@@ -1,0 +1,62 @@
+# Lemma-based rewrite rules.
+#
+# Each entry says: when Stanza identifies a token with `from_lemma` and the
+# optional guards pass, generate a candidate where that token is replaced with
+# the agreement-preserving form of `to_lemma` (looked up in
+# humanize_pl/data/inflections.json). The agreement gate downstream still
+# validates the result.
+#
+# Migration policy:
+#   - Pure synonym swaps where both lemmas share UPOS and inflection paradigm
+#     belong here. They replace whole families of hand-written regex.
+#   - Frame rewrites that change syntactic structure stay in dedicated rule
+#     modules until the lemma engine learns dependency templates.
+#
+# Adding a rule:
+#   1. Add an entry below.
+#   2. Run tools/build_inflections.py on a Linux box with morfeusz2 installed
+#      (`pip install morfeusz2 pyyaml`). Hand-edit inflections.json otherwise.
+#   3. Add the migrated regex's existing test cases to test_lemma_engine.py.
+
+- id: kancelaryzm:niniejszy_to_ten
+  from_lemma: niniejszy
+  to_lemma: ten
+  upos: ADJ
+  score: 0.60
+  risk: 0.06
+  stage: legal_rewrite
+  operation_type: debureaucratization
+  targeted_issue: bureaucratic_demonstrative
+  modes: [conservative, standard, strong]
+  guards:
+    # `niniejszy` inside legal headers or formula must not be touched.
+    forbid_left_lemmas: [art, paragraf, ustawa, kodeks]
+    forbid_right_lemmas: [kodeks, ustawa]
+
+- id: kancelaryzm:przedmiotowy_to_ten
+  from_lemma: przedmiotowy
+  to_lemma: ten
+  upos: ADJ
+  score: 0.58
+  risk: 0.08
+  stage: legal_rewrite
+  operation_type: debureaucratization
+  targeted_issue: bureaucratic_demonstrative
+  modes: [standard, strong]
+  guards:
+    # `przedmiotowy` sometimes carries domain meaning (e.g. "zakres
+    # przedmiotowy ustawy") that the substitution would erase.
+    forbid_left_lemmas: [zakres, charakter, aspekt]
+    forbid_right_lemmas: [zakres, charakter, aspekt]
+
+- id: kancelaryzm:powyzszy_to_ten
+  from_lemma: powyższy
+  to_lemma: ten
+  upos: ADJ
+  score: 0.55
+  risk: 0.10
+  stage: legal_rewrite
+  operation_type: debureaucratization
+  targeted_issue: vague_reference
+  modes: [standard, strong]
+  guards: {}

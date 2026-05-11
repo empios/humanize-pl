@@ -1,0 +1,58 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "humanize-pl"
+version = "0.2.0"
+description = "Deterministic Polish text humanization engine with optional NLP/transformer validation."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "humanize-pl contributors" }]
+keywords = ["polish", "nlp", "humanize", "docx", "style", "legal"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Natural Language :: Polish",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Text Processing :: Linguistic",
+]
+dependencies = [
+  "regex>=2024.0.0",
+  "python-docx>=1.1.0",
+  "typer>=0.12.0",
+  "rich>=13.0.0",
+  "numpy>=1.24.0",
+  "pyyaml>=6.0.0",
+]
+
+[project.optional-dependencies]
+nlp = ["stanza>=1.8.0"]
+transformers = [
+  "torch>=2.2.0",
+  "transformers>=4.40.0",
+  "sentence-transformers>=3.0.0",
+]
+morfeusz = ["morfeusz2"]
+dev = ["pytest>=8.0.0", "ruff>=0.6.0"]
+all = [
+  "stanza>=1.8.0",
+  "torch>=2.2.0",
+  "transformers>=4.40.0",
+  "sentence-transformers>=3.0.0",
+]
+
+[project.scripts]
+humanize-pl = "humanize_pl.cli:app"
+humanize-pl-benchmark = "humanize_pl.benchmark:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["humanize_pl"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"

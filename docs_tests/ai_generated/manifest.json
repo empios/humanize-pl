@@ -1,0 +1,51 @@
+[
+  {
+    "id": "ai_legal_01_umowa_uslug",
+    "file": "ai_legal_01_umowa_uslug.txt",
+    "type": "umowa",
+    "focus": ["strony", "wynagrodzenie", "terminy", "odpowiedzialność", "powtarzalne ramy AI"]
+  },
+  {
+    "id": "ai_legal_02_opinia_odpowiedzialnosc",
+    "file": "ai_legal_02_opinia_odpowiedzialnosc.txt",
+    "type": "opinia prawna",
+    "focus": ["normatywność", "podstawa prawna", "argumentacja", "ostrożne wnioski"]
+  },
+  {
+    "id": "ai_legal_03_esej_prawo_pracy",
+    "file": "ai_legal_03_esej_prawo_pracy.txt",
+    "type": "esej prawniczy",
+    "focus": ["monotonia akapitów", "nominalizacje", "art. 22 § 1", "co do zasady"]
+  },
+  {
+    "id": "ai_legal_04_regulamin_platformy",
+    "file": "ai_legal_04_regulamin_platformy.txt",
+    "type": "regulamin",
+    "focus": ["obowiązki użytkownika", "zakazy", "odpowiedzialność", "dane osobowe"]
+  },
+  {
+    "id": "ai_legal_05_pismo_urzedowe",
+    "file": "ai_legal_05_pismo_urzedowe.txt",
+    "type": "pismo urzędowe",
+    "focus": ["wniosek", "organ", "termin", "podstawa prawna", "załączniki"]
+  },
+  {
+    "id": "ai_legal_06_wezwanie_do_zaplaty",
+    "file": "ai_legal_06_wezwanie_do_zaplaty.txt",
+    "type": "wezwanie do zapłaty",
+    "focus": ["kwoty", "odsetki", "termin zapłaty", "bez zmiany roszczenia"]
+  },
+  {
+    "id": "ai_legal_07_pozew_zaplate",
+    "file": "ai_legal_07_pozew_zaplate.txt",
+    "type": "pismo procesowe",
+    "focus": ["żądanie pozwu", "dowody", "kwoty", "daty", "uzasadnienie"]
+  },
+  {
+    "id": "ai_legal_08_polityka_rodo",
+    "file": "ai_legal_08_polityka_rodo.txt",
+    "type": "polityka prywatności",
+    "focus": ["RODO", "administrator", "cele przetwarzania", "uprawnienia", "cytaty"]
+  }
+]
+

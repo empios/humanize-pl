@@ -1,0 +1,36 @@
+{
+  "ten": {
+    "upos": "DET",
+    "forms": {
+      "Case=Nom|Gender=Masc|Number=Sing": "ten",
+      "Case=Nom|Gender=Fem|Number=Sing": "ta",
+      "Case=Nom|Gender=Neut|Number=Sing": "to",
+      "Animacy=Hum|Case=Nom|Number=Plur": "ci",
+      "Case=Nom|Number=Plur": "te",
+      "Case=Gen|Gender=Masc|Number=Sing": "tego",
+      "Case=Gen|Gender=Fem|Number=Sing": "tej",
+      "Case=Gen|Gender=Neut|Number=Sing": "tego",
+      "Case=Gen|Number=Plur": "tych",
+      "Case=Dat|Gender=Masc|Number=Sing": "temu",
+      "Case=Dat|Gender=Fem|Number=Sing": "tej",
+      "Case=Dat|Gender=Neut|Number=Sing": "temu",
+      "Case=Dat|Number=Plur": "tym",
+      "Animacy=Inan|Case=Acc|Gender=Masc|Number=Sing": "ten",
+      "Animacy=Anim|Case=Acc|Gender=Masc|Number=Sing": "tego",
+      "Animacy=Hum|Case=Acc|Gender=Masc|Number=Sing": "tego",
+      "Case=Acc|Gender=Masc|Number=Sing": "ten",
+      "Case=Acc|Gender=Fem|Number=Sing": "tę",
+      "Case=Acc|Gender=Neut|Number=Sing": "to",
+      "Animacy=Hum|Case=Acc|Number=Plur": "tych",
+      "Case=Acc|Number=Plur": "te",
+      "Case=Ins|Gender=Masc|Number=Sing": "tym",
+      "Case=Ins|Gender=Fem|Number=Sing": "tą",
+      "Case=Ins|Gender=Neut|Number=Sing": "tym",
+      "Case=Ins|Number=Plur": "tymi",
+      "Case=Loc|Gender=Masc|Number=Sing": "tym",
+      "Case=Loc|Gender=Fem|Number=Sing": "tej",
+      "Case=Loc|Gender=Neut|Number=Sing": "tym",
+      "Case=Loc|Number=Plur": "tych"
+    }
+  }
+}

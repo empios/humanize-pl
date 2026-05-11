@@ -1,0 +1,17 @@
+POLITYKA PRYWATNOŚCI
+
+§ 1. Administrator danych
+Administratorem danych osobowych jest Gamma sp. z o.o. z siedzibą w Poznaniu. Warto wskazać, że administrator decyduje o celach i sposobach przetwarzania danych osobowych. Kontakt z administratorem jest możliwy pod adresem: privacy@example.test.
+
+§ 2. Cele przetwarzania
+Dane osobowe są przetwarzane w celu obsługi konta użytkownika, realizacji usług elektronicznych, rozpatrywania reklamacji oraz dochodzenia roszczeń. Szczególną rolę odgrywa zasada minimalizacji danych, ponieważ administrator powinien przetwarzać tylko takie dane, które są niezbędne do określonego celu. Nie oznacza to jednak, że administrator nie może przetwarzać danych w celu obrony przed roszczeniami.
+
+§ 3. Podstawy prawne
+Podstawą przetwarzania danych może być wykonanie umowy, obowiązek prawny ciążący na administratorze albo prawnie uzasadniony interes administratora. W przypadku zgody użytkownika dane mogą być przetwarzane do czasu jej wycofania. Cytat „zgoda może zostać wycofana w każdym czasie” powinien zostać zachowany bez zmian w dokumentacji informacyjnej.
+
+§ 4. Prawa osoby, której dane dotyczą
+Osobie, której dane dotyczą, przysługuje prawo dostępu do danych, prawo sprostowania danych, prawo usunięcia danych, prawo ograniczenia przetwarzania oraz prawo sprzeciwu. Warto podkreślić, że realizacja tych praw może zależeć od podstawy prawnej przetwarzania oraz od obowiązków ciążących na administratorze. Administrator powinien udzielić odpowiedzi bez zbędnej zwłoki, nie później niż w terminie 30 dni.
+
+§ 5. Okres przechowywania
+Dane są przechowywane przez okres niezbędny do realizacji celu przetwarzania, a następnie przez okres przedawnienia roszczeń. W dużej mierze okres ten zależy od rodzaju usługi oraz charakteru relacji z użytkownikiem.
+

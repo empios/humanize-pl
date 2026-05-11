@@ -1,0 +1,65 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+.eggs/
+build/
+dist/
+sdist/
+wheels/
+*.whl
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Virtualenv
+.venv/
+venv/
+env/
+ENV/
+
+# Test / coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+
+# Lint
+.ruff_cache/
+.mypy_cache/
+.pyre/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Claude Code local state
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project artifacts
+docs_tests/*_humanized*.docx
+docs_tests/*_review_*.docx
+docs_tests/*_report*.json
+*.log
+
+# Model caches (Stanza, HuggingFace)
+~/.cache/
+stanza_resources/
+
+# Local secrets (defensive — should never be present anyway)
+.env
+.env.local
+*.pem
+*.key

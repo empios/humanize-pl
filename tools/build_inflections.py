@@ -89,8 +89,13 @@ def morf_tag_to_ud(tag: str) -> dict[str, str]:
     if head in {"fin", "bedzie"}:
         out["VerbForm"] = "Fin"
     for fragment in parts[1:]:
-        if fragment in _CASE:
-            out["Case"] = _CASE[fragment]
+        # Compound case tags like "nom.voc" — take the first recognised sub-value.
+        # Compound gender tags like "m2.m3.f.n" are intentionally NOT split: when
+        # the same form covers multiple genders, omitting Gender from the key is
+        # correct so the runtime inflector's Gender-relaxation finds it for any gender.
+        case_candidate = fragment.split(".")[0]
+        if case_candidate in _CASE:
+            out["Case"] = _CASE[case_candidate]
         if fragment in _NUM:
             out["Number"] = _NUM[fragment]
         if fragment in _GENDER:
@@ -137,6 +142,17 @@ def enumerate_lemma(morfeusz: Any, lemma: str) -> dict[str, dict[str, str]]:
         # First win — Morfeusz returns variants in deterministic order; later
         # duplicates (e.g. alternative spellings) are intentionally ignored.
         bucket.setdefault(key, form)
+
+    # Polish adjectives have Degree in every Morfeusz tag, but callers
+    # (e.g. determiners analysed by Stanza) often don't carry Degree in their
+    # feats.  Add a no-Degree fallback key for each form so the runtime
+    # inflector can find the form in both cases.
+    for upos, forms in forms_by_upos.items():
+        for key, form in list(forms.items()):
+            if "Degree=" in key:
+                no_deg = "|".join(p for p in key.split("|") if not p.startswith("Degree="))
+                forms.setdefault(no_deg, form)
+
     return forms_by_upos
 
 

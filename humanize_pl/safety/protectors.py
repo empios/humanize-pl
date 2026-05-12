@@ -34,6 +34,20 @@ class ProtectedText:
             value = value.replace(placeholder, original)
         return value
 
+    def re_protect(self, value: str) -> str:
+        """Reverse of restore(): substitute original fragments back to placeholders.
+
+        Safe as long as the fragments in value are exactly those from the original
+        protect_text call — i.e., only Polish words were changed, not legal references.
+        Longest fragments are substituted first to avoid partial-match collisions.
+        """
+        result = value
+        for placeholder, fragment in sorted(
+            self.mapping.items(), key=lambda kv: len(kv[1]), reverse=True
+        ):
+            result = result.replace(fragment, placeholder)
+        return result
+
 
 def protect_text(text: str) -> ProtectedText:
     mapping: dict[str, str] = {}

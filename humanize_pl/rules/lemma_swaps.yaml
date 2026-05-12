@@ -60,3 +60,80 @@
   targeted_issue: vague_reference
   modes: [standard, strong]
   guards: {}
+
+- id: kancelaryzm:rzeczony_to_ten
+  from_lemma: rzeczony
+  to_lemma: ten
+  upos: ADJ
+  score: 0.54
+  risk: 0.11
+  stage: legal_rewrite
+  operation_type: debureaucratization
+  targeted_issue: bureaucratic_demonstrative
+  modes: [standard, strong]
+  guards:
+    forbid_left_lemmas: [art, paragraf, ustawa, kodeks]
+    forbid_right_lemmas: [kodeks, ustawa]
+
+- id: kancelaryzm:stosowny_to_odpowiedni
+  from_lemma: stosowny
+  to_lemma: odpowiedni
+  upos: ADJ
+  score: 0.57
+  risk: 0.07
+  stage: legal_rewrite
+  operation_type: debureaucratization
+  targeted_issue: bureaucratic_qualifier
+  modes: [standard, strong]
+  guards:
+    # "stosowne przepisy/tryb/forma" carries a specific legal meaning that
+    # "odpowiedni" would dilute — preserve it in those collocations.
+    forbid_right_lemmas: [przepis, tryb, forma, organ]
+
+- id: kancelaryzm:obligatoryjny_to_obowiazkowy
+  from_lemma: obligatoryjny
+  to_lemma: obowiązkowy
+  upos: ADJ
+  score: 0.56
+  risk: 0.07
+  stage: legal_rewrite
+  operation_type: debureaucratization
+  targeted_issue: latin_bureaucratism
+  modes: [standard, strong]
+  guards: {}
+
+- id: kancelaryzm:transparentny_to_przejrzysty
+  from_lemma: transparentny
+  to_lemma: przejrzysty
+  upos: ADJ
+  score: 0.58
+  risk: 0.06
+  stage: legal_rewrite
+  operation_type: debureaucratization
+  targeted_issue: latin_bureaucratism
+  modes: [standard, strong]
+  guards: {}
+
+- id: kancelaryzm:adekwatny_to_odpowiedni
+  from_lemma: adekwatny
+  to_lemma: odpowiedni
+  upos: ADJ
+  score: 0.55
+  risk: 0.07
+  stage: legal_rewrite
+  operation_type: debureaucratization
+  targeted_issue: latin_bureaucratism
+  modes: [standard, strong]
+  guards: {}
+
+- id: kancelaryzm:finalny_to_koncowy
+  from_lemma: finalny
+  to_lemma: końcowy
+  upos: ADJ
+  score: 0.53
+  risk: 0.08
+  stage: legal_rewrite
+  operation_type: debureaucratization
+  targeted_issue: latin_bureaucratism
+  modes: [standard, strong]
+  guards: {}

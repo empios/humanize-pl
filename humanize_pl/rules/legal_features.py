@@ -107,7 +107,7 @@ def normativity_signature(text: str) -> dict[str, int]:
         "strict_obligation": len(
             re.findall(
                 r"\b(?:musi|muszą|jest\s+zobowiązan\p{L}*|są\s+zobowiązan\p{L}*|"
-                r"ma\s+obowiązek|mają\s+obowiązek|obowiązk\p{L}*)\b",
+                r"ma\s+obowiązek|mają\s+obowiązek|obowiązek|obowiązk\p{L}*)\b",
                 lower,
             )
         ),

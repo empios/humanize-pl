@@ -12,6 +12,7 @@ from humanize_pl.rules.features import (
     SentenceFeatures,
     analyze_paragraph_features,
     analyze_sentence_features,
+    enrich_features_with_analysis,
 )
 from humanize_pl.rules.redundancy import redundancy_candidates
 from humanize_pl.rules.scoring import score_candidate
@@ -156,6 +157,7 @@ class LegalPipeline:
         for step_index in range(self._step_limit()):
             features_before = analyze_sentence_features(current_text)
             analysis = self._stanza_analysis(current_text, context)
+            features_before = enrich_features_with_analysis(features_before, analysis)
             candidates = self.rule_engine.generate_candidates(
                 current_text,
                 analysis=analysis,
@@ -401,13 +403,17 @@ class LegalPipeline:
             if self.config.agreement_gate_enabled and (
                 self.stanza_engine is not None or self.morfeusz is not None
             ):
-                agreement_checks = agreement_gate(
+                restored_cand = self.protected.restore(cand.text)
+                agreement_checks, effective_cand_text = agreement_gate(
                     self.protected.restore(original),
-                    self.protected.restore(cand.text),
+                    restored_cand,
                     stanza_engine=self.stanza_engine,
                     morfeusz=self.morfeusz,
                     analysis_cache=context.analysis_cache,
                 )
+                if effective_cand_text != restored_cand:
+                    # NP agreement was auto-repaired — update cand to the repaired text.
+                    cand = replace(cand, text=self.protected.re_protect(effective_cand_text))
                 failed_agreement = next(
                     (check for check in agreement_checks if not check.ok), None
                 )

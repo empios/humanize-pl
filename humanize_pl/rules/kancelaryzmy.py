@@ -22,18 +22,39 @@ NINIEJSZY_FALLBACK: list[tuple[str, str]] = [
 CONSERVATIVE_REPLACEMENTS: list[tuple[str, str]] = [
     (r"\bnależy zauważyć, że\b", "warto zauważyć, że"),
     (r"\bnależy podkreślić, że\b", "warto podkreślić, że"),
+    (r"\bnależy zaznaczyć, że\b", "warto zaznaczyć, że"),
+    (r"\bnależy wskazać, że\b", "warto wskazać, że"),
+    (r"\bwziąwszy pod uwagę\b", "biorąc pod uwagę"),
+    (r"\bzważywszy na\b", "biorąc pod uwagę"),
     (r"\bw odniesieniu do\b", "w przypadku"),
     (r"\bw zakresie dotyczącym\b", "w zakresie"),
     (r"\bdokonywać oceny\b", "oceniać"),
     (r"\bdokonać oceny\b", "ocenić"),
     (r"\bdokonano oceny\b", "oceniono"),
+    (r"\bdokonywać kontroli\b", "kontrolować"),
+    (r"\bdokonać kontroli\b", "skontrolować"),
+    (r"\bdokonano kontroli\b", "skontrolowano"),
+    (r"\bdokonywać weryfikacji\b", "weryfikować"),
+    (r"\bdokonać weryfikacji\b", "zweryfikować"),
+    (r"\bdokonano weryfikacji\b", "zweryfikowano"),
+    # Classic incorrect construction; "na podstawie" is the correct form
+    (r"\bw oparciu o\b", "na podstawie"),
+    (r"\bw chwili obecnej\b", "obecnie"),
 ]
 
 STANDARD_REPLACEMENTS: list[tuple[str, str]] = [
+    (r"\bco do zasady\b", "zasadniczo"),
+    (r"\bw konsekwencji\b", "w rezultacie"),
     (r"\bw celu dokonania oceny\b", "aby ocenić"),
     (r"\bw celu przeprowadzenia analizy\b", "aby przeanalizować"),
-    # Only rewrite "ma na celu" with a following infinitive-like phrase is too hard safely;
-    # leave general cases unchanged for legal text.
+    (r"\bmając na względzie\b", "biorąc pod uwagę"),
+    (r"\bz uwagi na powyższe\b", "z uwagi na to"),
+    (r"\bw związku z powyższym\b", "w związku z tym"),
+    (r"\bw przedmiocie\b", "w sprawie"),
+    (r"\balbowiem\b", "ponieważ"),
+    (r"\baczkolwiek\b", "choć"),
+    (r"\bjednakowoż\b", "jednak"),
+    (r"\bkażdorazowo\b", "zawsze"),
 ]
 
 

@@ -48,7 +48,7 @@ def legal_style_candidates(sentence: str, *, mode: Mode) -> list[Candidate]:
     if mode in {Mode.standard, Mode.strong}:
         patterns.extend([
             (r"\bistotne znaczenie ma\b", "duże znaczenie ma", "legal_style:duze_znaczenie", 0.68),
-            (r"\bma także istotne znaczenie\b", "jest też ważne", "legal_style:jest_tez_wazne", 0.65),
+            (r"\bma także istotne znaczenie\b", "ma też duże znaczenie", "legal_style:jest_tez_wazne", 0.65),
             (r"\bTo właśnie ono\b", "To ono", "legal_style:to_ono", 0.58),
             (r"\bJuż z tej definicji wynika, że\b", "Z tej definicji wynika, że", "legal_style:z_definicji", 0.58),
             (r"\bZgodnie z obowiązującym go systemem i rozkładem czasu pracy\b", "zgodnie z obowiązującym systemem i rozkładem czasu pracy", "legal_style:system_czasu", 0.55),

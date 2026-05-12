@@ -1,0 +1,6281 @@
+{
+  "changed": true,
+  "engine_used": "basic",
+  "legal_review_profile": "legal_ai_review",
+  "model_status": {
+    "stanza": "not_requested",
+    "semantic": "not_requested",
+    "fluency": "not_requested",
+    "morfeusz": "ready"
+  },
+  "semantic_model": null,
+  "fluency_model": null,
+  "warnings": [],
+  "summary": {
+    "accepted_changes": 11,
+    "rejected_candidates": 0,
+    "skipped_sentences": 7,
+    "all_candidates": 15
+  },
+  "quality": {
+    "word_count_estimate": 271,
+    "changes_per_1000_words": 40.5904,
+    "average_accepted_risk": 0.1033,
+    "operation_types": {
+      "legal_ai_style_rewrite": 4,
+      "legal_style_rewrite": 5,
+      "ai_artifact_reduction": 1,
+      "debureaucratization": 2,
+      "cleanup": 1,
+      "voice_transform": 2
+    },
+    "gate_rejections": {},
+    "untouched_sentences": 7
+  },
+  "legal_review": {
+    "profile": "legal_ai_review",
+    "ai_artifact_score": 0.1608,
+    "legal_risk_score": 0.1069,
+    "average_candidate_risk": 0.0923,
+    "ai_artifact_reductions": 1,
+    "redundancy_reductions": 0,
+    "normativity_changes_blocked": 0,
+    "anchor_loss_blocked": 0,
+    "sentence_completeness_blocked": 0,
+    "basic_score": null,
+    "hybrid_score": null
+  },
+  "accepted": [
+    {
+      "paragraph": 1,
+      "sentence": 0,
+      "step_index": 0,
+      "original": "Podporządkowanie pracownika jest jedną z najważniejszych cech stosunku pracy.",
+      "candidate": "Podporządkowanie pracownika jest jedną z kluczowych cech stosunku pracy.",
+      "rewritten": "Podporządkowanie pracownika jest jedną z kluczowych cech stosunku pracy.",
+      "rule": "legal_ai_style:key_feature_frame",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "legal_rewrite",
+      "operation_type": "legal_ai_style_rewrite",
+      "risk": 0.1433,
+      "features_before": {
+        "word_count": 9,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 3,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2,
+        "legal_risk_score": 0.075,
+        "complexity": 0.1511111111111111,
+        "lix": 53.44,
+        "mdd": null,
+        "formality": 0.1667
+      },
+      "features_after": {
+        "word_count": 9,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 3,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2,
+        "legal_risk_score": 0.075,
+        "complexity": 0.1511111111111111,
+        "lix": 53.44,
+        "mdd": null,
+        "formality": 0.3333
+      },
+      "score_before_gate": 0.55,
+      "score_after_gate": 0.4067,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": "abstract_frame",
+      "score_breakdown": {
+        "style_gain": 0.05,
+        "legal_risk": 0.13,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.1667,
+        "length_penalty": 0.0,
+        "final_score": 0.4067
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 14.75,
+        "sentence_length_variance": 51.1875,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.0
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 14.75,
+        "sentence_length_variance": 51.1875,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.0
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 1,
+      "sentence": 1,
+      "step_index": 0,
+      "original": "To właśnie ono w dużej mierze odróżnia zatrudnienie pracownicze od zatrudnienia cywilnoprawnego.",
+      "candidate": "To ono w dużej mierze odróżnia zatrudnienie pracownicze od zatrudnienia cywilnoprawnego.",
+      "rewritten": "To ono w dużej mierze odróżnia zatrudnienie pracownicze od zatrudnienia cywilnoprawnego.",
+      "rule": "legal_style:to_ono",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "adaptive_scoring",
+      "operation_type": "legal_style_rewrite",
+      "risk": 0.0,
+      "features_before": {
+        "word_count": 12,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": false,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 2,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.3333,
+        "legal_risk_score": 0.0,
+        "complexity": 0.1499933333333333,
+        "lix": 62.0,
+        "mdd": null,
+        "formality": 0.375
+      },
+      "features_after": {
+        "word_count": 11,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": false,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 2,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.3636,
+        "legal_risk_score": 0.0,
+        "complexity": 0.1636290909090909,
+        "lix": 56.45,
+        "mdd": null,
+        "formality": 0.4286
+      },
+      "score_before_gate": 0.605,
+      "score_after_gate": 0.605,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.025,
+        "legal_risk": 0.0,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.0,
+        "length_penalty": 0.0,
+        "final_score": 0.605
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 14.75,
+        "sentence_length_variance": 51.1875,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.0
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 14.75,
+        "sentence_length_variance": 51.1875,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.0
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 1,
+      "sentence": 1,
+      "step_index": 1,
+      "original": "To ono w dużej mierze odróżnia zatrudnienie pracownicze od zatrudnienia cywilnoprawnego.",
+      "candidate": "To ono w znacznym stopniu odróżnia zatrudnienie pracownicze od zatrudnienia cywilnoprawnego.",
+      "rewritten": "To ono w znacznym stopniu odróżnia zatrudnienie pracownicze od zatrudnienia cywilnoprawnego.",
+      "rule": "legal_style:w_znacznym_stopniu",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "adaptive_scoring",
+      "operation_type": "legal_style_rewrite",
+      "risk": 0.0229,
+      "features_before": {
+        "word_count": 11,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": false,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 2,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.3636,
+        "legal_risk_score": 0.0,
+        "complexity": 0.1636290909090909,
+        "lix": 56.45,
+        "mdd": null,
+        "formality": 0.4286
+      },
+      "features_after": {
+        "word_count": 11,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": false,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 2,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.3636,
+        "legal_risk_score": 0.0,
+        "complexity": 0.1636290909090909,
+        "lix": 74.64,
+        "mdd": null,
+        "formality": 0.5714
+      },
+      "score_before_gate": 0.605,
+      "score_after_gate": 0.5821,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.025,
+        "legal_risk": 0.0,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.2857,
+        "length_penalty": 0.0,
+        "final_score": 0.5821
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 14.75,
+        "sentence_length_variance": 51.1875,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.0
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 14.75,
+        "sentence_length_variance": 51.1875,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.0
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 1,
+      "sentence": 3,
+      "step_index": 0,
+      "original": "Przepis ten ma istotne znaczenie, ponieważ wskazuje podstawowe elementy relacji pracowniczej.",
+      "candidate": "Przepis ten ma duże znaczenie, ponieważ wskazuje podstawowe elementy relacji pracowniczej.",
+      "rewritten": "Przepis ten ma duże znaczenie, ponieważ wskazuje podstawowe elementy relacji pracowniczej.",
+      "rule": "legal_ai_style:important_frame",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "legal_rewrite",
+      "operation_type": "legal_ai_style_rewrite",
+      "risk": 0.14,
+      "features_before": {
+        "word_count": 11,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 1,
+        "enumeration_count": 1,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 1,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2727,
+        "legal_risk_score": 0.0,
+        "complexity": 0.32726727272727274,
+        "lix": 92.82,
+        "mdd": null,
+        "formality": 0.1111
+      },
+      "features_after": {
+        "word_count": 11,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 1,
+        "enumeration_count": 1,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 1,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2727,
+        "legal_risk_score": 0.0,
+        "complexity": 0.32726727272727274,
+        "lix": 83.73,
+        "mdd": null,
+        "formality": 0.125
+      },
+      "score_before_gate": 0.565,
+      "score_after_gate": 0.425,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": "abstract_frame",
+      "score_breakdown": {
+        "style_gain": 0.075,
+        "legal_risk": 0.13,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.125,
+        "length_penalty": 0.0,
+        "final_score": 0.425
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 14.75,
+        "sentence_length_variance": 51.1875,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.0
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 14.75,
+        "sentence_length_variance": 51.1875,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.0
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 2,
+      "sentence": 0,
+      "step_index": 0,
+      "original": "Warto wskazać, że podporządkowanie nie oznacza całkowitej zależności pracownika od pracodawcy.",
+      "candidate": "Podporządkowanie nie oznacza całkowitej zależności pracownika od pracodawcy.",
+      "rewritten": "Podporządkowanie nie oznacza całkowitej zależności pracownika od pracodawcy.",
+      "rule": "ai_artifact:drop_discourse_intro",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "ai_artifact_review",
+      "operation_type": "ai_artifact_reduction",
+      "risk": 0.4429,
+      "features_before": {
+        "word_count": 11,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 1,
+        "ai_artifact_score": 0.3618,
+        "legal_risk_score": 0.05,
+        "complexity": 0.25417818181818186,
+        "lix": 74.64,
+        "mdd": null,
+        "formality": 0.125
+      },
+      "features_after": {
+        "word_count": 8,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2,
+        "legal_risk_score": 0.05,
+        "complexity": 0.165,
+        "lix": 83.0,
+        "mdd": null,
+        "formality": 0.1667
+      },
+      "score_before_gate": 0.6516,
+      "score_after_gate": 0.2088,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.0816,
+        "legal_risk": 0.36,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.2857,
+        "length_penalty": 0.06,
+        "final_score": 0.2088
+      },
+      "paragraph_features_before": {
+        "sentence_count": 3,
+        "avg_sentence_words": 17.3333,
+        "sentence_length_variance": 20.2222,
+        "repeated_anchor_count": 4,
+        "transition_count": 1,
+        "topic_continuity": 0.0648
+      },
+      "paragraph_features_after": {
+        "sentence_count": 3,
+        "avg_sentence_words": 17.3333,
+        "sentence_length_variance": 20.2222,
+        "repeated_anchor_count": 4,
+        "transition_count": 1,
+        "topic_continuity": 0.0648
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 2,
+      "sentence": 2,
+      "step_index": 0,
+      "original": "Szczególną rolę odgrywa tutaj kierownictwo pracodawcy, które może dotyczyć sposobu wykonywania zadań, kolejności czynności, miejsca świadczenia pracy oraz oczekiwanego rezultatu organizacyjnego.",
+      "candidate": "Duże znaczenie ma tutaj kierownictwo pracodawcy, które może dotyczyć sposobu wykonywania zadań, kolejności czynności, miejsca świadczenia pracy oraz oczekiwanego rezultatu organizacyjnego.",
+      "rewritten": "Duże znaczenie ma tutaj kierownictwo pracodawcy, które może dotyczyć sposobu wykonywania zadań, kolejności czynności, miejsca świadczenia pracy oraz oczekiwanego rezultatu organizacyjnego.",
+      "rule": "legal_style:duze_znaczenie_ma",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "adaptive_scoring",
+      "operation_type": "legal_style_rewrite",
+      "risk": 0.0844,
+      "features_before": {
+        "word_count": 21,
+        "comma_count": 3,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 1,
+        "enumeration_count": 4,
+        "nominalization_count": 0,
+        "modal_count": 1,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 1,
+        "legal_anchor_count": 4,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0,
+        "legal_risk_score": 0.22,
+        "complexity": 0.2857142857142857,
+        "lix": 87.67,
+        "mdd": null,
+        "formality": 0.3889
+      },
+      "features_after": {
+        "word_count": 21,
+        "comma_count": 3,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 1,
+        "enumeration_count": 4,
+        "nominalization_count": 1,
+        "modal_count": 1,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 1,
+        "legal_anchor_count": 4,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0952,
+        "legal_risk_score": 0.22,
+        "complexity": 0.3523733333333333,
+        "lix": 82.9,
+        "mdd": null,
+        "formality": 0.3529
+      },
+      "score_before_gate": 0.61,
+      "score_after_gate": 0.5256,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.05,
+        "legal_risk": 0.075,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.1176,
+        "length_penalty": 0.0,
+        "final_score": 0.5256
+      },
+      "paragraph_features_before": {
+        "sentence_count": 3,
+        "avg_sentence_words": 17.3333,
+        "sentence_length_variance": 20.2222,
+        "repeated_anchor_count": 4,
+        "transition_count": 1,
+        "topic_continuity": 0.0648
+      },
+      "paragraph_features_after": {
+        "sentence_count": 3,
+        "avg_sentence_words": 17.3333,
+        "sentence_length_variance": 20.2222,
+        "repeated_anchor_count": 4,
+        "transition_count": 1,
+        "topic_continuity": 0.0648
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 3,
+      "sentence": 0,
+      "step_index": 0,
+      "original": "Co do zasady pracownik nie może dowolnie decydować o tym, kiedy i gdzie będzie wykonywał swoje obowiązki.",
+      "candidate": "Zasadniczo pracownik nie może dowolnie decydować o tym, kiedy i gdzie będzie wykonywał swoje obowiązki.",
+      "rewritten": "Zasadniczo pracownik nie może dowolnie decydować o tym, kiedy i gdzie będzie wykonywał swoje obowiązki.",
+      "rule": "kancelaryzm:combined",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "adaptive_scoring",
+      "operation_type": "debureaucratization",
+      "risk": 0.0589,
+      "features_before": {
+        "word_count": 17,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 0,
+        "modal_count": 1,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 2,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0,
+        "legal_risk_score": 0.29,
+        "complexity": 0.23529411764705882,
+        "lix": 46.41,
+        "mdd": null,
+        "formality": 0.2
+      },
+      "features_after": {
+        "word_count": 15,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 0,
+        "modal_count": 1,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 2,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0,
+        "legal_risk_score": 0.29,
+        "complexity": 0.26666666666666666,
+        "lix": 55.0,
+        "mdd": null,
+        "formality": 0.2
+      },
+      "score_before_gate": 0.7,
+      "score_after_gate": 0.6411,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.05,
+        "legal_risk": 0.05,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.1111,
+        "length_penalty": 0.0,
+        "final_score": 0.6411
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 16.0,
+        "sentence_length_variance": 8.5,
+        "repeated_anchor_count": 3,
+        "transition_count": 0,
+        "topic_continuity": 0.0355
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 16.0,
+        "sentence_length_variance": 8.5,
+        "repeated_anchor_count": 3,
+        "transition_count": 0,
+        "topic_continuity": 0.0355
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 3,
+      "sentence": 3,
+      "step_index": 0,
+      "original": "Nadal ma jednak znaczenie praktyczne, jeżeli pracownik pozostaje w strukturze organizacyjnej pracodawcy i wykonuje zadania na jego rzecz.",
+      "candidate": "Nadal ma praktyczne znaczenie, jeżeli pracownik pozostaje w strukturze organizacyjnej pracodawcy i wykonuje zadania na jego rzecz.",
+      "rewritten": "Nadal ma praktyczne znaczenie, jeżeli pracownik pozostaje w strukturze organizacyjnej pracodawcy i wykonuje zadania na jego rzecz.",
+      "rule": "legal_ai_style:practical_importance_frame",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "legal_rewrite",
+      "operation_type": "legal_ai_style_rewrite",
+      "risk": 0.13,
+      "features_before": {
+        "word_count": 18,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 2,
+        "enumeration_count": 1,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 3,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.1111,
+        "legal_risk_score": 0.075,
+        "complexity": 0.24444222222222223,
+        "lix": 68.0,
+        "mdd": null,
+        "formality": 0.2308
+      },
+      "features_after": {
+        "word_count": 17,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 1,
+        "enumeration_count": 1,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 3,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.1176,
+        "legal_risk_score": 0.075,
+        "complexity": 0.1999905882352941,
+        "lix": 69.94,
+        "mdd": null,
+        "formality": 0.25
+      },
+      "score_before_gate": 0.53,
+      "score_after_gate": 0.4,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": "abstract_frame",
+      "score_breakdown": {
+        "style_gain": 0.05,
+        "legal_risk": 0.13,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.0,
+        "length_penalty": 0.0,
+        "final_score": 0.4
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 16.0,
+        "sentence_length_variance": 8.5,
+        "repeated_anchor_count": 3,
+        "transition_count": 0,
+        "topic_continuity": 0.0355
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 16.0,
+        "sentence_length_variance": 8.5,
+        "repeated_anchor_count": 3,
+        "transition_count": 0,
+        "topic_continuity": 0.0355
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 4,
+      "sentence": 0,
+      "step_index": 0,
+      "original": "Podsumowując podporządkowanie pracownika ma szczególny charakter.",
+      "candidate": "Podsumowując, podporządkowanie pracownika ma szczególny charakter.",
+      "rewritten": "Podsumowując, podporządkowanie pracownika ma szczególny charakter.",
+      "rule": "legal_style:comma_after_podsumowujac",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "quality_gate",
+      "operation_type": "cleanup",
+      "risk": 0.0,
+      "features_before": {
+        "word_count": 6,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 1,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2,
+        "legal_risk_score": 0.025,
+        "complexity": 0.20666666666666667,
+        "lix": 89.33,
+        "mdd": null,
+        "formality": 0.4
+      },
+      "features_after": {
+        "word_count": 6,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 1,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2,
+        "legal_risk_score": 0.025,
+        "complexity": 0.3733333333333333,
+        "lix": 89.33,
+        "mdd": null,
+        "formality": 0.4
+      },
+      "score_before_gate": 0.95,
+      "score_after_gate": 0.95,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.05,
+        "legal_risk": 0.0,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.0,
+        "length_penalty": 0.0,
+        "final_score": 0.95
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 68.5,
+        "repeated_anchor_count": 4,
+        "transition_count": 0,
+        "topic_continuity": 0.0513
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 68.5,
+        "repeated_anchor_count": 4,
+        "transition_count": 0,
+        "topic_continuity": 0.0513
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 4,
+      "sentence": 3,
+      "step_index": 0,
+      "original": "Właśnie dlatego podporządkowanie ma także istotne znaczenie przy ocenie, czy dana umowa jest rzeczywiście umową o pracę, nawet jeżeli została nazwana umową zlecenia albo umową o dzieło.",
+      "candidate": "Właśnie dlatego podporządkowanie ma też duże znaczenie przy ocenie, czy dana umowa jest rzeczywiście umową o pracę, nawet jeżeli została nazwana umową zlecenia albo umową o dzieło.",
+      "rewritten": "Właśnie dlatego podporządkowanie ma też duże znaczenie przy ocenie, czy dana umowa jest rzeczywiście umową o pracę, nawet jeżeli została nazwana umową zlecenia albo umową o dzieło.",
+      "rule": "legal_style:jest_tez_wazne",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "adaptive_scoring",
+      "operation_type": "legal_style_rewrite",
+      "risk": 0.0567,
+      "features_before": {
+        "word_count": 27,
+        "comma_count": 2,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 2,
+        "enumeration_count": 3,
+        "nominalization_count": 3,
+        "modal_count": 0,
+        "passive_marker_count": 1,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2,
+        "legal_risk_score": 0.05,
+        "complexity": 0.3362962962962963,
+        "lix": 60.33,
+        "mdd": null,
+        "formality": 0.3158
+      },
+      "features_after": {
+        "word_count": 27,
+        "comma_count": 2,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 2,
+        "enumeration_count": 3,
+        "nominalization_count": 3,
+        "modal_count": 0,
+        "passive_marker_count": 1,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2,
+        "legal_risk_score": 0.05,
+        "complexity": 0.3362962962962963,
+        "lix": 56.63,
+        "mdd": null,
+        "formality": 0.3529
+      },
+      "score_before_gate": 0.7,
+      "score_after_gate": 0.6433,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.05,
+        "legal_risk": 0.05,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.0833,
+        "length_penalty": 0.0,
+        "final_score": 0.6433
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 68.5,
+        "repeated_anchor_count": 4,
+        "transition_count": 0,
+        "topic_continuity": 0.0513
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 68.5,
+        "repeated_anchor_count": 4,
+        "transition_count": 0,
+        "topic_continuity": 0.0513
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 4,
+      "sentence": 3,
+      "step_index": 1,
+      "original": "Właśnie dlatego podporządkowanie ma też duże znaczenie przy ocenie, czy dana umowa jest rzeczywiście umową o pracę, nawet jeżeli została nazwana umową zlecenia albo umową o dzieło.",
+      "candidate": "Właśnie dlatego podporządkowanie ma też duże znaczenie przy ocenie, czy dana umowa jest rzeczywiście umową o pracę, nawet jeżeli nazwano umową zlecenia albo umową o dzieło.",
+      "rewritten": "Właśnie dlatego podporządkowanie ma też duże znaczenie przy ocenie, czy dana umowa jest rzeczywiście umową o pracę, nawet jeżeli nazwano umową zlecenia albo umową o dzieło.",
+      "rule": "passive_to_impersonal",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "candidate_generation",
+      "operation_type": "voice_transform",
+      "risk": 0.0573,
+      "features_before": {
+        "word_count": 27,
+        "comma_count": 2,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 2,
+        "enumeration_count": 3,
+        "nominalization_count": 3,
+        "modal_count": 0,
+        "passive_marker_count": 1,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2,
+        "legal_risk_score": 0.05,
+        "complexity": 0.3362962962962963,
+        "lix": 56.63,
+        "mdd": null,
+        "formality": 0.3529
+      },
+      "features_after": {
+        "word_count": 26,
+        "comma_count": 2,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 2,
+        "enumeration_count": 3,
+        "nominalization_count": 3,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2,
+        "legal_risk_score": 0.05,
+        "complexity": 0.3092307692307693,
+        "lix": 52.92,
+        "mdd": null,
+        "formality": 0.375
+      },
+      "score_before_gate": 0.655,
+      "score_after_gate": 0.5977,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.055,
+        "legal_risk": 0.05,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.0909,
+        "length_penalty": 0.0,
+        "final_score": 0.5977
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 68.5,
+        "repeated_anchor_count": 4,
+        "transition_count": 0,
+        "topic_continuity": 0.0513
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 68.5,
+        "repeated_anchor_count": 4,
+        "transition_count": 0,
+        "topic_continuity": 0.0513
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    }
+  ],
+  "changes": [
+    {
+      "paragraph": 1,
+      "sentence": 0,
+      "step_index": 0,
+      "original": "Podporządkowanie pracownika jest jedną z najważniejszych cech stosunku pracy.",
+      "candidate": "Podporządkowanie pracownika jest jedną z kluczowych cech stosunku pracy.",
+      "rewritten": "Podporządkowanie pracownika jest jedną z kluczowych cech stosunku pracy.",
+      "rule": "legal_ai_style:key_feature_frame",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "legal_rewrite",
+      "operation_type": "legal_ai_style_rewrite",
+      "risk": 0.1433,
+      "features_before": {
+        "word_count": 9,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 3,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2,
+        "legal_risk_score": 0.075,
+        "complexity": 0.1511111111111111,
+        "lix": 53.44,
+        "mdd": null,
+        "formality": 0.1667
+      },
+      "features_after": {
+        "word_count": 9,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 3,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2,
+        "legal_risk_score": 0.075,
+        "complexity": 0.1511111111111111,
+        "lix": 53.44,
+        "mdd": null,
+        "formality": 0.3333
+      },
+      "score_before_gate": 0.55,
+      "score_after_gate": 0.4067,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": "abstract_frame",
+      "score_breakdown": {
+        "style_gain": 0.05,
+        "legal_risk": 0.13,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.1667,
+        "length_penalty": 0.0,
+        "final_score": 0.4067
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 14.75,
+        "sentence_length_variance": 51.1875,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.0
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 14.75,
+        "sentence_length_variance": 51.1875,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.0
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 1,
+      "sentence": 1,
+      "step_index": 0,
+      "original": "To właśnie ono w dużej mierze odróżnia zatrudnienie pracownicze od zatrudnienia cywilnoprawnego.",
+      "candidate": "To ono w dużej mierze odróżnia zatrudnienie pracownicze od zatrudnienia cywilnoprawnego.",
+      "rewritten": "To ono w dużej mierze odróżnia zatrudnienie pracownicze od zatrudnienia cywilnoprawnego.",
+      "rule": "legal_style:to_ono",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "adaptive_scoring",
+      "operation_type": "legal_style_rewrite",
+      "risk": 0.0,
+      "features_before": {
+        "word_count": 12,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": false,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 2,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.3333,
+        "legal_risk_score": 0.0,
+        "complexity": 0.1499933333333333,
+        "lix": 62.0,
+        "mdd": null,
+        "formality": 0.375
+      },
+      "features_after": {
+        "word_count": 11,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": false,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 2,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.3636,
+        "legal_risk_score": 0.0,
+        "complexity": 0.1636290909090909,
+        "lix": 56.45,
+        "mdd": null,
+        "formality": 0.4286
+      },
+      "score_before_gate": 0.605,
+      "score_after_gate": 0.605,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.025,
+        "legal_risk": 0.0,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.0,
+        "length_penalty": 0.0,
+        "final_score": 0.605
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 14.75,
+        "sentence_length_variance": 51.1875,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.0
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 14.75,
+        "sentence_length_variance": 51.1875,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.0
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 1,
+      "sentence": 1,
+      "step_index": 1,
+      "original": "To ono w dużej mierze odróżnia zatrudnienie pracownicze od zatrudnienia cywilnoprawnego.",
+      "candidate": "To ono w znacznym stopniu odróżnia zatrudnienie pracownicze od zatrudnienia cywilnoprawnego.",
+      "rewritten": "To ono w znacznym stopniu odróżnia zatrudnienie pracownicze od zatrudnienia cywilnoprawnego.",
+      "rule": "legal_style:w_znacznym_stopniu",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "adaptive_scoring",
+      "operation_type": "legal_style_rewrite",
+      "risk": 0.0229,
+      "features_before": {
+        "word_count": 11,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": false,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 2,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.3636,
+        "legal_risk_score": 0.0,
+        "complexity": 0.1636290909090909,
+        "lix": 56.45,
+        "mdd": null,
+        "formality": 0.4286
+      },
+      "features_after": {
+        "word_count": 11,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": false,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 2,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.3636,
+        "legal_risk_score": 0.0,
+        "complexity": 0.1636290909090909,
+        "lix": 74.64,
+        "mdd": null,
+        "formality": 0.5714
+      },
+      "score_before_gate": 0.605,
+      "score_after_gate": 0.5821,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.025,
+        "legal_risk": 0.0,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.2857,
+        "length_penalty": 0.0,
+        "final_score": 0.5821
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 14.75,
+        "sentence_length_variance": 51.1875,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.0
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 14.75,
+        "sentence_length_variance": 51.1875,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.0
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 1,
+      "sentence": 3,
+      "step_index": 0,
+      "original": "Przepis ten ma istotne znaczenie, ponieważ wskazuje podstawowe elementy relacji pracowniczej.",
+      "candidate": "Przepis ten ma duże znaczenie, ponieważ wskazuje podstawowe elementy relacji pracowniczej.",
+      "rewritten": "Przepis ten ma duże znaczenie, ponieważ wskazuje podstawowe elementy relacji pracowniczej.",
+      "rule": "legal_ai_style:important_frame",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "legal_rewrite",
+      "operation_type": "legal_ai_style_rewrite",
+      "risk": 0.14,
+      "features_before": {
+        "word_count": 11,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 1,
+        "enumeration_count": 1,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 1,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2727,
+        "legal_risk_score": 0.0,
+        "complexity": 0.32726727272727274,
+        "lix": 92.82,
+        "mdd": null,
+        "formality": 0.1111
+      },
+      "features_after": {
+        "word_count": 11,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 1,
+        "enumeration_count": 1,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 1,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2727,
+        "legal_risk_score": 0.0,
+        "complexity": 0.32726727272727274,
+        "lix": 83.73,
+        "mdd": null,
+        "formality": 0.125
+      },
+      "score_before_gate": 0.565,
+      "score_after_gate": 0.425,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": "abstract_frame",
+      "score_breakdown": {
+        "style_gain": 0.075,
+        "legal_risk": 0.13,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.125,
+        "length_penalty": 0.0,
+        "final_score": 0.425
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 14.75,
+        "sentence_length_variance": 51.1875,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.0
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 14.75,
+        "sentence_length_variance": 51.1875,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.0
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 2,
+      "sentence": 0,
+      "step_index": 0,
+      "original": "Warto wskazać, że podporządkowanie nie oznacza całkowitej zależności pracownika od pracodawcy.",
+      "candidate": "Podporządkowanie nie oznacza całkowitej zależności pracownika od pracodawcy.",
+      "rewritten": "Podporządkowanie nie oznacza całkowitej zależności pracownika od pracodawcy.",
+      "rule": "ai_artifact:drop_discourse_intro",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "ai_artifact_review",
+      "operation_type": "ai_artifact_reduction",
+      "risk": 0.4429,
+      "features_before": {
+        "word_count": 11,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 1,
+        "ai_artifact_score": 0.3618,
+        "legal_risk_score": 0.05,
+        "complexity": 0.25417818181818186,
+        "lix": 74.64,
+        "mdd": null,
+        "formality": 0.125
+      },
+      "features_after": {
+        "word_count": 8,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2,
+        "legal_risk_score": 0.05,
+        "complexity": 0.165,
+        "lix": 83.0,
+        "mdd": null,
+        "formality": 0.1667
+      },
+      "score_before_gate": 0.6516,
+      "score_after_gate": 0.2088,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.0816,
+        "legal_risk": 0.36,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.2857,
+        "length_penalty": 0.06,
+        "final_score": 0.2088
+      },
+      "paragraph_features_before": {
+        "sentence_count": 3,
+        "avg_sentence_words": 17.3333,
+        "sentence_length_variance": 20.2222,
+        "repeated_anchor_count": 4,
+        "transition_count": 1,
+        "topic_continuity": 0.0648
+      },
+      "paragraph_features_after": {
+        "sentence_count": 3,
+        "avg_sentence_words": 17.3333,
+        "sentence_length_variance": 20.2222,
+        "repeated_anchor_count": 4,
+        "transition_count": 1,
+        "topic_continuity": 0.0648
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 2,
+      "sentence": 2,
+      "step_index": 0,
+      "original": "Szczególną rolę odgrywa tutaj kierownictwo pracodawcy, które może dotyczyć sposobu wykonywania zadań, kolejności czynności, miejsca świadczenia pracy oraz oczekiwanego rezultatu organizacyjnego.",
+      "candidate": "Duże znaczenie ma tutaj kierownictwo pracodawcy, które może dotyczyć sposobu wykonywania zadań, kolejności czynności, miejsca świadczenia pracy oraz oczekiwanego rezultatu organizacyjnego.",
+      "rewritten": "Duże znaczenie ma tutaj kierownictwo pracodawcy, które może dotyczyć sposobu wykonywania zadań, kolejności czynności, miejsca świadczenia pracy oraz oczekiwanego rezultatu organizacyjnego.",
+      "rule": "legal_style:duze_znaczenie_ma",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "adaptive_scoring",
+      "operation_type": "legal_style_rewrite",
+      "risk": 0.0844,
+      "features_before": {
+        "word_count": 21,
+        "comma_count": 3,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 1,
+        "enumeration_count": 4,
+        "nominalization_count": 0,
+        "modal_count": 1,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 1,
+        "legal_anchor_count": 4,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0,
+        "legal_risk_score": 0.22,
+        "complexity": 0.2857142857142857,
+        "lix": 87.67,
+        "mdd": null,
+        "formality": 0.3889
+      },
+      "features_after": {
+        "word_count": 21,
+        "comma_count": 3,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 1,
+        "enumeration_count": 4,
+        "nominalization_count": 1,
+        "modal_count": 1,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 1,
+        "legal_anchor_count": 4,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0952,
+        "legal_risk_score": 0.22,
+        "complexity": 0.3523733333333333,
+        "lix": 82.9,
+        "mdd": null,
+        "formality": 0.3529
+      },
+      "score_before_gate": 0.61,
+      "score_after_gate": 0.5256,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.05,
+        "legal_risk": 0.075,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.1176,
+        "length_penalty": 0.0,
+        "final_score": 0.5256
+      },
+      "paragraph_features_before": {
+        "sentence_count": 3,
+        "avg_sentence_words": 17.3333,
+        "sentence_length_variance": 20.2222,
+        "repeated_anchor_count": 4,
+        "transition_count": 1,
+        "topic_continuity": 0.0648
+      },
+      "paragraph_features_after": {
+        "sentence_count": 3,
+        "avg_sentence_words": 17.3333,
+        "sentence_length_variance": 20.2222,
+        "repeated_anchor_count": 4,
+        "transition_count": 1,
+        "topic_continuity": 0.0648
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 3,
+      "sentence": 0,
+      "step_index": 0,
+      "original": "Co do zasady pracownik nie może dowolnie decydować o tym, kiedy i gdzie będzie wykonywał swoje obowiązki.",
+      "candidate": "Zasadniczo pracownik nie może dowolnie decydować o tym, kiedy i gdzie będzie wykonywał swoje obowiązki.",
+      "rewritten": "Zasadniczo pracownik nie może dowolnie decydować o tym, kiedy i gdzie będzie wykonywał swoje obowiązki.",
+      "rule": "kancelaryzm:combined",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "adaptive_scoring",
+      "operation_type": "debureaucratization",
+      "risk": 0.0589,
+      "features_before": {
+        "word_count": 17,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 0,
+        "modal_count": 1,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 2,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0,
+        "legal_risk_score": 0.29,
+        "complexity": 0.23529411764705882,
+        "lix": 46.41,
+        "mdd": null,
+        "formality": 0.2
+      },
+      "features_after": {
+        "word_count": 15,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 0,
+        "modal_count": 1,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 2,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0,
+        "legal_risk_score": 0.29,
+        "complexity": 0.26666666666666666,
+        "lix": 55.0,
+        "mdd": null,
+        "formality": 0.2
+      },
+      "score_before_gate": 0.7,
+      "score_after_gate": 0.6411,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.05,
+        "legal_risk": 0.05,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.1111,
+        "length_penalty": 0.0,
+        "final_score": 0.6411
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 16.0,
+        "sentence_length_variance": 8.5,
+        "repeated_anchor_count": 3,
+        "transition_count": 0,
+        "topic_continuity": 0.0355
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 16.0,
+        "sentence_length_variance": 8.5,
+        "repeated_anchor_count": 3,
+        "transition_count": 0,
+        "topic_continuity": 0.0355
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 3,
+      "sentence": 3,
+      "step_index": 0,
+      "original": "Nadal ma jednak znaczenie praktyczne, jeżeli pracownik pozostaje w strukturze organizacyjnej pracodawcy i wykonuje zadania na jego rzecz.",
+      "candidate": "Nadal ma praktyczne znaczenie, jeżeli pracownik pozostaje w strukturze organizacyjnej pracodawcy i wykonuje zadania na jego rzecz.",
+      "rewritten": "Nadal ma praktyczne znaczenie, jeżeli pracownik pozostaje w strukturze organizacyjnej pracodawcy i wykonuje zadania na jego rzecz.",
+      "rule": "legal_ai_style:practical_importance_frame",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "legal_rewrite",
+      "operation_type": "legal_ai_style_rewrite",
+      "risk": 0.13,
+      "features_before": {
+        "word_count": 18,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 2,
+        "enumeration_count": 1,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 3,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.1111,
+        "legal_risk_score": 0.075,
+        "complexity": 0.24444222222222223,
+        "lix": 68.0,
+        "mdd": null,
+        "formality": 0.2308
+      },
+      "features_after": {
+        "word_count": 17,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 1,
+        "enumeration_count": 1,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 3,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.1176,
+        "legal_risk_score": 0.075,
+        "complexity": 0.1999905882352941,
+        "lix": 69.94,
+        "mdd": null,
+        "formality": 0.25
+      },
+      "score_before_gate": 0.53,
+      "score_after_gate": 0.4,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": "abstract_frame",
+      "score_breakdown": {
+        "style_gain": 0.05,
+        "legal_risk": 0.13,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.0,
+        "length_penalty": 0.0,
+        "final_score": 0.4
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 16.0,
+        "sentence_length_variance": 8.5,
+        "repeated_anchor_count": 3,
+        "transition_count": 0,
+        "topic_continuity": 0.0355
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 16.0,
+        "sentence_length_variance": 8.5,
+        "repeated_anchor_count": 3,
+        "transition_count": 0,
+        "topic_continuity": 0.0355
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 4,
+      "sentence": 0,
+      "step_index": 0,
+      "original": "Podsumowując podporządkowanie pracownika ma szczególny charakter.",
+      "candidate": "Podsumowując, podporządkowanie pracownika ma szczególny charakter.",
+      "rewritten": "Podsumowując, podporządkowanie pracownika ma szczególny charakter.",
+      "rule": "legal_style:comma_after_podsumowujac",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "quality_gate",
+      "operation_type": "cleanup",
+      "risk": 0.0,
+      "features_before": {
+        "word_count": 6,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 1,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2,
+        "legal_risk_score": 0.025,
+        "complexity": 0.20666666666666667,
+        "lix": 89.33,
+        "mdd": null,
+        "formality": 0.4
+      },
+      "features_after": {
+        "word_count": 6,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 1,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2,
+        "legal_risk_score": 0.025,
+        "complexity": 0.3733333333333333,
+        "lix": 89.33,
+        "mdd": null,
+        "formality": 0.4
+      },
+      "score_before_gate": 0.95,
+      "score_after_gate": 0.95,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.05,
+        "legal_risk": 0.0,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.0,
+        "length_penalty": 0.0,
+        "final_score": 0.95
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 68.5,
+        "repeated_anchor_count": 4,
+        "transition_count": 0,
+        "topic_continuity": 0.0513
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 68.5,
+        "repeated_anchor_count": 4,
+        "transition_count": 0,
+        "topic_continuity": 0.0513
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 4,
+      "sentence": 3,
+      "step_index": 0,
+      "original": "Właśnie dlatego podporządkowanie ma także istotne znaczenie przy ocenie, czy dana umowa jest rzeczywiście umową o pracę, nawet jeżeli została nazwana umową zlecenia albo umową o dzieło.",
+      "candidate": "Właśnie dlatego podporządkowanie ma też duże znaczenie przy ocenie, czy dana umowa jest rzeczywiście umową o pracę, nawet jeżeli została nazwana umową zlecenia albo umową o dzieło.",
+      "rewritten": "Właśnie dlatego podporządkowanie ma też duże znaczenie przy ocenie, czy dana umowa jest rzeczywiście umową o pracę, nawet jeżeli została nazwana umową zlecenia albo umową o dzieło.",
+      "rule": "legal_style:jest_tez_wazne",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "adaptive_scoring",
+      "operation_type": "legal_style_rewrite",
+      "risk": 0.0567,
+      "features_before": {
+        "word_count": 27,
+        "comma_count": 2,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 2,
+        "enumeration_count": 3,
+        "nominalization_count": 3,
+        "modal_count": 0,
+        "passive_marker_count": 1,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2,
+        "legal_risk_score": 0.05,
+        "complexity": 0.3362962962962963,
+        "lix": 60.33,
+        "mdd": null,
+        "formality": 0.3158
+      },
+      "features_after": {
+        "word_count": 27,
+        "comma_count": 2,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 2,
+        "enumeration_count": 3,
+        "nominalization_count": 3,
+        "modal_count": 0,
+        "passive_marker_count": 1,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2,
+        "legal_risk_score": 0.05,
+        "complexity": 0.3362962962962963,
+        "lix": 56.63,
+        "mdd": null,
+        "formality": 0.3529
+      },
+      "score_before_gate": 0.7,
+      "score_after_gate": 0.6433,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.05,
+        "legal_risk": 0.05,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.0833,
+        "length_penalty": 0.0,
+        "final_score": 0.6433
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 68.5,
+        "repeated_anchor_count": 4,
+        "transition_count": 0,
+        "topic_continuity": 0.0513
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 68.5,
+        "repeated_anchor_count": 4,
+        "transition_count": 0,
+        "topic_continuity": 0.0513
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 4,
+      "sentence": 3,
+      "step_index": 1,
+      "original": "Właśnie dlatego podporządkowanie ma też duże znaczenie przy ocenie, czy dana umowa jest rzeczywiście umową o pracę, nawet jeżeli została nazwana umową zlecenia albo umową o dzieło.",
+      "candidate": "Właśnie dlatego podporządkowanie ma też duże znaczenie przy ocenie, czy dana umowa jest rzeczywiście umową o pracę, nawet jeżeli nazwano umową zlecenia albo umową o dzieło.",
+      "rewritten": "Właśnie dlatego podporządkowanie ma też duże znaczenie przy ocenie, czy dana umowa jest rzeczywiście umową o pracę, nawet jeżeli nazwano umową zlecenia albo umową o dzieło.",
+      "rule": "passive_to_impersonal",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "candidate_generation",
+      "operation_type": "voice_transform",
+      "risk": 0.0573,
+      "features_before": {
+        "word_count": 27,
+        "comma_count": 2,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 2,
+        "enumeration_count": 3,
+        "nominalization_count": 3,
+        "modal_count": 0,
+        "passive_marker_count": 1,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2,
+        "legal_risk_score": 0.05,
+        "complexity": 0.3362962962962963,
+        "lix": 56.63,
+        "mdd": null,
+        "formality": 0.3529
+      },
+      "features_after": {
+        "word_count": 26,
+        "comma_count": 2,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 2,
+        "enumeration_count": 3,
+        "nominalization_count": 3,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2,
+        "legal_risk_score": 0.05,
+        "complexity": 0.3092307692307693,
+        "lix": 52.92,
+        "mdd": null,
+        "formality": 0.375
+      },
+      "score_before_gate": 0.655,
+      "score_after_gate": 0.5977,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.055,
+        "legal_risk": 0.05,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.0909,
+        "length_penalty": 0.0,
+        "final_score": 0.5977
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 68.5,
+        "repeated_anchor_count": 4,
+        "transition_count": 0,
+        "topic_continuity": 0.0513
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 68.5,
+        "repeated_anchor_count": 4,
+        "transition_count": 0,
+        "topic_continuity": 0.0513
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    }
+  ],
+  "rejected": [],
+  "skipped": [
+    {
+      "paragraph": 0,
+      "sentence": 0,
+      "original": "PODPORZĄDKOWANIE PRACOWNIKA JAKO CECHA STOSUNKU PRACY",
+      "accepted": false,
+      "reason": "no_candidate"
+    },
+    {
+      "paragraph": 1,
+      "sentence": 2,
+      "original": "Zgodnie z art. 22 § 1 Kodeksu pracy pracownik zobowiązuje się do wykonywania pracy określonego rodzaju na rzecz pracodawcy, pod jego kierownictwem oraz w miejscu i czasie wyznaczonym przez pracodawcę.",
+      "accepted": false,
+      "reason": "no_candidate"
+    },
+    {
+      "paragraph": 2,
+      "sentence": 1,
+      "original": "Przejawia się ono przede wszystkim w obowiązku wykonywania poleceń dotyczących pracy, przestrzegania czasu pracy oraz podporządkowania się organizacji zakładu pracy.",
+      "accepted": false,
+      "reason": "no_candidate"
+    },
+    {
+      "paragraph": 3,
+      "sentence": 1,
+      "original": "Nie oznacza to jednak, że każdy element samodzielności wyklucza stosunek pracy.",
+      "accepted": false,
+      "reason": "no_candidate"
+    },
+    {
+      "paragraph": 3,
+      "sentence": 2,
+      "original": "Współczesne formy pracy, zwłaszcza praca zdalna, praca zadaniowa oraz praca specjalistyczna, powodują, że podporządkowanie może być mniej widoczne.",
+      "accepted": false,
+      "reason": "no_candidate"
+    },
+    {
+      "paragraph": 4,
+      "sentence": 1,
+      "original": "Z jednej strony umożliwia pracodawcy organizowanie procesu pracy.",
+      "accepted": false,
+      "reason": "no_candidate"
+    },
+    {
+      "paragraph": 4,
+      "sentence": 2,
+      "original": "Z drugiej strony uzasadnia ochronę pracownika jako słabszej strony stosunku pracy.",
+      "accepted": false,
+      "reason": "no_candidate"
+    }
+  ],
+  "all_candidates": [
+    {
+      "paragraph": 1,
+      "sentence": 0,
+      "step_index": 0,
+      "original": "Podporządkowanie pracownika jest jedną z najważniejszych cech stosunku pracy.",
+      "candidate": "Podporządkowanie pracownika jest jedną z kluczowych cech stosunku pracy.",
+      "rule": "legal_ai_style:key_feature_frame",
+      "score": 0.4067,
+      "status": "accepted",
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "legal_rewrite",
+      "operation_type": "legal_ai_style_rewrite",
+      "risk": 0.1433,
+      "features_before": {
+        "word_count": 9,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 3,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2,
+        "legal_risk_score": 0.075,
+        "complexity": 0.1511111111111111,
+        "lix": 53.44,
+        "mdd": null,
+        "formality": 0.1667
+      },
+      "features_after": {
+        "word_count": 9,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 3,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2,
+        "legal_risk_score": 0.075,
+        "complexity": 0.1511111111111111,
+        "lix": 53.44,
+        "mdd": null,
+        "formality": 0.3333
+      },
+      "score_before_gate": 0.55,
+      "score_after_gate": 0.4067,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": "abstract_frame",
+      "score_breakdown": {
+        "style_gain": 0.05,
+        "legal_risk": 0.13,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.1667,
+        "length_penalty": 0.0,
+        "final_score": 0.4067
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 14.75,
+        "sentence_length_variance": 51.1875,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.0
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 14.75,
+        "sentence_length_variance": 51.1875,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.0
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 1,
+      "sentence": 1,
+      "step_index": 0,
+      "original": "To właśnie ono w dużej mierze odróżnia zatrudnienie pracownicze od zatrudnienia cywilnoprawnego.",
+      "candidate": "To ono w dużej mierze odróżnia zatrudnienie pracownicze od zatrudnienia cywilnoprawnego.",
+      "rule": "legal_style:to_ono",
+      "score": 0.605,
+      "status": "accepted",
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "adaptive_scoring",
+      "operation_type": "legal_style_rewrite",
+      "risk": 0.0,
+      "features_before": {
+        "word_count": 12,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": false,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 2,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.3333,
+        "legal_risk_score": 0.0,
+        "complexity": 0.1499933333333333,
+        "lix": 62.0,
+        "mdd": null,
+        "formality": 0.375
+      },
+      "features_after": {
+        "word_count": 11,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": false,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 2,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.3636,
+        "legal_risk_score": 0.0,
+        "complexity": 0.1636290909090909,
+        "lix": 56.45,
+        "mdd": null,
+        "formality": 0.4286
+      },
+      "score_before_gate": 0.605,
+      "score_after_gate": 0.605,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.025,
+        "legal_risk": 0.0,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.0,
+        "length_penalty": 0.0,
+        "final_score": 0.605
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 14.75,
+        "sentence_length_variance": 51.1875,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.0
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 14.75,
+        "sentence_length_variance": 51.1875,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.0
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 1,
+      "sentence": 1,
+      "step_index": 0,
+      "original": "To właśnie ono w dużej mierze odróżnia zatrudnienie pracownicze od zatrudnienia cywilnoprawnego.",
+      "candidate": "To właśnie ono w znacznym stopniu odróżnia zatrudnienie pracownicze od zatrudnienia cywilnoprawnego.",
+      "rule": "legal_style:w_znacznym_stopniu",
+      "score": 0.5821,
+      "status": "not_evaluated",
+      "reason": "higher-scored candidate accepted first",
+      "semantic_similarity": null,
+      "stage": "adaptive_scoring",
+      "operation_type": "legal_style_rewrite",
+      "risk": 0.0229,
+      "features_before": {
+        "word_count": 12,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": false,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 2,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.3333,
+        "legal_risk_score": 0.0,
+        "complexity": 0.1499933333333333,
+        "lix": 62.0,
+        "mdd": null,
+        "formality": 0.375
+      },
+      "features_after": {
+        "word_count": 12,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": false,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 2,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.3333,
+        "legal_risk_score": 0.0,
+        "complexity": 0.1499933333333333,
+        "lix": 78.67,
+        "mdd": null,
+        "formality": 0.5
+      },
+      "score_before_gate": 0.605,
+      "score_after_gate": 0.5821,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.025,
+        "legal_risk": 0.0,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.2857,
+        "length_penalty": 0.0,
+        "final_score": 0.5821
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 14.75,
+        "sentence_length_variance": 51.1875,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.0
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 14.75,
+        "sentence_length_variance": 51.1875,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.0
+      },
+      "gate_results": []
+    },
+    {
+      "paragraph": 1,
+      "sentence": 1,
+      "step_index": 0,
+      "original": "To właśnie ono w dużej mierze odróżnia zatrudnienie pracownicze od zatrudnienia cywilnoprawnego.",
+      "candidate": "To ono w dużej mierze odróżnia zatrudnienie pracownicze od zatrudnienia cywilnoprawnego.",
+      "rule": "legal_ai_style:drop_wlasnie",
+      "score": 0.44,
+      "status": "not_evaluated",
+      "reason": "higher-scored candidate accepted first",
+      "semantic_similarity": null,
+      "stage": "legal_rewrite",
+      "operation_type": "legal_ai_style_rewrite",
+      "risk": 0.11,
+      "features_before": {
+        "word_count": 12,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": false,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 2,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.3333,
+        "legal_risk_score": 0.0,
+        "complexity": 0.1499933333333333,
+        "lix": 62.0,
+        "mdd": null,
+        "formality": 0.375
+      },
+      "features_after": {
+        "word_count": 11,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": false,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 2,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.3636,
+        "legal_risk_score": 0.0,
+        "complexity": 0.1636290909090909,
+        "lix": 56.45,
+        "mdd": null,
+        "formality": 0.4286
+      },
+      "score_before_gate": 0.55,
+      "score_after_gate": 0.44,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": "empty_emphasis",
+      "score_breakdown": {
+        "style_gain": 0.05,
+        "legal_risk": 0.11,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.0,
+        "length_penalty": 0.0,
+        "final_score": 0.44
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 14.75,
+        "sentence_length_variance": 51.1875,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.0
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 14.75,
+        "sentence_length_variance": 51.1875,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.0
+      },
+      "gate_results": []
+    },
+    {
+      "paragraph": 1,
+      "sentence": 1,
+      "step_index": 1,
+      "original": "To ono w dużej mierze odróżnia zatrudnienie pracownicze od zatrudnienia cywilnoprawnego.",
+      "candidate": "To ono w znacznym stopniu odróżnia zatrudnienie pracownicze od zatrudnienia cywilnoprawnego.",
+      "rule": "legal_style:w_znacznym_stopniu",
+      "score": 0.5821,
+      "status": "accepted",
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "adaptive_scoring",
+      "operation_type": "legal_style_rewrite",
+      "risk": 0.0229,
+      "features_before": {
+        "word_count": 11,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": false,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 2,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.3636,
+        "legal_risk_score": 0.0,
+        "complexity": 0.1636290909090909,
+        "lix": 56.45,
+        "mdd": null,
+        "formality": 0.4286
+      },
+      "features_after": {
+        "word_count": 11,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": false,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 2,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.3636,
+        "legal_risk_score": 0.0,
+        "complexity": 0.1636290909090909,
+        "lix": 74.64,
+        "mdd": null,
+        "formality": 0.5714
+      },
+      "score_before_gate": 0.605,
+      "score_after_gate": 0.5821,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.025,
+        "legal_risk": 0.0,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.2857,
+        "length_penalty": 0.0,
+        "final_score": 0.5821
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 14.75,
+        "sentence_length_variance": 51.1875,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.0
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 14.75,
+        "sentence_length_variance": 51.1875,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.0
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 1,
+      "sentence": 3,
+      "step_index": 0,
+      "original": "Przepis ten ma istotne znaczenie, ponieważ wskazuje podstawowe elementy relacji pracowniczej.",
+      "candidate": "Przepis ten ma duże znaczenie, ponieważ wskazuje podstawowe elementy relacji pracowniczej.",
+      "rule": "legal_ai_style:important_frame",
+      "score": 0.425,
+      "status": "accepted",
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "legal_rewrite",
+      "operation_type": "legal_ai_style_rewrite",
+      "risk": 0.14,
+      "features_before": {
+        "word_count": 11,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 1,
+        "enumeration_count": 1,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 1,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2727,
+        "legal_risk_score": 0.0,
+        "complexity": 0.32726727272727274,
+        "lix": 92.82,
+        "mdd": null,
+        "formality": 0.1111
+      },
+      "features_after": {
+        "word_count": 11,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 1,
+        "enumeration_count": 1,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 1,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2727,
+        "legal_risk_score": 0.0,
+        "complexity": 0.32726727272727274,
+        "lix": 83.73,
+        "mdd": null,
+        "formality": 0.125
+      },
+      "score_before_gate": 0.565,
+      "score_after_gate": 0.425,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": "abstract_frame",
+      "score_breakdown": {
+        "style_gain": 0.075,
+        "legal_risk": 0.13,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.125,
+        "length_penalty": 0.0,
+        "final_score": 0.425
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 14.75,
+        "sentence_length_variance": 51.1875,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.0
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 14.75,
+        "sentence_length_variance": 51.1875,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.0
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 2,
+      "sentence": 0,
+      "step_index": 0,
+      "original": "Warto wskazać, że podporządkowanie nie oznacza całkowitej zależności pracownika od pracodawcy.",
+      "candidate": "Podporządkowanie nie oznacza całkowitej zależności pracownika od pracodawcy.",
+      "rule": "ai_artifact:drop_discourse_intro",
+      "score": 0.2088,
+      "status": "accepted",
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "ai_artifact_review",
+      "operation_type": "ai_artifact_reduction",
+      "risk": 0.4429,
+      "features_before": {
+        "word_count": 11,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 1,
+        "ai_artifact_score": 0.3618,
+        "legal_risk_score": 0.05,
+        "complexity": 0.25417818181818186,
+        "lix": 74.64,
+        "mdd": null,
+        "formality": 0.125
+      },
+      "features_after": {
+        "word_count": 8,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2,
+        "legal_risk_score": 0.05,
+        "complexity": 0.165,
+        "lix": 83.0,
+        "mdd": null,
+        "formality": 0.1667
+      },
+      "score_before_gate": 0.6516,
+      "score_after_gate": 0.2088,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.0816,
+        "legal_risk": 0.36,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.2857,
+        "length_penalty": 0.06,
+        "final_score": 0.2088
+      },
+      "paragraph_features_before": {
+        "sentence_count": 3,
+        "avg_sentence_words": 17.3333,
+        "sentence_length_variance": 20.2222,
+        "repeated_anchor_count": 4,
+        "transition_count": 1,
+        "topic_continuity": 0.0648
+      },
+      "paragraph_features_after": {
+        "sentence_count": 3,
+        "avg_sentence_words": 17.3333,
+        "sentence_length_variance": 20.2222,
+        "repeated_anchor_count": 4,
+        "transition_count": 1,
+        "topic_continuity": 0.0648
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 2,
+      "sentence": 2,
+      "step_index": 0,
+      "original": "Szczególną rolę odgrywa tutaj kierownictwo pracodawcy, które może dotyczyć sposobu wykonywania zadań, kolejności czynności, miejsca świadczenia pracy oraz oczekiwanego rezultatu organizacyjnego.",
+      "candidate": "Duże znaczenie ma tutaj kierownictwo pracodawcy, które może dotyczyć sposobu wykonywania zadań, kolejności czynności, miejsca świadczenia pracy oraz oczekiwanego rezultatu organizacyjnego.",
+      "rule": "legal_style:duze_znaczenie_ma",
+      "score": 0.5256,
+      "status": "accepted",
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "adaptive_scoring",
+      "operation_type": "legal_style_rewrite",
+      "risk": 0.0844,
+      "features_before": {
+        "word_count": 21,
+        "comma_count": 3,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 1,
+        "enumeration_count": 4,
+        "nominalization_count": 0,
+        "modal_count": 1,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 1,
+        "legal_anchor_count": 4,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0,
+        "legal_risk_score": 0.22,
+        "complexity": 0.2857142857142857,
+        "lix": 87.67,
+        "mdd": null,
+        "formality": 0.3889
+      },
+      "features_after": {
+        "word_count": 21,
+        "comma_count": 3,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 1,
+        "enumeration_count": 4,
+        "nominalization_count": 1,
+        "modal_count": 1,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 1,
+        "legal_anchor_count": 4,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0952,
+        "legal_risk_score": 0.22,
+        "complexity": 0.3523733333333333,
+        "lix": 82.9,
+        "mdd": null,
+        "formality": 0.3529
+      },
+      "score_before_gate": 0.61,
+      "score_after_gate": 0.5256,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.05,
+        "legal_risk": 0.075,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.1176,
+        "length_penalty": 0.0,
+        "final_score": 0.5256
+      },
+      "paragraph_features_before": {
+        "sentence_count": 3,
+        "avg_sentence_words": 17.3333,
+        "sentence_length_variance": 20.2222,
+        "repeated_anchor_count": 4,
+        "transition_count": 1,
+        "topic_continuity": 0.0648
+      },
+      "paragraph_features_after": {
+        "sentence_count": 3,
+        "avg_sentence_words": 17.3333,
+        "sentence_length_variance": 20.2222,
+        "repeated_anchor_count": 4,
+        "transition_count": 1,
+        "topic_continuity": 0.0648
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 3,
+      "sentence": 0,
+      "step_index": 0,
+      "original": "Co do zasady pracownik nie może dowolnie decydować o tym, kiedy i gdzie będzie wykonywał swoje obowiązki.",
+      "candidate": "Zasadniczo pracownik nie może dowolnie decydować o tym, kiedy i gdzie będzie wykonywał swoje obowiązki.",
+      "rule": "kancelaryzm:combined",
+      "score": 0.6411,
+      "status": "accepted",
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "adaptive_scoring",
+      "operation_type": "debureaucratization",
+      "risk": 0.0589,
+      "features_before": {
+        "word_count": 17,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 0,
+        "modal_count": 1,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 2,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0,
+        "legal_risk_score": 0.29,
+        "complexity": 0.23529411764705882,
+        "lix": 46.41,
+        "mdd": null,
+        "formality": 0.2
+      },
+      "features_after": {
+        "word_count": 15,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 0,
+        "modal_count": 1,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 2,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0,
+        "legal_risk_score": 0.29,
+        "complexity": 0.26666666666666666,
+        "lix": 55.0,
+        "mdd": null,
+        "formality": 0.2
+      },
+      "score_before_gate": 0.7,
+      "score_after_gate": 0.6411,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.05,
+        "legal_risk": 0.05,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.1111,
+        "length_penalty": 0.0,
+        "final_score": 0.6411
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 16.0,
+        "sentence_length_variance": 8.5,
+        "repeated_anchor_count": 3,
+        "transition_count": 0,
+        "topic_continuity": 0.0355
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 16.0,
+        "sentence_length_variance": 8.5,
+        "repeated_anchor_count": 3,
+        "transition_count": 0,
+        "topic_continuity": 0.0355
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 3,
+      "sentence": 0,
+      "step_index": 0,
+      "original": "Co do zasady pracownik nie może dowolnie decydować o tym, kiedy i gdzie będzie wykonywał swoje obowiązki.",
+      "candidate": "Zasadniczo pracownik nie może dowolnie decydować o tym, kiedy i gdzie będzie wykonywał swoje obowiązki.",
+      "rule": "kancelaryzm:\\bco do zasady\\b",
+      "score": 0.5411,
+      "status": "not_evaluated",
+      "reason": "higher-scored candidate accepted first",
+      "semantic_similarity": null,
+      "stage": "adaptive_scoring",
+      "operation_type": "debureaucratization",
+      "risk": 0.0589,
+      "features_before": {
+        "word_count": 17,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 0,
+        "modal_count": 1,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 2,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0,
+        "legal_risk_score": 0.29,
+        "complexity": 0.23529411764705882,
+        "lix": 46.41,
+        "mdd": null,
+        "formality": 0.2
+      },
+      "features_after": {
+        "word_count": 15,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 0,
+        "modal_count": 1,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 2,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0,
+        "legal_risk_score": 0.29,
+        "complexity": 0.26666666666666666,
+        "lix": 55.0,
+        "mdd": null,
+        "formality": 0.2
+      },
+      "score_before_gate": 0.6,
+      "score_after_gate": 0.5411,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.05,
+        "legal_risk": 0.05,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.1111,
+        "length_penalty": 0.0,
+        "final_score": 0.5411
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 16.0,
+        "sentence_length_variance": 8.5,
+        "repeated_anchor_count": 3,
+        "transition_count": 0,
+        "topic_continuity": 0.0355
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 16.0,
+        "sentence_length_variance": 8.5,
+        "repeated_anchor_count": 3,
+        "transition_count": 0,
+        "topic_continuity": 0.0355
+      },
+      "gate_results": []
+    },
+    {
+      "paragraph": 3,
+      "sentence": 3,
+      "step_index": 0,
+      "original": "Nadal ma jednak znaczenie praktyczne, jeżeli pracownik pozostaje w strukturze organizacyjnej pracodawcy i wykonuje zadania na jego rzecz.",
+      "candidate": "Nadal ma praktyczne znaczenie, jeżeli pracownik pozostaje w strukturze organizacyjnej pracodawcy i wykonuje zadania na jego rzecz.",
+      "rule": "legal_ai_style:practical_importance_frame",
+      "score": 0.4,
+      "status": "accepted",
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "legal_rewrite",
+      "operation_type": "legal_ai_style_rewrite",
+      "risk": 0.13,
+      "features_before": {
+        "word_count": 18,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 2,
+        "enumeration_count": 1,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 3,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.1111,
+        "legal_risk_score": 0.075,
+        "complexity": 0.24444222222222223,
+        "lix": 68.0,
+        "mdd": null,
+        "formality": 0.2308
+      },
+      "features_after": {
+        "word_count": 17,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 1,
+        "enumeration_count": 1,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 3,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.1176,
+        "legal_risk_score": 0.075,
+        "complexity": 0.1999905882352941,
+        "lix": 69.94,
+        "mdd": null,
+        "formality": 0.25
+      },
+      "score_before_gate": 0.53,
+      "score_after_gate": 0.4,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": "abstract_frame",
+      "score_breakdown": {
+        "style_gain": 0.05,
+        "legal_risk": 0.13,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.0,
+        "length_penalty": 0.0,
+        "final_score": 0.4
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 16.0,
+        "sentence_length_variance": 8.5,
+        "repeated_anchor_count": 3,
+        "transition_count": 0,
+        "topic_continuity": 0.0355
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 16.0,
+        "sentence_length_variance": 8.5,
+        "repeated_anchor_count": 3,
+        "transition_count": 0,
+        "topic_continuity": 0.0355
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 4,
+      "sentence": 0,
+      "step_index": 0,
+      "original": "Podsumowując podporządkowanie pracownika ma szczególny charakter.",
+      "candidate": "Podsumowując, podporządkowanie pracownika ma szczególny charakter.",
+      "rule": "legal_style:comma_after_podsumowujac",
+      "score": 0.95,
+      "status": "accepted",
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "quality_gate",
+      "operation_type": "cleanup",
+      "risk": 0.0,
+      "features_before": {
+        "word_count": 6,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 1,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2,
+        "legal_risk_score": 0.025,
+        "complexity": 0.20666666666666667,
+        "lix": 89.33,
+        "mdd": null,
+        "formality": 0.4
+      },
+      "features_after": {
+        "word_count": 6,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 1,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2,
+        "legal_risk_score": 0.025,
+        "complexity": 0.3733333333333333,
+        "lix": 89.33,
+        "mdd": null,
+        "formality": 0.4
+      },
+      "score_before_gate": 0.95,
+      "score_after_gate": 0.95,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.05,
+        "legal_risk": 0.0,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.0,
+        "length_penalty": 0.0,
+        "final_score": 0.95
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 68.5,
+        "repeated_anchor_count": 4,
+        "transition_count": 0,
+        "topic_continuity": 0.0513
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 68.5,
+        "repeated_anchor_count": 4,
+        "transition_count": 0,
+        "topic_continuity": 0.0513
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 4,
+      "sentence": 3,
+      "step_index": 0,
+      "original": "Właśnie dlatego podporządkowanie ma także istotne znaczenie przy ocenie, czy dana umowa jest rzeczywiście umową o pracę, nawet jeżeli została nazwana umową zlecenia albo umową o dzieło.",
+      "candidate": "Właśnie dlatego podporządkowanie ma też duże znaczenie przy ocenie, czy dana umowa jest rzeczywiście umową o pracę, nawet jeżeli została nazwana umową zlecenia albo umową o dzieło.",
+      "rule": "legal_style:jest_tez_wazne",
+      "score": 0.6433,
+      "status": "accepted",
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "adaptive_scoring",
+      "operation_type": "legal_style_rewrite",
+      "risk": 0.0567,
+      "features_before": {
+        "word_count": 27,
+        "comma_count": 2,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 2,
+        "enumeration_count": 3,
+        "nominalization_count": 3,
+        "modal_count": 0,
+        "passive_marker_count": 1,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2,
+        "legal_risk_score": 0.05,
+        "complexity": 0.3362962962962963,
+        "lix": 60.33,
+        "mdd": null,
+        "formality": 0.3158
+      },
+      "features_after": {
+        "word_count": 27,
+        "comma_count": 2,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 2,
+        "enumeration_count": 3,
+        "nominalization_count": 3,
+        "modal_count": 0,
+        "passive_marker_count": 1,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2,
+        "legal_risk_score": 0.05,
+        "complexity": 0.3362962962962963,
+        "lix": 56.63,
+        "mdd": null,
+        "formality": 0.3529
+      },
+      "score_before_gate": 0.7,
+      "score_after_gate": 0.6433,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.05,
+        "legal_risk": 0.05,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.0833,
+        "length_penalty": 0.0,
+        "final_score": 0.6433
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 68.5,
+        "repeated_anchor_count": 4,
+        "transition_count": 0,
+        "topic_continuity": 0.0513
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 68.5,
+        "repeated_anchor_count": 4,
+        "transition_count": 0,
+        "topic_continuity": 0.0513
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 4,
+      "sentence": 3,
+      "step_index": 0,
+      "original": "Właśnie dlatego podporządkowanie ma także istotne znaczenie przy ocenie, czy dana umowa jest rzeczywiście umową o pracę, nawet jeżeli została nazwana umową zlecenia albo umową o dzieło.",
+      "candidate": "Właśnie dlatego podporządkowanie ma także istotne znaczenie przy ocenie, czy dana umowa jest rzeczywiście umową o pracę, nawet jeżeli nazwano umową zlecenia albo umową o dzieło.",
+      "rule": "passive_to_impersonal",
+      "score": 0.5983,
+      "status": "not_evaluated",
+      "reason": "higher-scored candidate accepted first",
+      "semantic_similarity": null,
+      "stage": "candidate_generation",
+      "operation_type": "voice_transform",
+      "risk": 0.0567,
+      "features_before": {
+        "word_count": 27,
+        "comma_count": 2,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 2,
+        "enumeration_count": 3,
+        "nominalization_count": 3,
+        "modal_count": 0,
+        "passive_marker_count": 1,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2,
+        "legal_risk_score": 0.05,
+        "complexity": 0.3362962962962963,
+        "lix": 60.33,
+        "mdd": null,
+        "formality": 0.3158
+      },
+      "features_after": {
+        "word_count": 26,
+        "comma_count": 2,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 2,
+        "enumeration_count": 3,
+        "nominalization_count": 3,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2,
+        "legal_risk_score": 0.05,
+        "complexity": 0.3092307692307693,
+        "lix": 56.77,
+        "mdd": null,
+        "formality": 0.3333
+      },
+      "score_before_gate": 0.655,
+      "score_after_gate": 0.5983,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.055,
+        "legal_risk": 0.05,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.0833,
+        "length_penalty": 0.0,
+        "final_score": 0.5983
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 68.5,
+        "repeated_anchor_count": 4,
+        "transition_count": 0,
+        "topic_continuity": 0.0513
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 68.5,
+        "repeated_anchor_count": 4,
+        "transition_count": 0,
+        "topic_continuity": 0.0513
+      },
+      "gate_results": []
+    },
+    {
+      "paragraph": 4,
+      "sentence": 3,
+      "step_index": 1,
+      "original": "Właśnie dlatego podporządkowanie ma też duże znaczenie przy ocenie, czy dana umowa jest rzeczywiście umową o pracę, nawet jeżeli została nazwana umową zlecenia albo umową o dzieło.",
+      "candidate": "Właśnie dlatego podporządkowanie ma też duże znaczenie przy ocenie, czy dana umowa jest rzeczywiście umową o pracę, nawet jeżeli nazwano umową zlecenia albo umową o dzieło.",
+      "rule": "passive_to_impersonal",
+      "score": 0.5977,
+      "status": "accepted",
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "candidate_generation",
+      "operation_type": "voice_transform",
+      "risk": 0.0573,
+      "features_before": {
+        "word_count": 27,
+        "comma_count": 2,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 2,
+        "enumeration_count": 3,
+        "nominalization_count": 3,
+        "modal_count": 0,
+        "passive_marker_count": 1,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2,
+        "legal_risk_score": 0.05,
+        "complexity": 0.3362962962962963,
+        "lix": 56.63,
+        "mdd": null,
+        "formality": 0.3529
+      },
+      "features_after": {
+        "word_count": 26,
+        "comma_count": 2,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 2,
+        "enumeration_count": 3,
+        "nominalization_count": 3,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.2,
+        "legal_risk_score": 0.05,
+        "complexity": 0.3092307692307693,
+        "lix": 52.92,
+        "mdd": null,
+        "formality": 0.375
+      },
+      "score_before_gate": 0.655,
+      "score_after_gate": 0.5977,
+      "fluency_delta": null,
+      "nlp_confidence": null,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.055,
+        "legal_risk": 0.05,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.0909,
+        "length_penalty": 0.0,
+        "final_score": 0.5977
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 68.5,
+        "repeated_anchor_count": 4,
+        "transition_count": 0,
+        "topic_continuity": 0.0513
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 68.5,
+        "repeated_anchor_count": 4,
+        "transition_count": 0,
+        "topic_continuity": 0.0513
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    }
+  ]
+}

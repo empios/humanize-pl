@@ -56,6 +56,20 @@ def score_candidate(
         if features.legal_reference_count:
             length_penalty += 0.04
 
+    lix = getattr(features, "lix", 0.0)
+    mdd = getattr(features, "mdd", None)
+    formality = getattr(features, "formality", None)
+    if lix > 55 and (candidate.operation_type in {"debureaucratization", "voice_transform"}):
+        quality_delta += min(0.02, (lix - 55) / 1000)
+    if mdd is not None and mdd > 2.5 and (
+        candidate.operation_type in {"debureaucratization", "voice_transform", "sentence_split"}
+    ):
+        quality_delta += min(0.015, (mdd - 2.5) / 200)
+    if formality is not None and formality > 0.15 and (
+        candidate.operation_type in {"debureaucratization", "voice_transform"}
+    ):
+        quality_delta += min(0.015, formality * 0.06)
+
     if candidate.rule.startswith("kancelaryzm:") and features.nominalization_count:
         quality_delta += min(0.05, features.nominalization_count * 0.01)
 

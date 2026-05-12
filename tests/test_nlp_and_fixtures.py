@@ -316,6 +316,71 @@ def test_intra_sentence_redundancy_reduction_is_safe():
     )
 
 
+def test_tautological_adj_pair_is_reduced():
+    from humanize_pl.rules.redundancy import _tautological_adj_candidates
+    from humanize_pl.config import Mode
+
+    sentence = "Warunki konieczne i niezbędne muszą być spełnione."
+    cands = _tautological_adj_candidates(sentence, mode=Mode.standard)
+    assert len(cands) == 1
+    assert cands[0].text == "Warunki niezbędne muszą być spełnione."
+    assert cands[0].rule == "redundancy:drop_tautological_adj_pair"
+    assert cands[0].operation_type == "redundancy_reduction"
+
+
+def test_tautological_adj_inflected_forms():
+    from humanize_pl.rules.redundancy import _tautological_adj_candidates
+    from humanize_pl.config import Mode
+
+    # Inflected: koniecznych i niezbędnych (Gen Plur)
+    sentence = "Brak dokumentów koniecznych i niezbędnych uniemożliwia rejestrację."
+    cands = _tautological_adj_candidates(sentence, mode=Mode.standard)
+    assert len(cands) == 1
+    assert "niezbędnych" in cands[0].text
+    assert "koniecznych" not in cands[0].text
+
+
+def test_tautological_adj_not_fired_for_non_pair():
+    from humanize_pl.rules.redundancy import _tautological_adj_candidates
+    from humanize_pl.config import Mode
+
+    # "ważny i prawomocny" — not in the tautology list
+    sentence = "Wyrok jest ważny i prawomocny."
+    cands = _tautological_adj_candidates(sentence, mode=Mode.standard)
+    assert cands == []
+
+
+def test_tautological_adj_not_fired_in_conservative_mode():
+    from humanize_pl.rules.redundancy import redundancy_candidates
+    from humanize_pl.config import Mode
+
+    sentence = "Analiza jest kompleksowa i wyczerpująca."
+    cands = redundancy_candidates(
+        sentence,
+        previous_sentence=None,
+        mode=Mode.conservative,
+        paragraph_features=None,
+    )
+    assert cands == []
+
+
+def test_tautological_adj_various_pairs():
+    from humanize_pl.rules.redundancy import _tautological_adj_candidates
+    from humanize_pl.config import Mode
+
+    cases = [
+        ("Wymóg jest jasny i oczywisty.", "oczywisty"),
+        ("Przesłanki kluczowe i zasadnicze decydują o wyniku.", "zasadnicze"),
+        ("Obowiązek całkowity i zupełny spoczywa na stronach.", "zupełny"),
+    ]
+    for sentence, expected_word in cases:
+        cands = _tautological_adj_candidates(sentence, mode=Mode.standard)
+        assert cands, f"Expected candidate for: {sentence}"
+        assert expected_word in cands[0].text, (
+            f"Expected '{expected_word}' in '{cands[0].text}'"
+        )
+
+
 def test_isap_fixture_documents_smoke(tmp_path):
     samples = json.loads(FIXTURE_PATH.read_text(encoding="utf-8"))
     assert len(samples) >= 3

@@ -1,0 +1,4496 @@
+{
+  "changed": true,
+  "engine_used": "nlp",
+  "legal_review_profile": "legal_ai_review",
+  "model_status": {
+    "stanza": "ready",
+    "semantic": "not_requested",
+    "fluency": "not_requested",
+    "morfeusz": "ready"
+  },
+  "semantic_model": null,
+  "fluency_model": null,
+  "warnings": [],
+  "summary": {
+    "accepted_changes": 7,
+    "rejected_candidates": 0,
+    "skipped_sentences": 8,
+    "all_candidates": 11
+  },
+  "quality": {
+    "word_count_estimate": 174,
+    "changes_per_1000_words": 40.2299,
+    "average_accepted_risk": 0.1095,
+    "operation_types": {
+      "ai_artifact_reduction": 3,
+      "voice_transform": 1,
+      "legal_style_rewrite": 1,
+      "debureaucratization": 6
+    },
+    "gate_rejections": {},
+    "untouched_sentences": 8
+  },
+  "legal_review": {
+    "profile": "legal_ai_review",
+    "ai_artifact_score": 0.124,
+    "legal_risk_score": 0.0957,
+    "average_candidate_risk": 0.1577,
+    "ai_artifact_reductions": 1,
+    "redundancy_reductions": 0,
+    "normativity_changes_blocked": 0,
+    "anchor_loss_blocked": 0,
+    "sentence_completeness_blocked": 0,
+    "basic_score": null,
+    "hybrid_score": null
+  },
+  "accepted": [
+    {
+      "paragraph": 5,
+      "sentence": 0,
+      "step_index": 0,
+      "original": "Warto wskazać, że obowiązek zapłaty wynika z zawartej przez strony umowy sprzedaży.",
+      "candidate": "Obowiązek zapłaty wynika z zawartej przez strony umowy sprzedaży.",
+      "rewritten": "Obowiązek zapłaty wynika z zawartej przez strony umowy sprzedaży.",
+      "rule": "ai_artifact:drop_discourse_intro",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "ai_artifact_review",
+      "operation_type": "ai_artifact_reduction",
+      "risk": 0.4628,
+      "features_before": {
+        "word_count": 12,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 0,
+        "modal_count": 1,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 1,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 1,
+        "ai_artifact_score": 0.18,
+        "legal_risk_score": 0.17,
+        "complexity": 0.286,
+        "lix": 53.67,
+        "mdd": 3.462,
+        "formality": 0.2
+      },
+      "features_after": {
+        "word_count": 9,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 0,
+        "modal_count": 1,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 1,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0,
+        "legal_risk_score": 0.17,
+        "complexity": 0.2222222222222222,
+        "lix": 53.44,
+        "mdd": null,
+        "formality": 0.25
+      },
+      "score_before_gate": 0.658,
+      "score_after_gate": 0.1952,
+      "fluency_delta": null,
+      "nlp_confidence": 1.0,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.088,
+        "legal_risk": 0.385,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.2222,
+        "length_penalty": 0.06,
+        "final_score": 0.1952
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 3.5,
+        "repeated_anchor_count": 2,
+        "transition_count": 1,
+        "topic_continuity": 0.0556
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 3.5,
+        "repeated_anchor_count": 2,
+        "transition_count": 1,
+        "topic_continuity": 0.0556
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "stanza_finite_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_np",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_subject_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_preposition",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 5,
+      "sentence": 1,
+      "step_index": 0,
+      "original": "Dłużnik odebrał towar bez zastrzeżeń, co zostało potwierdzone dokumentem WZ nr 44/2026.",
+      "candidate": "Dłużnik odebrał towar bez zastrzeżeń, co potwierdzono dokumentem WZ nr 44/2026.",
+      "rewritten": "Dłużnik odebrał towar bez zastrzeżeń, co potwierdzono dokumentem WZ nr 44/2026.",
+      "rule": "passive_to_impersonal",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "candidate_generation",
+      "operation_type": "voice_transform",
+      "risk": 0.0,
+      "features_before": {
+        "word_count": 11,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 0,
+        "modal_count": 0,
+        "passive_marker_count": 1,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 1,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0,
+        "legal_risk_score": 0.025,
+        "complexity": 0.18181818181818182,
+        "lix": 65.55,
+        "mdd": 2.462,
+        "formality": 0.4286
+      },
+      "features_after": {
+        "word_count": 10,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 0,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 1,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0,
+        "legal_risk_score": 0.025,
+        "complexity": 0.1,
+        "lix": 60.0,
+        "mdd": null,
+        "formality": 0.6667
+      },
+      "score_before_gate": 0.655,
+      "score_after_gate": 0.655,
+      "fluency_delta": null,
+      "nlp_confidence": 1.0,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.055,
+        "legal_risk": 0.0,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.0,
+        "length_penalty": 0.0,
+        "final_score": 0.655
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 3.5,
+        "repeated_anchor_count": 2,
+        "transition_count": 1,
+        "topic_continuity": 0.0556
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 3.5,
+        "repeated_anchor_count": 2,
+        "transition_count": 1,
+        "topic_continuity": 0.0556
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "stanza_finite_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_np",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_subject_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_preposition",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 5,
+      "sentence": 2,
+      "step_index": 0,
+      "original": "Szczególną rolę odgrywa fakt, że dłużnik nie zakwestionował jakości towaru ani wysokości faktury.",
+      "candidate": "Duże znaczenie ma fakt, że dłużnik nie zakwestionował jakości towaru ani wysokości faktury.",
+      "rewritten": "Duże znaczenie ma fakt, że dłużnik nie zakwestionował jakości towaru ani wysokości faktury.",
+      "rule": "legal_style:duze_znaczenie_ma",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "adaptive_scoring",
+      "operation_type": "legal_style_rewrite",
+      "risk": 0.02,
+      "features_before": {
+        "word_count": 13,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 0,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 1,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0,
+        "legal_risk_score": 0.025,
+        "complexity": 0.07692307692307693,
+        "lix": 66.85,
+        "mdd": 2.643,
+        "formality": 0.625
+      },
+      "features_after": {
+        "word_count": 13,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 1,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.1538,
+        "legal_risk_score": 0.025,
+        "complexity": 0.18460615384615386,
+        "lix": 59.15,
+        "mdd": null,
+        "formality": 0.5714
+      },
+      "score_before_gate": 0.585,
+      "score_after_gate": 0.565,
+      "fluency_delta": null,
+      "nlp_confidence": 1.0,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.025,
+        "legal_risk": 0.0,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.25,
+        "length_penalty": 0.0,
+        "final_score": 0.565
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 3.5,
+        "repeated_anchor_count": 2,
+        "transition_count": 1,
+        "topic_continuity": 0.0556
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 3.5,
+        "repeated_anchor_count": 2,
+        "transition_count": 1,
+        "topic_continuity": 0.0556
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "stanza_finite_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_np",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_subject_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_preposition",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 6,
+      "sentence": 0,
+      "step_index": 0,
+      "original": "Wzywam do zapłaty całej kwoty w terminie 7 dni od dnia doręczenia niniejszego pisma na rachunek bankowy nr 00 0000 0000 0000 0000 0000 0000.",
+      "candidate": "Wzywam do zapłaty całej kwoty w terminie 7 dni od dnia doręczenia tego pisma na rachunek bankowy nr 00 0000 0000 0000 0000 0000 0000.",
+      "rewritten": "Wzywam do zapłaty całej kwoty w terminie 7 dni od dnia doręczenia tego pisma na rachunek bankowy nr 00 0000 0000 0000 0000 0000 0000.",
+      "rule": "kancelaryzm:niniejszy_to_ten",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "legal_rewrite",
+      "operation_type": "debureaucratization",
+      "risk": 0.068,
+      "features_before": {
+        "word_count": 17,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 0,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": false,
+        "normativity_count": 0,
+        "legal_anchor_count": 1,
+        "vague_reference_count": 1,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0588,
+        "legal_risk_score": 0.025,
+        "complexity": 0.01176,
+        "lix": 52.29,
+        "mdd": 2.72,
+        "formality": 0.6
+      },
+      "features_after": {
+        "word_count": 17,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 0,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": false,
+        "normativity_count": 0,
+        "legal_anchor_count": 1,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0,
+        "legal_risk_score": 0.025,
+        "complexity": 0.0,
+        "lix": 46.41,
+        "mdd": null,
+        "formality": 0.5556
+      },
+      "score_before_gate": 0.6411,
+      "score_after_gate": 0.5731,
+      "fluency_delta": null,
+      "nlp_confidence": 0.65,
+      "targeted_issue": "bureaucratic_demonstrative",
+      "score_breakdown": {
+        "style_gain": 0.0411,
+        "legal_risk": 0.06,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.1,
+        "length_penalty": 0.0,
+        "final_score": 0.5731
+      },
+      "paragraph_features_before": {
+        "sentence_count": 2,
+        "avg_sentence_words": 16.5,
+        "sentence_length_variance": 0.25,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.1111
+      },
+      "paragraph_features_after": {
+        "sentence_count": 2,
+        "avg_sentence_words": 16.5,
+        "sentence_length_variance": 0.25,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.1111
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "stanza_finite_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_np",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_subject_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_preposition",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 6,
+      "sentence": 1,
+      "step_index": 0,
+      "original": "Brak zapłaty w powyższym terminie może skutkować skierowaniem sprawy na drogę postępowania sądowego bez dodatkowego wezwania.",
+      "candidate": "Brak zapłaty w tym terminie może skutkować skierowaniem sprawy na drogę postępowania sądowego bez dodatkowego wezwania.",
+      "rewritten": "Brak zapłaty w tym terminie może skutkować skierowaniem sprawy na drogę postępowania sądowego bez dodatkowego wezwania.",
+      "rule": "kancelaryzm:powyzszy_to_ten",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "legal_rewrite",
+      "operation_type": "debureaucratization",
+      "risk": 0.133,
+      "features_before": {
+        "word_count": 16,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 0,
+        "modal_count": 1,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 1,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 1,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0625,
+        "legal_risk_score": 0.17,
+        "complexity": 0.1375,
+        "lix": 72.25,
+        "mdd": 2.75,
+        "formality": 0.7273
+      },
+      "features_after": {
+        "word_count": 16,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 0,
+        "modal_count": 1,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 1,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0,
+        "legal_risk_score": 0.17,
+        "complexity": 0.125,
+        "lix": 66.0,
+        "mdd": null,
+        "formality": 0.7
+      },
+      "score_before_gate": 0.6085,
+      "score_after_gate": 0.4755,
+      "fluency_delta": null,
+      "nlp_confidence": 1.0,
+      "targeted_issue": "vague_reference",
+      "score_breakdown": {
+        "style_gain": 0.0585,
+        "legal_risk": 0.125,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.1,
+        "length_penalty": 0.0,
+        "final_score": 0.4755
+      },
+      "paragraph_features_before": {
+        "sentence_count": 2,
+        "avg_sentence_words": 16.5,
+        "sentence_length_variance": 0.25,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.1111
+      },
+      "paragraph_features_after": {
+        "sentence_count": 2,
+        "avg_sentence_words": 16.5,
+        "sentence_length_variance": 0.25,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.1111
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "stanza_finite_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_np",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_subject_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_preposition",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 7,
+      "sentence": 0,
+      "step_index": 0,
+      "original": "Należy podkreślić, że niniejsze wezwanie ma na celu polubowne zakończenie sprawy.",
+      "candidate": "Warto podkreślić, że niniejsze wezwanie ma na celu polubowne zakończenie sprawy.",
+      "rewritten": "Warto podkreślić, że niniejsze wezwanie ma na celu polubowne zakończenie sprawy.",
+      "rule": "kancelaryzm:combined",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "adaptive_scoring",
+      "operation_type": "debureaucratization",
+      "risk": 0.0114,
+      "features_before": {
+        "word_count": 11,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 2,
+        "modal_count": 1,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 1,
+        "ai_transition_count": 1,
+        "ai_artifact_score": 0.4709,
+        "legal_risk_score": 0.0,
+        "complexity": 0.45781636363636363,
+        "lix": 56.45,
+        "mdd": 3.0,
+        "formality": 0.2857
+      },
+      "features_after": {
+        "word_count": 11,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 2,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 1,
+        "ai_transition_count": 1,
+        "ai_artifact_score": 0.4709,
+        "legal_risk_score": 0.0,
+        "complexity": 0.3669072727272727,
+        "lix": 56.45,
+        "mdd": null,
+        "formality": 0.2857
+      },
+      "score_before_gate": 0.72,
+      "score_after_gate": 0.7086,
+      "fluency_delta": null,
+      "nlp_confidence": 1.0,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.07,
+        "legal_risk": 0.0,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.1429,
+        "length_penalty": 0.0,
+        "final_score": 0.7086
+      },
+      "paragraph_features_before": {
+        "sentence_count": 2,
+        "avg_sentence_words": 12.5,
+        "sentence_length_variance": 2.25,
+        "repeated_anchor_count": 0,
+        "transition_count": 1,
+        "topic_continuity": 0.0
+      },
+      "paragraph_features_after": {
+        "sentence_count": 2,
+        "avg_sentence_words": 12.5,
+        "sentence_length_variance": 2.25,
+        "repeated_anchor_count": 0,
+        "transition_count": 1,
+        "topic_continuity": 0.0
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "stanza_finite_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_np",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_subject_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_preposition",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 7,
+      "sentence": 0,
+      "step_index": 1,
+      "original": "Warto podkreślić, że niniejsze wezwanie ma na celu polubowne zakończenie sprawy.",
+      "candidate": "Warto podkreślić, że to wezwanie ma na celu polubowne zakończenie sprawy.",
+      "rewritten": "Warto podkreślić, że to wezwanie ma na celu polubowne zakończenie sprawy.",
+      "rule": "kancelaryzm:niniejszy_to_ten",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "legal_rewrite",
+      "operation_type": "debureaucratization",
+      "risk": 0.0714,
+      "features_before": {
+        "word_count": 11,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 2,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 1,
+        "ai_transition_count": 1,
+        "ai_artifact_score": 0.4709,
+        "legal_risk_score": 0.0,
+        "complexity": 0.3669072727272727,
+        "lix": 56.45,
+        "mdd": 3.0,
+        "formality": 0.2857
+      },
+      "features_after": {
+        "word_count": 11,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 2,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 1,
+        "ai_transition_count": 1,
+        "ai_artifact_score": 0.4709,
+        "legal_risk_score": 0.0,
+        "complexity": 0.3669072727272727,
+        "lix": 47.36,
+        "mdd": null,
+        "formality": 0.1667
+      },
+      "score_before_gate": 0.664,
+      "score_after_gate": 0.5925,
+      "fluency_delta": null,
+      "nlp_confidence": 1.0,
+      "targeted_issue": "bureaucratic_demonstrative",
+      "score_breakdown": {
+        "style_gain": 0.064,
+        "legal_risk": 0.06,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.1429,
+        "length_penalty": 0.0,
+        "final_score": 0.5925
+      },
+      "paragraph_features_before": {
+        "sentence_count": 2,
+        "avg_sentence_words": 12.5,
+        "sentence_length_variance": 2.25,
+        "repeated_anchor_count": 0,
+        "transition_count": 1,
+        "topic_continuity": 0.0
+      },
+      "paragraph_features_after": {
+        "sentence_count": 2,
+        "avg_sentence_words": 12.5,
+        "sentence_length_variance": 2.25,
+        "repeated_anchor_count": 0,
+        "transition_count": 1,
+        "topic_continuity": 0.0
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "stanza_finite_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_np",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_subject_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_preposition",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    }
+  ],
+  "changes": [
+    {
+      "paragraph": 5,
+      "sentence": 0,
+      "step_index": 0,
+      "original": "Warto wskazać, że obowiązek zapłaty wynika z zawartej przez strony umowy sprzedaży.",
+      "candidate": "Obowiązek zapłaty wynika z zawartej przez strony umowy sprzedaży.",
+      "rewritten": "Obowiązek zapłaty wynika z zawartej przez strony umowy sprzedaży.",
+      "rule": "ai_artifact:drop_discourse_intro",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "ai_artifact_review",
+      "operation_type": "ai_artifact_reduction",
+      "risk": 0.4628,
+      "features_before": {
+        "word_count": 12,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 0,
+        "modal_count": 1,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 1,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 1,
+        "ai_artifact_score": 0.18,
+        "legal_risk_score": 0.17,
+        "complexity": 0.286,
+        "lix": 53.67,
+        "mdd": 3.462,
+        "formality": 0.2
+      },
+      "features_after": {
+        "word_count": 9,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 0,
+        "modal_count": 1,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 1,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0,
+        "legal_risk_score": 0.17,
+        "complexity": 0.2222222222222222,
+        "lix": 53.44,
+        "mdd": null,
+        "formality": 0.25
+      },
+      "score_before_gate": 0.658,
+      "score_after_gate": 0.1952,
+      "fluency_delta": null,
+      "nlp_confidence": 1.0,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.088,
+        "legal_risk": 0.385,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.2222,
+        "length_penalty": 0.06,
+        "final_score": 0.1952
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 3.5,
+        "repeated_anchor_count": 2,
+        "transition_count": 1,
+        "topic_continuity": 0.0556
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 3.5,
+        "repeated_anchor_count": 2,
+        "transition_count": 1,
+        "topic_continuity": 0.0556
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "stanza_finite_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_np",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_subject_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_preposition",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 5,
+      "sentence": 1,
+      "step_index": 0,
+      "original": "Dłużnik odebrał towar bez zastrzeżeń, co zostało potwierdzone dokumentem WZ nr 44/2026.",
+      "candidate": "Dłużnik odebrał towar bez zastrzeżeń, co potwierdzono dokumentem WZ nr 44/2026.",
+      "rewritten": "Dłużnik odebrał towar bez zastrzeżeń, co potwierdzono dokumentem WZ nr 44/2026.",
+      "rule": "passive_to_impersonal",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "candidate_generation",
+      "operation_type": "voice_transform",
+      "risk": 0.0,
+      "features_before": {
+        "word_count": 11,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 0,
+        "modal_count": 0,
+        "passive_marker_count": 1,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 1,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0,
+        "legal_risk_score": 0.025,
+        "complexity": 0.18181818181818182,
+        "lix": 65.55,
+        "mdd": 2.462,
+        "formality": 0.4286
+      },
+      "features_after": {
+        "word_count": 10,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 0,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 1,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0,
+        "legal_risk_score": 0.025,
+        "complexity": 0.1,
+        "lix": 60.0,
+        "mdd": null,
+        "formality": 0.6667
+      },
+      "score_before_gate": 0.655,
+      "score_after_gate": 0.655,
+      "fluency_delta": null,
+      "nlp_confidence": 1.0,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.055,
+        "legal_risk": 0.0,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.0,
+        "length_penalty": 0.0,
+        "final_score": 0.655
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 3.5,
+        "repeated_anchor_count": 2,
+        "transition_count": 1,
+        "topic_continuity": 0.0556
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 3.5,
+        "repeated_anchor_count": 2,
+        "transition_count": 1,
+        "topic_continuity": 0.0556
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "stanza_finite_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_np",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_subject_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_preposition",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 5,
+      "sentence": 2,
+      "step_index": 0,
+      "original": "Szczególną rolę odgrywa fakt, że dłużnik nie zakwestionował jakości towaru ani wysokości faktury.",
+      "candidate": "Duże znaczenie ma fakt, że dłużnik nie zakwestionował jakości towaru ani wysokości faktury.",
+      "rewritten": "Duże znaczenie ma fakt, że dłużnik nie zakwestionował jakości towaru ani wysokości faktury.",
+      "rule": "legal_style:duze_znaczenie_ma",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "adaptive_scoring",
+      "operation_type": "legal_style_rewrite",
+      "risk": 0.02,
+      "features_before": {
+        "word_count": 13,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 0,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 1,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0,
+        "legal_risk_score": 0.025,
+        "complexity": 0.07692307692307693,
+        "lix": 66.85,
+        "mdd": 2.643,
+        "formality": 0.625
+      },
+      "features_after": {
+        "word_count": 13,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 1,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.1538,
+        "legal_risk_score": 0.025,
+        "complexity": 0.18460615384615386,
+        "lix": 59.15,
+        "mdd": null,
+        "formality": 0.5714
+      },
+      "score_before_gate": 0.585,
+      "score_after_gate": 0.565,
+      "fluency_delta": null,
+      "nlp_confidence": 1.0,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.025,
+        "legal_risk": 0.0,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.25,
+        "length_penalty": 0.0,
+        "final_score": 0.565
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 3.5,
+        "repeated_anchor_count": 2,
+        "transition_count": 1,
+        "topic_continuity": 0.0556
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 3.5,
+        "repeated_anchor_count": 2,
+        "transition_count": 1,
+        "topic_continuity": 0.0556
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "stanza_finite_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_np",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_subject_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_preposition",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 6,
+      "sentence": 0,
+      "step_index": 0,
+      "original": "Wzywam do zapłaty całej kwoty w terminie 7 dni od dnia doręczenia niniejszego pisma na rachunek bankowy nr 00 0000 0000 0000 0000 0000 0000.",
+      "candidate": "Wzywam do zapłaty całej kwoty w terminie 7 dni od dnia doręczenia tego pisma na rachunek bankowy nr 00 0000 0000 0000 0000 0000 0000.",
+      "rewritten": "Wzywam do zapłaty całej kwoty w terminie 7 dni od dnia doręczenia tego pisma na rachunek bankowy nr 00 0000 0000 0000 0000 0000 0000.",
+      "rule": "kancelaryzm:niniejszy_to_ten",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "legal_rewrite",
+      "operation_type": "debureaucratization",
+      "risk": 0.068,
+      "features_before": {
+        "word_count": 17,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 0,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": false,
+        "normativity_count": 0,
+        "legal_anchor_count": 1,
+        "vague_reference_count": 1,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0588,
+        "legal_risk_score": 0.025,
+        "complexity": 0.01176,
+        "lix": 52.29,
+        "mdd": 2.72,
+        "formality": 0.6
+      },
+      "features_after": {
+        "word_count": 17,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 0,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": false,
+        "normativity_count": 0,
+        "legal_anchor_count": 1,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0,
+        "legal_risk_score": 0.025,
+        "complexity": 0.0,
+        "lix": 46.41,
+        "mdd": null,
+        "formality": 0.5556
+      },
+      "score_before_gate": 0.6411,
+      "score_after_gate": 0.5731,
+      "fluency_delta": null,
+      "nlp_confidence": 0.65,
+      "targeted_issue": "bureaucratic_demonstrative",
+      "score_breakdown": {
+        "style_gain": 0.0411,
+        "legal_risk": 0.06,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.1,
+        "length_penalty": 0.0,
+        "final_score": 0.5731
+      },
+      "paragraph_features_before": {
+        "sentence_count": 2,
+        "avg_sentence_words": 16.5,
+        "sentence_length_variance": 0.25,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.1111
+      },
+      "paragraph_features_after": {
+        "sentence_count": 2,
+        "avg_sentence_words": 16.5,
+        "sentence_length_variance": 0.25,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.1111
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "stanza_finite_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_np",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_subject_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_preposition",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 6,
+      "sentence": 1,
+      "step_index": 0,
+      "original": "Brak zapłaty w powyższym terminie może skutkować skierowaniem sprawy na drogę postępowania sądowego bez dodatkowego wezwania.",
+      "candidate": "Brak zapłaty w tym terminie może skutkować skierowaniem sprawy na drogę postępowania sądowego bez dodatkowego wezwania.",
+      "rewritten": "Brak zapłaty w tym terminie może skutkować skierowaniem sprawy na drogę postępowania sądowego bez dodatkowego wezwania.",
+      "rule": "kancelaryzm:powyzszy_to_ten",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "legal_rewrite",
+      "operation_type": "debureaucratization",
+      "risk": 0.133,
+      "features_before": {
+        "word_count": 16,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 0,
+        "modal_count": 1,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 1,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 1,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0625,
+        "legal_risk_score": 0.17,
+        "complexity": 0.1375,
+        "lix": 72.25,
+        "mdd": 2.75,
+        "formality": 0.7273
+      },
+      "features_after": {
+        "word_count": 16,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 0,
+        "modal_count": 1,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 1,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0,
+        "legal_risk_score": 0.17,
+        "complexity": 0.125,
+        "lix": 66.0,
+        "mdd": null,
+        "formality": 0.7
+      },
+      "score_before_gate": 0.6085,
+      "score_after_gate": 0.4755,
+      "fluency_delta": null,
+      "nlp_confidence": 1.0,
+      "targeted_issue": "vague_reference",
+      "score_breakdown": {
+        "style_gain": 0.0585,
+        "legal_risk": 0.125,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.1,
+        "length_penalty": 0.0,
+        "final_score": 0.4755
+      },
+      "paragraph_features_before": {
+        "sentence_count": 2,
+        "avg_sentence_words": 16.5,
+        "sentence_length_variance": 0.25,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.1111
+      },
+      "paragraph_features_after": {
+        "sentence_count": 2,
+        "avg_sentence_words": 16.5,
+        "sentence_length_variance": 0.25,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.1111
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "stanza_finite_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_np",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_subject_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_preposition",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 7,
+      "sentence": 0,
+      "step_index": 0,
+      "original": "Należy podkreślić, że niniejsze wezwanie ma na celu polubowne zakończenie sprawy.",
+      "candidate": "Warto podkreślić, że niniejsze wezwanie ma na celu polubowne zakończenie sprawy.",
+      "rewritten": "Warto podkreślić, że niniejsze wezwanie ma na celu polubowne zakończenie sprawy.",
+      "rule": "kancelaryzm:combined",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "adaptive_scoring",
+      "operation_type": "debureaucratization",
+      "risk": 0.0114,
+      "features_before": {
+        "word_count": 11,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 2,
+        "modal_count": 1,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 1,
+        "ai_transition_count": 1,
+        "ai_artifact_score": 0.4709,
+        "legal_risk_score": 0.0,
+        "complexity": 0.45781636363636363,
+        "lix": 56.45,
+        "mdd": 3.0,
+        "formality": 0.2857
+      },
+      "features_after": {
+        "word_count": 11,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 2,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 1,
+        "ai_transition_count": 1,
+        "ai_artifact_score": 0.4709,
+        "legal_risk_score": 0.0,
+        "complexity": 0.3669072727272727,
+        "lix": 56.45,
+        "mdd": null,
+        "formality": 0.2857
+      },
+      "score_before_gate": 0.72,
+      "score_after_gate": 0.7086,
+      "fluency_delta": null,
+      "nlp_confidence": 1.0,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.07,
+        "legal_risk": 0.0,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.1429,
+        "length_penalty": 0.0,
+        "final_score": 0.7086
+      },
+      "paragraph_features_before": {
+        "sentence_count": 2,
+        "avg_sentence_words": 12.5,
+        "sentence_length_variance": 2.25,
+        "repeated_anchor_count": 0,
+        "transition_count": 1,
+        "topic_continuity": 0.0
+      },
+      "paragraph_features_after": {
+        "sentence_count": 2,
+        "avg_sentence_words": 12.5,
+        "sentence_length_variance": 2.25,
+        "repeated_anchor_count": 0,
+        "transition_count": 1,
+        "topic_continuity": 0.0
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "stanza_finite_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_np",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_subject_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_preposition",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 7,
+      "sentence": 0,
+      "step_index": 1,
+      "original": "Warto podkreślić, że niniejsze wezwanie ma na celu polubowne zakończenie sprawy.",
+      "candidate": "Warto podkreślić, że to wezwanie ma na celu polubowne zakończenie sprawy.",
+      "rewritten": "Warto podkreślić, że to wezwanie ma na celu polubowne zakończenie sprawy.",
+      "rule": "kancelaryzm:niniejszy_to_ten",
+      "accepted": true,
+      "rejection_reason": null,
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "legal_rewrite",
+      "operation_type": "debureaucratization",
+      "risk": 0.0714,
+      "features_before": {
+        "word_count": 11,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 2,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 1,
+        "ai_transition_count": 1,
+        "ai_artifact_score": 0.4709,
+        "legal_risk_score": 0.0,
+        "complexity": 0.3669072727272727,
+        "lix": 56.45,
+        "mdd": 3.0,
+        "formality": 0.2857
+      },
+      "features_after": {
+        "word_count": 11,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 2,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 1,
+        "ai_transition_count": 1,
+        "ai_artifact_score": 0.4709,
+        "legal_risk_score": 0.0,
+        "complexity": 0.3669072727272727,
+        "lix": 47.36,
+        "mdd": null,
+        "formality": 0.1667
+      },
+      "score_before_gate": 0.664,
+      "score_after_gate": 0.5925,
+      "fluency_delta": null,
+      "nlp_confidence": 1.0,
+      "targeted_issue": "bureaucratic_demonstrative",
+      "score_breakdown": {
+        "style_gain": 0.064,
+        "legal_risk": 0.06,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.1429,
+        "length_penalty": 0.0,
+        "final_score": 0.5925
+      },
+      "paragraph_features_before": {
+        "sentence_count": 2,
+        "avg_sentence_words": 12.5,
+        "sentence_length_variance": 2.25,
+        "repeated_anchor_count": 0,
+        "transition_count": 1,
+        "topic_continuity": 0.0
+      },
+      "paragraph_features_after": {
+        "sentence_count": 2,
+        "avg_sentence_words": 12.5,
+        "sentence_length_variance": 2.25,
+        "repeated_anchor_count": 0,
+        "transition_count": 1,
+        "topic_continuity": 0.0
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "stanza_finite_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_np",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_subject_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_preposition",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    }
+  ],
+  "rejected": [],
+  "skipped": [
+    {
+      "paragraph": 0,
+      "sentence": 0,
+      "original": "WEZWANIE DO ZAPŁATY",
+      "accepted": false,
+      "reason": "no_candidate"
+    },
+    {
+      "paragraph": 1,
+      "sentence": 0,
+      "original": "Kraków, dnia 18.04.2026 r.",
+      "accepted": false,
+      "reason": "no_candidate"
+    },
+    {
+      "paragraph": 2,
+      "sentence": 0,
+      "original": "Wierzyciel: Alfa sp. z o.o.",
+      "accepted": false,
+      "reason": "no_candidate"
+    },
+    {
+      "paragraph": 3,
+      "sentence": 0,
+      "original": "Dłużnik: Beta sp. z o.o.",
+      "accepted": false,
+      "reason": "no_candidate"
+    },
+    {
+      "paragraph": 4,
+      "sentence": 0,
+      "original": "Wzywam do zapłaty kwoty 27 300 zł wraz z odsetkami ustawowymi za opóźnienie liczonymi od dnia 01.03.2026 r. do dnia zapłaty.",
+      "accepted": false,
+      "reason": "no_candidate"
+    },
+    {
+      "paragraph": 4,
+      "sentence": 1,
+      "original": "Roszczenie wynika z faktury VAT nr FV/12/02/2026 z dnia 15.02.2026 r., której termin płatności upłynął w dniu 28.02.2026 r.",
+      "accepted": false,
+      "reason": "no_candidate"
+    },
+    {
+      "paragraph": 5,
+      "sentence": 3,
+      "original": "Nie oznacza to jednak, że wierzyciel rezygnuje z dochodzenia dalszych należności, jeżeli opóźnienie spowodowało dodatkową szkodę.",
+      "accepted": false,
+      "reason": "no_candidate"
+    },
+    {
+      "paragraph": 7,
+      "sentence": 1,
+      "original": "Jednocześnie wierzyciel zastrzega sobie prawo dochodzenia kosztów postępowania, kosztów zastępstwa procesowego oraz dalszych odsetek.",
+      "accepted": false,
+      "reason": "no_candidate"
+    }
+  ],
+  "all_candidates": [
+    {
+      "paragraph": 5,
+      "sentence": 0,
+      "step_index": 0,
+      "original": "Warto wskazać, że obowiązek zapłaty wynika z zawartej przez strony umowy sprzedaży.",
+      "candidate": "Obowiązek zapłaty wynika z zawartej przez strony umowy sprzedaży.",
+      "rule": "ai_artifact:drop_discourse_intro",
+      "score": 0.1952,
+      "status": "accepted",
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "ai_artifact_review",
+      "operation_type": "ai_artifact_reduction",
+      "risk": 0.4628,
+      "features_before": {
+        "word_count": 12,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 0,
+        "modal_count": 1,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 1,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 1,
+        "ai_artifact_score": 0.18,
+        "legal_risk_score": 0.17,
+        "complexity": 0.286,
+        "lix": 53.67,
+        "mdd": 3.462,
+        "formality": 0.2
+      },
+      "features_after": {
+        "word_count": 9,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 0,
+        "modal_count": 1,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 1,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0,
+        "legal_risk_score": 0.17,
+        "complexity": 0.2222222222222222,
+        "lix": 53.44,
+        "mdd": null,
+        "formality": 0.25
+      },
+      "score_before_gate": 0.658,
+      "score_after_gate": 0.1952,
+      "fluency_delta": null,
+      "nlp_confidence": 1.0,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.088,
+        "legal_risk": 0.385,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.2222,
+        "length_penalty": 0.06,
+        "final_score": 0.1952
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 3.5,
+        "repeated_anchor_count": 2,
+        "transition_count": 1,
+        "topic_continuity": 0.0556
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 3.5,
+        "repeated_anchor_count": 2,
+        "transition_count": 1,
+        "topic_continuity": 0.0556
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "stanza_finite_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_np",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_subject_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_preposition",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 5,
+      "sentence": 1,
+      "step_index": 0,
+      "original": "Dłużnik odebrał towar bez zastrzeżeń, co zostało potwierdzone dokumentem WZ nr 44/2026.",
+      "candidate": "Dłużnik odebrał towar bez zastrzeżeń, co potwierdzono dokumentem WZ nr 44/2026.",
+      "rule": "passive_to_impersonal",
+      "score": 0.655,
+      "status": "accepted",
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "candidate_generation",
+      "operation_type": "voice_transform",
+      "risk": 0.0,
+      "features_before": {
+        "word_count": 11,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 0,
+        "modal_count": 0,
+        "passive_marker_count": 1,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 1,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0,
+        "legal_risk_score": 0.025,
+        "complexity": 0.18181818181818182,
+        "lix": 65.55,
+        "mdd": 2.462,
+        "formality": 0.4286
+      },
+      "features_after": {
+        "word_count": 10,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 0,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 1,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0,
+        "legal_risk_score": 0.025,
+        "complexity": 0.1,
+        "lix": 60.0,
+        "mdd": null,
+        "formality": 0.6667
+      },
+      "score_before_gate": 0.655,
+      "score_after_gate": 0.655,
+      "fluency_delta": null,
+      "nlp_confidence": 1.0,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.055,
+        "legal_risk": 0.0,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.0,
+        "length_penalty": 0.0,
+        "final_score": 0.655
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 3.5,
+        "repeated_anchor_count": 2,
+        "transition_count": 1,
+        "topic_continuity": 0.0556
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 3.5,
+        "repeated_anchor_count": 2,
+        "transition_count": 1,
+        "topic_continuity": 0.0556
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "stanza_finite_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_np",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_subject_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_preposition",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 5,
+      "sentence": 2,
+      "step_index": 0,
+      "original": "Szczególną rolę odgrywa fakt, że dłużnik nie zakwestionował jakości towaru ani wysokości faktury.",
+      "candidate": "Duże znaczenie ma fakt, że dłużnik nie zakwestionował jakości towaru ani wysokości faktury.",
+      "rule": "legal_style:duze_znaczenie_ma",
+      "score": 0.565,
+      "status": "accepted",
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "adaptive_scoring",
+      "operation_type": "legal_style_rewrite",
+      "risk": 0.02,
+      "features_before": {
+        "word_count": 13,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 0,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 1,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0,
+        "legal_risk_score": 0.025,
+        "complexity": 0.07692307692307693,
+        "lix": 66.85,
+        "mdd": 2.643,
+        "formality": 0.625
+      },
+      "features_after": {
+        "word_count": 13,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 1,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 1,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.1538,
+        "legal_risk_score": 0.025,
+        "complexity": 0.18460615384615386,
+        "lix": 59.15,
+        "mdd": null,
+        "formality": 0.5714
+      },
+      "score_before_gate": 0.585,
+      "score_after_gate": 0.565,
+      "fluency_delta": null,
+      "nlp_confidence": 1.0,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.025,
+        "legal_risk": 0.0,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.25,
+        "length_penalty": 0.0,
+        "final_score": 0.565
+      },
+      "paragraph_features_before": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 3.5,
+        "repeated_anchor_count": 2,
+        "transition_count": 1,
+        "topic_continuity": 0.0556
+      },
+      "paragraph_features_after": {
+        "sentence_count": 4,
+        "avg_sentence_words": 13.0,
+        "sentence_length_variance": 3.5,
+        "repeated_anchor_count": 2,
+        "transition_count": 1,
+        "topic_continuity": 0.0556
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "stanza_finite_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_np",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_subject_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_preposition",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 6,
+      "sentence": 0,
+      "step_index": 0,
+      "original": "Wzywam do zapłaty całej kwoty w terminie 7 dni od dnia doręczenia niniejszego pisma na rachunek bankowy nr 00 0000 0000 0000 0000 0000 0000.",
+      "candidate": "Wzywam do zapłaty całej kwoty w terminie 7 dni od dnia doręczenia tego pisma na rachunek bankowy nr 00 0000 0000 0000 0000 0000 0000.",
+      "rule": "kancelaryzm:niniejszy_to_ten",
+      "score": 0.5731,
+      "status": "accepted",
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "legal_rewrite",
+      "operation_type": "debureaucratization",
+      "risk": 0.068,
+      "features_before": {
+        "word_count": 17,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 0,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": false,
+        "normativity_count": 0,
+        "legal_anchor_count": 1,
+        "vague_reference_count": 1,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0588,
+        "legal_risk_score": 0.025,
+        "complexity": 0.01176,
+        "lix": 52.29,
+        "mdd": 2.72,
+        "formality": 0.6
+      },
+      "features_after": {
+        "word_count": 17,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 0,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": false,
+        "normativity_count": 0,
+        "legal_anchor_count": 1,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0,
+        "legal_risk_score": 0.025,
+        "complexity": 0.0,
+        "lix": 46.41,
+        "mdd": null,
+        "formality": 0.5556
+      },
+      "score_before_gate": 0.6411,
+      "score_after_gate": 0.5731,
+      "fluency_delta": null,
+      "nlp_confidence": 0.65,
+      "targeted_issue": "bureaucratic_demonstrative",
+      "score_breakdown": {
+        "style_gain": 0.0411,
+        "legal_risk": 0.06,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.1,
+        "length_penalty": 0.0,
+        "final_score": 0.5731
+      },
+      "paragraph_features_before": {
+        "sentence_count": 2,
+        "avg_sentence_words": 16.5,
+        "sentence_length_variance": 0.25,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.1111
+      },
+      "paragraph_features_after": {
+        "sentence_count": 2,
+        "avg_sentence_words": 16.5,
+        "sentence_length_variance": 0.25,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.1111
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "stanza_finite_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_np",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_subject_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_preposition",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 6,
+      "sentence": 1,
+      "step_index": 0,
+      "original": "Brak zapłaty w powyższym terminie może skutkować skierowaniem sprawy na drogę postępowania sądowego bez dodatkowego wezwania.",
+      "candidate": "Brak zapłaty w tym terminie może skutkować skierowaniem sprawy na drogę postępowania sądowego bez dodatkowego wezwania.",
+      "rule": "kancelaryzm:powyzszy_to_ten",
+      "score": 0.4755,
+      "status": "accepted",
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "legal_rewrite",
+      "operation_type": "debureaucratization",
+      "risk": 0.133,
+      "features_before": {
+        "word_count": 16,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 0,
+        "modal_count": 1,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 1,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 1,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0625,
+        "legal_risk_score": 0.17,
+        "complexity": 0.1375,
+        "lix": 72.25,
+        "mdd": 2.75,
+        "formality": 0.7273
+      },
+      "features_after": {
+        "word_count": 16,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 0,
+        "modal_count": 1,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 1,
+        "legal_anchor_count": 2,
+        "vague_reference_count": 0,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.0,
+        "legal_risk_score": 0.17,
+        "complexity": 0.125,
+        "lix": 66.0,
+        "mdd": null,
+        "formality": 0.7
+      },
+      "score_before_gate": 0.6085,
+      "score_after_gate": 0.4755,
+      "fluency_delta": null,
+      "nlp_confidence": 1.0,
+      "targeted_issue": "vague_reference",
+      "score_breakdown": {
+        "style_gain": 0.0585,
+        "legal_risk": 0.125,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.1,
+        "length_penalty": 0.0,
+        "final_score": 0.4755
+      },
+      "paragraph_features_before": {
+        "sentence_count": 2,
+        "avg_sentence_words": 16.5,
+        "sentence_length_variance": 0.25,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.1111
+      },
+      "paragraph_features_after": {
+        "sentence_count": 2,
+        "avg_sentence_words": 16.5,
+        "sentence_length_variance": 0.25,
+        "repeated_anchor_count": 2,
+        "transition_count": 0,
+        "topic_continuity": 0.1111
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "stanza_finite_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_np",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_subject_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_preposition",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 7,
+      "sentence": 0,
+      "step_index": 0,
+      "original": "Należy podkreślić, że niniejsze wezwanie ma na celu polubowne zakończenie sprawy.",
+      "candidate": "Warto podkreślić, że niniejsze wezwanie ma na celu polubowne zakończenie sprawy.",
+      "rule": "kancelaryzm:combined",
+      "score": 0.7086,
+      "status": "accepted",
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "adaptive_scoring",
+      "operation_type": "debureaucratization",
+      "risk": 0.0114,
+      "features_before": {
+        "word_count": 11,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 2,
+        "modal_count": 1,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 1,
+        "ai_transition_count": 1,
+        "ai_artifact_score": 0.4709,
+        "legal_risk_score": 0.0,
+        "complexity": 0.45781636363636363,
+        "lix": 56.45,
+        "mdd": 3.0,
+        "formality": 0.2857
+      },
+      "features_after": {
+        "word_count": 11,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 2,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 1,
+        "ai_transition_count": 1,
+        "ai_artifact_score": 0.4709,
+        "legal_risk_score": 0.0,
+        "complexity": 0.3669072727272727,
+        "lix": 56.45,
+        "mdd": null,
+        "formality": 0.2857
+      },
+      "score_before_gate": 0.72,
+      "score_after_gate": 0.7086,
+      "fluency_delta": null,
+      "nlp_confidence": 1.0,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.07,
+        "legal_risk": 0.0,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.1429,
+        "length_penalty": 0.0,
+        "final_score": 0.7086
+      },
+      "paragraph_features_before": {
+        "sentence_count": 2,
+        "avg_sentence_words": 12.5,
+        "sentence_length_variance": 2.25,
+        "repeated_anchor_count": 0,
+        "transition_count": 1,
+        "topic_continuity": 0.0
+      },
+      "paragraph_features_after": {
+        "sentence_count": 2,
+        "avg_sentence_words": 12.5,
+        "sentence_length_variance": 2.25,
+        "repeated_anchor_count": 0,
+        "transition_count": 1,
+        "topic_continuity": 0.0
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "stanza_finite_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_np",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_subject_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_preposition",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 7,
+      "sentence": 0,
+      "step_index": 0,
+      "original": "Należy podkreślić, że niniejsze wezwanie ma na celu polubowne zakończenie sprawy.",
+      "candidate": "Warto podkreślić, że niniejsze wezwanie ma na celu polubowne zakończenie sprawy.",
+      "rule": "kancelaryzm:\\bnależy podkreślić, że\\b",
+      "score": 0.6086,
+      "status": "not_evaluated",
+      "reason": "higher-scored candidate accepted first",
+      "semantic_similarity": null,
+      "stage": "adaptive_scoring",
+      "operation_type": "debureaucratization",
+      "risk": 0.0114,
+      "features_before": {
+        "word_count": 11,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 2,
+        "modal_count": 1,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 1,
+        "ai_transition_count": 1,
+        "ai_artifact_score": 0.4709,
+        "legal_risk_score": 0.0,
+        "complexity": 0.45781636363636363,
+        "lix": 56.45,
+        "mdd": 3.0,
+        "formality": 0.2857
+      },
+      "features_after": {
+        "word_count": 11,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 2,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 1,
+        "ai_transition_count": 1,
+        "ai_artifact_score": 0.4709,
+        "legal_risk_score": 0.0,
+        "complexity": 0.3669072727272727,
+        "lix": 56.45,
+        "mdd": null,
+        "formality": 0.2857
+      },
+      "score_before_gate": 0.62,
+      "score_after_gate": 0.6086,
+      "fluency_delta": null,
+      "nlp_confidence": 1.0,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.07,
+        "legal_risk": 0.0,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.1429,
+        "length_penalty": 0.0,
+        "final_score": 0.6086
+      },
+      "paragraph_features_before": {
+        "sentence_count": 2,
+        "avg_sentence_words": 12.5,
+        "sentence_length_variance": 2.25,
+        "repeated_anchor_count": 0,
+        "transition_count": 1,
+        "topic_continuity": 0.0
+      },
+      "paragraph_features_after": {
+        "sentence_count": 2,
+        "avg_sentence_words": 12.5,
+        "sentence_length_variance": 2.25,
+        "repeated_anchor_count": 0,
+        "transition_count": 1,
+        "topic_continuity": 0.0
+      },
+      "gate_results": []
+    },
+    {
+      "paragraph": 7,
+      "sentence": 0,
+      "step_index": 0,
+      "original": "Należy podkreślić, że niniejsze wezwanie ma na celu polubowne zakończenie sprawy.",
+      "candidate": "Należy podkreślić, że to wezwanie ma na celu polubowne zakończenie sprawy.",
+      "rule": "kancelaryzm:niniejszy_to_ten",
+      "score": 0.5925,
+      "status": "not_evaluated",
+      "reason": "higher-scored candidate accepted first",
+      "semantic_similarity": null,
+      "stage": "legal_rewrite",
+      "operation_type": "debureaucratization",
+      "risk": 0.0714,
+      "features_before": {
+        "word_count": 11,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 2,
+        "modal_count": 1,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 1,
+        "ai_transition_count": 1,
+        "ai_artifact_score": 0.4709,
+        "legal_risk_score": 0.0,
+        "complexity": 0.45781636363636363,
+        "lix": 56.45,
+        "mdd": 3.0,
+        "formality": 0.2857
+      },
+      "features_after": {
+        "word_count": 11,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 2,
+        "modal_count": 1,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 1,
+        "ai_transition_count": 1,
+        "ai_artifact_score": 0.4709,
+        "legal_risk_score": 0.0,
+        "complexity": 0.45781636363636363,
+        "lix": 47.36,
+        "mdd": null,
+        "formality": 0.1667
+      },
+      "score_before_gate": 0.664,
+      "score_after_gate": 0.5925,
+      "fluency_delta": null,
+      "nlp_confidence": 1.0,
+      "targeted_issue": "bureaucratic_demonstrative",
+      "score_breakdown": {
+        "style_gain": 0.064,
+        "legal_risk": 0.06,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.1429,
+        "length_penalty": 0.0,
+        "final_score": 0.5925
+      },
+      "paragraph_features_before": {
+        "sentence_count": 2,
+        "avg_sentence_words": 12.5,
+        "sentence_length_variance": 2.25,
+        "repeated_anchor_count": 0,
+        "transition_count": 1,
+        "topic_continuity": 0.0
+      },
+      "paragraph_features_after": {
+        "sentence_count": 2,
+        "avg_sentence_words": 12.5,
+        "sentence_length_variance": 2.25,
+        "repeated_anchor_count": 0,
+        "transition_count": 1,
+        "topic_continuity": 0.0
+      },
+      "gate_results": []
+    },
+    {
+      "paragraph": 7,
+      "sentence": 0,
+      "step_index": 0,
+      "original": "Należy podkreślić, że niniejsze wezwanie ma na celu polubowne zakończenie sprawy.",
+      "candidate": "Niniejsze wezwanie ma na celu polubowne zakończenie sprawy.",
+      "rule": "ai_artifact:drop_discourse_intro",
+      "score": 0.2032,
+      "status": "not_evaluated",
+      "reason": "higher-scored candidate accepted first",
+      "semantic_similarity": null,
+      "stage": "ai_artifact_review",
+      "operation_type": "ai_artifact_reduction",
+      "risk": 0.4429,
+      "features_before": {
+        "word_count": 11,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 2,
+        "modal_count": 1,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 1,
+        "ai_transition_count": 1,
+        "ai_artifact_score": 0.4709,
+        "legal_risk_score": 0.0,
+        "complexity": 0.45781636363636363,
+        "lix": 56.45,
+        "mdd": 3.0,
+        "formality": 0.2857
+      },
+      "features_after": {
+        "word_count": 8,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 2,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 1,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.325,
+        "legal_risk_score": 0.0,
+        "complexity": 0.315,
+        "lix": 58.0,
+        "mdd": null,
+        "formality": 0.4
+      },
+      "score_before_gate": 0.6461,
+      "score_after_gate": 0.2032,
+      "fluency_delta": null,
+      "nlp_confidence": 1.0,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.0761,
+        "legal_risk": 0.36,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.2857,
+        "length_penalty": 0.06,
+        "final_score": 0.2032
+      },
+      "paragraph_features_before": {
+        "sentence_count": 2,
+        "avg_sentence_words": 12.5,
+        "sentence_length_variance": 2.25,
+        "repeated_anchor_count": 0,
+        "transition_count": 1,
+        "topic_continuity": 0.0
+      },
+      "paragraph_features_after": {
+        "sentence_count": 2,
+        "avg_sentence_words": 12.5,
+        "sentence_length_variance": 2.25,
+        "repeated_anchor_count": 0,
+        "transition_count": 1,
+        "topic_continuity": 0.0
+      },
+      "gate_results": []
+    },
+    {
+      "paragraph": 7,
+      "sentence": 0,
+      "step_index": 1,
+      "original": "Warto podkreślić, że niniejsze wezwanie ma na celu polubowne zakończenie sprawy.",
+      "candidate": "Warto podkreślić, że to wezwanie ma na celu polubowne zakończenie sprawy.",
+      "rule": "kancelaryzm:niniejszy_to_ten",
+      "score": 0.5925,
+      "status": "accepted",
+      "reason": "accepted",
+      "semantic_similarity": null,
+      "stage": "legal_rewrite",
+      "operation_type": "debureaucratization",
+      "risk": 0.0714,
+      "features_before": {
+        "word_count": 11,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 2,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 1,
+        "ai_transition_count": 1,
+        "ai_artifact_score": 0.4709,
+        "legal_risk_score": 0.0,
+        "complexity": 0.3669072727272727,
+        "lix": 56.45,
+        "mdd": 3.0,
+        "formality": 0.2857
+      },
+      "features_after": {
+        "word_count": 11,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 2,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 1,
+        "ai_transition_count": 1,
+        "ai_artifact_score": 0.4709,
+        "legal_risk_score": 0.0,
+        "complexity": 0.3669072727272727,
+        "lix": 47.36,
+        "mdd": null,
+        "formality": 0.1667
+      },
+      "score_before_gate": 0.664,
+      "score_after_gate": 0.5925,
+      "fluency_delta": null,
+      "nlp_confidence": 1.0,
+      "targeted_issue": "bureaucratic_demonstrative",
+      "score_breakdown": {
+        "style_gain": 0.064,
+        "legal_risk": 0.06,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.1429,
+        "length_penalty": 0.0,
+        "final_score": 0.5925
+      },
+      "paragraph_features_before": {
+        "sentence_count": 2,
+        "avg_sentence_words": 12.5,
+        "sentence_length_variance": 2.25,
+        "repeated_anchor_count": 0,
+        "transition_count": 1,
+        "topic_continuity": 0.0
+      },
+      "paragraph_features_after": {
+        "sentence_count": 2,
+        "avg_sentence_words": 12.5,
+        "sentence_length_variance": 2.25,
+        "repeated_anchor_count": 0,
+        "transition_count": 1,
+        "topic_continuity": 0.0
+      },
+      "gate_results": [
+        {
+          "name": "non_empty",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_foreign_words",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "known_bad_patterns",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_double_conjunctions",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "no_dangling_connectors",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "balanced_punctuation",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "length_ratio",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "numbers_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "placeholder_restore",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "normativity_preserved",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "content_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "finite_verb_presence",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "legal_anchor_retention",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "sentence_split_safety",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "protected_fragments",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "stanza_finite_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_lexical",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_np",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_subject_verb",
+          "ok": true,
+          "reason": ""
+        },
+        {
+          "name": "agreement_preposition",
+          "ok": true,
+          "reason": ""
+        }
+      ]
+    },
+    {
+      "paragraph": 7,
+      "sentence": 0,
+      "step_index": 1,
+      "original": "Warto podkreślić, że niniejsze wezwanie ma na celu polubowne zakończenie sprawy.",
+      "candidate": "Niniejsze wezwanie ma na celu polubowne zakończenie sprawy.",
+      "rule": "ai_artifact:drop_discourse_intro",
+      "score": 0.2032,
+      "status": "not_evaluated",
+      "reason": "higher-scored candidate accepted first",
+      "semantic_similarity": null,
+      "stage": "ai_artifact_review",
+      "operation_type": "ai_artifact_reduction",
+      "risk": 0.4429,
+      "features_before": {
+        "word_count": 11,
+        "comma_count": 1,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 1,
+        "nominalization_count": 2,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 1,
+        "ai_transition_count": 1,
+        "ai_artifact_score": 0.4709,
+        "legal_risk_score": 0.0,
+        "complexity": 0.3669072727272727,
+        "lix": 56.45,
+        "mdd": 3.0,
+        "formality": 0.2857
+      },
+      "features_after": {
+        "word_count": 8,
+        "comma_count": 0,
+        "legal_reference_count": 0,
+        "protected_placeholder_count": 0,
+        "connective_count": 0,
+        "enumeration_count": 0,
+        "nominalization_count": 2,
+        "modal_count": 0,
+        "passive_marker_count": 0,
+        "has_finite_verb": true,
+        "normativity_count": 0,
+        "legal_anchor_count": 0,
+        "vague_reference_count": 1,
+        "ai_transition_count": 0,
+        "ai_artifact_score": 0.325,
+        "legal_risk_score": 0.0,
+        "complexity": 0.315,
+        "lix": 58.0,
+        "mdd": null,
+        "formality": 0.4
+      },
+      "score_before_gate": 0.6461,
+      "score_after_gate": 0.2032,
+      "fluency_delta": null,
+      "nlp_confidence": 1.0,
+      "targeted_issue": null,
+      "score_breakdown": {
+        "style_gain": 0.0761,
+        "legal_risk": 0.36,
+        "semantic_risk": 0.0,
+        "fluency_gain": 0.0,
+        "anchor_loss": 0.2857,
+        "length_penalty": 0.06,
+        "final_score": 0.2032
+      },
+      "paragraph_features_before": {
+        "sentence_count": 2,
+        "avg_sentence_words": 12.5,
+        "sentence_length_variance": 2.25,
+        "repeated_anchor_count": 0,
+        "transition_count": 1,
+        "topic_continuity": 0.0
+      },
+      "paragraph_features_after": {
+        "sentence_count": 2,
+        "avg_sentence_words": 12.5,
+        "sentence_length_variance": 2.25,
+        "repeated_anchor_count": 0,
+        "transition_count": 1,
+        "topic_continuity": 0.0
+      },
+      "gate_results": []
+    }
+  ]
+}

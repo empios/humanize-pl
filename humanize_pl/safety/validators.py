@@ -30,6 +30,7 @@ BAD_POLISH_PATTERNS = [
     r"\bjest\s+(?:przeprowadzić|wykonać|wdrożyć|zastosować|wykorzystać)\b",
     r"\.\s*Ponadto\s+(?:za|w|na|do|od|przy|bez|pod)\b",
     r"\.\s*Z kolei\s+(?:za|w|na|do|od|przy|bez|pod)\b",
+    r"\.\s*Przy czym\s+(?:za|w|na|do|od|bez|pod)\b",
 ]
 
 SENTENCE_TRANSITIONS = (
@@ -37,6 +38,7 @@ SENTENCE_TRANSITIONS = (
     "Z kolei",
     "Jednak",
     "Natomiast",
+    "Przy czym",
     "Warto",
     "Należy",
     "Wynika to z tego, że",
@@ -210,7 +212,7 @@ def validate_candidate(
                     "split produced fragment without finite verb",
                     checks,
                 )
-            if re.match(r"^(?:Ponadto|Z kolei)\b", part, re.IGNORECASE) and not has_finite_verb(checked):
+            if re.match(r"^(?:Ponadto|Z kolei|Przy czym)\b", part, re.IGNORECASE) and not has_finite_verb(checked):
                 return _failed(
                     "sentence_split_safety",
                     "transition sentence lacks finite verb",

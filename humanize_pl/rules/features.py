@@ -1,10 +1,12 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import regex as re
 
 from humanize_pl.rules.legal_features import analyze_legal_review_features
 from humanize_pl.safety.anchors import content_anchor_tokens
+from humanize_pl.nlp.morphology import lix_score, mean_dependency_distance
+from humanize_pl.nlp.frequency import sentence_formality
 
 
 @dataclass(frozen=True)
@@ -26,6 +28,9 @@ class SentenceFeatures:
     ai_artifact_score: float
     legal_risk_score: float
     complexity: float
+    lix: float = 0.0
+    mdd: float | None = None
+    formality: float | None = None
 
 
 @dataclass(frozen=True)
@@ -109,7 +114,21 @@ def analyze_sentence_features(sentence: str) -> SentenceFeatures:
         ai_artifact_score=legal_review.ai_artifact_score,
         legal_risk_score=legal_review.legal_risk_score,
         complexity=complexity,
+        lix=lix_score(sentence),
+        formality=sentence_formality(sentence),
     )
+
+
+def enrich_features_with_analysis(
+    features: SentenceFeatures, analysis
+) -> SentenceFeatures:
+    """Add Stanza-derived metrics (MDD) to already-computed features."""
+    if analysis is None:
+        return features
+    mdd = mean_dependency_distance(analysis)
+    if mdd is None:
+        return features
+    return replace(features, mdd=mdd)
 
 
 def analyze_paragraph_features(sentences: list[str]) -> ParagraphFeatures:

@@ -60,7 +60,7 @@ def agreement_gate(
     stanza_engine: Any = None,
     morfeusz: MorfeuszAnalyzer | None = None,
     analysis_cache: dict[str, Any] | None = None,
-) -> list[GateCheck]:
+) -> tuple[list[GateCheck], str]:
     """Validate that `candidate` did not introduce Polish morphology bugs.
 
     The gate is diff-localized: it only inspects spans that changed between
@@ -75,21 +75,29 @@ def agreement_gate(
     The gate degrades gracefully: with no Stanza and no Morfeusz it is a
     no-op (returns a single passing check). With Morfeusz only it does
     lexical validity. With Stanza it does all of the above.
+
+    Returns (checks, effective_candidate).  When an NP agreement error is
+    detected and Morfeusz can supply the correct inflected form, the error
+    is auto-repaired: ``effective_candidate`` contains the repaired text and
+    the NP check is marked passing.  In all other cases ``effective_candidate``
+    equals ``candidate``.
     """
+    effective_candidate = candidate
+
     if not candidate.strip():
-        return [GateCheck("agreement", False, "empty candidate")]
+        return [GateCheck("agreement", False, "empty candidate")], candidate
     if candidate == original:
-        return [GateCheck("agreement", True)]
+        return [GateCheck("agreement", True)], candidate
     if stanza_engine is None and morfeusz is None:
-        return [GateCheck("agreement", True)]
+        return [GateCheck("agreement", True)], candidate
 
     cand_words = list(WORD_RE.finditer(candidate))
     if not cand_words:
-        return [GateCheck("agreement", True)]
+        return [GateCheck("agreement", True)], candidate
 
     diff_spans = _modified_word_spans(original, candidate)
     if not diff_spans:
-        return [GateCheck("agreement", True)]
+        return [GateCheck("agreement", True)], candidate
 
     char_spans = _char_spans_from_word_spans(cand_words, diff_spans)
 
@@ -99,27 +107,38 @@ def agreement_gate(
         lex_check = _lexical_check(candidate, char_spans, morfeusz)
         checks.append(lex_check)
         if not lex_check.ok:
-            return checks
+            return checks, candidate
 
     if stanza_engine is None:
         checks.append(GateCheck("agreement", True))
-        return checks
+        return checks, candidate
 
     cand_analysis = _analyze(stanza_engine, candidate, analysis_cache)
     if cand_analysis is None or not getattr(cand_analysis, "tokens", None):
         checks.append(GateCheck("agreement", True))
-        return checks
+        return checks, candidate
     orig_analysis = _analyze(stanza_engine, original, analysis_cache)
 
-    np_failure = _np_agreement_failure(
-        cand_analysis,
-        orig_analysis,
-        char_spans=char_spans,
-    )
-    if np_failure:
-        checks.append(GateCheck("agreement_np", False, np_failure))
-        return checks
-    checks.append(GateCheck("agreement_np", True))
+    np_result = _find_first_np_disagreement(cand_analysis, orig_analysis, char_spans=char_spans)
+    if np_result:
+        failure_msg, bad_token, head_token = np_result
+        repaired: str | None = None
+        if morfeusz is not None:
+            repaired = _repair_np_form(candidate, bad_token, _feats(head_token), morfeusz)
+        if repaired is not None:
+            effective_candidate = repaired
+            checks.append(
+                GateCheck(
+                    "agreement_np",
+                    True,
+                    f"auto-repaired NP: '{bad_token.text}' → correct form",
+                )
+            )
+        else:
+            checks.append(GateCheck("agreement_np", False, failure_msg))
+            return checks, candidate
+    else:
+        checks.append(GateCheck("agreement_np", True))
 
     sv_failure = _subject_verb_failure(
         cand_analysis,
@@ -128,7 +147,7 @@ def agreement_gate(
     )
     if sv_failure:
         checks.append(GateCheck("agreement_subject_verb", False, sv_failure))
-        return checks
+        return checks, effective_candidate
     checks.append(GateCheck("agreement_subject_verb", True))
 
     prep_failure = _preposition_government_failure(
@@ -138,10 +157,10 @@ def agreement_gate(
     )
     if prep_failure:
         checks.append(GateCheck("agreement_preposition", False, prep_failure))
-        return checks
+        return checks, effective_candidate
     checks.append(GateCheck("agreement_preposition", True))
 
-    return checks
+    return checks, effective_candidate
 
 
 def _analyze(stanza_engine: Any, text: str, cache: dict[str, Any] | None):
@@ -297,12 +316,13 @@ def _np_pair_signature(modifier: Any, head: Any) -> tuple[str, str]:
     return (mod_lemma, head_lemma)
 
 
-def _np_agreement_failure(
+def _find_first_np_disagreement(
     candidate_analysis: Any,
     original_analysis: Any | None,
     *,
     char_spans: list[tuple[int, int]],
-) -> str | None:
+) -> tuple[str, Any, Any] | None:
+    """Return (message, modifier_token, head_token) for the first NP failure, or None."""
     original_pairs = _np_disagreement_pairs(original_analysis) if original_analysis else set()
     for token in candidate_analysis.tokens:
         deprel = (token.deprel or "").lower()
@@ -329,9 +349,75 @@ def _np_agreement_failure(
             # by this rewrite — do no harm.
             continue
         return (
-            f"NP agreement broken on '{token.text}' ↔ '{head.text}' ({mismatch})"
+            f"NP agreement broken on '{token.text}' ↔ '{head.text}' ({mismatch})",
+            token,
+            head,
         )
     return None
+
+
+def _repair_np_form(
+    candidate: str,
+    token: Any,
+    target_feats: dict[str, str],
+    morfeusz: MorfeuszAnalyzer,
+) -> str | None:
+    """Replace the ADJ/DET modifier token with the correctly inflected form.
+
+    Uses ``morfeusz.generate(lemma)`` to find the form matching the head's
+    Case/Number/Gender, then substitutes it at the token's character position.
+    Returns the repaired candidate string, or None when no repair is possible.
+    """
+    if (token.upos or "").upper() not in {"ADJ", "DET"}:
+        return None
+    lemma = getattr(token, "lemma", None) or ""
+    if not lemma:
+        lemma = (getattr(token, "text", None) or "").lower()
+    start_char = getattr(token, "start_char", None)
+    end_char = getattr(token, "end_char", None)
+    if not lemma or start_char is None or end_char is None:
+        return None
+
+    target_case = target_feats.get("Case")
+    target_number = target_feats.get("Number")
+    target_gender = target_feats.get("Gender")
+
+    for form_analysis in morfeusz.generate(lemma):
+        tag = form_analysis.tag
+        if not tag.startswith("adj"):
+            continue
+        # Skip comparative/superlative — positive degree only in NPs.
+        if ":com" in tag or ":sup" in tag:
+            continue
+        if target_case and form_analysis.case != target_case:
+            continue
+        if target_number and form_analysis.number != target_number:
+            continue
+        if target_gender:
+            form_gender = form_analysis.gender
+            # form_gender is None for compound-gender tags (e.g. m2.m3); accept them
+            # as they represent shared forms compatible with multiple genders.
+            if form_gender is not None and form_gender != target_gender:
+                continue
+        fixed = form_analysis.form
+        original_form = candidate[start_char:end_char]
+        if fixed.lower() == original_form.lower():
+            return None  # form already correct, nothing to repair
+        if original_form[:1].isupper():
+            fixed = fixed[:1].upper() + fixed[1:]
+        return candidate[:start_char] + fixed + candidate[end_char:]
+
+    return None
+
+
+def _np_agreement_failure(
+    candidate_analysis: Any,
+    original_analysis: Any | None,
+    *,
+    char_spans: list[tuple[int, int]],
+) -> str | None:
+    result = _find_first_np_disagreement(candidate_analysis, original_analysis, char_spans=char_spans)
+    return result[0] if result else None
 
 
 def _np_disagreement_pairs(analysis: Any) -> set[tuple[str, str]]:

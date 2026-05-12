@@ -1,0 +1,159 @@
+# Nominalization reduction: light verb + deverbal noun → simple verb
+#
+# entries: used by the NLP path (Stanza dep-parse + Morfeusz generate).
+#   light_verb — lemma of the light verb as Stanza returns it
+#   noun       — nominative lemma of the deverbal noun
+#   replacement — lemma of the simple replacement verb
+#
+# patterns: regex fallback used in basic mode (no Stanza).
+#   Patterns for dokonać+oceny/kontroli/weryfikacji live in kancelaryzmy.py
+#   (conservative) and are intentionally omitted here to avoid double-firing.
+
+entries:
+  # ═══ dokonać (perf) / dokonywać (imperf) ═══
+  - {light_verb: dokonać,    noun: analiza,      replacement: przeanalizować, modes: [standard, strong], risk: 0.10}
+  - {light_verb: dokonywać,  noun: analiza,      replacement: analizować,     modes: [standard, strong], risk: 0.10}
+  - {light_verb: dokonać,    noun: zmiana,       replacement: zmienić,        modes: [standard, strong], risk: 0.10}
+  - {light_verb: dokonywać,  noun: zmiana,       replacement: zmieniać,       modes: [standard, strong], risk: 0.10}
+  - {light_verb: dokonać,    noun: wybór,        replacement: wybrać,         modes: [standard, strong], risk: 0.11}
+  - {light_verb: dokonywać,  noun: wybór,        replacement: wybierać,       modes: [standard, strong], risk: 0.11}
+  - {light_verb: dokonać,    noun: ustalenie,    replacement: ustalić,        modes: [standard, strong], risk: 0.10}
+  - {light_verb: dokonywać,  noun: ustalenie,    replacement: ustalać,        modes: [standard, strong], risk: 0.10}
+  - {light_verb: dokonać,    noun: rozliczenie,  replacement: rozliczyć,      modes: [standard, strong], risk: 0.10}
+  - {light_verb: dokonywać,  noun: rozliczenie,  replacement: rozliczać,      modes: [standard, strong], risk: 0.10}
+  - {light_verb: dokonać,    noun: podział,      replacement: podzielić,      modes: [standard, strong], risk: 0.11}
+  - {light_verb: dokonywać,  noun: podział,      replacement: dzielić,        modes: [standard, strong], risk: 0.11}
+  - {light_verb: dokonać,    noun: pomiar,       replacement: zmierzyć,       modes: [standard, strong], risk: 0.10}
+  - {light_verb: dokonywać,  noun: pomiar,       replacement: mierzyć,        modes: [standard, strong], risk: 0.10}
+  - {light_verb: dokonać,    noun: naprawa,      replacement: naprawić,       modes: [standard, strong], risk: 0.10}
+  - {light_verb: dokonywać,  noun: naprawa,      replacement: naprawiać,      modes: [standard, strong], risk: 0.10}
+  - {light_verb: dokonać,    noun: przegląd,     replacement: przejrzeć,      modes: [standard, strong], risk: 0.11}
+  - {light_verb: dokonywać,  noun: przegląd,     replacement: przeglądać,     modes: [standard, strong], risk: 0.11}
+  - {light_verb: dokonać,    noun: płatność,     replacement: zapłacić,       modes: [strong], risk: 0.14}
+  - {light_verb: dokonywać,  noun: płatność,     replacement: płacić,         modes: [strong], risk: 0.14}
+  - {light_verb: dokonać,    noun: zakup,        replacement: kupić,          modes: [strong], risk: 0.14}
+  - {light_verb: dokonywać,  noun: zakup,        replacement: kupować,        modes: [strong], risk: 0.14}
+
+  # ═══ przeprowadzić (perf) / przeprowadzać (imperf) ═══
+  - {light_verb: przeprowadzić, noun: analiza,    replacement: przeanalizować, modes: [standard, strong], risk: 0.10}
+  - {light_verb: przeprowadzać, noun: analiza,    replacement: analizować,     modes: [standard, strong], risk: 0.10}
+  - {light_verb: przeprowadzić, noun: kontrola,   replacement: skontrolować,   modes: [standard, strong], risk: 0.10}
+  - {light_verb: przeprowadzać, noun: kontrola,   replacement: kontrolować,    modes: [standard, strong], risk: 0.10}
+  - {light_verb: przeprowadzić, noun: weryfikacja,replacement: zweryfikować,   modes: [standard, strong], risk: 0.10}
+  - {light_verb: przeprowadzać, noun: weryfikacja,replacement: weryfikować,    modes: [standard, strong], risk: 0.10}
+  - {light_verb: przeprowadzić, noun: badanie,    replacement: zbadać,         modes: [standard, strong], risk: 0.10}
+  - {light_verb: przeprowadzać, noun: badanie,    replacement: badać,          modes: [standard, strong], risk: 0.10}
+  - {light_verb: przeprowadzić, noun: ocena,      replacement: ocenić,         modes: [standard, strong], risk: 0.10}
+  - {light_verb: przeprowadzać, noun: ocena,      replacement: oceniać,        modes: [standard, strong], risk: 0.10}
+
+  # ═══ sprawować (imperf; brak pary aspektowej) ═══
+  - {light_verb: sprawować, noun: kontrola, replacement: kontrolować,  modes: [standard, strong], risk: 0.10}
+  - {light_verb: sprawować, noun: nadzór,   replacement: nadzorować,   modes: [standard, strong], risk: 0.10}
+
+  # ═══ podjąć (perf) / podejmować (imperf) ═══
+  - {light_verb: podjąć,     noun: uchwała, replacement: uchwalić,    modes: [standard, strong], risk: 0.10}
+  - {light_verb: podejmować, noun: uchwała, replacement: uchwalać,    modes: [standard, strong], risk: 0.10}
+  - {light_verb: podjąć,     noun: decyzja, replacement: zdecydować,  modes: [strong], risk: 0.14}
+  - {light_verb: podejmować, noun: decyzja, replacement: decydować,   modes: [strong], risk: 0.14}
+
+  # ═══ wydać (perf) / wydawać (imperf) ═══
+  - {light_verb: wydać,    noun: zezwolenie,    replacement: zezwolić,     modes: [standard, strong], risk: 0.11}
+  - {light_verb: wydawać,  noun: zezwolenie,    replacement: zezwalać,     modes: [standard, strong], risk: 0.11}
+  - {light_verb: wydać,    noun: pozwolenie,    replacement: pozwolić,     modes: [standard, strong], risk: 0.11}
+  - {light_verb: wydawać,  noun: pozwolenie,    replacement: pozwalać,     modes: [standard, strong], risk: 0.11}
+  - {light_verb: wydać,    noun: postanowienie, replacement: postanowić,   modes: [strong], risk: 0.14}
+  - {light_verb: wydawać,  noun: postanowienie, replacement: postanawiać,  modes: [strong], risk: 0.14}
+
+  # ═══ udzielić (perf) / udzielać (imperf) ═══
+  - {light_verb: udzielić, noun: zezwolenie, replacement: zezwolić,      modes: [standard, strong], risk: 0.11}
+  - {light_verb: udzielać, noun: zezwolenie, replacement: zezwalać,      modes: [standard, strong], risk: 0.11}
+  - {light_verb: udzielić, noun: odpowiedź,  replacement: odpowiedzieć,  modes: [standard, strong], risk: 0.10}
+  - {light_verb: udzielać, noun: odpowiedź,  replacement: odpowiadać,    modes: [standard, strong], risk: 0.10}
+
+  # ═══ złożyć (perf) / składać (imperf) ═══
+  - {light_verb: złożyć,  noun: oświadczenie, replacement: oświadczyć,  modes: [standard, strong], risk: 0.11}
+  - {light_verb: składać, noun: oświadczenie, replacement: oświadczać,  modes: [standard, strong], risk: 0.11}
+
+# Regex fallback — active only when Stanza is unavailable (basic mode).
+# Covers infinitive + impersonal forms only.
+patterns:
+  - {pattern: '\bdokonać\s+analizy\b',      replacement: przeanalizować,  modes: [standard, strong], risk: 0.10}
+  - {pattern: '\bdokonywać\s+analizy\b',    replacement: analizować,      modes: [standard, strong], risk: 0.10}
+  - {pattern: '\bdokonano\s+analizy\b',     replacement: przeanalizowano, modes: [standard, strong], risk: 0.08}
+  - {pattern: '\bdokonać\s+zmiany\b',       replacement: zmienić,         modes: [standard, strong], risk: 0.10}
+  - {pattern: '\bdokonywać\s+zmiany\b',     replacement: zmieniać,        modes: [standard, strong], risk: 0.10}
+  - {pattern: '\bdokonano\s+zmiany\b',      replacement: zmieniono,       modes: [standard, strong], risk: 0.08}
+  - {pattern: '\bdokonać\s+wyboru\b',       replacement: wybrać,          modes: [standard, strong], risk: 0.11}
+  - {pattern: '\bdokonywać\s+wyboru\b',     replacement: wybierać,        modes: [standard, strong], risk: 0.11}
+  - {pattern: '\bdokonano\s+wyboru\b',      replacement: wybrano,         modes: [standard, strong], risk: 0.08}
+  - {pattern: '\bdokonać\s+ustalenia\b',    replacement: ustalić,         modes: [standard, strong], risk: 0.10}
+  - {pattern: '\bdokonywać\s+ustalenia\b',  replacement: ustalać,         modes: [standard, strong], risk: 0.10}
+  - {pattern: '\bdokonano\s+ustalenia\b',   replacement: ustalono,        modes: [standard, strong], risk: 0.08}
+  - {pattern: '\bdokonać\s+rozliczenia\b',  replacement: rozliczyć,       modes: [standard, strong], risk: 0.10}
+  - {pattern: '\bdokonywać\s+rozliczenia\b',replacement: rozliczać,       modes: [standard, strong], risk: 0.10}
+  - {pattern: '\bdokonano\s+rozliczenia\b', replacement: rozliczono,      modes: [standard, strong], risk: 0.08}
+  - {pattern: '\bdokonać\s+podziału\b',     replacement: podzielić,       modes: [standard, strong], risk: 0.11}
+  - {pattern: '\bdokonywać\s+podziału\b',   replacement: dzielić,         modes: [standard, strong], risk: 0.11}
+  - {pattern: '\bdokonano\s+podziału\b',    replacement: podzielono,      modes: [standard, strong], risk: 0.08}
+  - {pattern: '\bdokonać\s+pomiaru\b',      replacement: zmierzyć,        modes: [standard, strong], risk: 0.10}
+  - {pattern: '\bdokonywać\s+pomiaru\b',    replacement: mierzyć,         modes: [standard, strong], risk: 0.10}
+  - {pattern: '\bdokonano\s+pomiaru\b',     replacement: zmierzono,       modes: [standard, strong], risk: 0.08}
+  - {pattern: '\bdokonać\s+naprawy\b',      replacement: naprawić,        modes: [standard, strong], risk: 0.10}
+  - {pattern: '\bdokonywać\s+naprawy\b',    replacement: naprawiać,       modes: [standard, strong], risk: 0.10}
+  - {pattern: '\bdokonano\s+naprawy\b',     replacement: naprawiono,      modes: [standard, strong], risk: 0.08}
+  - {pattern: '\bdokonać\s+przeglądu\b',    replacement: przejrzeć,       modes: [standard, strong], risk: 0.11}
+  - {pattern: '\bdokonywać\s+przeglądu\b',  replacement: przeglądać,      modes: [standard, strong], risk: 0.11}
+  - {pattern: '\bdokonano\s+przeglądu\b',   replacement: przejrzano,      modes: [standard, strong], risk: 0.08}
+  - {pattern: '\bdokonać\s+płatności\b',    replacement: zapłacić,        modes: [strong], risk: 0.14}
+  - {pattern: '\bdokonywać\s+płatności\b',  replacement: płacić,          modes: [strong], risk: 0.14}
+  - {pattern: '\bdokonano\s+płatności\b',   replacement: zapłacono,       modes: [strong], risk: 0.12}
+  - {pattern: '\bdokonać\s+zakupu\b',       replacement: kupić,           modes: [strong], risk: 0.14}
+  - {pattern: '\bdokonywać\s+zakupu\b',     replacement: kupować,         modes: [strong], risk: 0.14}
+  - {pattern: '\bdokonano\s+zakupu\b',      replacement: kupiono,         modes: [strong], risk: 0.12}
+  - {pattern: '\bprzeprowadzić\s+analizę\b',     replacement: przeanalizować,  modes: [standard, strong], risk: 0.10}
+  - {pattern: '\bprzeprowadzać\s+analizę\b',     replacement: analizować,      modes: [standard, strong], risk: 0.10}
+  - {pattern: '\bprzeprowadzono\s+analizę\b',    replacement: przeanalizowano, modes: [standard, strong], risk: 0.08}
+  - {pattern: '\bprzeprowadzić\s+kontrolę\b',    replacement: skontrolować,    modes: [standard, strong], risk: 0.10}
+  - {pattern: '\bprzeprowadzać\s+kontrolę\b',    replacement: kontrolować,     modes: [standard, strong], risk: 0.10}
+  - {pattern: '\bprzeprowadzono\s+kontrolę\b',   replacement: skontrolowano,   modes: [standard, strong], risk: 0.08}
+  - {pattern: '\bprzeprowadzić\s+weryfikację\b', replacement: zweryfikować,    modes: [standard, strong], risk: 0.10}
+  - {pattern: '\bprzeprowadzać\s+weryfikację\b', replacement: weryfikować,     modes: [standard, strong], risk: 0.10}
+  - {pattern: '\bprzeprowadzono\s+weryfikację\b',replacement: zweryfikowano,   modes: [standard, strong], risk: 0.08}
+  - {pattern: '\bprzeprowadzić\s+badanie\b',     replacement: zbadać,          modes: [standard, strong], risk: 0.10}
+  - {pattern: '\bprzeprowadzać\s+badanie\b',     replacement: badać,           modes: [standard, strong], risk: 0.10}
+  - {pattern: '\bprzeprowadzono\s+badanie\b',    replacement: zbadano,         modes: [standard, strong], risk: 0.08}
+  - {pattern: '\bprzeprowadzić\s+ocenę\b',       replacement: ocenić,          modes: [standard, strong], risk: 0.10}
+  - {pattern: '\bprzeprowadzać\s+ocenę\b',       replacement: oceniać,         modes: [standard, strong], risk: 0.10}
+  - {pattern: '\bprzeprowadzono\s+ocenę\b',      replacement: oceniono,        modes: [standard, strong], risk: 0.08}
+  - {pattern: '\bsprawować\s+kontrolę\b',  replacement: kontrolować,  modes: [standard, strong], risk: 0.10}
+  - {pattern: '\bsprawuje\s+kontrolę\b',   replacement: kontroluje,   modes: [standard, strong], risk: 0.10}
+  - {pattern: '\bsprawują\s+kontrolę\b',   replacement: kontrolują,   modes: [standard, strong], risk: 0.10}
+  - {pattern: '\bsprawowano\s+kontrolę\b', replacement: kontrolowano, modes: [standard, strong], risk: 0.08}
+  - {pattern: '\bsprawować\s+nadzór\b',    replacement: nadzorować,   modes: [standard, strong], risk: 0.10}
+  - {pattern: '\bsprawuje\s+nadzór\b',     replacement: nadzoruje,    modes: [standard, strong], risk: 0.10}
+  - {pattern: '\bsprawują\s+nadzór\b',     replacement: nadzorują,    modes: [standard, strong], risk: 0.10}
+  - {pattern: '\bsprawowano\s+nadzór\b',   replacement: nadzorowano,  modes: [standard, strong], risk: 0.08}
+  - {pattern: '\bpodjąć\s+uchwałę\b',      replacement: uchwalić,    modes: [standard, strong], risk: 0.10}
+  - {pattern: '\bpodejmować\s+uchwałę\b',  replacement: uchwalać,    modes: [standard, strong], risk: 0.10}
+  - {pattern: '\bpodjęto\s+uchwałę\b',     replacement: uchwalono,   modes: [standard, strong], risk: 0.08}
+  - {pattern: '\bpodjąć\s+decyzję\b',      replacement: zdecydować,  modes: [strong], risk: 0.14}
+  - {pattern: '\bpodejmować\s+decyzję\b',  replacement: decydować,   modes: [strong], risk: 0.14}
+  - {pattern: '\bpodjęto\s+decyzję\b',     replacement: zdecydowano, modes: [strong], risk: 0.12}
+  - {pattern: '\bwydać\s+zezwolenie\b',       replacement: zezwolić,     modes: [standard, strong], risk: 0.11}
+  - {pattern: '\bwydawać\s+zezwolenie\b',     replacement: zezwalać,     modes: [standard, strong], risk: 0.11}
+  - {pattern: '\bwydano\s+zezwolenie\b',      replacement: zezwolono,    modes: [standard, strong], risk: 0.09}
+  - {pattern: '\bwydać\s+pozwolenie\b',       replacement: pozwolić,     modes: [standard, strong], risk: 0.11}
+  - {pattern: '\bwydawać\s+pozwolenie\b',     replacement: pozwalać,     modes: [standard, strong], risk: 0.11}
+  - {pattern: '\bwydano\s+pozwolenie\b',      replacement: pozwolono,    modes: [standard, strong], risk: 0.09}
+  - {pattern: '\bwydać\s+postanowienie\b',    replacement: postanowić,   modes: [strong], risk: 0.14}
+  - {pattern: '\bwydawać\s+postanowienie\b',  replacement: postanawiać,  modes: [strong], risk: 0.14}
+  - {pattern: '\bwydano\s+postanowienie\b',   replacement: postanowiono, modes: [strong], risk: 0.12}
+  - {pattern: '\budzielić\s+zezwolenia\b',    replacement: zezwolić,      modes: [standard, strong], risk: 0.11}
+  - {pattern: '\budzielać\s+zezwolenia\b',    replacement: zezwalać,      modes: [standard, strong], risk: 0.11}
+  - {pattern: '\budzielono\s+zezwolenia\b',   replacement: zezwolono,     modes: [standard, strong], risk: 0.09}
+  - {pattern: '\budzielić\s+odpowiedzi\b',    replacement: odpowiedzieć,  modes: [standard, strong], risk: 0.10}
+  - {pattern: '\budzielać\s+odpowiedzi\b',    replacement: odpowiadać,    modes: [standard, strong], risk: 0.10}
+  - {pattern: '\budzielono\s+odpowiedzi\b',   replacement: odpowiedziano, modes: [standard, strong], risk: 0.08}
+  - {pattern: '\bzłożyć\s+oświadczenie\b',    replacement: oświadczyć,   modes: [standard, strong], risk: 0.11}
+  - {pattern: '\bskładać\s+oświadczenie\b',   replacement: oświadczać,   modes: [standard, strong], risk: 0.11}
+  - {pattern: '\bzłożono\s+oświadczenie\b',   replacement: oświadczono,  modes: [standard, strong], risk: 0.09}

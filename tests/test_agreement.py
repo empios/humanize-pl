@@ -49,7 +49,7 @@ def _tokens(*specs: tuple) -> list[TokenInfo]:
 
 
 def test_no_nlp_no_morfeusz_is_noop():
-    checks = agreement_gate(
+    checks, _ = agreement_gate(
         "Pracownik wykonuje pracę.",
         "Pracownik wykonuje obowiązek.",
         stanza_engine=None,
@@ -61,7 +61,7 @@ def test_no_nlp_no_morfeusz_is_noop():
 
 def test_identical_inputs_pass():
     fake = FakeStanza({})
-    checks = agreement_gate(
+    checks, _ = agreement_gate(
         "Pracownik wykonuje pracę.",
         "Pracownik wykonuje pracę.",
         stanza_engine=fake,
@@ -88,7 +88,7 @@ def test_np_agreement_break_is_caught():
             ),
         }
     )
-    checks = agreement_gate(original, candidate, stanza_engine=fake, morfeusz=None)
+    checks, _ = agreement_gate(original, candidate, stanza_engine=fake, morfeusz=None)
     np_check = next((c for c in checks if c.name == "agreement_np"), None)
     assert np_check is not None
     assert not np_check.ok
@@ -113,7 +113,7 @@ def test_np_agreement_do_no_harm_when_break_existed_in_original():
         ("ważne", "ADJ", "Case=Nom|Number=Plur", 3, "xcomp"),
     )
     fake = FakeStanza({original: bad_np, candidate: candidate_tokens})
-    checks = agreement_gate(original, candidate, stanza_engine=fake, morfeusz=None)
+    checks, _ = agreement_gate(original, candidate, stanza_engine=fake, morfeusz=None)
     np_check = next((c for c in checks if c.name == "agreement_np"), None)
     assert np_check is not None
     assert np_check.ok
@@ -139,7 +139,7 @@ def test_subject_verb_mismatch_caught():
             ),
         }
     )
-    checks = agreement_gate(original, candidate, stanza_engine=fake, morfeusz=None)
+    checks, _ = agreement_gate(original, candidate, stanza_engine=fake, morfeusz=None)
     sv_check = next((c for c in checks if c.name == "agreement_subject_verb"), None)
     assert sv_check is not None
     assert not sv_check.ok
@@ -167,7 +167,7 @@ def test_preposition_governs_wrong_case_caught():
             ),
         }
     )
-    checks = agreement_gate(original, candidate, stanza_engine=fake, morfeusz=None)
+    checks, _ = agreement_gate(original, candidate, stanza_engine=fake, morfeusz=None)
     prep_check = next((c for c in checks if c.name == "agreement_preposition"), None)
     assert prep_check is not None
     assert not prep_check.ok
@@ -216,7 +216,7 @@ def test_diff_localization_ignores_unchanged_span():
     add("tutaj", "ADV", "", 14, "advmod")
 
     fake = FakeStanza({candidate: cand_tokens, original: []})
-    checks = agreement_gate(original, candidate, stanza_engine=fake, morfeusz=None)
+    checks, _ = agreement_gate(original, candidate, stanza_engine=fake, morfeusz=None)
     assert all(check.ok for check in checks)
 
 
@@ -228,7 +228,7 @@ def test_lexical_check_flags_unknown_form():
 
     original = "Pracownik wykonuje pracę."
     candidate = "Pracownik wykonawczacz pracę."
-    checks = agreement_gate(
+    checks, _ = agreement_gate(
         original,
         candidate,
         stanza_engine=None,
@@ -248,7 +248,7 @@ def test_lexical_check_ignores_protected_placeholders():
 
     original = "Pracownik wykonuje pracę zgodnie z __PROTECTED_0001__."
     candidate = "Wykonawca realizuje zadanie zgodnie z __PROTECTED_0001__."
-    checks = agreement_gate(
+    checks, _ = agreement_gate(
         original,
         candidate,
         stanza_engine=None,
@@ -260,7 +260,7 @@ def test_lexical_check_ignores_protected_placeholders():
 
 
 def test_empty_candidate_fails_fast():
-    checks = agreement_gate("Coś tam.", "", stanza_engine=None, morfeusz=None)
+    checks, _ = agreement_gate("Coś tam.", "", stanza_engine=None, morfeusz=None)
     assert len(checks) == 1
     assert not checks[0].ok
 
@@ -288,7 +288,7 @@ def test_correct_rewrite_passes_full_gate():
             ),
         }
     )
-    checks = agreement_gate(
+    checks, _ = agreement_gate(
         original,
         candidate,
         stanza_engine=fake,
@@ -333,6 +333,65 @@ def test_humanize_text_records_morfeusz_status():
     assert result.model_status["morfeusz"] in {"ready", "not_requested"} or result.model_status[
         "morfeusz"
     ].startswith("unavailable")
+
+
+def test_np_agreement_auto_repaired_by_morfeusz():
+    """When NP agreement fails but Morfeusz knows the correct form, the gate repairs it."""
+    from humanize_pl.nlp.morfeusz import MorfeuszAnalysis
+
+    original = "duża decyzja zapadła."
+    # "ważne" is Nom/Neut/Plur but "decyzja" is Nom/Fem/Sing — mismatch.
+    candidate = "ważne decyzja zapadła."
+
+    # Token positions in candidate: "ważne "(0–5) "decyzja "(6–13) "zapadła."(14–22)
+    cand_tokens = [
+        TokenInfo(
+            text="ważne", lemma="ważny", upos="ADJ",
+            feats="Case=Nom|Gender=Neut|Number=Plur",
+            head=2, deprel="amod", id=1, start_char=0, end_char=5,
+        ),
+        TokenInfo(
+            text="decyzja", lemma="decyzja", upos="NOUN",
+            feats="Case=Nom|Gender=Fem|Number=Sing",
+            head=3, deprel="nsubj", id=2, start_char=6, end_char=13,
+        ),
+        TokenInfo(
+            text="zapadła", lemma="zapadać", upos="VERB",
+            feats="VerbForm=Fin|Number=Sing|Tense=Past|Gender=Fem",
+            head=0, deprel="root", id=3, start_char=14, end_char=21,
+        ),
+    ]
+    orig_tokens = _tokens(
+        ("duża", "ADJ", "Case=Nom|Gender=Fem|Number=Sing", 2, "amod"),
+        ("decyzja", "NOUN", "Case=Nom|Gender=Fem|Number=Sing", 3, "nsubj"),
+        ("zapadła", "VERB", "VerbForm=Fin|Number=Sing|Tense=Past|Gender=Fem", 0, "root"),
+    )
+    fake = FakeStanza({original: orig_tokens, candidate: cand_tokens})
+
+    class RepairMorfeusz:
+        name = "repair_stub"
+
+        def has_form(self, word: str) -> bool:
+            return True
+
+        def generate(self, lemma: str) -> list[MorfeuszAnalysis]:
+            if lemma == "ważny":
+                return [
+                    MorfeuszAnalysis("ważna", "ważny", "adj:sg:nom:f:pos"),
+                    MorfeuszAnalysis("ważne", "ważny", "adj:sg:nom:n:pos"),
+                    MorfeuszAnalysis("ważny", "ważny", "adj:sg:nom:m1:pos"),
+                    MorfeuszAnalysis("ważnych", "ważny", "adj:pl:gen:m1:pos"),
+                ]
+            return []
+
+    checks, repaired_text = agreement_gate(
+        original, candidate, stanza_engine=fake, morfeusz=RepairMorfeusz()
+    )
+    np_check = next((c for c in checks if c.name == "agreement_np"), None)
+    assert np_check is not None
+    assert np_check.ok, f"Expected NP check to pass after repair; reason: {np_check.reason}"
+    assert "repaired" in np_check.reason.lower()
+    assert repaired_text == "ważna decyzja zapadła."
 
 
 def test_require_morfeusz_raises_when_unavailable(monkeypatch):

@@ -363,6 +363,13 @@ def test_cli_exposes_offline_models_flag():
     assert "--offline-models" in result.stdout
 
 
+def test_cli_exposes_version():
+    runner = CliRunner()
+    result = runner.invoke(app, ["--version"])
+    assert result.exit_code == 0
+    assert "humanize-pl 0.2.2" in result.stdout
+
+
 def test_intra_sentence_redundancy_reduction_is_safe():
     text = (
         "Pracownik wykonuje pracę pod kierownictwem, "

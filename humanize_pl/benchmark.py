@@ -73,6 +73,11 @@ def main(
     offline_models: bool = typer.Option(True, "--offline-models/--online-models", help="Use local model cache only"),
     require_models: bool = typer.Option(False, "--require-models", help="Fail if requested models are unavailable"),
     allow_fallback: bool = typer.Option(False, "--allow-fallback", help="Allow nlp/hybrid to fall back to available layers"),
+    fail_on_status: bool = typer.Option(
+        False,
+        "--fail-on-status",
+        help="Exit with code 1 when any run is not ok",
+    ),
     include_docx: list[Path] = typer.Option(
         [],
         "--include-docx",
@@ -98,6 +103,8 @@ def main(
     failed = sum(1 for row in rows if row.status != "ok")
     if failed:
         print(f"[yellow]Statusy wymagające uwagi:[/yellow] {failed}")
+        if fail_on_status:
+            raise typer.Exit(1)
 
 
 def parse_engines(value: str) -> list[Engine]:

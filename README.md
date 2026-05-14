@@ -58,6 +58,20 @@ python -m pip install -e ".[nlp,transformers]"
 python -m humanize_pl.download_models --stanza --transformers --fluency
 ```
 
+Pełny lokalny zestaw NLP, razem z warstwą Morfeusz2, jeżeli system ma dostępne
+natywne zależności Morfeusza:
+
+```bash
+python -m pip install -e ".[nlp,transformers,morfeusz]"
+python -m humanize_pl.download_models --stanza --transformers --fluency --morfeusz
+```
+
+Dla pracy developerskiej:
+
+```bash
+python -m pip install -e ".[dev]"
+```
+
 ## Użycie
 
 DOCX:
@@ -106,6 +120,12 @@ Tekst:
 humanize-pl "Podsumowując źródła prawa pracy tworzą system."
 ```
 
+Wersja:
+
+```bash
+humanize-pl --version
+```
+
 ## Tryby
 
 - `conservative` — dla prawa i dokumentów formalnych; mało zmian.
@@ -122,6 +142,45 @@ Jeżeli model nie jest dostępny lokalnie, silnik domyślnie zapisze ostrzeżeni
 wróci do dostępnych warstw. Flaga `--require-models` zmienia to w błąd, a
 `--offline-models` wymusza ładowanie wyłącznie z lokalnego cache bez prób
 odświeżania zasobów Stanza/HuggingFace.
+
+## Benchmark i bramki wydania
+
+Podstawowa bramka bezpieczeństwa bez modeli zewnętrznych:
+
+```bash
+make benchmark-basic
+```
+
+Równoważna komenda:
+
+```bash
+humanize-pl-benchmark --engines basic --mode standard --allow-fallback --fail-on-status
+```
+
+Komenda zapisuje artefakty pod `docs_tests/results/latest/` i kończy się kodem
+`1`, jeżeli którykolwiek dokument ma status inny niż `ok`.
+
+Pełniejsza, ręczna walidacja silników opcjonalnych wymaga lokalnie pobranych
+modeli:
+
+```bash
+python -m humanize_pl.download_models --stanza --transformers --fluency --morfeusz
+make benchmark-optional
+```
+
+`benchmark-optional` uruchamia `nlp` i `hybrid` z `--offline-models`,
+`--require-models` oraz `--fail-on-status`, więc nadaje się jako lokalna
+checklista przed wydaniem, ale nie zakłada dostępu do sieci w trakcie testu.
+
+Pełna lokalna kontrola przed wydaniem:
+
+```bash
+humanize-pl-release-check
+```
+
+Obejmuje testy, lint, podstawowy benchmark i budowę wheel w trybie
+`--no-isolation`, czyli z zależnościami zainstalowanymi przez `.[dev]`.
+Jeżeli w systemie jest `make`, równoważnym skrótem jest `make release-check`.
 
 ## Ważne
 

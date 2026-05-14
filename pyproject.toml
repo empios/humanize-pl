@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "humanize-pl"
-version = "0.2.0"
+dynamic = ["version"]
 description = "Deterministic Polish text humanization engine with optional NLP/transformer validation."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -39,7 +39,7 @@ transformers = [
   "sentence-transformers>=3.0.0",
 ]
 morfeusz = ["morfeusz2"]
-dev = ["pytest>=8.0.0", "ruff>=0.6.0"]
+dev = ["build>=1.2.0", "hatchling>=1.24", "pytest>=8.0.0", "ruff>=0.6.0"]
 all = [
   "stanza>=1.8.0",
   "torch>=2.2.0",
@@ -50,9 +50,13 @@ all = [
 [project.scripts]
 humanize-pl = "humanize_pl.cli:app"
 humanize-pl-benchmark = "humanize_pl.benchmark:app"
+humanize-pl-release-check = "humanize_pl.release_check:app"
 
 [tool.hatch.build.targets.wheel]
 packages = ["humanize_pl"]
+
+[tool.hatch.version]
+path = "humanize_pl/version.py"
 
 [tool.ruff]
 line-length = 100

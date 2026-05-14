@@ -202,3 +202,43 @@ def test_benchmark_cli_help_exposes_options():
     assert result.exit_code == 0
     assert "--engines" in result.stdout
     assert "--allow-fallback" in result.stdout
+    assert "--fail-on-status" in result.stdout
+
+
+def test_benchmark_cli_fail_on_status_exits_nonzero(monkeypatch, tmp_path):
+    runner = CliRunner()
+
+    def fake_load_manifest(path):
+        return [BenchmarkDocument(id="doc", path=tmp_path / "doc.txt")]
+
+    def fake_run_benchmark(*args, **kwargs):
+        return [
+            BenchmarkRow(
+                document_id="doc",
+                document_type="unknown",
+                engine="basic",
+                mode="standard",
+                status="failed_safety",
+                source_path="doc.txt",
+                safety={"passed": False},
+            )
+        ]
+
+    monkeypatch.setattr(benchmark, "load_manifest", fake_load_manifest)
+    monkeypatch.setattr(benchmark, "run_benchmark", fake_run_benchmark)
+
+    result = runner.invoke(
+        benchmark.app,
+        [
+            "--manifest",
+            str(tmp_path / "manifest.json"),
+            "--output",
+            str(tmp_path / "out"),
+            "--engines",
+            "basic",
+            "--fail-on-status",
+        ],
+    )
+
+    assert result.exit_code == 1
+    assert "Statusy wymagające uwagi" in result.stdout

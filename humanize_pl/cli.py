@@ -9,8 +9,15 @@ from .config import Engine, LegalReviewProfile, Mode
 from .core import humanize_text
 from .io.docx_io import process_docx
 from .reports.report import write_json_report
+from .version import __version__
 
 app = typer.Typer(add_completion=False, help="Deterministic Polish humanization engine.")
+
+
+def _version_callback(value: bool) -> None:
+    if value:
+        print(f"humanize-pl {__version__}")
+        raise typer.Exit()
 
 
 @app.command()
@@ -53,8 +60,16 @@ def main(
         "--require-morfeusz",
         help="Fail instead of falling back when Morfeusz2 is unavailable",
     ),
+    version: bool = typer.Option(
+        False,
+        "--version",
+        callback=_version_callback,
+        is_eager=True,
+        help="Show package version and exit",
+    ),
     debug: bool = typer.Option(False, help="Print debug details"),
 ) -> None:
+    del version
     path = Path(input_value)
 
     if path.exists() and path.suffix.lower() == ".docx":

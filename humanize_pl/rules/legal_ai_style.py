@@ -48,6 +48,12 @@ def _paragraph_has_ai_style_issue(
             score += 1
         if paragraph_features.transition_count:
             score += 1
+        if paragraph_features.repeated_opening_count:
+            score += 1
+        if paragraph_features.repeated_frame_count:
+            score += 1
+        if paragraph_features.monotony_score >= 0.25:
+            score += 1
         if paragraph_features.avg_sentence_words >= 18:
             score += 1
     return score > 0

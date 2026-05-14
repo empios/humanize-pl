@@ -1,9 +1,0 @@
-document_id,document_type,engine,mode,status,accepted_changes,rejected_candidates,average_accepted_risk,changes_per_1000_words,safety_passed,output_path,report_path
-ai_legal_01_umowa_uslug,umowa,basic,standard,ok,10,0,0.168,28.9017,True,docs_tests/results/latest/basic/ai_legal_01_umowa_uslug.txt,docs_tests/results/latest/basic/ai_legal_01_umowa_uslug.json
-ai_legal_02_opinia_odpowiedzialnosc,opinia prawna,basic,standard,ok,9,0,0.1884,35.2941,True,docs_tests/results/latest/basic/ai_legal_02_opinia_odpowiedzialnosc.txt,docs_tests/results/latest/basic/ai_legal_02_opinia_odpowiedzialnosc.json
-ai_legal_03_esej_prawo_pracy,esej prawniczy,basic,standard,ok,11,0,0.1033,40.5904,True,docs_tests/results/latest/basic/ai_legal_03_esej_prawo_pracy.txt,docs_tests/results/latest/basic/ai_legal_03_esej_prawo_pracy.json
-ai_legal_04_regulamin_platformy,regulamin,basic,standard,ok,6,0,0.1907,26.9058,True,docs_tests/results/latest/basic/ai_legal_04_regulamin_platformy.txt,docs_tests/results/latest/basic/ai_legal_04_regulamin_platformy.json
-ai_legal_05_pismo_urzedowe,pismo urzędowe,basic,standard,ok,6,0,0.1674,33.1492,True,docs_tests/results/latest/basic/ai_legal_05_pismo_urzedowe.txt,docs_tests/results/latest/basic/ai_legal_05_pismo_urzedowe.json
-ai_legal_06_wezwanie_do_zaplaty,wezwanie do zapłaty,basic,standard,ok,6,0,0.1601,34.4828,True,docs_tests/results/latest/basic/ai_legal_06_wezwanie_do_zaplaty.txt,docs_tests/results/latest/basic/ai_legal_06_wezwanie_do_zaplaty.json
-ai_legal_07_pozew_zaplate,pismo procesowe,basic,standard,ok,4,0,0.1207,20.3046,True,docs_tests/results/latest/basic/ai_legal_07_pozew_zaplate.txt,docs_tests/results/latest/basic/ai_legal_07_pozew_zaplate.json
-ai_legal_08_polityka_rodo,polityka prywatności,basic,standard,ok,5,0,0.2137,21.9298,True,docs_tests/results/latest/basic/ai_legal_08_polityka_rodo.txt,docs_tests/results/latest/basic/ai_legal_08_polityka_rodo.json

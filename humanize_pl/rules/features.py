@@ -41,6 +41,9 @@ class ParagraphFeatures:
     repeated_anchor_count: int
     transition_count: int
     topic_continuity: float
+    repeated_opening_count: int = 0
+    repeated_frame_count: int = 0
+    monotony_score: float = 0.0
 
 
 CONNECTIVE_PATTERN = re.compile(
@@ -64,6 +67,18 @@ NOMINALIZATION_SUFFIXES = ("anie", "enie", "cie", "ość", "acja", "izja", "yzja
 TRANSITION_START_PATTERN = re.compile(
     r"^\s*(?:Ponadto|Jednak|Natomiast|Z kolei|Oznacza to|Warto|Należy)\b",
     re.IGNORECASE,
+)
+OPENING_FRAME_PATTERN = re.compile(
+    r"^\s*(warto\s+(?:wskazać|zauważyć|podkreślić|odnotować|zaznaczyć)|"
+    r"należy\s+(?:wskazać|zauważyć|podkreślić|odnotować|zaznaczyć)|"
+    r"ponadto|dodatkowo|co\s+więcej|z\s+kolei|oznacza\s+to|"
+    r"duże\s+znaczenie\s+ma|istotne\s+znaczenie\s+ma)\b",
+    re.IGNORECASE,
+)
+STYLE_FRAME_PATTERNS: tuple[re.Pattern, ...] = (
+    re.compile(r"\bma\s+(?:bardzo\s+)?(?:istotne|duże|szczególne)\s+znaczenie\b", re.IGNORECASE),
+    re.compile(r"\b(?:odgrywa|pełni)\s+(?:istotną|szczególną|ważną)\s+rolę\b", re.IGNORECASE),
+    re.compile(r"\bw\s+znacznym\s+stopniu\b", re.IGNORECASE),
 )
 
 
@@ -150,12 +165,28 @@ def analyze_paragraph_features(sentences: list[str]) -> ParagraphFeatures:
 
     repeated_anchor_count = sum(1 for count in anchor_counts.values() if count > 1)
     transition_count = sum(1 for sentence in sentences if TRANSITION_START_PATTERN.search(sentence))
+    opening_counts: dict[str, int] = {}
+    frame_counts: dict[str, int] = {}
+    for sentence in sentences:
+        opening = _opening_frame(sentence)
+        if opening:
+            opening_counts[opening] = opening_counts.get(opening, 0) + 1
+        for frame in _style_frames(sentence):
+            frame_counts[frame] = frame_counts.get(frame, 0) + 1
+    repeated_opening_count = sum(count - 1 for count in opening_counts.values() if count > 1)
+    repeated_frame_count = sum(count - 1 for count in frame_counts.values() if count > 1)
     overlaps: list[float] = []
     for left, right in zip(sentence_anchors, sentence_anchors[1:]):
         if not left or not right:
             continue
         overlaps.append(len(left & right) / len(left | right))
     topic_continuity = sum(overlaps) / len(overlaps) if overlaps else 0.0
+    monotony_score = _paragraph_monotony_score(
+        sentence_count=sentence_count,
+        transition_count=transition_count,
+        repeated_opening_count=repeated_opening_count,
+        repeated_frame_count=repeated_frame_count,
+    )
 
     return ParagraphFeatures(
         sentence_count=sentence_count,
@@ -164,4 +195,36 @@ def analyze_paragraph_features(sentences: list[str]) -> ParagraphFeatures:
         repeated_anchor_count=repeated_anchor_count,
         transition_count=transition_count,
         topic_continuity=round(topic_continuity, 4),
+        repeated_opening_count=repeated_opening_count,
+        repeated_frame_count=repeated_frame_count,
+        monotony_score=round(monotony_score, 4),
     )
+
+
+def _opening_frame(sentence: str) -> str | None:
+    match = OPENING_FRAME_PATTERN.search(sentence)
+    if not match:
+        return None
+    return re.sub(r"\s+", " ", match.group(1).lower()).strip()
+
+
+def _style_frames(sentence: str) -> list[str]:
+    frames: list[str] = []
+    for pattern in STYLE_FRAME_PATTERNS:
+        if pattern.search(sentence):
+            frames.append(pattern.pattern)
+    return frames
+
+
+def _paragraph_monotony_score(
+    *,
+    sentence_count: int,
+    transition_count: int,
+    repeated_opening_count: int,
+    repeated_frame_count: int,
+) -> float:
+    if sentence_count <= 1:
+        return 0.0
+    transition_load = transition_count / sentence_count
+    repeated_load = (repeated_opening_count + repeated_frame_count) / sentence_count
+    return min(1.0, transition_load * 0.45 + repeated_load * 0.55)

@@ -8,6 +8,7 @@ import humanize_pl.core as core
 from humanize_pl.cli import app
 from humanize_pl.config import Engine, HumanizeConfig, Mode
 from humanize_pl.core import humanize_text
+from humanize_pl.io.docx_io import process_docx
 from humanize_pl.pipeline import LegalPipeline
 from humanize_pl.reports.report import write_json_report
 from humanize_pl.rules.base import Candidate
@@ -293,6 +294,66 @@ def test_offline_models_flag_is_passed_to_model_loaders(monkeypatch):
     )
     assert result.engine_used == "hybrid"
     assert calls == {"stanza": True, "semantic": True, "fluency": True}
+
+
+def test_process_docx_reuses_one_humanizer_session(monkeypatch, tmp_path):
+    import humanize_pl.io.docx_io as docx_io
+    from docx import Document
+
+    created_sessions = []
+    processed_paragraphs = []
+
+    class FakeSession:
+        config = HumanizeConfig(mode=Mode.standard, engine=Engine.nlp)
+        warnings: list[str] = []
+        engine_used = "nlp"
+        model_status = {
+            "stanza": "ready",
+            "semantic": "not_requested",
+            "fluency": "not_requested",
+            "morfeusz": "ready",
+        }
+        semantic_model_used = None
+        fluency_model_used = None
+
+        def humanize(self, text: str, *, include_candidates: bool = False) -> HumanizeResult:
+            processed_paragraphs.append(text)
+            rewritten = text.replace("Należy zauważyć, że", "Warto zauważyć, że")
+            return HumanizeResult(
+                text=rewritten,
+                changed=rewritten != text,
+                engine_used=self.engine_used,
+                model_status=dict(self.model_status),
+            )
+
+    def fake_create_humanizer_session(**kwargs):
+        created_sessions.append(kwargs)
+        return FakeSession()
+
+    monkeypatch.setattr(docx_io, "create_humanizer_session", fake_create_humanizer_session)
+
+    input_path = tmp_path / "input.docx"
+    output_path = tmp_path / "output.docx"
+    doc = Document()
+    doc.add_paragraph("Należy zauważyć, że dokument przedstawia zasady.")
+    doc.add_paragraph("Pracownik wykonuje pracę.")
+    doc.save(input_path)
+
+    result, stats = process_docx(
+        input_path,
+        output_path,
+        mode=Mode.standard,
+        engine=Engine.nlp,
+    )
+
+    assert len(created_sessions) == 1
+    assert processed_paragraphs == [
+        "Należy zauważyć, że dokument przedstawia zasady.",
+        "Pracownik wykonuje pracę.",
+    ]
+    assert stats == {"processed": 2, "changed": 1, "empty": 0}
+    assert result.engine_used == "nlp"
+    assert result.model_status["stanza"] == "ready"
 
 
 def test_cli_exposes_offline_models_flag():

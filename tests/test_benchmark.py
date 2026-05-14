@@ -110,6 +110,63 @@ def test_basic_benchmark_writes_all_artifacts(tmp_path):
     assert (output / "basic" / "a.json").exists()
 
 
+def test_long_docx_benchmark_records_timing_and_artifacts(monkeypatch, tmp_path):
+    from docx import Document
+
+    source = tmp_path / "long.docx"
+    doc = Document()
+    for index in range(60):
+        doc.add_paragraph(
+            f"Warto wskazać, że akapit {index} opisuje obowiązki strony umowy."
+        )
+    doc.save(source)
+
+    def fake_process_docx(input_path, output_path, **kwargs):
+        input_doc = Document(str(input_path))
+        output_doc = Document()
+        for paragraph in input_doc.paragraphs:
+            output_doc.add_paragraph(
+                paragraph.text.replace("Warto wskazać, że", "Wskazano, że")
+            )
+        output_doc.save(str(output_path))
+        return (
+            HumanizeResult(
+                text=str(output_path),
+                changed=True,
+                engine_used="nlp",
+                model_status={
+                    "stanza": "ready",
+                    "semantic": "not_requested",
+                    "fluency": "not_requested",
+                    "morfeusz": "ready",
+                },
+            ),
+            {"processed": 60, "changed": 60, "empty": 0},
+        )
+
+    monkeypatch.setattr(benchmark, "process_docx", fake_process_docx)
+    output = tmp_path / "out"
+    rows = run_benchmark(
+        [BenchmarkDocument(id="long_docx", path=source, type="docx", source_kind="docx")],
+        output_dir=output,
+        engines=[Engine.nlp],
+        mode=Mode.standard,
+        offline_models=True,
+        require_models=True,
+        allow_fallback=False,
+    )
+    write_summary_artifacts(rows, output)
+
+    assert len(rows) == 1
+    assert rows[0].status == "ok"
+    assert rows[0].processing_seconds >= 0
+    assert (output / "nlp" / "long_docx.docx").exists()
+    assert (output / "nlp" / "long_docx.json").exists()
+    review = (output / "review.md").read_text(encoding="utf-8")
+    assert "Processing seconds" in review
+    assert "Time(s)" in review
+
+
 def test_fake_hybrid_records_model_metadata(monkeypatch, tmp_path):
     source = tmp_path / "a.txt"
     source.write_text("Pracownik wykonuje pracę.", encoding="utf-8")

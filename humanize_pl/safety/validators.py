@@ -33,6 +33,15 @@ BAD_POLISH_PATTERNS = [
     r"\.\s*Przy czym\s+(?:za|w|na|do|od|bez|pod)\b",
 ]
 
+RELATIVE_PRONOUN_RE = (
+    r"który|która|które|którzy|których|którym|którego|której|któremu|"
+    r"którymi|którą"
+)
+STRANDED_RELATIVE_CLAUSE_RE = re.compile(
+    rf"\b\p{{L}}{{3,}}(?:ć|c)\s*,\s*(?:{RELATIVE_PRONOUN_RE})\b",
+    re.IGNORECASE,
+)
+
 SENTENCE_TRANSITIONS = (
     "Ponadto",
     "Z kolei",
@@ -95,6 +104,10 @@ def _word_count(text: str) -> int:
     return len(re.findall(r"\p{L}+", text))
 
 
+def has_stranded_relative_clause(text: str) -> bool:
+    return bool(STRANDED_RELATIVE_CLAUSE_RE.search(text))
+
+
 def _sentence_has_required_predication(original: str, candidate: str) -> bool:
     original_parts = _split_sentence_like(original)
     original_has_predication = any(has_finite_verb(_without_transition(part)) for part in original_parts)
@@ -138,6 +151,14 @@ def validate_candidate(
     if any(re.search(pattern, lower) for pattern in BAD_POLISH_PATTERNS):
         return _failed("known_bad_patterns", "known bad Polish pattern", checks)
     _passed("known_bad_patterns", checks)
+
+    if has_stranded_relative_clause(candidate):
+        return _failed(
+            "no_stranded_relative_clause",
+            "relative clause stranded after infinitive",
+            checks,
+        )
+    _passed("no_stranded_relative_clause", checks)
 
     if re.search(r"\b(?:oraz|i|lub|albo|a także)\s+(?:oraz|i|lub|albo|a także)\b", lower):
         return _failed("no_double_conjunctions", "double conjunction detected", checks)

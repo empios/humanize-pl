@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 from statistics import mean
 import tempfile
+from time import perf_counter
 from typing import Any
 
 import regex as re
@@ -17,6 +18,7 @@ from humanize_pl.core import HumanizeResult, humanize_text
 from humanize_pl.io.docx_io import process_docx
 from humanize_pl.reports.report import write_json_report
 from humanize_pl.safety.protectors import protect_text
+from humanize_pl.safety.validators import has_stranded_relative_clause
 
 
 DEFAULT_MANIFEST = Path("docs_tests/ai_generated/manifest.json")
@@ -49,6 +51,7 @@ class BenchmarkRow:
     rejected_candidates: int = 0
     skipped_sentences: int = 0
     all_candidates: int = 0
+    processing_seconds: float = 0.0
     changes_per_1000_words: float = 0.0
     average_accepted_risk: float = 0.0
     model_status: dict[str, str] = field(default_factory=dict)
@@ -182,6 +185,7 @@ def safety_checks(original: str, rewritten: str) -> dict[str, Any]:
             re.IGNORECASE,
         ),
         "no_bad_split_phrase": "Ponadto za wynagrodzeniem" not in rewritten,
+        "no_stranded_relative_clause": not has_stranded_relative_clause(rewritten),
         "no_placeholder_leak": "__PROTECTED_" not in rewritten,
         "numbers_preserved": _numbers(original) == _numbers(rewritten),
         "protected_fragments_preserved": _protected_values(original_protected)
@@ -203,20 +207,27 @@ def render_review_markdown(rows: list[BenchmarkRow]) -> str:
     lines.append(f"- Failed safety: {aggregate['failed_safety']}")
     lines.append(f"- Model unavailable: {aggregate['model_unavailable']}")
     lines.append(f"- Accepted changes: {aggregate['accepted_changes']}")
+    lines.append(f"- Processing seconds: {aggregate['processing_seconds']:.4f}")
     lines.append("")
     lines.append("## Per Document")
     lines.append("")
     lines.append(
-        "| Document | Engine | Status | Accepted | Rejected | Risk | Changes/1000 | Safety |"
+        "| Document | Engine | Status | Accepted | Rejected | Risk | Changes/1000 | Time(s) | Safety |"
     )
-    lines.append("|---|---:|---:|---:|---:|---:|---:|---:|")
+    lines.append("|---|---:|---:|---:|---:|---:|---:|---:|---:|")
     for row in sorted(rows, key=lambda item: (item.document_id, item.engine)):
         lines.append(
             "| "
             f"{row.document_id} | {row.engine} | {row.status} | {row.accepted_changes} | "
             f"{row.rejected_candidates} | {row.average_accepted_risk:.4f} | "
-            f"{row.changes_per_1000_words:.4f} | {row.safety.get('passed', False)} |"
+            f"{row.changes_per_1000_words:.4f} | {row.processing_seconds:.4f} | "
+            f"{row.safety.get('passed', False)} |"
         )
+    lines.append("")
+    lines.append("## Safety Signals")
+    lines.append("")
+    safety_sections = _safety_signal_sections(rows)
+    lines.extend(safety_sections or ["Brak sygnałów bezpieczeństwa."])
     lines.append("")
     lines.append("## Rejected Candidates")
     lines.append("")
@@ -256,6 +267,7 @@ def _run_one(
         source_path=str(document.path),
     )
     try:
+        started_at = perf_counter()
         result, output_path = _process_document(
             document,
             engine_dir=engine_dir,
@@ -264,7 +276,9 @@ def _run_one(
             offline_models=offline_models,
             require_models=require_models,
         )
+        row.processing_seconds = round(perf_counter() - started_at, 4)
     except RuntimeError as exc:
+        row.processing_seconds = round(perf_counter() - started_at, 4)
         row.status = "model_unavailable"
         row.error = str(exc)
         return row
@@ -361,6 +375,7 @@ def _write_summary_csv(rows: list[BenchmarkRow], path: Path) -> None:
         "rejected_candidates",
         "average_accepted_risk",
         "changes_per_1000_words",
+        "processing_seconds",
         "safety_passed",
         "output_path",
         "report_path",
@@ -380,6 +395,7 @@ def _write_summary_csv(rows: list[BenchmarkRow], path: Path) -> None:
                     "rejected_candidates": row.rejected_candidates,
                     "average_accepted_risk": row.average_accepted_risk,
                     "changes_per_1000_words": row.changes_per_1000_words,
+                    "processing_seconds": row.processing_seconds,
                     "safety_passed": row.safety.get("passed"),
                     "output_path": row.output_path,
                     "report_path": row.report_path,
@@ -395,6 +411,7 @@ def _aggregate(rows: list[BenchmarkRow]) -> dict[str, Any]:
         "model_unavailable": sum(1 for row in rows if row.status == "model_unavailable"),
         "accepted_changes": sum(row.accepted_changes for row in rows),
         "rejected_candidates": sum(row.rejected_candidates for row in rows),
+        "processing_seconds": round(sum(row.processing_seconds for row in rows), 4),
         "average_risk": round(
             mean([row.average_accepted_risk for row in rows if row.accepted_changes]),
             4,
@@ -431,7 +448,7 @@ def _needs_review_sections(rows: list[BenchmarkRow]) -> list[str]:
         risky = [
             item
             for item in payload.get("accepted", [])
-            if (item.get("risk") or 0.0) >= 0.15
+            if _accepted_item_needs_review(item)
             or (item.get("semantic_similarity") is not None and item["semantic_similarity"] < 0.92)
             or (item.get("fluency_delta") is not None and item["fluency_delta"] < 0)
         ][:5]
@@ -449,6 +466,45 @@ def _needs_review_sections(rows: list[BenchmarkRow]) -> list[str]:
     return sections
 
 
+def _accepted_item_needs_review(item: dict[str, Any]) -> bool:
+    if (item.get("risk") or 0.0) < 0.15:
+        return False
+    if item.get("operation_type") == "ai_artifact_reduction" and _all_gates_passed(item):
+        return False
+    return True
+
+
+def _all_gates_passed(item: dict[str, Any]) -> bool:
+    return all(gate.get("ok", True) for gate in item.get("gate_results") or [])
+
+
+def _safety_signal_sections(rows: list[BenchmarkRow]) -> list[str]:
+    sections: list[str] = []
+    for row in sorted(rows, key=lambda item: (item.document_id, item.engine)):
+        failed_safety = [
+            key for key, value in row.safety.items() if key != "passed" and not value
+        ]
+        gate_failures = {
+            key: count
+            for key, count in row.gate_rejections.items()
+            if key in {
+                "no_stranded_relative_clause",
+                "finite_verb_presence",
+                "sentence_split_safety",
+                "known_bad_patterns",
+                "no_dangling_connectors",
+            }
+        }
+        if not failed_safety and not gate_failures:
+            continue
+        sections.append(f"### {row.document_id} / {row.engine}")
+        if failed_safety:
+            sections.append(f"- Safety failed: {', '.join(failed_safety)}")
+        for name, count in sorted(gate_failures.items()):
+            sections.append(f"- Gate `{name}` blocked {count} candidate(s)")
+    return sections
+
+
 def _recommended_rules(rows: list[BenchmarkRow]) -> list[str]:
     gate_counts: dict[str, int] = {}
     operation_counts: dict[str, int] = {}
@@ -463,6 +519,8 @@ def _recommended_rules(rows: list[BenchmarkRow]) -> list[str]:
         recommendations.append("- Przejrzeć reguły odrzucane przez `semantic_similarity` i zawęzić ich kontekst.")
     if gate_counts.get("legal_anchor_retention", 0) or gate_counts.get("content_anchor_retention", 0):
         recommendations.append("- Dodać warianty reguł zachowujące kotwice treściowe i prawne.")
+    if gate_counts.get("no_stranded_relative_clause", 0):
+        recommendations.append("- Przejrzeć nominalizacje blokowane przez `no_stranded_relative_clause`.")
     if operation_counts.get("legal_ai_style_rewrite", 0) < 5:
         recommendations.append("- Rozbudować `legal_ai_style` o kolejne monotonne ramy AI-prawnicze.")
     if not recommendations:

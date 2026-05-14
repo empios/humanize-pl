@@ -87,6 +87,8 @@ def score_candidate(
                 0.08,
                 (original_review.ai_artifact_score - candidate_review.ai_artifact_score) * 0.35,
             )
+        if paragraph_features and paragraph_features.monotony_score >= 0.20:
+            quality_delta += min(0.04, paragraph_features.monotony_score * 0.08)
         risk += 0.06
 
     if candidate.rule.startswith("legal_ai_style:"):
@@ -96,6 +98,8 @@ def score_candidate(
                 0.05,
                 (original_review.ai_artifact_score - candidate_review.ai_artifact_score) * 0.25,
             )
+        if paragraph_features and paragraph_features.repeated_frame_count:
+            quality_delta += min(0.035, paragraph_features.repeated_frame_count * 0.012)
         risk += 0.02
 
     if normativity_signature(original) != normativity_signature(candidate.text):
@@ -126,6 +130,10 @@ def score_candidate(
         "fluency_gain": 0.0,
         "anchor_loss": round(anchor_loss, 4),
         "length_penalty": round(length_penalty, 4),
+        "paragraph_monotony": round(
+            paragraph_features.monotony_score if paragraph_features else 0.0,
+            4,
+        ),
         "final_score": round(max(0.0, min(1.0, score_after_gate)), 4),
     }
 
@@ -147,6 +155,10 @@ def score_candidate(
             "length_penalty": round(length_penalty, 4),
             "ai_artifact_delta": round(
                 original_review.ai_artifact_score - candidate_review.ai_artifact_score,
+                4,
+            ),
+            "paragraph_monotony": round(
+                paragraph_features.monotony_score if paragraph_features else 0.0,
                 4,
             ),
         },

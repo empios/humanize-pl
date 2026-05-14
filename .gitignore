@@ -49,6 +49,7 @@ coverage.xml
 Thumbs.db
 
 # Project artifacts
+docs_tests/results/
 docs_tests/*_humanized*.docx
 docs_tests/*_review_*.docx
 docs_tests/*_report*.json

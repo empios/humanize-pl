@@ -7,7 +7,9 @@ from collections import Counter
 import regex as re
 
 from humanize_pl.core import HumanizeResult
+from humanize_pl.rules.features import analyze_paragraph_features
 from humanize_pl.rules.legal_features import analyze_legal_review_features
+from humanize_pl.sentence_splitter import split_sentences
 
 
 def write_json_report(result: HumanizeResult, path: str | Path) -> None:
@@ -161,6 +163,7 @@ def _quality_summary(result: HumanizeResult) -> dict:
     operation_types = Counter(
         candidate.operation_type or "unknown" for candidate in result.all_candidates
     )
+    paragraph_monotony = _paragraph_monotony_summary(result, originals)
     return {
         "word_count_estimate": word_count,
         "changes_per_1000_words": round(len(result.changes) / max(word_count, 1) * 1000, 4),
@@ -168,7 +171,47 @@ def _quality_summary(result: HumanizeResult) -> dict:
         "operation_types": dict(operation_types),
         "gate_rejections": dict(gate_rejections),
         "untouched_sentences": len(result.skipped),
+        "paragraph_monotony": paragraph_monotony,
     }
+
+
+def _paragraph_monotony_summary(result: HumanizeResult, originals: list[str]) -> dict:
+    snapshots = _paragraph_feature_snapshots(result)
+    if snapshots:
+        return {
+            "average_score": round(
+                mean(row.get("monotony_score", 0.0) for row in snapshots),
+                4,
+            ),
+            "repeated_openings": sum(row.get("repeated_opening_count", 0) for row in snapshots),
+            "repeated_frames": sum(row.get("repeated_frame_count", 0) for row in snapshots),
+            "transition_count": sum(row.get("transition_count", 0) for row in snapshots),
+        }
+    if not originals:
+        return {
+            "average_score": 0.0,
+            "repeated_openings": 0,
+            "repeated_frames": 0,
+            "transition_count": 0,
+        }
+    features = [analyze_paragraph_features(split_sentences(original)) for original in originals]
+    return {
+        "average_score": round(mean(row.monotony_score for row in features), 4),
+        "repeated_openings": sum(row.repeated_opening_count for row in features),
+        "repeated_frames": sum(row.repeated_frame_count for row in features),
+        "transition_count": sum(row.transition_count for row in features),
+    }
+
+
+def _paragraph_feature_snapshots(result: HumanizeResult) -> list[dict]:
+    snapshots: dict[int, dict] = {}
+    for item in [*result.changes, *result.all_candidates]:
+        paragraph_index = item.paragraph_index
+        paragraph_features = item.paragraph_features_before
+        if paragraph_index is None or not paragraph_features:
+            continue
+        snapshots.setdefault(paragraph_index, paragraph_features)
+    return list(snapshots.values())
 
 
 def _legal_review_summary(result: HumanizeResult) -> dict:

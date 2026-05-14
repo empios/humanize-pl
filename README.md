@@ -19,16 +19,22 @@ Działa warstwowo:
 7. opcjonalny filtr semantyczny sentence-transformers,
 8. zapis DOCX/TXT + raport JSON.
 
-## Co nowego w 0.2.0
+## Co nowego w 0.2.2
 
 - wyłączone ryzykowne dzielenie zdań po `oraz`,
 - dodany walidator: nowo utworzone zdanie musi mieć czasownik osobowy,
+- dodany walidator blokujący konstrukcje typu `działać, które` po zbyt agresywnej nominalizacji,
 - dodane reguły stylu formalnego/prawniczego,
+- dodane wykrywanie monotonnych otwarć i ram AI, np. powtarzanego `Warto wskazać` oraz `ma istotne znaczenie`,
 - raport JSON pokazuje zaakceptowane zmiany i odrzucone kandydaty,
+- raport JSON pokazuje metryki monotonii akapitów w sekcji `quality.paragraph_monotony`,
+- benchmark zapisuje czas przetwarzania, sygnały bezpieczeństwa i blokady bramek w `review.md`, `summary.csv` i `summary.json`,
 - domyślny profil `legal_ai_review` dla AI-generowanych tekstów prawniczych,
 - metryki `legal_review` w raporcie JSON,
+- przetwarzanie DOCX używa jednej sesji humanizatora na dokument, więc modele NLP nie są ładowane osobno dla każdego akapitu,
 - usunięte reguły, które generowały niepoprawne konstrukcje typu `Nie oznacza to jednak, że nie występuje podporządkowania`,
-- test regresji dla błędu `Ponadto za wynagrodzeniem`.
+- test regresji dla błędu `Ponadto za wynagrodzeniem`,
+- wyniki benchmarków pod `docs_tests/results/` są traktowane jako artefakty lokalne i ignorowane przez Git.
 
 ## Instalacja
 
@@ -123,4 +129,5 @@ Silnik nie jest generatywnym parafrazerem. To kontrolowany edytor formalnej pols
 
 Walidatory blokują m.in. zmianę normatywności (`może`/`musi`/`powinien`),
 utratę stron, świadczeń, kwot, dat, cytatów i podstaw prawnych, zdania bez
-orzeczenia, angielskie wstawki oraz wycieki placeholderów ochronnych.
+orzeczenia, osierocone zdania względne po bezokoliczniku, angielskie wstawki
+oraz wycieki placeholderów ochronnych.

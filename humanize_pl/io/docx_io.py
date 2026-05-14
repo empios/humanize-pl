@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from humanize_pl.config import Engine, LegalReviewProfile, Mode
-from humanize_pl.core import HumanizeResult, humanize_text
+from humanize_pl.core import HumanizeResult, create_humanizer_session
 
 
 def process_docx(
@@ -35,11 +35,27 @@ def process_docx(
     all_rejected = []
     all_skipped = []
     all_candidates = []
-    warnings = []
-    engine_used = str(engine.value if isinstance(engine, Engine) else engine)
-    model_status: dict[str, str] = {}
-    semantic_model_used: str | None = None
-    fluency_model_used: str | None = None
+    session = create_humanizer_session(
+        mode=mode,
+        engine=engine,
+        legal_review_profile=legal_review_profile,
+        semantic_threshold=semantic_threshold,
+        semantic_model=semantic_model,
+        fluency_model=fluency_model,
+        require_models=require_models,
+        offline_models=offline_models,
+        agreement_gate_enabled=agreement_gate_enabled,
+        require_morfeusz=require_morfeusz,
+    )
+    warnings = list(session.warnings)
+    engine_used = session.engine_used
+    model_status: dict[str, str] = dict(session.model_status)
+    semantic_model_used = (
+        session.semantic_model_used if session.config.engine == Engine.hybrid else None
+    )
+    fluency_model_used = (
+        session.fluency_model_used if session.config.engine == Engine.hybrid else None
+    )
 
     for paragraph_index, paragraph in enumerate(doc.paragraphs):
         original = paragraph.text
@@ -47,21 +63,7 @@ def process_docx(
             empty += 1
             continue
         processed += 1
-        result = humanize_text(
-            original,
-            mode=mode,
-            engine=engine,
-            legal_review_profile=legal_review_profile,
-            semantic_threshold=semantic_threshold,
-            semantic_model=semantic_model,
-            fluency_model=fluency_model,
-            require_models=require_models,
-            offline_models=offline_models,
-            include_candidates=include_candidates,
-            agreement_gate_enabled=agreement_gate_enabled,
-            require_morfeusz=require_morfeusz,
-        )
-        warnings.extend(result.warnings)
+        result = session.humanize(original, include_candidates=include_candidates)
         engine_used = result.engine_used
         model_status.update(result.model_status)
         semantic_model_used = result.semantic_model or semantic_model_used

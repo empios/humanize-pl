@@ -1,3 +1,5 @@
+import json
+
 from humanize_pl.config import Mode
 from humanize_pl.config import HumanizeConfig
 from humanize_pl.core import humanize_text
@@ -217,6 +219,47 @@ def test_sentence_feature_analysis_detects_legal_complexity():
     assert features.complexity > 0
 
 
+def test_paragraph_features_detect_monotone_ai_openings():
+    from humanize_pl.rules.features import analyze_paragraph_features
+    from humanize_pl.sentence_splitter import split_sentences
+
+    text = (
+        "Warto wskazać, że pracownik wykonuje pracę pod kierownictwem. "
+        "Warto wskazać, że pracodawca organizuje proces pracy. "
+        "Ponadto obowiązek osobistego świadczenia pracy ma istotne znaczenie. "
+        "Ponadto wynagrodzenie ma istotne znaczenie dla stron."
+    )
+    features = analyze_paragraph_features(split_sentences(text))
+
+    assert features.repeated_opening_count >= 2
+    assert features.repeated_frame_count >= 1
+    assert features.monotony_score > 0
+
+
+def test_standard_reduces_monotone_ai_openings_and_reports_metrics(tmp_path):
+    text = (
+        "Warto wskazać, że pracownik wykonuje pracę pod kierownictwem. "
+        "Warto wskazać, że pracodawca organizuje proces pracy. "
+        "Ponadto obowiązek osobistego świadczenia pracy ma istotne znaczenie. "
+        "Ponadto wynagrodzenie ma istotne znaczenie dla stron."
+    )
+    result = humanize_text(text, mode="standard", include_candidates=True)
+
+    assert result.text.count("Warto wskazać") < text.count("Warto wskazać")
+    assert result.text.count("Ponadto") < text.count("Ponadto")
+    assert any(
+        trace.operation_type == "ai_artifact_reduction" and trace.status == "accepted"
+        for trace in result.all_candidates
+    )
+
+    report_path = tmp_path / "report.json"
+    write_json_report(result, report_path)
+    payload = json.loads(report_path.read_text(encoding="utf-8"))
+    monotony = payload["quality"]["paragraph_monotony"]
+    assert monotony["average_score"] > 0
+    assert monotony["repeated_openings"] >= 2
+
+
 def test_algorithmic_scoring_penalizes_splits_in_dense_legal_sentences():
     original = (
         "Zgodnie z art. 22 § 1 Kodeksu pracy pracownik wykonuje pracę, "
@@ -270,38 +313,112 @@ def test_nlp_nominalization_does_not_strand_relative_clause():
         def __init__(self, tokens):
             self.tokens = tokens
 
-    sentence = "Użytkownik nie może również podejmować działań, które zakłócają funkcjonowanie platformy."
-    verb_start = sentence.index("podejmować")
-    noun_start = sentence.index("działań")
-    analysis = _A([
-        _T(
-            id=1,
-            text="podejmować",
-            lemma="podejmować",
-            upos="VERB",
-            deprel="xcomp",
-            head=0,
-            start_char=verb_start,
-            end_char=verb_start + len("podejmować"),
+    cases = [
+        (
+            "Użytkownik nie może również podejmować działań, "
+            "które zakłócają funkcjonowanie platformy.",
+            "działań",
+            "działanie",
         ),
-        _T(
-            id=2,
-            text="działań",
-            lemma="działanie",
-            upos="NOUN",
-            deprel="obj",
-            head=1,
-            start_char=noun_start,
-            end_char=noun_start + len("działań"),
+        (
+            "Organ nie powinien podejmować czynności, które naruszają prawa strony.",
+            "czynności",
+            "czynność",
         ),
-    ])
+        (
+            "Organ nie powinien podejmować decyzji, która narusza prawa strony.",
+            "decyzji",
+            "decyzja",
+        ),
+        (
+            "Strona nie musi podejmować obowiązku, który wynika z umowy.",
+            "obowiązku",
+            "obowiązek",
+        ),
+        (
+            "Organ nie powinien podejmować dokumentów, których nie zbadano.",
+            "dokumentów",
+            "dokument",
+        ),
+    ]
+    for sentence, noun_text, noun_lemma in cases:
+        verb_start = sentence.index("podejmować")
+        noun_start = sentence.index(noun_text)
+        analysis = _A([
+            _T(
+                id=1,
+                text="podejmować",
+                lemma="podejmować",
+                upos="VERB",
+                deprel="xcomp",
+                head=0,
+                start_char=verb_start,
+                end_char=verb_start + len("podejmować"),
+            ),
+            _T(
+                id=2,
+                text=noun_text,
+                lemma=noun_lemma,
+                upos="NOUN",
+                deprel="obj",
+                head=1,
+                start_char=noun_start,
+                end_char=noun_start + len(noun_text),
+            ),
+        ])
 
-    candidates = nominalization_candidates(sentence, mode=Mode.standard, analysis=analysis)
+        candidates = nominalization_candidates(sentence, mode=Mode.standard, analysis=analysis)
 
-    assert all("działać, które" not in candidate.text for candidate in candidates)
-    assert not any(
-        candidate.rule == "nominalizacja:nlp:podejmować+działanie"
-        for candidate in candidates
+        assert all("ć, któr" not in candidate.text for candidate in candidates)
+        assert not any(
+            candidate.rule == f"nominalizacja:nlp:podejmować+{noun_lemma}"
+            for candidate in candidates
+        )
+
+
+def test_validator_rejects_stranded_relative_clause_after_infinitive():
+    original = (
+        "Użytkownik nie może również podejmować działań, "
+        "które zakłócają funkcjonowanie platformy."
+    )
+    validation = validate_candidate(
+        original,
+        "Użytkownik nie może również działać, które zakłócają funkcjonowanie platformy.",
+        protected=protect_text(original),
+        max_length_ratio=2.0,
+    )
+    assert not validation.ok
+    assert validation.reason == "relative clause stranded after infinitive"
+
+    valid = validate_candidate(
+        original,
+        original,
+        protected=protect_text(original),
+        max_length_ratio=2.0,
+    )
+    assert valid.ok
+
+
+def test_safe_nlp_nominalizations_still_work():
+    assert (
+        humanize_text(
+            "Administrator powinien udzielić odpowiedzi bez zbędnej zwłoki, "
+            "nie później niż w terminie 30 dni.",
+            mode="standard",
+            engine="nlp",
+        ).text
+        == (
+            "Administrator powinien odpowiedzieć bez zbędnej zwłoki, "
+            "nie później niż w terminie 30 dni."
+        )
+    )
+    assert (
+        humanize_text(
+            "Brak zapłaty w powyższym terminie może skutkować skierowaniem sprawy do sądu.",
+            mode="standard",
+            engine="nlp",
+        ).text
+        == "Brak zapłaty w tym terminie może skutkować skierowaniem sprawy do sądu."
     )
 
 

@@ -23,6 +23,22 @@ from humanize_pl.safety.validators import GateCheck, validate_candidate
 from humanize_pl.sentence_splitter import split_sentences
 
 
+# A masked-LM fluency scorer is structurally biased against AI-artifact removal:
+# "fluent" and "high-probability" are the same thing to a language model, and
+# AI-style discourse frames are high-probability Polish. HerBERT scores
+# "Warto wskazać, że X" above bare "X", so the gate was rejecting exactly the
+# edits the engine exists to make. Measured on the sample set: with the gate
+# applied, hybrid left the AI signal at 0.52 where basic reduced it to 0.46.
+#
+# These operations stay subject to every other gate — syntax, agreement,
+# normativity, anchor retention and semantic similarity. Only the fluency
+# scorer is skipped, because dropping a discourse marker does not break Polish,
+# it only makes it less predictable, which is the point.
+FLUENCY_EXEMPT_OPERATIONS = frozenset(
+    {"ai_artifact_reduction", "legal_ai_style_rewrite", "redundancy_reduction"}
+)
+
+
 @dataclass
 class PipelineContext:
     config: HumanizeConfig
@@ -497,7 +513,10 @@ class LegalPipeline:
                     self.protected.restore(cand.text),
                 )
                 cand = self._with_transformer_score(cand, fluency_delta=fluency_delta)
-                if fluency_delta < self.config.min_fluency_delta:
+                if (
+                    fluency_delta < self.config.min_fluency_delta
+                    and cand.operation_type not in FLUENCY_EXEMPT_OPERATIONS
+                ):
                     fluency_checks.append(
                         GateCheck(
                             "fluency_delta",

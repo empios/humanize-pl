@@ -8,7 +8,8 @@ from typing import Any
 import regex as re
 
 from humanize_pl.core import HumanizeResult
-from humanize_pl.detect import DocumentDiagnosis
+from humanize_pl.detect import Calibration, DocumentDiagnosis
+from humanize_pl.detect.calibration import REVIEW_THRESHOLD
 from humanize_pl.detect.engine import SATURATION_PER_1000_WORDS
 from humanize_pl.rules.features import analyze_paragraph_features
 from humanize_pl.rules.legal_features import analyze_legal_review_features
@@ -217,13 +218,47 @@ def _detection_summary(result: HumanizeResult) -> dict:
     return build_detection_payload(result.diagnosis)
 
 
+def _calibration_payload(calibration: Calibration | None) -> dict | None:
+    """The document expressed relative to measured human legal writing.
+
+    `needs_review` is a triage flag, never a verdict of authorship.
+    """
+    if calibration is None:
+        return None
+    return {
+        "profile_name": calibration.profile_name,
+        "profile_genre": calibration.profile_genre,
+        "profile_documents": calibration.profile_documents,
+        "calibrated_score": calibration.calibrated_score,
+        "review_threshold": REVIEW_THRESHOLD,
+        "needs_review": calibration.above_human_range,
+        "human_score_p50": calibration.human_score_p50,
+        "human_score_p95": calibration.human_score_p95,
+        "signals": [
+            {
+                "name": signal.name,
+                "observed": signal.observed,
+                "human_p50": signal.human_p50,
+                "human_p95": signal.human_p95,
+                "direction": signal.direction,
+                "exceedance": signal.exceedance,
+                "weight": signal.weight,
+                "genre_confounded": signal.confounded,
+            }
+            for signal in calibration.signals
+        ],
+    }
+
+
 def build_detection_payload(diagnosis: DocumentDiagnosis) -> dict:
     """Serialise a diagnosis on its own, for `--detect-only` runs."""
+    calibration = diagnosis.calibration
     return {
         "available": True,
         "ai_signal_score": diagnosis.ai_signal_score,
-        "score_is_calibrated": False,
+        "score_is_calibrated": calibration is not None,
         "saturation_per_1000_words": SATURATION_PER_1000_WORDS,
+        "calibration": _calibration_payload(calibration),
         "word_count": diagnosis.word_count,
         "sentence_count": diagnosis.sentence_count,
         "paragraph_count": diagnosis.paragraph_count,

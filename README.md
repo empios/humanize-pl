@@ -28,7 +28,10 @@ Działa warstwowo:
   i od tego, czy istnieje reguła przepisująca,
 - sekcja `detection` w raporcie JSON, widoczna także przy zerze zmian,
 - flaga `--detect-only` dla tekstu, pliku DOCX i folderu,
-- powtórzone otwarcia zdań liczone w skali dokumentu, nie akapitu.
+- powtórzone otwarcia zdań liczone w skali dokumentu, nie akapitu,
+- kalibracja sygnału na ludzkim korpusie referencyjnym (SAOS, 2393 uzasadnienia),
+  z udokumentowanym punktem pracy i jawnie wykluczonymi metrykami
+  zniekształconymi przez gatunek.
 
 ## Co nowego w 0.2.2
 
@@ -83,6 +86,60 @@ być widoczne, a nie przemilczane.
 Wykrywanie powtórzonych otwarć zdań liczone jest w skali **dokumentu**, nie
 akapitu — teksty AI różnicują otwarcia wewnątrz akapitu, powtarzając te same
 ramy w całym dokumencie.
+
+## Kalibracja na ludzkim korpusie referencyjnym
+
+Sygnał jest odnoszony do zmierzonego ludzkiego pisarstwa prawniczego. Profil
+`saos_common_2018_2024` zbudowano na 2393 uzasadnieniach sądów powszechnych
+z lat 2018–2024 (SAOS, ~8,8 mln słów). Sam korpus zostaje lokalnie; repozytorium
+zawiera wyłącznie wyprowadzony profil statystyczny w
+`humanize_pl/data/reference_profiles/`.
+
+Odtworzenie:
+
+```bash
+python tools/fetch_saos_corpus.py --pages 40 --start-date 2018-01-01 --court-type COMMON
+python tools/build_reference_profile.py --corpus docs_tests/corpus/saos.jsonl \
+  --name saos_common_2018_2024 --genre court_reasoning
+```
+
+Punkt pracy zmierzony na 599 odłożonych uzasadnieniach (nieużytych do budowy
+profilu) wobec 9 dokumentów AI:
+
+| próg | recall AI | FPR na tekstach ludzkich |
+|------|-----------|--------------------------|
+| 0.15 | 100%      | 3,7%                     |
+| 0.25 | 100%      | 0,5%                     |
+| 0.30 | 78%       | 0,3%                     |
+
+Domyślny próg przeglądu to **0.25**. Flaga `needs_review` w raporcie oznacza
+„dokument wart przejrzenia przez człowieka", nigdy „napisane przez AI".
+
+Dwa zastrzeżenia, które trzeba czytać razem z tymi liczbami:
+
+1. Strona ludzka jest wiarygodna, strona AI **nie** — to 9 dokumentów.
+   Potrzebny jest korpus AI z różnymi promptami i modelami.
+2. Obie strony różnią się nie tylko autorstwem, ale i **gatunkiem**
+   (uzasadnienia vs opinie, umowy, pisma). Część separacji może pochodzić
+   z gatunku. Rozstrzygnąłby to profil ludzki w tym samym gatunku, np.
+   zbudowany z własnych dokumentów kancelarii.
+
+### Metryki wykluczone ze scoringu
+
+Pomiar na korpusie pokazał, że dwie metryki opisywane w literaturze
+anglojęzycznej jako wskaźniki AI działają dla tej pary gatunków **odwrotnie**:
+
+| metryka | ludzie (p50) | tekst AI | wniosek |
+|---------|--------------|----------|---------|
+| `type_token_ratio` | 0,66 | 0,72 | AI **wyżej** — odwrotnie niż w literaturze |
+| `opening_diversity` | 0,81 | 1,00 | AI **wyżej** — odwrotnie niż w literaturze |
+
+Powód jest gatunkowy: uzasadnienia sądowe intensywnie powtarzają nazwy stron,
+terminy prawne i formuły otwierające. Obie metryki są raportowane z etykietą
+`genre_confounded` i mają wagę 0 — użycie ich karałoby ludzkie pisarstwo.
+
+Najsilniejszym pojedynczym dyskryminatorem okazała się **burstiness**: CV
+długości zdań wynosi u ludzi 0,83, a w tekstach AI 0,45–0,53.
 
 ## Instalacja
 

@@ -49,8 +49,10 @@ def test_report_exposes_detection_alongside_zero_changes() -> None:
     detection = payload["detection"]
     assert detection["available"] is True
     assert detection["findings_total"] > 0
-    assert detection["score_is_calibrated"] is False
     assert detection["families"]
+    # Calibration is present iff a reference profile is installed; either way
+    # the flag and the payload must agree.
+    assert detection["score_is_calibrated"] is (detection["calibration"] is not None)
 
 
 def test_findings_carry_spans_and_rewritability() -> None:

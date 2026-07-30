@@ -63,12 +63,28 @@ def _report_summary(payload: dict) -> dict:
 
 def _print_diagnosis(diagnosis: DocumentDiagnosis, *, label: str | None = None) -> None:
     header = f"[bold]{label}[/bold] " if label else ""
+    calibration = diagnosis.calibration
+    if calibration is None:
+        score = f"sygnał AI: [bold]{diagnosis.ai_signal_score:.2f}[/bold] (nieskalibrowany)"
+    else:
+        colour = "red" if calibration.above_human_range else "green"
+        score = (
+            f"sygnał AI: [{colour}][bold]{calibration.calibrated_score:.2f}[/bold][/{colour}] "
+            f"(ludzka mediana {calibration.human_score_p50:.2f}, próg przeglądu 0.25)"
+        )
     print(
-        f"{header}sygnał AI: [bold]{diagnosis.ai_signal_score:.2f}[/bold] "
-        f"(nieskalibrowany) | znaleziska: {len(diagnosis.findings)} "
+        f"{header}{score} | znaleziska: {len(diagnosis.findings)} "
         f"| przepisywalne: {diagnosis.rewritable_count} "
         f"| tylko wykryte: {diagnosis.detected_only_count}"
     )
+    if calibration is not None:
+        for signal in calibration.signals:
+            if signal.confounded or signal.exceedance <= 0:
+                continue
+            print(
+                f"  ! {signal.name}: {signal.observed:g} "
+                f"(ludzie p50 {signal.human_p50:g}, p95 {signal.human_p95:g})"
+            )
     for row in diagnosis.families:
         print(
             f"  - {row.family}: {row.count} "

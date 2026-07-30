@@ -1,6 +1,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .calibration import Calibration
 
 
 @dataclass(frozen=True)
@@ -60,6 +64,8 @@ class DocumentDiagnosis:
     families: list[FamilySummary] = field(default_factory=list)
     paragraphs: list[ParagraphDiagnosis] = field(default_factory=list)
     metrics: dict[str, float] = field(default_factory=dict)
+    # None when no reference profile is installed for the genre.
+    calibration: "Calibration | None" = None
 
     @property
     def rewritable_count(self) -> int:

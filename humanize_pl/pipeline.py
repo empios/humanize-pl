@@ -466,7 +466,8 @@ class LegalPipeline:
             semantic_checks: list[GateCheck] = []
             if self.semantic is not None and cand.text != original:
                 sim = self.semantic.similarity(self.protected.restore(original), self.protected.restore(cand.text))
-                if sim < self.config.similarity_threshold():
+                semantic_threshold = self.config.similarity_threshold_for(cand.operation_type)
+                if sim < semantic_threshold:
                     semantic_checks.append(
                         GateCheck(
                             "semantic_similarity",
@@ -643,8 +644,12 @@ class LegalPipeline:
     ) -> Candidate:
         score_after_gate = candidate.score_after_gate if candidate.score_after_gate is not None else candidate.score
         score_delta = 0.0
+        # Score the margin against the threshold this candidate was actually
+        # judged by, otherwise an exempt operation is penalised for clearing a
+        # bar it was never held to.
+        threshold = self.config.similarity_threshold_for(candidate.operation_type)
         if semantic_similarity is not None:
-            margin = semantic_similarity - self.config.similarity_threshold()
+            margin = semantic_similarity - threshold
             semantic_delta = max(-0.04, min(0.04, margin * 0.20))
             score_delta += semantic_delta
         if fluency_delta is not None:
@@ -659,7 +664,7 @@ class LegalPipeline:
             features_delta["fluency_delta"] = round(fluency_delta, 4)
         score_breakdown = dict(candidate.score_breakdown or {})
         if semantic_similarity is not None:
-            semantic_risk = max(0.0, self.config.similarity_threshold() - semantic_similarity)
+            semantic_risk = max(0.0, threshold - semantic_similarity)
             score_breakdown["semantic_risk"] = round(semantic_risk, 4)
         if fluency_delta is not None:
             score_breakdown["fluency_gain"] = round(fluency_score_delta, 4)

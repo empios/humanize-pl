@@ -451,6 +451,42 @@ Wersja:
 humanize-pl --version
 ```
 
+## Progi bramek per operacja
+
+Dwie bramki transformerowe są z natury stronnicze wobec usuwania artefaktów AI,
+bo „płynne" i „wysoce prawdopodobne" to dla modelu językowego to samo, a ramy
+dyskursywne AI są bardzo prawdopodobną polszczyzną.
+
+**Bramka płynności** (masked-LM) nie jest stosowana do operacji
+`ai_artifact_reduction`, `legal_ai_style_rewrite` i `redundancy_reduction`.
+HerBERT ocenia „Warto podkreślić, że X" wyżej niż samo „X", więc odrzucała
+dokładnie te zmiany, dla których silnik istnieje.
+
+**Bramka semantyczna** ma dla `ai_artifact_reduction` próg niższy o 0,10
+(0,80 w trybie `standard`). Podstawa pomiarowa — 97 kandydatów na zestawie
+benchmarkowym:
+
+| operacja | n | min | p05 | mediana |
+|----------|---|-----|-----|---------|
+| `ai_artifact_reduction` | 25 | 0,825 | 0,879 | 0,973 |
+| pozostałe | 72 | 0,933 | 0,963 | 0,991 |
+
+Cały ogon poniżej 0,93 należy do jednej rodziny operacji. Offset obejmuje go
+z marginesem, zamiast rozluźniać bramkę dla wszystkiego, i przesuwa się razem
+z `--semantic-threshold`.
+
+Dla tej klasy operacji bramka semantyczna jest zabezpieczeniem, nie gwarancją:
+zachowanie treści egzekwują bramki kotwic, normatywności, placeholderów
+ochronnych i czasownika osobowego, które działają bez zmian.
+
+Efekt na zestawie 5 dokumentów:
+
+| silnik | czas | zmian | sygnał AI |
+|--------|------|-------|-----------|
+| basic | 2 s | 37 | 0,522 → 0,460 |
+| hybrid (przed poprawkami) | 70 s | 31 | 0,522 → 0,525 |
+| hybrid (po poprawkach) | 51 s | 38 | 0,522 → 0,460 |
+
 ## Tryby
 
 - `conservative` — dla prawa i dokumentów formalnych; mało zmian.

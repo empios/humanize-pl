@@ -25,9 +25,13 @@ GENRE_CONFOUNDED = {"type_token_ratio", "opening_diversity"}
 # the profile) against 9 AI-generated legal documents:
 #
 #   threshold  recall(AI)  FPR(human)
-#   0.15       100%        3.7%
-#   0.25       100%        0.5%     <- REVIEW_THRESHOLD
-#   0.30        78%        0.3%
+#   0.15       100%        1.17%
+#   0.20       100%        0.67%
+#   0.25       100%        0.00%    <- REVIEW_THRESHOLD
+#
+# The populations do not overlap: human max 0.215, AI min 0.332, and the
+# threshold sits in that gap. The structural families opened it — before them
+# the human maximum (0.335) sat above the lowest AI document (0.262).
 #
 # Two caveats that must travel with this number:
 #   1. The AI side is 9 documents. The human side is credible, the AI side is
@@ -120,6 +124,22 @@ def calibrate(
             weight=1.5,
         )
     )
+
+    # Paragraph shape: AI output clusters near a fixed paragraph size, human
+    # legal writing mixes one-line findings with long argument blocks.
+    shape_cv = diagnosis.metrics.get("paragraph_shape_cv", 0.0)
+    if shape_cv > 0 and profile.paragraph_shape_cv.p50 > 0:
+        signals.append(
+            CalibratedSignal(
+                name="paragraph_shape_cv",
+                observed=round(shape_cv, 4),
+                human_p50=profile.paragraph_shape_cv.p50,
+                human_p95=profile.paragraph_shape_cv.p95,
+                direction="low",
+                exceedance=_exceedance_low(shape_cv, profile.paragraph_shape_cv.p50),
+                weight=1.0,
+            )
+        )
 
     mean_words = diagnosis.metrics.get("mean_sentence_words", 0.0)
     signals.append(

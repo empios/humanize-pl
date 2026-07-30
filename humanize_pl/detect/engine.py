@@ -9,6 +9,7 @@ from humanize_pl.sentence_splitter import split_sentences
 from .base import DocumentDiagnosis, FamilySummary, Finding, ParagraphDiagnosis
 from .calibration import calibrate
 from .signals import WORD_RE, repeated_opening_findings, sentence_findings
+from .structural import paragraph_shape_cv
 
 # Weighted findings per 1000 words at which `ai_signal_score` saturates to 1.0.
 # Provisional engineering default — replace with a value fitted against a human
@@ -75,7 +76,11 @@ def detect_document(text: str, *, profile: ReferenceProfile | None = None) -> Do
         findings=findings,
         families=_family_summaries(findings, total_words),
         paragraphs=paragraph_rows,
-        metrics=_metrics(indexed_sentences, total_words),
+        metrics=_metrics(
+            indexed_sentences,
+            total_words,
+            sentences_per_paragraph=[row.sentence_count for row in paragraph_rows],
+        ),
     )
     return replace(diagnosis, calibration=calibrate(diagnosis, text, profile=profile))
 
@@ -106,12 +111,16 @@ def _family_summaries(findings: list[Finding], word_count: int) -> list[FamilySu
 
 
 def _metrics(
-    indexed_sentences: list[tuple[int, int, str]], word_count: int
+    indexed_sentences: list[tuple[int, int, str]],
+    word_count: int,
+    *,
+    sentences_per_paragraph: list[int],
 ) -> dict[str, float]:
     """Descriptive document metrics reported alongside the findings.
 
-    These are observations, not signals — they carry no weight in the score
-    because none of them can be thresholded without a human reference corpus.
+    Which of these carry weight is decided in `calibration`, against the human
+    reference profile — several point the opposite way to the English-language
+    literature for this genre pair.
     """
     lengths = [len(WORD_RE.findall(sentence)) for _, _, sentence in indexed_sentences]
     lengths = [length for length in lengths if length]
@@ -134,5 +143,6 @@ def _metrics(
         "sentence_length_cv": round(variance**0.5 / mean_length, 4) if mean_length else 0.0,
         "opening_diversity": round(len(set(openings)) / len(openings), 4),
         "type_token_ratio": round(len(set(tokens)) / len(tokens), 4) if tokens else 0.0,
+        "paragraph_shape_cv": paragraph_shape_cv(sentences_per_paragraph),
         "words": float(word_count),
     }

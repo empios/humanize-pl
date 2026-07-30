@@ -22,6 +22,7 @@ def build_reference_profile(
     """
     sentence_words: list[float] = []
     cvs: list[float] = []
+    shape_cvs: list[float] = []
     diversities: list[float] = []
     ttrs: list[float] = []
     anonymisations: list[float] = []
@@ -43,6 +44,7 @@ def build_reference_profile(
 
         sentence_words.append(diagnosis.metrics["mean_sentence_words"])
         cvs.append(diagnosis.metrics["sentence_length_cv"])
+        shape_cvs.append(diagnosis.metrics.get("paragraph_shape_cv", 0.0))
         diversities.append(diagnosis.metrics["opening_diversity"])
         ttrs.append(windowed_ttr(text))
         anonymisations.append(anonymisation_rate(text))
@@ -67,6 +69,7 @@ def build_reference_profile(
         sentence_count=sentence_count,
         sentence_words=Distribution.of(sentence_words),
         sentence_length_cv=Distribution.of(cvs),
+        paragraph_shape_cv=Distribution.of([cv for cv in shape_cvs if cv > 0]),
         opening_diversity=Distribution.of(diversities),
         windowed_ttr=Distribution.of(ttrs),
         anonymisation_rate=Distribution.of(anonymisations),

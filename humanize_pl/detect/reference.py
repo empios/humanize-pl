@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, fields
 from pathlib import Path
 from statistics import mean, pstdev
 
@@ -23,6 +23,10 @@ class Distribution:
     p90: float
     p95: float
     p99: float
+
+    @classmethod
+    def empty(cls) -> "Distribution":
+        return cls(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 
     @classmethod
     def of(cls, values: list[float]) -> "Distribution":
@@ -60,6 +64,7 @@ class ReferenceProfile:
     sentence_count: int
     sentence_words: Distribution
     sentence_length_cv: Distribution
+    paragraph_shape_cv: Distribution
     opening_diversity: Distribution
     windowed_ttr: Distribution
     anonymisation_rate: Distribution
@@ -76,17 +81,23 @@ class ReferenceProfile:
         for key in (
             "sentence_words",
             "sentence_length_cv",
+            "paragraph_shape_cv",
             "opening_diversity",
             "windowed_ttr",
             "anonymisation_rate",
             "signal_score",
         ):
-            data[key] = Distribution(**data[key])
+            # A profile written before a metric existed loads with an empty
+            # distribution rather than failing. Calibration skips zero-valued
+            # baselines, so an older profile degrades instead of breaking —
+            # and a new profile can be built while an older one is installed.
+            data[key] = Distribution(**data[key]) if key in data else Distribution.empty()
         data["family_rates"] = {
             family: Distribution(**values)
             for family, values in (data.get("family_rates") or {}).items()
         }
-        return cls(**data)
+        known = {field.name for field in fields(cls)}
+        return cls(**{key: value for key, value in data.items() if key in known})
 
     def save(self, path: str | Path) -> None:
         target = Path(path)

@@ -108,11 +108,12 @@ profilu) wobec 9 dokumentów AI:
 
 | próg | recall AI | FPR na tekstach ludzkich |
 |------|-----------|--------------------------|
-| 0.15 | 100%      | 3,7%                     |
-| 0.25 | 100%      | 0,5%                     |
-| 0.30 | 78%       | 0,3%                     |
+| 0.15 | 100%      | 1,17%                    |
+| 0.20 | 100%      | 0,67%                    |
+| 0.25 | 100%      | 0,00%                    |
 
-Domyślny próg przeglądu to **0.25**. Flaga `needs_review` w raporcie oznacza
+Populacje się nie stykają: maksimum ludzkie 0,215, minimum AI 0,332. Domyślny
+próg przeglądu **0.25** leży w tej luce. Flaga `needs_review` w raporcie oznacza
 „dokument wart przejrzenia przez człowieka", nigdy „napisane przez AI".
 
 Dwa zastrzeżenia, które trzeba czytać razem z tymi liczbami:
@@ -139,7 +140,42 @@ terminy prawne i formuły otwierające. Obie metryki są raportowane z etykietą
 `genre_confounded` i mają wagę 0 — użycie ich karałoby ludzkie pisarstwo.
 
 Najsilniejszym pojedynczym dyskryminatorem okazała się **burstiness**: CV
-długości zdań wynosi u ludzi 0,83, a w tekstach AI 0,45–0,53.
+długości zdań wynosi u ludzi 0,83, a w tekstach AI 0,45–0,53. Podobnie działa
+**kształt akapitu**: CV liczby zdań na akapit to u ludzi 0,92, w tekstach AI
+0,42 — teksty AI trzymają się stałego rozmiaru akapitu.
+
+## Sygnały strukturalne
+
+Pierwotny zestaw reguł był wyłącznie leksykalny — stałe frazy typu
+`warto wskazać`. Współczesny polski tekst LLM rzadko się na nich opiera; jego
+sygnaturą jest *kształt* wywodu. `humanize_pl/detect/structural.py` dodaje
+ramy retoryczne, trikolon i kształt akapitu.
+
+Każda rodzina musiała zarobić na swoje miejsce — separacja co najmniej 3×
+wobec ludzkiego korpusu:
+
+```bash
+python tools/validate_structural_signals.py \
+  --human docs_tests/corpus/saos_holdout.jsonl --ai sciezka/do/dokumentow_ai
+```
+
+| reguła | ludzie/1000 | AI/1000 | × |
+|--------|-------------|---------|---|
+| `w_praktyce_oznacza` | 0,0005 | 0,487 | 974 |
+| `kluczowe_znaczenie` | 0,0010 | 0,487 | 487 |
+| `nie_oznacza_to_ze` | 0,0098 | 3,897 | 398 |
+| `stanowi_jedno_z` | 0,0015 | 0,487 | 325 |
+| `nie_lecz` | 0,0020 | 0,487 | 244 |
+| `z_jednej_strony` | 0,0333 | 0,974 | 29 |
+| `summary_opener` | 0,0847 | 1,461 | 17 |
+| `tricolon` | 1,6058 | 6,332 | 3,9 |
+
+Wzorzec `nie_tylko_ale` został **odrzucony**: ludzie używają go częściej niż
+AI. To jest kontrola, której pierwotny zestaw reguł nigdy nie miał — jego
+wzorce walidowano na fixture'ach napisanych tak, by je zawierały.
+
+Trikolon mierzy **równowagę** członów, nie samą koordynację: zwykłe wyliczenia
+prawnicze są nieregularne, a sygnaturą AI jest zbliżona długość trzech pozycji.
 
 ## Wyprowadzanie wzorców pomiarem
 

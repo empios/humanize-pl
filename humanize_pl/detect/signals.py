@@ -12,6 +12,7 @@ from humanize_pl.rules.legal_features import (
     VAGUE_REFERENCE_PATTERN,
 )
 from .base import Finding
+from .structural import scaffold_findings, tricolon_findings
 
 # Detectors reuse the rewrite rules' own patterns wherever a rewrite exists, so
 # the two layers cannot drift apart. `rewritable=True` marks exactly those.
@@ -47,6 +48,16 @@ def sentence_findings(
     out.extend(_abstract_frames(sentence, paragraph_index, sentence_index))
     out.extend(_empty_emphasis(sentence, paragraph_index, sentence_index))
     out.extend(_reference_density(sentence, paragraph_index, sentence_index))
+    out.extend(
+        scaffold_findings(
+            sentence, paragraph_index=paragraph_index, sentence_index=sentence_index
+        )
+    )
+    out.extend(
+        tricolon_findings(
+            sentence, paragraph_index=paragraph_index, sentence_index=sentence_index
+        )
+    )
     return _dedupe(out)
 
 

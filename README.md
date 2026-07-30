@@ -177,6 +177,50 @@ wzorce walidowano na fixture'ach napisanych tak, by je zawierały.
 Trikolon mierzy **równowagę** członów, nie samą koordynację: zwykłe wyliczenia
 prawnicze są nieregularne, a sygnaturą AI jest zbliżona długość trzech pozycji.
 
+## Bramka jakości dla odpowiedzi „prawnika AI”
+
+Problem jest rejestrowy, nie detektorowy: odpowiedź, która czyta się jak
+napisana przez maszynę, jest gorszym produktem — polski klient odbiera ten
+rejestr jako wymijający i ogólnikowy.
+
+Silnik ocenia i instruuje, ale **nigdy nie parafrazuje**. Regeneracja należy do
+wywołującego i jego modelu. Ten podział jest celowy: podmiana słów w tekście
+prawnym oddaje precyzję, która jest całym produktem, i robi to po cichu.
+
+```bash
+humanize-pl --gate odpowiedz.txt --report gate.json
+```
+
+Kod wyjścia `2` oznacza „do poprawy”, `0` oznacza „przechodzi”. Z poziomu Pythona:
+
+```python
+from humanize_pl.gate import review_response
+
+verdict = review_response(answer)
+if verdict.needs_revision:
+    answer = my_llm.regenerate(question, constraints=verdict.prompt_constraints)
+```
+
+`prompt_constraints` to gotowe instrukcje po polsku, do wstawienia w prompt
+regenerujący. Przykładowe wyjście:
+
+```
+DO POPRAWY  sygnał 0.69 (próg 0.25)
+  - abstract_frame x1 — „Kluczowe znaczenie ma”
+  - balanced_pair x1 — „Z jednej strony”
+  - summary_frame x1 — „Podsumowując”
+
+Ograniczenia do regeneracji:
+  • Nie buduj wywodu na parach „z jednej strony… z drugiej strony”…
+  • Nie kończ akapitem podsumowującym. Wniosek postaw na początku odpowiedzi.
+  • Zróżnicuj długość akapitów. Nie utrzymuj stałego rozmiaru 3–5 zdań.
+  • Odpowiedź nie zawiera żadnej konkretnej kotwicy. Wskaż przepis, kwotę…
+```
+
+Ostatnia pozycja to próg jakości, nie sygnał AI: odpowiedź bez konkretnej
+kotwicy (przepis, kwota, termin, nazwa strony) czyta się ogólnikowo niezależnie
+od sformułowań. Wyłączane przez `require_anchor=False`.
+
 ## Wyprowadzanie wzorców pomiarem
 
 Pierwotna lista wzorców powstała ręcznie i — co nie zaskakuje — trafiała

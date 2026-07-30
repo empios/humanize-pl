@@ -8,6 +8,7 @@ from rich import print
 from .config import Engine, LegalReviewProfile, Mode
 from .core import humanize_text
 from .detect import DocumentDiagnosis, detect_document
+from .gate import review_response
 from .io.docx_io import docx_text, process_docx
 from .reports.report import (
     build_detection_payload,
@@ -213,6 +214,37 @@ def _process_docx_directory(
         raise typer.Exit(1)
 
 
+def _read_input(path: Path, input_value: str) -> str:
+    if path.exists() and path.suffix.lower() == ".docx":
+        return docx_text(path)
+    if path.exists():
+        return path.read_text(encoding="utf-8")
+    return input_value
+
+
+def _run_gate(path: Path, input_value: str, *, report: Path | None) -> None:
+    """Review an AI-drafted answer. Exits 2 when the answer needs regenerating."""
+    verdict = review_response(_read_input(path, input_value))
+
+    status = "[red]DO POPRAWY[/red]" if verdict.needs_revision else "[green]OK[/green]"
+    print(f"{status}  sygnał {verdict.score:.2f} (próg {verdict.threshold:.2f})")
+    for violation in verdict.violations:
+        evidence = f" — „{violation.evidence}”" if violation.evidence else ""
+        print(f"  - {violation.family} x{violation.count}{evidence}")
+    if verdict.prompt_constraints:
+        print("\n[bold]Ograniczenia do regeneracji:[/bold]")
+        for constraint in verdict.prompt_constraints:
+            print(f"  • {constraint}")
+
+    if report is not None:
+        report.parent.mkdir(parents=True, exist_ok=True)
+        write_json_payload({"mode": "gate", **verdict.to_json()}, report)
+        print(f"\nRaport: {report}")
+
+    if verdict.needs_revision:
+        raise typer.Exit(2)
+
+
 def _run_detect_only(path: Path, input_value: str, *, report: Path | None) -> None:
     """Diagnose without rewriting. Never writes a document, only a report."""
     if path.is_dir():
@@ -249,14 +281,7 @@ def _run_detect_only(path: Path, input_value: str, *, report: Path | None) -> No
             print(f"Raport: {report}")
         return
 
-    if path.exists() and path.suffix.lower() == ".docx":
-        text = docx_text(path)
-    elif path.exists():
-        text = path.read_text(encoding="utf-8")
-    else:
-        text = input_value
-
-    diagnosis = detect_document(text)
+    diagnosis = detect_document(_read_input(path, input_value))
     _print_diagnosis(diagnosis)
     for finding in diagnosis.findings:
         marker = "przepisywalne" if finding.rewritable else "tylko wykryte"
@@ -303,6 +328,14 @@ def main(
         "--detect-only",
         help="Only diagnose AI-style signals; do not rewrite or write any document",
     ),
+    gate: bool = typer.Option(
+        False,
+        "--gate",
+        help=(
+            "Review an AI-drafted client answer: print constraints for regeneration "
+            "and exit 2 when revision is needed"
+        ),
+    ),
     semantic_threshold: float | None = typer.Option(None, help="Override semantic threshold"),
     semantic_model: str | None = typer.Option(None, "--semantic-model", help="Sentence-transformer model name"),
     fluency_model: str | None = typer.Option(None, "--fluency-model", help="Masked-LM fluency model name"),
@@ -337,6 +370,10 @@ def main(
 ) -> None:
     del version
     path = Path(input_value)
+
+    if gate:
+        _run_gate(path, input_value, report=report)
+        return
 
     if detect_only:
         _run_detect_only(path, input_value, report=report)

@@ -50,6 +50,65 @@ Działa warstwowo:
 - test regresji dla błędu `Ponadto za wynagrodzeniem`,
 - wyniki benchmarków pod `docs_tests/results/` są traktowane jako artefakty lokalne i ignorowane przez Git.
 
+## Gotowe przepływy
+
+`humanize-pl-flow` uruchamia wszystkie warstwy jedną komendą:
+
+```
+diagnoza → redakcja → ponowna diagnoza → bramka jakości
+```
+
+Pomiar sygnału **przed i po** redakcji jest tu istotą rzeczy. Wcześniej silnik
+potrafił zaraportować „zastosowano 5 zmian”, a nikt nie wiedział, czy dokument
+czyta się przez to mniej jak tekst AI.
+
+### Folder dokumentów DOCX
+
+```bash
+humanize-pl-flow docx docs/ -o wyniki/
+```
+
+```
+do przeglądu ai_legal_03_esej_prawo_pracy.docx: sygnał 0.72 → 0.60, zmian 11
+do przeglądu claude_real_01.docx: sygnał 0.70 → 0.63, zmian 1
+
+Podsumowanie
+  pozycje: 5  poprawnie: 5  błędy: 0
+  do przeglądu: 5
+  średni sygnał: 0.52 → 0.46 (delta -0.06)
+```
+
+Powstaje: `<nazwa>_humanized.docx` dla każdego pliku, `summary.csv`,
+`flow-report.json` oraz `details/<nazwa>.json` ze znaleziskami, spanami,
+metrykami i werdyktem bramki. Błąd jednego pliku nie zatrzymuje pozostałych;
+komenda kończy się kodem `1`, jeżeli którykolwiek zawiódł.
+
+`--no-rewrite` daje samą diagnozę i bramkę, bez zapisu dokumentów.
+
+### Kolumna w arkuszu XLSX
+
+```bash
+humanize-pl-flow xlsx odpowiedzi.xlsx --column "Odpowiedź AI"
+```
+
+Kolumnę można wskazać literą (`-c D`), numerem (`-c 4`) albo nagłówkiem.
+Dopasowanie nagłówka ignoruje wielkość liter, spacje i polskie znaki
+diakrytyczne, więc `odpowiedz ai` też trafi w `Odpowiedź AI`.
+
+Do arkusza dopisywane są kolumny: `sygnał AI`, `do przeglądu`, `znaleziska`,
+`rodziny`, `ograniczenia do regeneracji` oraz — o ile nie podano
+`--no-rewrite` — `tekst po redakcji`. Kolumna źródłowa nie jest ruszana, a
+wynik zapisywany jest do nowego pliku.
+
+Dla arkuszy z odpowiedziami do klienta wymóg konkretnej kotwicy (przepis,
+kwota, termin) jest **domyślnie włączony** — wyłącza go `--no-require-anchor`.
+
+Obsługa `.xlsx` wymaga dodatkowej zależności:
+
+```bash
+python -m pip install -e ".[xlsx]"
+```
+
 ## Detekcja niezależna od przepisywania
 
 Silnik rozdziela dwie rzeczy, które wcześniej były sklejone: **wykrycie**

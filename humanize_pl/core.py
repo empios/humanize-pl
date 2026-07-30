@@ -5,6 +5,7 @@ import regex as re
 from typing import Any
 
 from .config import Engine, HumanizeConfig, LegalReviewProfile, Mode
+from .detect import detect_document
 from .nlp.morfeusz import MorfeuszAnalyzer
 from .nlp.semantic import (
     DEFAULT_FLUENCY_MODEL,
@@ -56,6 +57,9 @@ class HumanizerSession:
             self.rule_engine = RuleEngine(mode=self.config.mode)
 
     def humanize(self, text: str, *, include_candidates: bool = False) -> HumanizeResult:
+        # Detection is deliberately outside the rewrite pipeline: it must report
+        # signals even in conservative mode, where no candidate is generated.
+        diagnosis = detect_document(text)
         protected = protect_text(text)
         pipeline = LegalPipeline(
             config=self.config,
@@ -119,6 +123,7 @@ class HumanizerSession:
             ),
             fluency_model=self.fluency_model_used if self.config.engine == Engine.hybrid else None,
             warnings=list(self.warnings),
+            diagnosis=diagnosis,
         )
 
 

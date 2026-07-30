@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from humanize_pl.detect import DocumentDiagnosis
 
 
 @dataclass
@@ -92,3 +95,5 @@ class HumanizeResult:
     semantic_model: str | None = None
     fluency_model: str | None = None
     warnings: list[str] = field(default_factory=list)
+    # Populated regardless of mode or of whether any rewrite was applied.
+    diagnosis: "DocumentDiagnosis | None" = None

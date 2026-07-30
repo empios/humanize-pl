@@ -4,6 +4,15 @@ from pathlib import Path
 
 from humanize_pl.config import Engine, LegalReviewProfile, Mode
 from humanize_pl.core import HumanizeResult, create_humanizer_session
+from humanize_pl.detect import detect_document
+
+
+def docx_text(input_path: str | Path) -> str:
+    """Return the document body as newline-separated paragraphs."""
+    from docx import Document  # type: ignore
+
+    doc = Document(str(Path(input_path)))
+    return "\n".join(paragraph.text for paragraph in doc.paragraphs if paragraph.text.strip())
 
 
 def process_docx(
@@ -57,6 +66,13 @@ def process_docx(
         session.fluency_model_used if session.config.engine == Engine.hybrid else None
     )
 
+    # Detection runs once over the whole document. Paragraph-scoped detection
+    # would miss the document-level signals (repeated openings and frames),
+    # which is precisely where AI legal prose is monotone.
+    diagnosis = detect_document(
+        "\n".join(paragraph.text for paragraph in doc.paragraphs if paragraph.text.strip())
+    )
+
     for paragraph_index, paragraph in enumerate(doc.paragraphs):
         original = paragraph.text
         if not original.strip():
@@ -103,5 +119,6 @@ def process_docx(
         semantic_model=semantic_model_used,
         fluency_model=fluency_model_used,
         warnings=warnings,
+        diagnosis=diagnosis,
     )
     return aggregate, {"processed": processed, "changed": changed, "empty": empty}

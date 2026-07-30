@@ -4,17 +4,19 @@ import json
 from pathlib import Path
 from statistics import mean
 from collections import Counter
+from typing import Any
 import regex as re
 
 from humanize_pl.core import HumanizeResult
+from humanize_pl.detect import DocumentDiagnosis
+from humanize_pl.detect.engine import SATURATION_PER_1000_WORDS
 from humanize_pl.rules.features import analyze_paragraph_features
 from humanize_pl.rules.legal_features import analyze_legal_review_features
 from humanize_pl.sentence_splitter import split_sentences
 
 
-def write_json_report(result: HumanizeResult, path: str | Path) -> None:
-    path = Path(path)
-    payload = {
+def build_json_report(result: HumanizeResult) -> dict[str, Any]:
+    return {
         "changed": result.changed,
         "engine_used": result.engine_used,
         "legal_review_profile": result.legal_review_profile,
@@ -28,6 +30,7 @@ def write_json_report(result: HumanizeResult, path: str | Path) -> None:
             "skipped_sentences": len(result.skipped),
             "all_candidates": len(result.all_candidates),
         },
+        "detection": _detection_summary(result),
         "quality": _quality_summary(result),
         "legal_review": _legal_review_summary(result),
         "accepted": [
@@ -144,7 +147,126 @@ def write_json_report(result: HumanizeResult, path: str | Path) -> None:
             for c in result.all_candidates
         ],
     }
+
+
+def write_json_report(result: HumanizeResult, path: str | Path) -> None:
+    write_json_payload(build_json_report(result), path)
+
+
+def write_json_payload(payload: dict[str, Any], path: str | Path) -> None:
+    path = Path(path)
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def write_batch_json_report(
+    documents: list[dict[str, Any]],
+    path: str | Path,
+    *,
+    input_directory: str | Path,
+    output_directory: str | Path,
+    details_directory: str | Path,
+) -> None:
+    successful = [document for document in documents if document["status"] == "ok"]
+    totals = Counter()
+    changed_documents = 0
+    for document in successful:
+        paragraphs = document["paragraphs"]
+        totals["processed_paragraphs"] += paragraphs["processed"]
+        totals["changed_paragraphs"] += paragraphs["changed"]
+        totals["empty_paragraphs"] += paragraphs["empty"]
+        report_summary = document["report_summary"]
+        changed_documents += int(report_summary["changed"])
+        for key in (
+            "accepted_changes",
+            "rejected_candidates",
+            "skipped_sentences",
+            "all_candidates",
+        ):
+            totals[key] += report_summary["summary"][key]
+
+    payload = {
+        "input_directory": str(input_directory),
+        "output_directory": str(output_directory),
+        "details_directory": str(details_directory),
+        "summary": {
+            "documents": len(documents),
+            "ok": len(successful),
+            "failed": len(documents) - len(successful),
+            "changed_documents": changed_documents,
+            "processed_paragraphs": totals["processed_paragraphs"],
+            "changed_paragraphs": totals["changed_paragraphs"],
+            "empty_paragraphs": totals["empty_paragraphs"],
+            "accepted_changes": totals["accepted_changes"],
+            "rejected_candidates": totals["rejected_candidates"],
+            "skipped_sentences": totals["skipped_sentences"],
+            "all_candidates": totals["all_candidates"],
+        },
+        "documents": documents,
+    }
+    write_json_payload(payload, path)
+
+
+def _detection_summary(result: HumanizeResult) -> dict:
+    """AI-style signals found in the source, independent of any rewriting.
+
+    Reported even when `accepted_changes` is 0. "Nothing rewritten" and "no
+    signal" are different outcomes and the report has to distinguish them.
+    """
+    if result.diagnosis is None:
+        return {"available": False}
+    return build_detection_payload(result.diagnosis)
+
+
+def build_detection_payload(diagnosis: DocumentDiagnosis) -> dict:
+    """Serialise a diagnosis on its own, for `--detect-only` runs."""
+    return {
+        "available": True,
+        "ai_signal_score": diagnosis.ai_signal_score,
+        "score_is_calibrated": False,
+        "saturation_per_1000_words": SATURATION_PER_1000_WORDS,
+        "word_count": diagnosis.word_count,
+        "sentence_count": diagnosis.sentence_count,
+        "paragraph_count": diagnosis.paragraph_count,
+        "findings_total": len(diagnosis.findings),
+        "findings_rewritable": diagnosis.rewritable_count,
+        "findings_detect_only": diagnosis.detected_only_count,
+        "metrics": diagnosis.metrics,
+        "families": [
+            {
+                "family": row.family,
+                "count": row.count,
+                "per_1000_words": row.per_1000_words,
+                "weight_total": row.weight_total,
+                "rewritable_count": row.rewritable_count,
+            }
+            for row in diagnosis.families
+        ],
+        "paragraphs": [
+            {
+                "paragraph": row.paragraph_index,
+                "word_count": row.word_count,
+                "sentence_count": row.sentence_count,
+                "signal_score": row.signal_score,
+                "finding_count": row.finding_count,
+            }
+            for row in diagnosis.paragraphs
+        ],
+        "findings": [
+            {
+                "family": finding.family,
+                "rule": finding.rule,
+                "evidence": finding.evidence,
+                "paragraph": finding.paragraph_index,
+                "sentence": finding.sentence_index,
+                "char_start": finding.char_start,
+                "char_end": finding.char_end,
+                "weight": finding.weight,
+                "rewritable": finding.rewritable,
+                "detail": finding.detail,
+            }
+            for finding in diagnosis.findings
+        ],
+    }
 
 
 def _quality_summary(result: HumanizeResult) -> dict:

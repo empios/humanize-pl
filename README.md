@@ -19,6 +19,17 @@ Działa warstwowo:
 7. opcjonalny filtr semantyczny sentence-transformers,
 8. zapis DOCX/TXT + raport JSON.
 
+## Co nowego (niewydane)
+
+- wykrywanie predykacji (`has_finite_verb`) oparte na morfologii Morfeusz2/SGJP
+  zamiast zamkniętej listy ~90 czasowników; poprzednia heurystyka odrzucała 32%
+  zdań realnej prozy prawniczej i po cichu blokowała generowanie kandydatów,
+- nowa warstwa `humanize_pl/detect/` — diagnoza sygnałów AI niezależna od trybu
+  i od tego, czy istnieje reguła przepisująca,
+- sekcja `detection` w raporcie JSON, widoczna także przy zerze zmian,
+- flaga `--detect-only` dla tekstu, pliku DOCX i folderu,
+- powtórzone otwarcia zdań liczone w skali dokumentu, nie akapitu.
+
 ## Co nowego w 0.2.2
 
 - wyłączone ryzykowne dzielenie zdań po `oraz`,
@@ -35,6 +46,43 @@ Działa warstwowo:
 - usunięte reguły, które generowały niepoprawne konstrukcje typu `Nie oznacza to jednak, że nie występuje podporządkowania`,
 - test regresji dla błędu `Ponadto za wynagrodzeniem`,
 - wyniki benchmarków pod `docs_tests/results/` są traktowane jako artefakty lokalne i ignorowane przez Git.
+
+## Detekcja niezależna od przepisywania
+
+Silnik rozdziela dwie rzeczy, które wcześniej były sklejone: **wykrycie**
+sygnału AI i **bezpieczne przepisanie** go. Dokument bez ani jednej
+zaakceptowanej zmiany nadal dostaje pełną diagnozę — „nic nie przepisano" i
+„nic nie znaleziono" to różne wyniki.
+
+Sama diagnoza, bez zapisu dokumentu:
+
+```bash
+humanize-pl input.docx --detect-only --report detection.json
+```
+
+Folder dokumentów:
+
+```bash
+humanize-pl docs/ --detect-only --report detection.json
+```
+
+Detekcja działa w każdym trybie, także w `conservative`, gdzie żadna reguła
+przepisująca nie jest uruchamiana. Sekcja `detection` w raporcie JSON zawiera:
+
+- `ai_signal_score` — nasycająca się ważona gęstość sygnałów (0–1),
+- `score_is_calibrated` — dziś zawsze `false`; próg wymaga ludzkiego korpusu
+  referencyjnego polskich tekstów prawniczych,
+- `families` — rodziny sygnałów z gęstością na 1000 słów,
+- `findings` — pojedyncze znaleziska ze spanami znakowymi i dowodem,
+- `findings_rewritable` / `findings_detect_only` — ile znalezisk ma za sobą
+  regułę przepisującą, a ile silnik potrafi tylko wskazać.
+
+Rozróżnienie `rewritable` jest celowe: znalezisko bez reguły przepisującej ma
+być widoczne, a nie przemilczane.
+
+Wykrywanie powtórzonych otwarć zdań liczone jest w skali **dokumentu**, nie
+akapitu — teksty AI różnicują otwarcia wewnątrz akapitu, powtarzając te same
+ramy w całym dokumencie.
 
 ## Instalacja
 
@@ -85,6 +133,24 @@ Tryb standard:
 ```bash
 humanize-pl input.docx -o output.docx --mode standard --engine basic --report report.json
 ```
+
+Folder dokumentów DOCX:
+
+```bash
+humanize-pl docs/ -o output/ --mode standard --engine nlp --report batch-report.json
+```
+
+Tryb folderowy przetwarza wszystkie pliki `.docx` bezpośrednio w podanym
+folderze (bez przeszukiwania podfolderów). Pliki tymczasowe Worda zaczynające
+się od `~$` są pomijane. Wyniki otrzymują przyrostek `_humanized.docx`.
+Jeżeli `-o` nie zostanie podane, powstanie folder obok wejściowego, np.
+`docs_humanized/`.
+
+Dla folderu `--report batch-report.json` zapisuje raport zbiorczy z sumami i
+krótkim podsumowaniem każdego dokumentu. Pełne raporty dokumentów trafiają do
+folderu `batch-report_details/`. Błąd jednego dokumentu nie zatrzymuje
+pozostałych; zostaje zapisany w raporcie zbiorczym, a komenda kończy się kodem
+`1`, jeżeli co najmniej jeden plik nie został przetworzony.
 
 Profil prawny AI jest domyślny, ale można go jawnie wskazać:
 

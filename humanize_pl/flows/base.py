@@ -23,8 +23,18 @@ from humanize_pl.gate import GateVerdict, review_response
 
 @dataclass(frozen=True)
 class FlowSettings:
+    """Defaults for a flow run.
+
+    The engine defaults to `hybrid` — the full neural stack: Stanza for syntax,
+    a sentence-transformer as semantic validator and a masked LM as fluency
+    scorer. When a model is missing the session degrades hybrid -> nlp -> basic
+    and says so in the layer status; `require_models` turns that into an error
+    instead. Loading the stack costs ~35 s once per run, then it is reused
+    across every document or row.
+    """
+
     mode: Mode = Mode.standard
-    engine: Engine = Engine.basic
+    engine: Engine = Engine.hybrid
     legal_review_profile: LegalReviewProfile = LegalReviewProfile.legal_ai_review
     rewrite: bool = True
     require_anchor: bool = False

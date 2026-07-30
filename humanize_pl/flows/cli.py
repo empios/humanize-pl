@@ -59,15 +59,38 @@ def _print_layers(layers: dict) -> None:
         print("[dim]redakcja:[/dim] pominięta (--no-rewrite)")
     else:
         used, requested = rewrite["engine_used"], rewrite["engine_requested"]
-        downgraded = "  [yellow](degradacja silnika)[/yellow]" if used != requested else ""
+        downgraded = used != requested
+        marker = "  [yellow](degradacja silnika)[/yellow]" if downgraded else ""
         print(
             f"[dim]redakcja:[/dim] silnik={used} (żądany {requested}) "
             f"stanza={rewrite['stanza']} morfeusz={rewrite['morfeusz']} "
-            f"semantic={rewrite['semantic']} fluency={rewrite['fluency']}{downgraded}"
+            f"semantic={rewrite['semantic']} fluency={rewrite['fluency']}{marker}"
         )
+        if downgraded:
+            print(f"  [yellow]![/yellow] {_install_hint(rewrite)}")
     for warning in layers.get("warnings", []):
         print(f"  [yellow]![/yellow] {warning}")
     print()
+
+
+def _install_hint(rewrite: dict) -> str:
+    """Turn a silent downgrade into an actionable instruction.
+
+    The neural stack lives in optional extras, so a default of `hybrid` will
+    quietly fall back on a minimal install. Saying which extra is missing is
+    the difference between a warning and a fix.
+    """
+    missing_transformers = any(
+        str(rewrite.get(key, "")).startswith("unavailable") for key in ("semantic", "fluency")
+    )
+    missing_stanza = str(rewrite.get("stanza", "")).startswith("unavailable")
+    if missing_transformers or missing_stanza:
+        return (
+            "Brakuje modeli. Instalacja: "
+            'python -m pip install -e ".[nlp,transformers]" && '
+            "python -m humanize_pl.download_models --stanza --transformers --fluency"
+        )
+    return "Silnik zdegradowany — szczegóły w polu layers raportu."
 
 
 def _print_item(item: ItemOutcome) -> None:
@@ -99,7 +122,10 @@ def docx_command(
         None, "--output", "-o", help="Folder wyjściowy (domyślnie <folder>_flow)"
     ),
     mode: Mode = typer.Option(Mode.standard, help="conservative, standard, strong"),
-    engine: Engine = typer.Option(Engine.basic, help="basic, nlp, hybrid"),
+    engine: Engine = typer.Option(
+        Engine.hybrid,
+        help="hybrid (pełny stos neuronowy, domyślnie), nlp (Stanza), basic (bez modeli)",
+    ),
     no_rewrite: bool = typer.Option(
         False, "--no-rewrite", help="Tylko diagnoza i bramka, bez redakcji dokumentów"
     ),
@@ -158,7 +184,10 @@ def xlsx_command(
     ),
     report: Path = typer.Option(None, "--report", help="Dodatkowy raport JSON"),
     mode: Mode = typer.Option(Mode.standard, help="conservative, standard, strong"),
-    engine: Engine = typer.Option(Engine.basic, help="basic, nlp, hybrid"),
+    engine: Engine = typer.Option(
+        Engine.hybrid,
+        help="hybrid (pełny stos neuronowy, domyślnie), nlp (Stanza), basic (bez modeli)",
+    ),
     no_rewrite: bool = typer.Option(
         False, "--no-rewrite", help="Tylko diagnoza i bramka, bez kolumny z redakcją"
     ),

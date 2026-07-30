@@ -64,11 +64,23 @@ czyta się przez to mniej jak tekst AI.
 
 ### Które warstwy NLP są aktywne
 
+Flow domyślnie uruchamia **pełny stos neuronowy** (`--engine hybrid`): Stanza
+do składni, sentence-transformer jako walidator semantyczny i masked-LM jako
+scorer płynności. Wymaga to dodatkowych zależności:
+
+```bash
+python -m pip install -e ".[nlp,transformers,morfeusz,xlsx]"
+python -m humanize_pl.download_models --stanza --transformers --fluency --morfeusz
+```
+
+Bez nich flow zejdzie do `nlp` albo `basic` — widocznie, z instrukcją instalacji
+w nagłówku. `--require-models` zamienia degradację w błąd.
+
 Każdy przebieg zaczyna się od nagłówka mówiącego, co faktycznie się załadowało:
 
 ```
 detekcja: morfeusz=ready stanza=not_used profil=saos_common_2018_2024
-redakcja: silnik=nlp (żądany nlp) stanza=ready morfeusz=ready
+redakcja: silnik=hybrid (żądany hybrid) stanza=ready morfeusz=ready semantic=ready fluency=ready
 ```
 
 Podział nie jest oczywisty z samych flag:

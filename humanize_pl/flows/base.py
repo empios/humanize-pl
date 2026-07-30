@@ -16,7 +16,8 @@ from typing import Any
 
 from humanize_pl.config import Engine, LegalReviewProfile, Mode
 from humanize_pl.core import HumanizerSession, create_humanizer_session
-from humanize_pl.detect import detect_document
+from humanize_pl.detect import detect_document, load_profile
+from humanize_pl.nlp.morfeusz import try_load_morfeusz
 from humanize_pl.gate import GateVerdict, review_response
 
 
@@ -27,6 +28,7 @@ class FlowSettings:
     legal_review_profile: LegalReviewProfile = LegalReviewProfile.legal_ai_review
     rewrite: bool = True
     require_anchor: bool = False
+    require_models: bool = False
     require_morfeusz: bool = False
     offline_models: bool = False
 
@@ -36,8 +38,39 @@ class FlowSettings:
             engine=self.engine,
             legal_review_profile=self.legal_review_profile,
             offline_models=self.offline_models,
+            require_models=self.require_models,
             require_morfeusz=self.require_morfeusz,
         )
+
+
+def layer_status(session: HumanizerSession | None) -> dict[str, Any]:
+    """What actually loaded, per layer.
+
+    Reported because the answer is not obvious from the flags: Morfeusz backs
+    both detection and rewriting and loads whenever available, while Stanza is
+    only requested by --engine nlp/hybrid and is never used by detection at
+    all. Without this the flow can silently run degraded.
+    """
+    detection_morfeusz = try_load_morfeusz() is not None
+    status: dict[str, Any] = {
+        "detection": {
+            "morfeusz": "ready" if detection_morfeusz else "unavailable",
+            "stanza": "not_used",
+            "reference_profile": (
+                load_profile().name if load_profile() is not None else "missing"
+            ),
+        }
+    }
+    if session is None:
+        status["rewrite"] = {"skipped": True}
+    else:
+        status["rewrite"] = {
+            "engine_requested": session.config.engine.value,
+            "engine_used": session.engine_used,
+            **session.model_status,
+        }
+        status["warnings"] = list(session.warnings)
+    return status
 
 
 @dataclass

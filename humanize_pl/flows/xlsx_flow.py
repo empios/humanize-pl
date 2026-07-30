@@ -12,7 +12,7 @@ import unicodedata
 from pathlib import Path
 from typing import Any
 
-from .base import FlowSettings, ItemOutcome, run_all_layers, summarise
+from .base import FlowSettings, ItemOutcome, layer_status, run_all_layers, summarise
 
 # Appended to the right of the existing data, in this order.
 OUTPUT_COLUMNS = [
@@ -74,6 +74,7 @@ def run_xlsx_flow(
     header_row: int | None = 1,
     report_path: Path | None = None,
     on_item=None,
+    on_layers=None,
 ) -> dict[str, Any]:
     openpyxl = _require_openpyxl()
 
@@ -90,6 +91,9 @@ def run_xlsx_flow(
             sheet.cell(row=header_row, column=first_column + offset, value=header)
 
     session = settings.session() if settings.rewrite else None
+    layers = layer_status(session)
+    if on_layers is not None:
+        on_layers(layers)
     start_row = (header_row + 1) if header_row else 1
     outcomes: list[ItemOutcome] = []
 
@@ -143,6 +147,7 @@ def run_xlsx_flow(
             "rewrite": settings.rewrite,
             "require_anchor": settings.require_anchor,
         },
+        "layers": layers,
         "summary": summarise(outcomes),
         "rows": [item.to_json() for item in outcomes],
     }

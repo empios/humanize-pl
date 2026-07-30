@@ -38,6 +38,34 @@ def write_xlsx(path, rows, *, header=("ID", "Odpowiedź AI")):
     workbook.save(str(path))
 
 
+def test_layer_status_reports_what_actually_loaded() -> None:
+    from humanize_pl.flows.base import layer_status
+
+    status = layer_status(FlowSettings().session())
+
+    # Morfeusz backs detection and rewriting alike; Stanza never backs detection.
+    assert status["detection"]["stanza"] == "not_used"
+    assert status["detection"]["morfeusz"] in {"ready", "unavailable"}
+    assert status["rewrite"]["engine_requested"] == "basic"
+    assert "morfeusz" in status["rewrite"]
+
+
+def test_layer_status_marks_a_skipped_rewrite() -> None:
+    from humanize_pl.flows.base import layer_status
+
+    assert layer_status(None)["rewrite"] == {"skipped": True}
+
+
+def test_flow_report_records_the_layer_status(tmp_path) -> None:
+    source = tmp_path / "in"
+    source.mkdir()
+    write_docx(source / "a.docx", AI_TEXT)
+
+    payload = run_docx_flow(source, tmp_path / "out", settings=FlowSettings(rewrite=False))
+
+    assert payload["layers"]["detection"]["stanza"] == "not_used"
+
+
 def test_run_all_layers_reports_signal_before_and_after() -> None:
     outcome, verdict = run_all_layers(
         AI_TEXT, name="t", settings=FlowSettings(mode=Mode.standard)

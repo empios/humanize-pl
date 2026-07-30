@@ -29,6 +29,7 @@ def _settings(
     no_rewrite: bool,
     require_anchor: bool,
     offline_models: bool,
+    require_models: bool = False,
 ) -> FlowSettings:
     return FlowSettings(
         mode=mode,
@@ -36,7 +37,37 @@ def _settings(
         rewrite=not no_rewrite,
         require_anchor=require_anchor,
         offline_models=offline_models,
+        require_models=require_models,
+        require_morfeusz=require_models,
     )
+
+
+def _print_layers(layers: dict) -> None:
+    """Say which layers are actually live before any work is reported.
+
+    Morfeusz backs both detection and rewriting and loads whenever installed;
+    Stanza is only requested by --engine nlp/hybrid and detection never uses
+    it. Printing this removes the guesswork about what a run really did.
+    """
+    detection = layers["detection"]
+    print(
+        f"[dim]detekcja:[/dim] morfeusz={detection['morfeusz']} "
+        f"stanza={detection['stanza']} profil={detection['reference_profile']}"
+    )
+    rewrite = layers["rewrite"]
+    if rewrite.get("skipped"):
+        print("[dim]redakcja:[/dim] pominięta (--no-rewrite)")
+    else:
+        used, requested = rewrite["engine_used"], rewrite["engine_requested"]
+        downgraded = "  [yellow](degradacja silnika)[/yellow]" if used != requested else ""
+        print(
+            f"[dim]redakcja:[/dim] silnik={used} (żądany {requested}) "
+            f"stanza={rewrite['stanza']} morfeusz={rewrite['morfeusz']} "
+            f"semantic={rewrite['semantic']} fluency={rewrite['fluency']}{downgraded}"
+        )
+    for warning in layers.get("warnings", []):
+        print(f"  [yellow]![/yellow] {warning}")
+    print()
 
 
 def _print_item(item: ItemOutcome) -> None:
@@ -80,6 +111,11 @@ def docx_command(
     offline_models: bool = typer.Option(
         False, "--offline-models", help="Ładuj modele wyłącznie z lokalnego cache"
     ),
+    require_models: bool = typer.Option(
+        False,
+        "--require-models",
+        help="Przerwij zamiast po cichu degradować, gdy Stanza/Morfeusz są niedostępne",
+    ),
 ) -> None:
     """Folder .docx: diagnoza → redakcja → ponowna diagnoza → bramka."""
     output_directory = output or folder.with_name(f"{folder.name}_flow")
@@ -87,9 +123,14 @@ def docx_command(
         payload = run_docx_flow(
             folder,
             output_directory,
-            settings=_settings(mode, engine, no_rewrite, require_anchor, offline_models),
+            settings=_settings(
+                mode, engine, no_rewrite, require_anchor, offline_models, require_models
+            ),
             on_item=_print_item,
+            on_layers=_print_layers,
         )
+    except RuntimeError as exc:
+        raise typer.BadParameter(str(exc), param_hint="--require-models") from exc
     except FileNotFoundError as exc:
         raise typer.BadParameter(str(exc), param_hint="folder") from exc
 
@@ -129,6 +170,11 @@ def xlsx_command(
     offline_models: bool = typer.Option(
         False, "--offline-models", help="Ładuj modele wyłącznie z lokalnego cache"
     ),
+    require_models: bool = typer.Option(
+        False,
+        "--require-models",
+        help="Przerwij zamiast po cichu degradować, gdy Stanza/Morfeusz są niedostępne",
+    ),
 ) -> None:
     """Kolumna .xlsx: diagnoza → redakcja → bramka, wyniki dopisane obok."""
     output_path = output or workbook.with_name(f"{workbook.stem}_flow.xlsx")
@@ -141,11 +187,14 @@ def xlsx_command(
             workbook,
             output_path,
             column=column,
-            settings=_settings(mode, engine, no_rewrite, require_anchor, offline_models),
+            settings=_settings(
+                mode, engine, no_rewrite, require_anchor, offline_models, require_models
+            ),
             sheet_name=sheet,
             header_row=header_row or None,
             report_path=report,
             on_item=_print_item,
+            on_layers=_print_layers,
         )
     except (ValueError, RuntimeError) as exc:
         raise typer.BadParameter(str(exc), param_hint="--column") from exc

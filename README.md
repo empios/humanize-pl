@@ -62,6 +62,34 @@ Pomiar sygnału **przed i po** redakcji jest tu istotą rzeczy. Wcześniej silni
 potrafił zaraportować „zastosowano 5 zmian”, a nikt nie wiedział, czy dokument
 czyta się przez to mniej jak tekst AI.
 
+### Które warstwy NLP są aktywne
+
+Każdy przebieg zaczyna się od nagłówka mówiącego, co faktycznie się załadowało:
+
+```
+detekcja: morfeusz=ready stanza=not_used profil=saos_common_2018_2024
+redakcja: silnik=nlp (żądany nlp) stanza=ready morfeusz=ready
+```
+
+Podział nie jest oczywisty z samych flag:
+
+| warstwa | Morfeusz2 | Stanza |
+|---------|-----------|--------|
+| detekcja i kalibracja | **zawsze**, gdy zainstalowany (`has_finite_verb`) | **nigdy** — detektory to regexy + morfologia |
+| redakcja (silnik reguł) | **zawsze** — bramka zgodności | tylko `--engine nlp` lub `hybrid` |
+| bramka jakości | pośrednio, przez detekcję | nie |
+
+Domyślnie flow działa na `--engine basic`, czyli **bez Stanzy**. Żeby ją
+włączyć w warstwie redakcyjnej:
+
+```bash
+humanize-pl-flow docx docs/ --engine nlp
+```
+
+`--engine hybrid` dokłada walidator semantyczny i scorer płynności.
+`--require-models` przerywa zamiast po cichu degradować, gdy model jest
+niedostępny — nagłówek oznacza taką degradację jako `(degradacja silnika)`.
+
 ### Folder dokumentów DOCX
 
 ```bash

@@ -9,7 +9,7 @@ from typing import Any
 
 from humanize_pl.detect import detect_document
 from humanize_pl.io.docx_io import docx_text
-from .base import FlowSettings, ItemOutcome, run_all_layers, summarise
+from .base import FlowSettings, ItemOutcome, layer_status, run_all_layers, summarise
 
 
 def docx_files(directory: Path) -> list[Path]:
@@ -31,6 +31,7 @@ def run_docx_flow(
     *,
     settings: FlowSettings,
     on_item=None,
+    on_layers=None,
 ) -> dict[str, Any]:
     """Diagnose, rewrite and gate every .docx in `input_directory`.
 
@@ -46,6 +47,9 @@ def run_docx_flow(
     details_directory.mkdir(parents=True, exist_ok=True)
 
     session = settings.session() if settings.rewrite else None
+    layers = layer_status(session)
+    if on_layers is not None:
+        on_layers(layers)
     outcomes: list[ItemOutcome] = []
 
     for path in files:
@@ -76,6 +80,7 @@ def run_docx_flow(
             "rewrite": settings.rewrite,
             "require_anchor": settings.require_anchor,
         },
+        "layers": layers,
         "summary": summary,
         "documents": [item.to_json() for item in outcomes],
     }

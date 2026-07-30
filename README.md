@@ -141,6 +141,29 @@ terminy prawne i formuły otwierające. Obie metryki są raportowane z etykietą
 Najsilniejszym pojedynczym dyskryminatorem okazała się **burstiness**: CV
 długości zdań wynosi u ludzi 0,83, a w tekstach AI 0,45–0,53.
 
+## Wyprowadzanie wzorców pomiarem
+
+Pierwotna lista wzorców powstała ręcznie i — co nie zaskakuje — trafiała
+w ręcznie napisane fixture'y benchmarku znacznie lepiej niż w realny tekst AI.
+`tools/derive_patterns.py` zastępuje zgadywanie pomiarem: porównuje korpus AI
+z ludzkim korpusem referencyjnym metodą log-odds z informatywnym priorem
+Dirichleta (Monroe i in., 2008) i rankinguje n-gramy oraz otwarcia zdań.
+
+```bash
+python tools/derive_patterns.py \
+  --ai sciezka/do/dokumentow_ai \
+  --human docs_tests/corpus/saos_train.jsonl \
+  --out docs_tests/corpus/derived_patterns.json
+```
+
+Analizowane są osobno unigramy, bigramy, trigramy oraz **otwarcia zdań**
+(2- i 3-tokenowe). Rozdzielenie otwarć od zwykłych n-gramów jest celowe:
+monotonia AI ujawnia się na początku zdania znacznie wyraźniej niż w środku,
+a wspólne liczenie ją zakopuje.
+
+Narzędzie ostrzega, gdy korpus AI liczy mniej niż 25 dokumentów — poniżej tego
+progu ranking odzwierciedla kilka konkretnych plików, a nie styl modelu.
+
 ## Instalacja
 
 Minimalnie:

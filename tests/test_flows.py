@@ -171,6 +171,72 @@ def test_xlsx_flow_skips_blank_cells(tmp_path) -> None:
     assert payload["summary"]["items"] == 1
 
 
+def test_xlsx_flow_reports_an_empty_column_instead_of_writing_nothing(tmp_path) -> None:
+    """Silently copying the file is the failure mode this project started with."""
+    source = tmp_path / "in.xlsx"
+    write_xlsx(source, [("1", AI_TEXT)], header=("ID", "Odpowiedź AI", "Pusta"))
+    output = tmp_path / "out.xlsx"
+
+    with pytest.raises(ValueError, match="nie ma żadnych niepustych komórek"):
+        run_xlsx_flow(source, output, column="C", settings=BASIC_NO_REWRITE)
+
+    assert not output.exists()
+
+
+def test_xlsx_flow_names_the_other_sheets_when_the_active_one_is_empty(tmp_path) -> None:
+    workbook = openpyxl.Workbook()
+    workbook.active.title = "Podsumowanie"
+    workbook.active["A1"] = "nic"
+    data = workbook.create_sheet("Dane")
+    data.append(["ID", "Odpowiedź AI"])
+    data.append(["1", AI_TEXT])
+    source = tmp_path / "in.xlsx"
+    workbook.save(str(source))
+
+    with pytest.raises(ValueError, match="Dane"):
+        run_xlsx_flow(source, tmp_path / "out.xlsx", column="B", settings=BASIC_NO_REWRITE)
+
+    payload = run_xlsx_flow(
+        source,
+        tmp_path / "out.xlsx",
+        column="B",
+        sheet_name="Dane",
+        settings=BASIC_NO_REWRITE,
+    )
+    assert payload["summary"]["ok"] == 1
+
+
+def test_xlsx_flow_reads_cached_formula_results(tmp_path) -> None:
+    """A column of answers pulled from elsewhere holds formulas, not text."""
+    from openpyxl.worksheet.formula import ArrayFormula  # noqa: F401  (import guard)
+
+    workbook = openpyxl.Workbook()
+    sheet = workbook.active
+    sheet.append(["ID", "Odpowiedź AI"])
+    sheet.append(["1", "=A2"])
+    source = tmp_path / "in.xlsx"
+    workbook.save(str(source))
+
+    # No Excel has opened this file, so there is no cached value; the raw
+    # fallback keeps the row from vanishing.
+    payload = run_xlsx_flow(
+        source, tmp_path / "out.xlsx", column="B", settings=BASIC_NO_REWRITE
+    )
+
+    assert payload["summary"]["items"] == 1
+
+
+def test_xlsx_output_columns_land_beside_the_data_not_further_out(tmp_path) -> None:
+    source = tmp_path / "in.xlsx"
+    write_xlsx(source, [("1", AI_TEXT)])
+    output = tmp_path / "out.xlsx"
+
+    run_xlsx_flow(source, output, column="B", settings=BASIC_NO_REWRITE)
+
+    sheet = openpyxl.load_workbook(str(output)).active
+    assert sheet.cell(row=1, column=3).value == "sygnał AI"
+
+
 def test_xlsx_flow_rejects_an_unknown_column(tmp_path) -> None:
     source = tmp_path / "in.xlsx"
     write_xlsx(source, [("1", AI_TEXT)])

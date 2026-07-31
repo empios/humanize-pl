@@ -78,17 +78,21 @@ def run_xlsx_flow(
 ) -> dict[str, Any]:
     openpyxl = _require_openpyxl()
 
+    # Two handles on the same file. `data_only=True` yields the cached results
+    # of formulas, which is what a column of AI answers pulled from another
+    # sheet actually contains — but saving that workbook would replace every
+    # formula in the file with a static value. So values are read from one and
+    # written to the other.
     workbook = openpyxl.load_workbook(str(input_path))
+    values_workbook = openpyxl.load_workbook(str(input_path), data_only=True)
     sheet = workbook[sheet_name] if sheet_name else workbook.active
+    values_sheet = values_workbook[sheet.title]
     column_index = resolve_column(sheet, column, header_row=header_row)
 
     first_column = sheet.max_column + 1
     headers = list(OUTPUT_COLUMNS)
     if settings.rewrite:
         headers.append(REWRITE_COLUMN)
-    if header_row:
-        for offset, header in enumerate(headers):
-            sheet.cell(row=header_row, column=first_column + offset, value=header)
 
     session = settings.session() if settings.rewrite else None
     layers = layer_status(session)
@@ -98,7 +102,11 @@ def run_xlsx_flow(
     outcomes: list[ItemOutcome] = []
 
     for row_index in range(start_row, sheet.max_row + 1):
-        value = sheet.cell(row=row_index, column=column_index).value
+        # Cached formula result first; fall back to the raw cell for files that
+        # Excel has never opened and so carry no cached values.
+        value = values_sheet.cell(row=row_index, column=column_index).value
+        if value is None:
+            value = sheet.cell(row=row_index, column=column_index).value
         text = str(value).strip() if value is not None else ""
         if not text:
             continue
@@ -131,6 +139,19 @@ def run_xlsx_flow(
         if on_item is not None:
             on_item(outcome)
 
+    # Headers are written only once a row has been processed. Writing them up
+    # front widened `max_column` on an empty sheet, which then misreported the
+    # sheet's real shape in the diagnostic below.
+    if header_row and outcomes:
+        for offset, header in enumerate(headers):
+            sheet.cell(row=header_row, column=first_column + offset, value=header)
+
+    if not outcomes:
+        # Writing an untouched copy and reporting success is the same failure
+        # mode the detection layer had: silence that reads as "nothing to do".
+        # Say what was actually looked at so the mismatch is obvious.
+        raise ValueError(_empty_column_message(workbook, sheet, column, column_index, start_row))
+
     output_path.parent.mkdir(parents=True, exist_ok=True)
     workbook.save(str(output_path))
 
@@ -157,6 +178,35 @@ def run_xlsx_flow(
             json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
         )
     return payload
+
+
+def _empty_column_message(workbook, sheet, column: str, column_index: int, start_row: int) -> str:
+    from openpyxl.utils import get_column_letter  # type: ignore
+
+    letter = get_column_letter(column_index)
+    lines = [
+        f"Kolumna „{column}” (={letter}) w arkuszu „{sheet.title}” nie ma żadnych "
+        f"niepustych komórek od wiersza {start_row}.",
+        f"Arkusz ma zakres {sheet.dimensions} "
+        f"({sheet.max_row} wierszy, {sheet.max_column} kolumn).",
+    ]
+    if len(workbook.sheetnames) > 1:
+        others = ", ".join(f"„{name}”" for name in workbook.sheetnames if name != sheet.title)
+        lines.append(
+            f"Plik ma też arkusze: {others}. Domyślnie brany jest aktywny — "
+            "wskaż inny przez --sheet."
+        )
+    non_empty = [
+        get_column_letter(index)
+        for index in range(1, sheet.max_column + 1)
+        if any(
+            sheet.cell(row=row, column=index).value not in (None, "")
+            for row in range(start_row, min(sheet.max_row, start_row + 20) + 1)
+        )
+    ]
+    if non_empty:
+        lines.append(f"Kolumny z danymi w tym arkuszu: {', '.join(non_empty)}.")
+    return " ".join(lines)
 
 
 def _normalise(value: str) -> str:

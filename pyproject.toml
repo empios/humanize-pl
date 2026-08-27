@@ -39,16 +39,21 @@ transformers = [
   "sentence-transformers>=3.0.0",
 ]
 morfeusz = ["morfeusz2"]
+xlsx = ["openpyxl>=3.1.0"]
+pdf = ["reportlab>=4.0.0"]
 dev = ["build>=1.2.0", "hatchling>=1.24", "pytest>=8.0.0", "ruff>=0.6.0"]
 all = [
   "stanza>=1.8.0",
   "torch>=2.2.0",
   "transformers>=4.40.0",
   "sentence-transformers>=3.0.0",
+  "openpyxl>=3.1.0",
+  "reportlab>=4.0.0",
 ]
 
 [project.scripts]
 humanize-pl = "humanize_pl.cli:app"
+humanize-pl-flow = "humanize_pl.flows.cli:app"
 humanize-pl-benchmark = "humanize_pl.benchmark:app"
 humanize-pl-release-check = "humanize_pl.release_check:app"
 

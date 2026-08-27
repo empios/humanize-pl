@@ -96,108 +96,112 @@ def _drop_empty_emphasis(sentence: str, *, nlp_confidence: float | None) -> list
     return out
 
 
+# (pattern, replacement, rule, targeted_issue, score, risk)
+# Module-level so the detection layer can report these frames as findings even
+# when the mode forbids rewriting them. Keep this as the single definition.
+ABSTRACT_FRAME_REPLACEMENTS: list[tuple[str, str, str, str, float, float]] = [
+    (
+        r"\bjedną z najważniejszych cech\b",
+        "jedną z kluczowych cech",
+        "legal_ai_style:key_feature_frame",
+        "abstract_frame",
+        0.50,
+        0.08,
+    ),
+    (
+        r"\bszczególne znaczenie ma\b",
+        "duże znaczenie ma",
+        "legal_ai_style:special_importance_frame",
+        "abstract_frame",
+        0.52,
+        0.08,
+    ),
+    (
+        r"\bma bardzo istotne znaczenie\b",
+        "ma bardzo duże znaczenie",
+        "legal_ai_style:very_important_frame",
+        "abstract_frame",
+        0.51,
+        0.08,
+    ),
+    (
+        r"\bma istotne znaczenie\b",
+        "ma duże znaczenie",
+        "legal_ai_style:important_frame",
+        "abstract_frame",
+        0.49,
+        0.08,
+    ),
+    (
+        r"\bmają istotne znaczenie\b",
+        "mają duże znaczenie",
+        "legal_ai_style:important_frame_pl",
+        "abstract_frame",
+        0.49,
+        0.08,
+    ),
+    (
+        r"\bma szczególne znaczenie\b",
+        "ma duże znaczenie",
+        "legal_ai_style:special_importance_direct",
+        "abstract_frame",
+        0.49,
+        0.08,
+    ),
+    (
+        r"\bodgrywa istotną rolę\b",
+        "ma duże znaczenie",
+        "legal_ai_style:role_frame",
+        "abstract_frame",
+        0.48,
+        0.08,
+    ),
+    (
+        r"\bodgrywa szczególną rolę\b",
+        "ma duże znaczenie",
+        "legal_ai_style:special_role_frame",
+        "abstract_frame",
+        0.48,
+        0.08,
+    ),
+    (
+        r"\bważne znaczenie mają\b",
+        "ważne są",
+        "legal_ai_style:important_plural_frame",
+        "abstract_frame",
+        0.50,
+        0.08,
+    ),
+    (
+        r"\bdrugą istotną funkcją jest\b",
+        "drugą ważną funkcją jest",
+        "legal_ai_style:important_function_frame",
+        "abstract_frame",
+        0.49,
+        0.08,
+    ),
+    (
+        r"\bnajbardziej klasyczną postacią\b",
+        "klasyczną postacią",
+        "legal_ai_style:drop_most_classic",
+        "empty_emphasis",
+        0.48,
+        0.06,
+    ),
+    (
+        r"\bma\s+(?:\p{L}+\s+)?znaczenie praktyczne\b",
+        "ma praktyczne znaczenie",
+        "legal_ai_style:practical_importance_frame",
+        "abstract_frame",
+        0.48,
+        0.08,
+    ),
+]
+
+
 def _abstract_frame_rewrites(sentence: str, *, nlp_confidence: float | None) -> list[Candidate]:
     out: list[Candidate] = []
-
-    replacements: list[tuple[str, str, str, str, float, float]] = [
-        (
-            r"\bjedną z najważniejszych cech\b",
-            "jedną z kluczowych cech",
-            "legal_ai_style:key_feature_frame",
-            "abstract_frame",
-            0.50,
-            0.08,
-        ),
-        (
-            r"\bszczególne znaczenie ma\b",
-            "duże znaczenie ma",
-            "legal_ai_style:special_importance_frame",
-            "abstract_frame",
-            0.52,
-            0.08,
-        ),
-        (
-            r"\bma bardzo istotne znaczenie\b",
-            "ma bardzo duże znaczenie",
-            "legal_ai_style:very_important_frame",
-            "abstract_frame",
-            0.51,
-            0.08,
-        ),
-        (
-            r"\bma istotne znaczenie\b",
-            "ma duże znaczenie",
-            "legal_ai_style:important_frame",
-            "abstract_frame",
-            0.49,
-            0.08,
-        ),
-        (
-            r"\bmają istotne znaczenie\b",
-            "mają duże znaczenie",
-            "legal_ai_style:important_frame_pl",
-            "abstract_frame",
-            0.49,
-            0.08,
-        ),
-        (
-            r"\bma szczególne znaczenie\b",
-            "ma duże znaczenie",
-            "legal_ai_style:special_importance_direct",
-            "abstract_frame",
-            0.49,
-            0.08,
-        ),
-        (
-            r"\bodgrywa istotną rolę\b",
-            "ma duże znaczenie",
-            "legal_ai_style:role_frame",
-            "abstract_frame",
-            0.48,
-            0.08,
-        ),
-        (
-            r"\bodgrywa szczególną rolę\b",
-            "ma duże znaczenie",
-            "legal_ai_style:special_role_frame",
-            "abstract_frame",
-            0.48,
-            0.08,
-        ),
-        (
-            r"\bważne znaczenie mają\b",
-            "ważne są",
-            "legal_ai_style:important_plural_frame",
-            "abstract_frame",
-            0.50,
-            0.08,
-        ),
-        (
-            r"\bdrugą istotną funkcją jest\b",
-            "drugą ważną funkcją jest",
-            "legal_ai_style:important_function_frame",
-            "abstract_frame",
-            0.49,
-            0.08,
-        ),
-        (
-            r"\bnajbardziej klasyczną postacią\b",
-            "klasyczną postacią",
-            "legal_ai_style:drop_most_classic",
-            "empty_emphasis",
-            0.48,
-            0.06,
-        ),
-        (
-            r"\bma\s+(?:\p{L}+\s+)?znaczenie praktyczne\b",
-            "ma praktyczne znaczenie",
-            "legal_ai_style:practical_importance_frame",
-            "abstract_frame",
-            0.48,
-            0.08,
-        ),
-    ]
-    for pattern, replacement, rule, issue, score, risk in replacements:
+    for pattern, replacement, rule, issue, score, risk in ABSTRACT_FRAME_REPLACEMENTS:
         regex = re.compile(pattern, re.IGNORECASE)
         match = regex.search(sentence)
         if not match:

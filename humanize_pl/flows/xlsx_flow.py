@@ -1,0 +1,242 @@
+"""End-to-end flow over one column of an .xlsx sheet.
+
+Intended for a sheet of AI-drafted answers: point the flow at the column that
+holds them and it appends the diagnosis, the gate verdict and the regeneration
+constraints as new columns next to each row.
+"""
+
+from __future__ import annotations
+
+import json
+import unicodedata
+from pathlib import Path
+from typing import Any
+
+from .base import (
+    FlowSettings,
+    ItemOutcome,
+    attach_pdf_report,
+    layer_status,
+    run_all_layers,
+    summarise,
+)
+
+# Appended to the right of the existing data, in this order.
+OUTPUT_COLUMNS = [
+    "sygnał AI",
+    "do przeglądu",
+    "znaleziska",
+    "rodziny",
+    "ograniczenia do regeneracji",
+]
+REWRITE_COLUMN = "tekst po redakcji"
+
+
+def _require_openpyxl():
+    try:
+        import openpyxl  # type: ignore
+    except ImportError as exc:  # pragma: no cover - depends on the install
+        raise RuntimeError(
+            "Obsługa .xlsx wymaga openpyxl. Zainstaluj: pip install -e '.[xlsx]'"
+        ) from exc
+    return openpyxl
+
+
+def resolve_column(sheet, spec: str, *, header_row: int | None) -> int:
+    """Accept a column letter, a 1-based index, or a header cell's text.
+
+    Header matching is case- and whitespace-insensitive so "Odpowiedź AI" and
+    "odpowiedz ai " both resolve, which is what a hand-made sheet looks like.
+    """
+    from openpyxl.utils import column_index_from_string  # type: ignore
+
+    spec = spec.strip()
+    if spec.isdigit():
+        return int(spec)
+    if spec.isalpha() and len(spec) <= 3:
+        try:
+            return column_index_from_string(spec.upper())
+        except ValueError:
+            pass
+
+    if header_row:
+        wanted = _normalise(spec)
+        for cell in sheet[header_row]:
+            if cell.value is not None and _normalise(str(cell.value)) == wanted:
+                return cell.column
+
+    raise ValueError(
+        f"Nie znaleziono kolumny „{spec}”. Podaj literę (np. D), numer (np. 4) "
+        "albo nagłówek, wskazując --header-row."
+    )
+
+
+def run_xlsx_flow(
+    input_path: Path,
+    output_path: Path,
+    *,
+    column: str,
+    settings: FlowSettings,
+    sheet_name: str | None = None,
+    header_row: int | None = 1,
+    report: bool = True,
+    report_path: Path | None = None,
+    pdf: bool = True,
+    pdf_path: Path | None = None,
+    on_item=None,
+    on_layers=None,
+) -> dict[str, Any]:
+    openpyxl = _require_openpyxl()
+
+    # Two handles on the same file. `data_only=True` yields the cached results
+    # of formulas, which is what a column of AI answers pulled from another
+    # sheet actually contains — but saving that workbook would replace every
+    # formula in the file with a static value. So values are read from one and
+    # written to the other.
+    workbook = openpyxl.load_workbook(str(input_path))
+    values_workbook = openpyxl.load_workbook(str(input_path), data_only=True)
+    sheet = workbook[sheet_name] if sheet_name else workbook.active
+    values_sheet = values_workbook[sheet.title]
+    column_index = resolve_column(sheet, column, header_row=header_row)
+
+    first_column = sheet.max_column + 1
+    headers = list(OUTPUT_COLUMNS)
+    if settings.rewrite:
+        headers.append(REWRITE_COLUMN)
+
+    session = settings.session() if settings.rewrite else None
+    layers = layer_status(session)
+    if on_layers is not None:
+        on_layers(layers)
+    start_row = (header_row + 1) if header_row else 1
+    outcomes: list[ItemOutcome] = []
+
+    for row_index in range(start_row, sheet.max_row + 1):
+        # Cached formula result first; fall back to the raw cell for files that
+        # Excel has never opened and so carry no cached values.
+        value = values_sheet.cell(row=row_index, column=column_index).value
+        if value is None:
+            value = sheet.cell(row=row_index, column=column_index).value
+        text = str(value).strip() if value is not None else ""
+        if not text:
+            continue
+
+        name = f"wiersz {row_index}"
+        try:
+            outcome, _verdict = run_all_layers(
+                text, name=name, settings=settings, session=session
+            )
+        except Exception as exc:
+            outcome = ItemOutcome(name=name, status="failed", error=f"{type(exc).__name__}: {exc}")
+            outcomes.append(outcome)
+            if on_item is not None:
+                on_item(outcome)
+            continue
+
+        values = [
+            outcome.signal_after,
+            "TAK" if outcome.needs_review else "nie",
+            outcome.findings_before,
+            "; ".join(outcome.families),
+            "\n".join(f"• {item}" for item in outcome.constraints),
+        ]
+        if settings.rewrite:
+            values.append(outcome.text_out or text)
+        for offset, cell_value in enumerate(values):
+            sheet.cell(row=row_index, column=first_column + offset, value=cell_value)
+
+        outcomes.append(outcome)
+        if on_item is not None:
+            on_item(outcome)
+
+    # Headers are written only once a row has been processed. Writing them up
+    # front widened `max_column` on an empty sheet, which then misreported the
+    # sheet's real shape in the diagnostic below.
+    if header_row and outcomes:
+        for offset, header in enumerate(headers):
+            sheet.cell(row=header_row, column=first_column + offset, value=header)
+
+    if not outcomes:
+        # Writing an untouched copy and reporting success is the same failure
+        # mode the detection layer had: silence that reads as "nothing to do".
+        # Say what was actually looked at so the mismatch is obvious.
+        raise ValueError(_empty_column_message(workbook, sheet, column, column_index, start_row))
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    workbook.save(str(output_path))
+
+    payload = {
+        "flow": "xlsx",
+        "input_path": str(input_path),
+        "output_path": str(output_path),
+        "sheet": sheet.title,
+        "source_column": column,
+        "source_column_index": column_index,
+        "settings": {
+            "mode": settings.mode.value,
+            "engine": settings.engine.value,
+            "rewrite": settings.rewrite,
+            "require_anchor": settings.require_anchor,
+        },
+        "layers": layers,
+        "summary": summarise(outcomes),
+        "rows": [item.to_json() for item in outcomes],
+    }
+    if pdf:
+        attach_pdf_report(
+            payload, pdf_path or output_path.with_name(f"{output_path.stem}_raport.pdf")
+        )
+
+    # The .docx flow has always written its JSON report unasked. This one used
+    # to write it only behind --report, so a plain run left nothing to rebuild
+    # a report from and nothing to diff against later. Same default now.
+    if report:
+        report_path = report_path or output_path.with_name(f"{output_path.stem}_raport.json")
+        report_path.parent.mkdir(parents=True, exist_ok=True)
+        report_path.write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+        )
+        payload["report_path"] = str(report_path)
+    return payload
+
+
+def _empty_column_message(workbook, sheet, column: str, column_index: int, start_row: int) -> str:
+    from openpyxl.utils import get_column_letter  # type: ignore
+
+    letter = get_column_letter(column_index)
+    lines = [
+        f"Kolumna „{column}” (={letter}) w arkuszu „{sheet.title}” nie ma żadnych "
+        f"niepustych komórek od wiersza {start_row}.",
+        f"Arkusz ma zakres {sheet.dimensions} "
+        f"({sheet.max_row} wierszy, {sheet.max_column} kolumn).",
+    ]
+    if len(workbook.sheetnames) > 1:
+        others = ", ".join(f"„{name}”" for name in workbook.sheetnames if name != sheet.title)
+        lines.append(
+            f"Plik ma też arkusze: {others}. Domyślnie brany jest aktywny — "
+            "wskaż inny przez --sheet."
+        )
+    non_empty = [
+        get_column_letter(index)
+        for index in range(1, sheet.max_column + 1)
+        if any(
+            sheet.cell(row=row, column=index).value not in (None, "")
+            for row in range(start_row, min(sheet.max_row, start_row + 20) + 1)
+        )
+    ]
+    if non_empty:
+        lines.append(f"Kolumny z danymi w tym arkuszu: {', '.join(non_empty)}.")
+    return " ".join(lines)
+
+
+def _normalise(value: str) -> str:
+    """Fold case, whitespace and Polish diacritics.
+
+    Hand-made sheets are typed without diacritics as often as with them, so
+    "Odpowiedź AI" and "odpowiedz ai" have to resolve to the same column.
+    """
+    folded = unicodedata.normalize("NFKD", value)
+    stripped = "".join(char for char in folded if not unicodedata.combining(char))
+    # ł/Ł has no decomposition, so NFKD leaves it alone.
+    stripped = stripped.replace("ł", "l").replace("Ł", "L")
+    return " ".join(stripped.split()).casefold()

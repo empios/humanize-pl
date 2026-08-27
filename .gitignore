@@ -50,6 +50,9 @@ Thumbs.db
 
 # Project artifacts
 docs_tests/results/
+# Raw reference corpora stay local; only derived profiles under
+# humanize_pl/data/reference_profiles/ are committed.
+docs_tests/corpus/
 docs_tests/*_humanized*.docx
 docs_tests/*_review_*.docx
 docs_tests/*_report*.json

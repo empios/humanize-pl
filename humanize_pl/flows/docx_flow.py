@@ -9,7 +9,14 @@ from typing import Any
 
 from humanize_pl.detect import detect_document
 from humanize_pl.io.docx_io import docx_text
-from .base import FlowSettings, ItemOutcome, layer_status, run_all_layers, summarise
+from .base import (
+    FlowSettings,
+    ItemOutcome,
+    attach_pdf_report,
+    layer_status,
+    run_all_layers,
+    summarise,
+)
 
 
 def docx_files(directory: Path) -> list[Path]:
@@ -30,6 +37,7 @@ def run_docx_flow(
     output_directory: Path,
     *,
     settings: FlowSettings,
+    pdf: bool = True,
     on_item=None,
     on_layers=None,
 ) -> dict[str, Any]:
@@ -84,6 +92,8 @@ def run_docx_flow(
         "summary": summary,
         "documents": [item.to_json() for item in outcomes],
     }
+    if pdf:
+        attach_pdf_report(payload, output_directory / "raport.pdf")
     (output_directory / "flow-report.json").write_text(
         json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )

@@ -13,8 +13,15 @@ import typer
 from rich import print
 
 from humanize_pl.config import Engine, Mode
-from .base import FlowSettings, ItemOutcome
+from .base import FlowSettings, ItemOutcome, attach_pdf_report
 from .docx_flow import run_docx_flow
+from .replay import (
+    REPORT_NAME,
+    backfill_payload,
+    load_payload,
+    needs_backfill,
+    payload_from_workbook,
+)
 from .xlsx_flow import run_xlsx_flow
 
 app = typer.Typer(
@@ -115,6 +122,19 @@ def _print_summary(summary: dict) -> None:
         print(f"  zastosowane zmiany: {summary['changes_applied']}")
 
 
+def _print_pdf(payload: dict) -> None:
+    """Say where the client-facing report landed, or why it did not.
+
+    A skipped optional report has to be visible: the whole point of it is that
+    someone non-technical receives it, and they will not read the JSON to find
+    out that it was never written.
+    """
+    if payload.get("pdf_report"):
+        print(f"  raport opisowy (PDF): {payload['pdf_report']}")
+    elif payload.get("pdf_error"):
+        print(f"  [yellow]![/yellow] {payload['pdf_error']}")
+
+
 @app.command("docx")
 def docx_command(
     folder: Path = typer.Argument(..., help="Folder z plikami .docx"),
@@ -142,6 +162,9 @@ def docx_command(
         "--require-models",
         help="Przerwij zamiast po cichu degradować, gdy Stanza/Morfeusz są niedostępne",
     ),
+    no_pdf: bool = typer.Option(
+        False, "--no-pdf", help="Pomiń raport PDF opisowy (dla odbiorcy nietechnicznego)"
+    ),
 ) -> None:
     """Folder .docx: diagnoza → redakcja → ponowna diagnoza → bramka."""
     output_directory = output or folder.with_name(f"{folder.name}_flow")
@@ -152,6 +175,7 @@ def docx_command(
             settings=_settings(
                 mode, engine, no_rewrite, require_anchor, offline_models, require_models
             ),
+            pdf=not no_pdf,
             on_item=_print_item,
             on_layers=_print_layers,
         )
@@ -165,6 +189,7 @@ def docx_command(
     print(f"  raport: {output_directory / 'flow-report.json'}")
     print(f"  zestawienie: {output_directory / 'summary.csv'}")
     print(f"  szczegóły: {output_directory / 'details'}")
+    _print_pdf(payload)
     if payload["summary"]["failed"]:
         raise typer.Exit(1)
 
@@ -182,7 +207,16 @@ def xlsx_command(
     header_row: int = typer.Option(
         1, "--header-row", help="Wiersz nagłówków; 0 oznacza brak nagłówków"
     ),
-    report: Path = typer.Option(None, "--report", help="Dodatkowy raport JSON"),
+    report: Path = typer.Option(
+        None, "--report", help="Ścieżka raportu JSON (domyślnie <nazwa>_flow_raport.json)"
+    ),
+    no_report: bool = typer.Option(False, "--no-report", help="Pomiń raport JSON"),
+    pdf: Path = typer.Option(
+        None, "--pdf", help="Ścieżka raportu PDF (domyślnie <nazwa>_flow_raport.pdf)"
+    ),
+    no_pdf: bool = typer.Option(
+        False, "--no-pdf", help="Pomiń raport PDF opisowy (dla odbiorcy nietechnicznego)"
+    ),
     mode: Mode = typer.Option(Mode.standard, help="conservative, standard, strong"),
     engine: Engine = typer.Option(
         Engine.hybrid,
@@ -221,7 +255,10 @@ def xlsx_command(
             ),
             sheet_name=sheet,
             header_row=header_row or None,
+            report=not no_report,
             report_path=report,
+            pdf=not no_pdf,
+            pdf_path=pdf,
             on_item=_print_item,
             on_layers=_print_layers,
         )
@@ -231,10 +268,99 @@ def xlsx_command(
     _print_summary(payload["summary"])
     print(f"\n[green]Zapisano:[/green] {output_path}")
     print(f"  arkusz: {payload['sheet']}, kolumna źródłowa: {payload['source_column']}")
-    if report is not None:
-        print(f"  raport: {report}")
+    if payload.get("report_path"):
+        print(f"  raport: {payload['report_path']}")
+    _print_pdf(payload)
     if payload["summary"]["failed"]:
         raise typer.Exit(1)
+
+
+@app.command("report")
+def report_command(
+    source: Path = typer.Argument(
+        ...,
+        help=(
+            f"Folder z poprzedniego przebiegu, plik {REPORT_NAME} "
+            "albo gotowy arkusz .xlsx (wtedy wymagane --column)"
+        ),
+    ),
+    output: Path = typer.Option(
+        None, "--output", "-o", help="Ścieżka PDF (domyślnie raport.pdf obok źródła)"
+    ),
+    column: str = typer.Option(
+        None,
+        "--column",
+        "-c",
+        help="Tylko dla .xlsx: kolumna z oryginalnymi odpowiedziami AI",
+    ),
+    sheet: str = typer.Option(None, "--sheet", help="Tylko dla .xlsx: nazwa arkusza"),
+    header_row: int = typer.Option(
+        1, "--header-row", help="Tylko dla .xlsx: wiersz nagłówków; 0 oznacza brak"
+    ),
+    no_backfill: bool = typer.Option(
+        False,
+        "--no-backfill",
+        help="Nie doczytuj dokumentów z dysku, żeby uzupełnić starszy zapis przebiegu",
+    ),
+) -> None:
+    """Sam raport PDF z zakończonej pracy — bez ponownej redakcji."""
+    try:
+        payload = _replay_payload(source, column=column, sheet=sheet, header_row=header_row)
+    except (FileNotFoundError, ValueError, RuntimeError) as exc:
+        raise typer.BadParameter(str(exc), param_hint="source") from exc
+
+    incomplete = needs_backfill(payload)
+    if incomplete and not no_backfill:
+        completed = backfill_payload(payload)
+        if completed:
+            print(
+                f"[dim]uzupełniono pomiary dla {completed} pozycji "
+                "przez ponowną diagnozę dokumentów[/dim]"
+            )
+        elif payload.get("flow") == "docx":
+            print(
+                "[yellow]![/yellow] Starszy zapis przebiegu, a dokumentów źródłowych nie "
+                "ma już na dysku — sekcje z rozbiciem na rodziny i metryki będą oznaczone "
+                "jako niedostępne."
+            )
+        else:
+            print(
+                "[yellow]![/yellow] Starszy zapis przebiegu bez rozbicia na rodziny "
+                "i metryki — te sekcje będą oznaczone jako niedostępne."
+            )
+
+    target = output or _default_report_path(source)
+    attach_pdf_report(payload, target)
+    if not payload.get("pdf_report"):
+        raise typer.BadParameter(payload.get("pdf_error", "Nie udało się zapisać PDF."))
+    print(f"[green]Zapisano:[/green] {payload['pdf_report']}")
+
+
+def _replay_payload(source: Path, *, column: str | None, sheet: str | None, header_row: int):
+    """A finished run, read back from whatever it left behind.
+
+    A .docx run leaves a JSON report; an .xlsx run made before that report
+    existed leaves only the workbook, which is enough to measure again.
+    """
+    if source.suffix.lower() in {".xlsx", ".xlsm"}:
+        if not column:
+            raise ValueError(
+                "Dla arkusza .xlsx podaj kolumnę z oryginalnymi odpowiedziami AI: "
+                "--column „Odpowiedź AI”."
+            )
+        return payload_from_workbook(
+            source, column=column, sheet_name=sheet, header_row=header_row or None
+        )
+    return load_payload(source)
+
+
+def _default_report_path(source: Path) -> Path:
+    """Next to the run it describes, under the name the flow itself uses."""
+    if source.is_dir():
+        return source / "raport.pdf"
+    if source.suffix.lower() in {".xlsx", ".xlsm"}:
+        return source.with_name(f"{source.stem}_raport.pdf")
+    return source.parent / "raport.pdf"
 
 
 if __name__ == "__main__":

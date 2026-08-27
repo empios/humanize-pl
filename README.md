@@ -31,7 +31,24 @@ Działa warstwowo:
 - powtórzone otwarcia zdań liczone w skali dokumentu, nie akapitu,
 - kalibracja sygnału na ludzkim korpusie referencyjnym (SAOS, 2393 uzasadnienia),
   z udokumentowanym punktem pracy i jawnie wykluczonymi metrykami
-  zniekształconymi przez gatunek.
+  zniekształconymi przez gatunek,
+- opisowy raport PDF po polsku (`raport.pdf`) generowany po każdym przepływie:
+  słownik metryk, wynik przed/po dla każdej z nich, rodziny zwrotów z informacją,
+  co silnik poprawia sam, oraz zastrzeżenia — dla odbiorcy nietechnicznego,
+- rodziny i metryki liczone po obu stronach redakcji (`family_counts_before/after`,
+  `metrics_before/after` w raporcie JSON), bez czego nie dało się powiedzieć,
+  *co* się zmieniło, a jedynie *czy*,
+- przykłady „było → jest” w raporcie PDF (`examples` w raporcie JSON), z sklejaniem
+  wieloetapowych poprawek tego samego zdania w jedną parę,
+- ocena słowna przy każdej metryce („w normie”, „wyraźnie poniżej normy”) —
+  sama liczba nie mówi odbiorcy, czy jest dobrze, czy źle,
+- raport PDF bez nazw plików, wersji narzędzia, nazw modeli i załącznika
+  technicznego; szczegóły implementacyjne zostają w raporcie JSON,
+- `humanize-pl-flow report <folder|json|xlsx>` — sam raport PDF z zakończonej
+  pracy, z doczytaniem brakujących pomiarów ze starszych przebiegów DOCX
+  i odtworzeniem obu stron pomiaru z gotowego arkusza XLSX,
+- przepływ XLSX zapisuje raport JSON domyślnie, tak jak DOCX (wcześniej tylko
+  po podaniu `--report`, więc zwykły przebieg nie zostawiał czego odtworzyć).
 
 ## Co nowego w 0.2.2
 
@@ -119,9 +136,10 @@ Podsumowanie
 ```
 
 Powstaje: `<nazwa>_humanized.docx` dla każdego pliku, `summary.csv`,
-`flow-report.json` oraz `details/<nazwa>.json` ze znaleziskami, spanami,
-metrykami i werdyktem bramki. Błąd jednego pliku nie zatrzymuje pozostałych;
-komenda kończy się kodem `1`, jeżeli którykolwiek zawiódł.
+`flow-report.json`, `details/<nazwa>.json` ze znaleziskami, spanami,
+metrykami i werdyktem bramki oraz `raport.pdf` — opisowy raport po polsku dla
+odbiorcy nietechnicznego (patrz niżej). Błąd jednego pliku nie zatrzymuje
+pozostałych; komenda kończy się kodem `1`, jeżeli którykolwiek zawiódł.
 
 `--no-rewrite` daje samą diagnozę i bramkę, bez zapisu dokumentów.
 
@@ -140,6 +158,10 @@ Do arkusza dopisywane są kolumny: `sygnał AI`, `do przeglądu`, `znaleziska`,
 `--no-rewrite` — `tekst po redakcji`. Kolumna źródłowa nie jest ruszana, a
 wynik zapisywany jest do nowego pliku.
 
+Obok arkusza wynikowego powstają `<nazwa>_flow_raport.json` (pełny raport
+przebiegu, tak jak w przepływie DOCX) i `<nazwa>_flow_raport.pdf`. Ścieżkę
+JSON-a zmienia `--report`, wyłącza `--no-report`.
+
 Dla arkuszy z odpowiedziami do klienta wymóg konkretnej kotwicy (przepis,
 kwota, termin) jest **domyślnie włączony** — wyłącza go `--no-require-anchor`.
 
@@ -148,6 +170,90 @@ Obsługa `.xlsx` wymaga dodatkowej zależności:
 ```bash
 python -m pip install -e ".[xlsx]"
 ```
+
+### Raport opisowy PDF (dla odbiorcy nietechnicznego)
+
+`flow-report.json`, `summary.csv` i `details/` są pisane dla osoby, która
+debuguje silnik. Odpowiadają na pytanie „która reguła zadziałała i pod którym
+offsetem”. Nie odpowiadają na pytanie, które zadaje odbiorca gotowego tekstu:
+**co zmierzono, co ta liczba znaczy i czy cokolwiek się poprawiło.**
+
+Dlatego oba przepływy zapisują dodatkowo `raport.pdf` (DOCX) albo
+`<nazwa>_flow_raport.pdf` (XLSX) — po polsku, bez żargonu:
+
+1. **Najważniejsze liczby** — wskaźnik przed → po na narysowanej skali
+   z zaznaczonym progiem przeglądu, liczba zmian, ile pozycji zostaje do
+   przejrzenia, plus jedno zdanie podsumowania.
+2. **Co się zmieniło w tekście** — prawdziwe pary „było → jest”, wybrane
+   z przebiegu. Wieloetapowe poprawki tego samego zdania (A→B→C) są sklejane
+   w jedną parę A→C, bo dla czytelnika to jedna zmiana, nie dwie.
+3. **Jak to sprawdzaliśmy** — cztery kroki (diagnoza → poprawki → ponowny
+   pomiar → kontrola) razem z wynikiem każdego z nich.
+4. **Co dokładnie mierzymy** — każda metryka z wartością typową dla człowieka,
+   wynikiem tutaj i **oceną słowną** („w normie”, „wyraźnie poniżej normy”),
+   bo samo „0,26” nie mówi odbiorcy nic; oraz tabela zwrotów z kolumną
+   „poprawia automat”, która tłumaczy, czemu część liczb nie spada do zera.
+5. **Wyniki pozycja po pozycji** — tabela zbiorcza, a pod nią osobny blok dla
+   każdej pozycji: co w niej poprawiliśmy (było → jest) i jakie uwagi zostają
+   do ręcznej redakcji. Pozycje bez poprawek i bez uwag są tylko zliczone.
+   Przy paczkach powyżej 20 pozycji rozpisujemy najpierw te do przejrzenia,
+   a komplet uwag ląduje w tabeli zbiorczej.
+
+Czego w nim **nie ma**, celowo: nazw plików i ścieżek (pozycje są numerowane
+w kolejności przekazania, rodzaj materiału podany raz na początku), wersji
+narzędzia, nazw modeli i profili, ani załącznika o tym, które warstwy były
+aktywne. To wszystko jest w `flow-report.json` dla osoby technicznej.
+
+Sam raport jest też pisany pod własny detektor: bez długich myślników jako
+wtrąceń, bez ram typu „warto wskazać”, bez akapitów podsumowujących. Pilnuje
+tego test — jedyne sygnały, jakie detektor znajduje w gotowym PDF-ie, pochodzą
+z cytatów: przykładów zwrotów i par „było → jest”.
+
+Raport wymaga dodatkowej zależności; bez niej przepływ kończy się normalnie,
+a w `flow-report.json` pojawia się `pdf_error` z instrukcją instalacji:
+
+```bash
+python -m pip install -e ".[pdf]"
+```
+
+Wyłącza go `--no-pdf`; `--pdf <ścieżka>` (XLSX) wskazuje własną lokalizację.
+
+#### Sam raport z zakończonego przebiegu
+
+Przebiegi są kosztowne i już się odbyły — folder przetworzony miesiąc temu nie
+musi być przetwarzany od nowa tylko dlatego, że raportowanie się poprawiło:
+
+```bash
+humanize-pl-flow report wyniki/                    # folder z poprzedniego przebiegu
+humanize-pl-flow report wyniki/flow-report.json    # albo sam raport JSON
+humanize-pl-flow report odpowiedzi_flow_raport.json -o dla-klienta.pdf
+```
+
+Arkusze przetworzone, zanim przepływ XLSX zaczął zapisywać JSON, nie mają
+żadnego raportu — ale mają wszystko, czego trzeba, żeby go odtworzyć: kolumna
+źródłowa nadal trzyma oryginał, a `tekst po redakcji` wynik. Wystarczy wskazać
+gotowy arkusz i kolumnę źródłową:
+
+```bash
+humanize-pl-flow report odpowiedzi_flow.xlsx --column "Odpowiedź AI"
+```
+
+Obie strony są wtedy mierzone od nowa. Nie da się natomiast odtworzyć tego, co
+przebieg *zrobił* — ile poprawek zastosował i których zdań dotknął. Raport
+pokazuje w tych miejscach „nie wiadomo”, zamiast wpisać zero.
+
+Starsze przebiegi DOCX nie zapisywały rozbicia na rodziny i metryk po obu
+stronach redakcji. Jeżeli dokumenty nadal leżą na dysku, komenda **doczytuje je
+i liczy te wielkości ponownie** — detekcja nie wymaga modeli ani redakcji, więc
+jest tania (`--no-backfill` to wyłącza). Jeżeli dokumentów już nie ma,
+brakujące sekcje są w PDF-ie oznaczone jako „brak danych”, a nie wypełnione
+zerami: „nie wykryto niczego” i „nie wiadomo” to dla odbiorcy dwie różne
+informacje.
+
+Raport składany jest czcionką systemową z polskimi znakami (Arial, DejaVu,
+Liberation). Jeżeli w systemie nie ma żadnej z nich, wskaż plik `.ttf` przez
+`HUMANIZE_PL_PDF_FONT` — brak diakrytyków byłby cichym zepsuciem raportu, więc
+zamiast tego generowanie kończy się błędem.
 
 ## Detekcja niezależna od przepisywania
 
@@ -371,6 +477,12 @@ natywne zależności Morfeusza:
 ```bash
 python -m pip install -e ".[nlp,transformers,morfeusz]"
 python -m humanize_pl.download_models --stanza --transformers --fluency --morfeusz
+```
+
+Z raportem PDF dla klienta i obsługą arkuszy:
+
+```bash
+python -m pip install -e ".[pdf,xlsx]"
 ```
 
 Dla pracy developerskiej:

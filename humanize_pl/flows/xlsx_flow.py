@@ -12,7 +12,14 @@ import unicodedata
 from pathlib import Path
 from typing import Any
 
-from .base import FlowSettings, ItemOutcome, layer_status, run_all_layers, summarise
+from .base import (
+    FlowSettings,
+    ItemOutcome,
+    attach_pdf_report,
+    layer_status,
+    run_all_layers,
+    summarise,
+)
 
 # Appended to the right of the existing data, in this order.
 OUTPUT_COLUMNS = [
@@ -72,7 +79,10 @@ def run_xlsx_flow(
     settings: FlowSettings,
     sheet_name: str | None = None,
     header_row: int | None = 1,
+    report: bool = True,
     report_path: Path | None = None,
+    pdf: bool = True,
+    pdf_path: Path | None = None,
     on_item=None,
     on_layers=None,
 ) -> dict[str, Any]:
@@ -172,11 +182,21 @@ def run_xlsx_flow(
         "summary": summarise(outcomes),
         "rows": [item.to_json() for item in outcomes],
     }
-    if report_path is not None:
+    if pdf:
+        attach_pdf_report(
+            payload, pdf_path or output_path.with_name(f"{output_path.stem}_raport.pdf")
+        )
+
+    # The .docx flow has always written its JSON report unasked. This one used
+    # to write it only behind --report, so a plain run left nothing to rebuild
+    # a report from and nothing to diff against later. Same default now.
+    if report:
+        report_path = report_path or output_path.with_name(f"{output_path.stem}_raport.json")
         report_path.parent.mkdir(parents=True, exist_ok=True)
         report_path.write_text(
             json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
         )
+        payload["report_path"] = str(report_path)
     return payload
 
 

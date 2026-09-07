@@ -1,0 +1,222 @@
+# Katalog kategorii prawniczych.
+#
+# Każdy dokument wchodzący do narzędzia dostaje dokładnie jedną kategorię z tej
+# listy. Kategoria jest drobna i opisowa — to ona nosi szablon struktury.
+#
+# `family` wskazuje jedną z trzech rodzin `DocumentType`, które sterują
+# zachowaniem silnika: normalizacją formatowania, profilem gatunkowym i bramką.
+# Rodziny są stabilne i nie rosną; kategorie rosną swobodnie, bo dopisanie
+# wiersza tutaj nie zmienia niczego w logice.
+#
+# signals        — zwroty typowe dla kategorii (waga 1)
+# signals_strong — zwroty, które same w sobie niemal ją przesądzają (waga 3)
+#
+# Sygnały dobiera się pod kątem tego, czego NIE ma w sąsiednich kategoriach.
+# "umowa" nie odróżnia umowy zlecenia od umowy najmu i jako sygnał jest
+# bezwartościowa — trafia więc do rodziny, nie do kategorii.
+
+version: 1
+
+categories:
+
+  # ---------------------------------------------------------------- umowy ---
+
+  - id: umowa_uslug
+    label_pl: umowa o świadczenie usług
+    family: contract
+    signals_strong: ["świadczenie usług", "usługodawca"]
+    signals: ["usługobiorca", "zakres usług", "raport z wykonania", "etapy"]
+    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa o świadczenie usług"]
+
+  - id: umowa_zlecenia
+    label_pl: umowa zlecenia
+    family: contract
+    signals_strong: ["umowa zlecenia", "zleceniobiorca"]
+    signals: ["zleceniodawca", "starannego działania", "art. 734"]
+    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa zlecenia"]
+
+  - id: umowa_o_dzielo
+    label_pl: umowa o dzieło
+    family: contract
+    signals_strong: ["umowa o dzieło", "wykonanie dzieła"]
+    signals: ["zamawiający dzieło", "odbiór dzieła", "art. 627"]
+    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa o dzieło"]
+
+  - id: umowa_o_prace
+    label_pl: umowa o pracę
+    family: contract
+    signals_strong: ["umowa o pracę", "stosunek pracy"]
+    signals: ["pracodawca", "pracownik", "wymiar czasu pracy", "kodeks pracy"]
+    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa o pracę"]
+
+  - id: umowa_sprzedazy
+    label_pl: umowa sprzedaży
+    family: contract
+    signals_strong: ["umowa sprzedaży", "przenosi własność"]
+    signals: ["sprzedający", "kupujący", "wydanie rzeczy", "cena sprzedaży"]
+    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa sprzedaży"]
+
+  - id: umowa_najmu
+    label_pl: umowa najmu
+    family: contract
+    signals_strong: ["umowa najmu", "czynsz"]
+    signals: ["wynajmujący", "najemca", "przedmiot najmu", "kaucja"]
+    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa najmu"]
+
+  - id: umowa_nda
+    label_pl: umowa o zachowaniu poufności
+    family: contract
+    signals_strong: ["zachowaniu poufności", "informacje poufne"]
+    signals: ["ujawniająca", "otrzymująca", "okres poufności", "nda"]
+    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa o zachowaniu poufności"]
+
+  - id: umowa_spolki
+    label_pl: umowa spółki
+    family: contract
+    signals_strong: ["umowa spółki", "kapitał zakładowy"]
+    signals: ["wspólnicy", "udziały", "zgromadzenie wspólników", "firma spółki"]
+    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa spółki"]
+
+  - id: aneks
+    label_pl: aneks do umowy
+    family: contract
+    signals_strong: ["aneks nr", "zmienia się umowę"]
+    signals: ["otrzymuje brzmienie", "pozostałe postanowienia", "dotychczasowe brzmienie"]
+    requires_any: ["aneks nr", "aneks do umowy", "zmienia się umowę"]
+
+  - id: ugoda
+    label_pl: ugoda
+    family: contract
+    signals_strong: ["zawierają ugodę", "czynią sobie wzajemne ustępstwa"]
+    signals: ["zrzeka się roszczeń", "wyczerpuje wszelkie roszczenia"]
+    requires_any: ["zawierają ugodę", "niniejsza ugoda", "strony zawierają"]
+
+  - id: regulamin
+    label_pl: regulamin
+    family: contract
+    signals_strong: ["niniejszy regulamin", "regulamin określa"]
+    signals: ["usługobiorca", "konto", "reklamacje", "postanowienia końcowe"]
+    requires_any: ["niniejszy regulamin", "regulamin określa", "regulamin serwisu"]
+
+  - id: polityka_prywatnosci
+    label_pl: polityka prywatności
+    family: contract
+    signals_strong: ["polityka prywatności", "administratorem danych"]
+    signals: ["rodo", "dane osobowe", "podstawa przetwarzania", "okres przechowywania"]
+    requires_any: ["polityka prywatności", "administratorem danych"]
+
+  # ------------------------------------------------- pisma procesowe i urząd ---
+
+  - id: pozew
+    label_pl: pozew
+    family: filing_official
+    signals_strong: ["wnoszę o zasądzenie", "pozew o"]
+    signals: ["powód", "pozwany", "wartość przedmiotu sporu", "wnoszę o zasądzenie kosztów"]
+    requires_any: ["wnoszę o zasądzenie", "wnoszę pozew", "pozew o zapłatę", "wnosi o zasądzenie"]
+
+  - id: odpowiedz_na_pozew
+    label_pl: odpowiedź na pozew
+    family: filing_official
+    signals_strong: ["odpowiedź na pozew", "wnoszę o oddalenie powództwa"]
+    signals: ["zaprzeczam", "podnoszę zarzut", "powództwo jest bezzasadne"]
+    requires_any: ["odpowiedź na pozew", "wnoszę o oddalenie powództwa"]
+
+  - id: apelacja
+    label_pl: apelacja
+    family: filing_official
+    signals_strong: ["wnoszę apelację", "zaskarżam wyrok"]
+    signals: ["zarzucam", "wnoszę o zmianę wyroku", "sąd drugiej instancji"]
+    requires_any: ["wnoszę apelację", "zaskarżam wyrok", "niniejszym zaskarżam"]
+
+  - id: zazalenie
+    label_pl: zażalenie
+    family: filing_official
+    signals_strong: ["wnoszę zażalenie", "zaskarżam postanowienie"]
+    signals: ["wnoszę o uchylenie postanowienia"]
+    requires_any: ["wnoszę zażalenie", "zaskarżam postanowienie"]
+
+  - id: skarga_kasacyjna
+    label_pl: skarga kasacyjna
+    family: filing_official
+    signals_strong: ["skarga kasacyjna", "sąd najwyższy"]
+    signals: ["naruszenie prawa materialnego", "przyjęcie skargi do rozpoznania"]
+    requires_any: ["skargę kasacyjną", "wnoszę skargę kasacyjną"]
+
+  - id: skarga_wsa
+    label_pl: skarga do sądu administracyjnego
+    family: filing_official
+    signals_strong: ["wojewódzkiego sądu administracyjnego", "wnoszę skargę na decyzję"]
+    signals: ["organ administracji", "uchylenie zaskarżonej decyzji"]
+    requires_any: ["wnoszę skargę na decyzję", "skargę do wojewódzkiego sądu administracyjnego"]
+
+  - id: odwolanie_od_decyzji
+    label_pl: odwołanie od decyzji
+    family: filing_official
+    signals_strong: ["wnoszę odwołanie", "od decyzji z dnia"]
+    signals: ["organ pierwszej instancji", "uchylenie decyzji", "kodeks postępowania administracyjnego"]
+    requires_any: ["wnoszę odwołanie", "niniejszym odwołuję się"]
+
+  - id: wniosek_procesowy
+    label_pl: wniosek procesowy
+    family: filing_official
+    signals_strong: ["wnoszę o dopuszczenie", "wniosek dowodowy"]
+    signals: ["na okoliczność", "świadka", "biegłego"]
+    requires_any: ["wnoszę o dopuszczenie", "wniosek dowodowy", "wnoszę o przeprowadzenie"]
+
+  - id: pismo_urzedowe
+    label_pl: pismo urzędowe
+    family: filing_official
+    signals_strong: ["działając w imieniu", "na podstawie art"]
+    signals: ["organ", "wnoszę o udostępnienie", "informacja publiczna", "w załączeniu"]
+    requires_any: ["działając w imieniu", "wnoszę o udostępnienie", "zwracam się z wnioskiem"]
+
+  - id: wezwanie_do_zaplaty
+    label_pl: wezwanie do zapłaty
+    family: filing_official
+    signals_strong: ["wezwanie do zapłaty", "wzywam do zapłaty"]
+    signals: ["pod rygorem skierowania sprawy", "odsetki ustawowe za opóźnienie", "termin 7 dni"]
+    requires_any: ["wezwanie do zapłaty", "wzywam do zapłaty", "wzywamy do zapłaty"]
+
+  # ------------------------------------------------------ doradztwo i klient ---
+
+  - id: opinia_prawna
+    label_pl: opinia prawna
+    family: client_communication
+    signals_strong: ["opinia prawna", "przedmiot opinii"]
+    signals: ["stan faktyczny", "ocena prawna", "wnioski", "zastrzeżenia"]
+
+  - id: memorandum
+    label_pl: memorandum
+    family: client_communication
+    signals_strong: ["memorandum", "nota prawna"]
+    signals: ["podsumowanie", "rekomendacja", "ryzyka"]
+
+  - id: pismo_do_klienta
+    label_pl: pismo do klienta
+    family: client_communication
+    signals_strong: ["szanowni państwo", "w nawiązaniu do"]
+    signals: ["informujemy", "rekomendujemy", "w razie pytań", "pozostajemy do dyspozycji"]
+
+  - id: notatka_prawna
+    label_pl: notatka prawna
+    family: client_communication
+    signals_strong: ["notatka", "ustalenia ze spotkania"]
+    signals: ["do ustalenia", "kolejne kroki", "osoba odpowiedzialna"]
+
+  - id: esej_prawniczy
+    label_pl: esej prawniczy
+    family: client_communication
+    signals_strong: ["w doktrynie", "w piśmiennictwie"]
+    signals: ["rozważania", "przedmiotem niniejszego", "konkludując", "de lege ferenda"]
+
+  # ------------------------------------------------------------ bez decyzji ---
+
+  # Zamyka listę i jest jedyną kategorią bez sygnałów: dostaje ją dokument,
+  # którego nie udało się rozpoznać. Zgadywanie kategorii byłoby gorsze niż
+  # przyznanie się do niewiedzy — szablon struktury dobrany na chybił trafił
+  # zgłaszałby braki, których nie ma.
+  - id: nieokreslony
+    label_pl: nieokreślony
+    family: client_communication
+    signals_strong: []
+    signals: []

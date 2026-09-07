@@ -20,6 +20,7 @@ from typing import Any
 
 from humanize_pl.config import Engine, LegalReviewProfile, Mode
 from humanize_pl.core import HumanizerSession, create_humanizer_session
+from humanize_pl.categories import classify_category
 from humanize_pl.detect import detect_document, load_profile
 from humanize_pl.document import (
     DocumentType,
@@ -283,6 +284,10 @@ class ItemOutcome:
     document_type: str | None = None
     document_type_confidence: float | None = None
     document_type_evidence: list[str] = field(default_factory=list)
+    # The fine legal category (umowa najmu, wezwanie do zapłaty, ...), as
+    # opposed to the coarse family above. This is the level a structure
+    # blueprint attaches to, and the level a lawyer names a document at.
+    legal_category: dict[str, Any] = field(default_factory=dict)
     calibration_status: str = "uncalibrated"
     style_compliance: dict[str, Any] = field(default_factory=dict)
     legal_sensitive_check: dict[str, Any] = field(default_factory=dict)
@@ -325,6 +330,7 @@ class ItemOutcome:
             "document_type": self.document_type,
             "document_type_confidence": self.document_type_confidence,
             "document_type_evidence": self.document_type_evidence,
+            "legal_category": self.legal_category,
             "calibration_status": self.calibration_status,
             "style_compliance": self.style_compliance,
             "legal_sensitive_check": self.legal_sensitive_check,
@@ -357,6 +363,7 @@ def run_all_layers(
     )
     if settings.document_type != DocumentType.auto:
         guess = type(guess)(resolved_type, 1.0, ("typ wskazany przez użytkownika",))
+    category = classify_category(text)
     style_profile = style_profile or settings.load_style_profile()
     before = detect_document(text, calibrate_against_default=False)
     outcome = ItemOutcome(
@@ -371,9 +378,19 @@ def run_all_layers(
         document_type=resolved_type.value,
         document_type_confidence=guess.confidence,
         document_type_evidence=list(guess.evidence),
+        legal_category=category.to_json(),
         calibration_status="uncalibrated_for_document_genre",
     )
     outcome.warnings.extend(llm_initialization_warnings or [])
+    # Two classifiers looked at the same text: the coarse family one and the
+    # evidence-gated category one. When they disagree, one of them is wrong,
+    # and which one decides the formatting norms and the genre profile - so it
+    # is said out loud rather than resolved by a silent preference.
+    if category.specified and category.category.family != resolved_type:
+        outcome.warnings.append(
+            f"Kategoria „{category.category.label_pl}” wskazuje rodzinę "
+            f"{category.category.family.value}, a rozpoznano {resolved_type.value}."
+        )
     if guess.confidence < 0.60:
         outcome.warnings.append(
             "Niska pewność rozpoznania rodzaju dokumentu; rozważ --document-type."

@@ -57,6 +57,7 @@ SATURATED = 1.0
 
 TABLE_HEADERS = [
     "pozycja",
+    "kategoria",
     "sygnał przed",
     "sygnał po",
     "delta",
@@ -339,11 +340,25 @@ def item_line(item: ItemOutcome) -> str:
     )
 
 
+def category_label(item: ItemOutcome) -> str:
+    """Name the document the way a lawyer would, or admit it is unknown.
+
+    An unrecognised document is shown as such rather than as the nearest
+    guess, because the category is what a structure blueprint hangs off.
+    """
+    row = item.legal_category or {}
+    label = row.get("label_pl")
+    if not label or row.get("id") == "nieokreslony":
+        return "nierozpoznana"
+    return f"{label} ({row.get('confidence', 0):.0%})"
+
+
 def item_row(item: ItemOutcome) -> list[Any]:
     if item.status == "failed":
-        return [item.name, "", "", "", "", "", "", "", "błąd", item.error or ""]
+        return [item.name, "", "", "", "", "", "", "", "", "błąd", item.error or ""]
     return [
         item.name,
+        category_label(item),
         round(item.signal_before, 3),
         round(item.signal_after, 3),
         round(item.signal_after - item.signal_before, 3),

@@ -1,0 +1,55 @@
+# Szkielet pozwu o zapłatę.
+#
+# Braki formalne pozwu są dotkliwe inaczej niż braki umowy: sąd wzywa do
+# uzupełnienia, a termin biegnie. Dlatego oznaczenie sądu i podpis są
+# wymagane, choć model pomija je najczęściej.
+
+category: pozew
+label_pl: pozew
+numbering: roman
+
+sections:
+  - id: sad
+    label_pl: oznaczenie sądu
+    severity: required
+    matches: ["sąd rejonowy", "sąd okręgowy", "do sądu"]
+
+  - id: strony
+    label_pl: oznaczenie stron
+    severity: required
+    matches: ["powód", "pozwany"]
+
+  - id: wps
+    label_pl: wartość przedmiotu sporu
+    severity: required
+    matches: ["wartość przedmiotu sporu", "w.p.s."]
+
+  - id: zadanie
+    label_pl: żądanie pozwu
+    severity: required
+    matches: ["wnoszę o zasądzenie", "żądanie", "wnosi o zasądzenie"]
+
+  - id: koszty
+    label_pl: wniosek o koszty procesu
+    severity: expected
+    matches: ["koszty procesu", "kosztów zastępstwa", "koszty postępowania"]
+
+  - id: uzasadnienie
+    label_pl: uzasadnienie
+    severity: required
+    matches: ["uzasadnienie"]
+
+  - id: dowody
+    label_pl: wnioski dowodowe
+    severity: required
+    matches: ["dowody", "dowód z", "wnoszę o dopuszczenie"]
+
+  - id: podpis
+    label_pl: podpis
+    severity: required
+    matches: ["podpis", "pełnomocnik powoda", "adwokat", "radca prawny"]
+
+  - id: zalaczniki
+    label_pl: załączniki
+    severity: expected
+    matches: ["załączniki", "w załączeniu", "załącznik"]

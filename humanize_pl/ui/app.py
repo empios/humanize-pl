@@ -58,6 +58,7 @@ SATURATED = 1.0
 TABLE_HEADERS = [
     "pozycja",
     "kategoria",
+    "struktura",
     "sygnał przed",
     "sygnał po",
     "delta",
@@ -353,12 +354,30 @@ def category_label(item: ItemOutcome) -> str:
     return f"{label} ({row.get('confidence', 0):.0%})"
 
 
+def structure_label(item: ItemOutcome) -> str:
+    """Say whether the document carries the sections its category owes.
+
+    "Nie sprawdzono" and "w porządku" are kept apart: a report someone signs
+    off on must not let an unchecked document look like a clean one.
+    """
+    row = item.blueprint or {}
+    if not row.get("checked"):
+        return "nie sprawdzono"
+    missing = len(row.get("missing_required") or []) + len(row.get("empty_sections") or [])
+    if missing:
+        return f"braki: {missing}"
+    if row.get("issues"):
+        return "uwagi"
+    return "kompletna"
+
+
 def item_row(item: ItemOutcome) -> list[Any]:
     if item.status == "failed":
-        return [item.name, "", "", "", "", "", "", "", "", "błąd", item.error or ""]
+        return [item.name, "", "", "", "", "", "", "", "", "", "błąd", item.error or ""]
     return [
         item.name,
         category_label(item),
+        structure_label(item),
         round(item.signal_before, 3),
         round(item.signal_after, 3),
         round(item.signal_after - item.signal_before, 3),

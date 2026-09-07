@@ -1,0 +1,60 @@
+# Szkielet umowy o świadczenie usług.
+#
+# `required` blokuje gotowość, `expected` tylko odnotowuje. Podział jest
+# celowy: umowa bez klauzuli odpowiedzialności jest wadliwa, umowa bez
+# klauzuli poufności bywa po prostu inną umową.
+
+category: umowa_uslug
+label_pl: umowa o świadczenie usług
+numbering: paragraph
+
+sections:
+  - id: komparycja
+    label_pl: komparycja (data, miejsce, strony)
+    severity: required
+    matches: ["zawarta w dniu", "zawarto umowę", "pomiędzy"]
+
+  - id: przedmiot
+    label_pl: przedmiot umowy
+    severity: required
+    matches: ["przedmiot umowy", "przedmiotem umowy", "przedmiotem niniejszej umowy"]
+
+  - id: termin
+    label_pl: termin i sposób wykonania
+    severity: required
+    matches: ["termin", "sposób wykonania", "harmonogram"]
+
+  - id: wynagrodzenie
+    label_pl: wynagrodzenie
+    severity: required
+    matches: ["wynagrodzenie"]
+
+  - id: odpowiedzialnosc
+    label_pl: odpowiedzialność
+    severity: required
+    matches: ["odpowiedzialność", "odpowiada za"]
+
+  - id: poufnosc
+    label_pl: poufność
+    severity: expected
+    matches: ["poufnoś", "informacje poufne"]
+
+  - id: rozwiazanie
+    label_pl: rozwiązanie i wypowiedzenie umowy
+    severity: required
+    matches: ["rozwiązanie umowy", "wypowiedzenie", "odstąpienie od umowy"]
+
+  - id: postanowienia_koncowe
+    label_pl: postanowienia końcowe
+    severity: required
+    matches: ["postanowienia końcowe", "w sprawach nieuregulowanych"]
+
+  - id: wlasciwosc
+    label_pl: właściwość sądu
+    severity: expected
+    matches: ["właściwy sąd", "sądem właściwym", "właściwości sądu"]
+
+  - id: podpisy
+    label_pl: podpisy stron
+    severity: required
+    matches: ["podpis", "zamawiający:", "wykonawca:"]

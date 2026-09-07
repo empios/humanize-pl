@@ -20,6 +20,7 @@ from typing import Any
 
 from humanize_pl.config import Engine, LegalReviewProfile, Mode
 from humanize_pl.core import HumanizerSession, create_humanizer_session
+from humanize_pl.blueprint import check_category
 from humanize_pl.categories import classify_category
 from humanize_pl.detect import detect_document, load_profile
 from humanize_pl.document import (
@@ -288,6 +289,10 @@ class ItemOutcome:
     # opposed to the coarse family above. This is the level a structure
     # blueprint attaches to, and the level a lawyer names a document at.
     legal_category: dict[str, Any] = field(default_factory=dict)
+    # Whether the document carries the sections its category owes. Absent a
+    # blueprint this says so explicitly — "not checked" must never read as
+    # "nothing wrong".
+    blueprint: dict[str, Any] = field(default_factory=dict)
     calibration_status: str = "uncalibrated"
     style_compliance: dict[str, Any] = field(default_factory=dict)
     legal_sensitive_check: dict[str, Any] = field(default_factory=dict)
@@ -331,6 +336,7 @@ class ItemOutcome:
             "document_type_confidence": self.document_type_confidence,
             "document_type_evidence": self.document_type_evidence,
             "legal_category": self.legal_category,
+            "blueprint": self.blueprint,
             "calibration_status": self.calibration_status,
             "style_compliance": self.style_compliance,
             "legal_sensitive_check": self.legal_sensitive_check,
@@ -542,6 +548,13 @@ def run_all_layers(
         )
     if outcome.style_compliance.get("issues"):
         outcome.warnings.append("Pozostały odstępstwa od profilu stylu.")
+
+    # Checked on the text that leaves the flow, not on the input: a rewrite
+    # must not be able to drop a required section quietly.
+    structure = check_category(text_out, category.category.id)
+    outcome.blueprint = structure.to_json()
+    if structure.checked:
+        outcome.warnings.extend(structure.issues)
     if outcome.needs_review or outcome.unresolved_findings or outcome.warnings:
         outcome.readiness_status = ReadinessStatus.ready_with_warnings.value
     if owned_rewriter and rewriter is not None:

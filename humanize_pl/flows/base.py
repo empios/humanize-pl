@@ -532,6 +532,13 @@ def run_all_layers(
     return outcome, verdict
 
 
+
+def _short_rationale(value: str, limit: int = 300) -> str:
+    """Collapse the model's reason to one report-sized line."""
+    text = " ".join(str(value or "").split())
+    return text if len(text) <= limit else text[: limit - 1].rstrip() + "…"
+
+
 def _rewrite_remaining_with_llm(
     text: str,
     diagnosis,
@@ -626,6 +633,11 @@ def _rewrite_remaining_with_llm(
                 "paragraph_index": job["paragraph_index"],
                 "sentence_index": None,
                 "model_decision": "accepted_by_local_validators",
+                # The model already pays tokens to explain itself, and an
+                # accepted machine edit is exactly the kind a reviewer will
+                # want a reason for. Trimmed because it is model prose in a
+                # report, not an essay, and treated as data throughout.
+                "model_rationale": _short_rationale(result.rationale),
             }
         )
     return "\n".join(lines), changes, rejected

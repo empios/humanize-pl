@@ -303,9 +303,21 @@ def test_fragments_are_rewritten_concurrently_but_applied_in_document_order() ->
     )
 
     assert peak > 1, "fragmenty poszły sekwencyjnie"
+    # An accepted machine edit carries the model's own reason into the report.
+    assert all(change["model_rationale"] == "usunięto rozbieg" for change in changes)
     assert [change["paragraph_index"] for change in changes] == sorted(
         change["paragraph_index"] for change in changes
     )
     for line, original in zip(result.split("\n"), paragraphs):
         assert line == original.replace("Warto zauważyć, że ", "")
     assert rejected == 0
+
+
+def test_report_rationale_is_trimmed_to_one_line() -> None:
+    from humanize_pl.flows.base import _short_rationale
+
+    assert _short_rationale("  usunięto\n  rozbieg  ") == "usunięto rozbieg"
+    assert _short_rationale("") == ""
+    long_reason = "a" * 400
+    trimmed = _short_rationale(long_reason)
+    assert len(trimmed) == 300 and trimmed.endswith("…")

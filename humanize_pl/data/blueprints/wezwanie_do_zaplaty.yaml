@@ -1,0 +1,49 @@
+# Szkielet wezwania do zapłaty.
+#
+# Numer rachunku jest wymagany z powodu praktycznego, nie formalnego:
+# wezwanie, które nie mówi dokąd zapłacić, nie może zostać wykonane.
+
+category: wezwanie_do_zaplaty
+label_pl: wezwanie do zapłaty
+check_order: false
+
+sections:
+  - id: data_miejsce
+    label_pl: miejscowość i data
+    severity: required
+    matches: ["dnia", " r."]
+
+  - id: strony
+    label_pl: oznaczenie wierzyciela i dłużnika
+    severity: required
+    matches: ["wierzyciel", "dłużnik"]
+
+  - id: kwota
+    label_pl: kwota wraz z odsetkami
+    severity: required
+    matches: ["kwoty", "kwotę", "odsetkami"]
+
+  - id: podstawa
+    label_pl: tytuł zobowiązania
+    severity: required
+    matches: ["wynika z", "faktur", "z tytułu", "umowy"]
+
+  - id: termin
+    label_pl: termin zapłaty
+    severity: required
+    matches: ["w terminie", "termin zapłaty", "termin płatności"]
+
+  - id: rachunek
+    label_pl: numer rachunku bankowego
+    severity: required
+    matches: ["rachunek bankowy", "numer rachunku", "na rachunek", "iban"]
+
+  - id: rygor
+    label_pl: rygor skierowania sprawy na drogę sądową
+    severity: required
+    matches: ["na drogę sądową", "postępowania sądowego", "pod rygorem"]
+
+  - id: podpis
+    label_pl: podpis wzywającego
+    severity: required
+    matches: ["podpis", "pełnomocnik", "z poważaniem"]

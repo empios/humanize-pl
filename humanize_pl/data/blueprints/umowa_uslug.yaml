@@ -22,7 +22,7 @@ sections:
   - id: termin
     label_pl: termin i sposób wykonania
     severity: required
-    matches: ["termin", "sposób wykonania", "harmonogram"]
+    matches: ["termin wykonania", "terminy i sposób", "sposób wykonania", "harmonogram"]
 
   - id: wynagrodzenie
     label_pl: wynagrodzenie

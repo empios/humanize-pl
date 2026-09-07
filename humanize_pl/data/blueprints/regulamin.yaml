@@ -1,0 +1,57 @@
+# Szkielet regulaminu świadczenia usług drogą elektroniczną.
+#
+# Elementy wymagane wynikają z ustawy o świadczeniu usług drogą elektroniczną
+# i z prawa konsumenckiego. Brak pouczenia o odstąpieniu od umowy nie jest
+# niedopatrzeniem redakcyjnym — to wada wobec konsumenta.
+
+category: regulamin
+label_pl: regulamin
+numbering: paragraph
+
+sections:
+  - id: postanowienia_ogolne
+    label_pl: postanowienia ogólne
+    severity: required
+    matches: ["postanowienia ogólne", "niniejszy regulamin określa"]
+
+  - id: dane_uslugodawcy
+    label_pl: oznaczenie usługodawcy
+    severity: required
+    matches: ["usługodawcą jest", "operatorem jest", "prowadzonej przez", "z siedzibą w"]
+
+  - id: definicje
+    label_pl: definicje
+    severity: required
+    matches: ["definicje", "użyte w regulaminie", "ilekroć w regulaminie"]
+
+  - id: zakres_uslug
+    label_pl: rodzaj i zakres usług
+    severity: required
+    matches: ["rodzaj i zakres", "zakres usług", "usługi świadczone", "konto użytkownika"]
+
+  - id: warunki_zawarcia
+    label_pl: warunki zawierania umowy
+    severity: required
+    matches: ["zawarcie umowy", "warunki zawierania", "rejestrac"]
+
+  - id: odstapienie
+    label_pl: odstąpienie od umowy przez konsumenta
+    severity: required
+    # NIE "14 dni": ten termin stoi też w klauzuli reklamacyjnej i udawał
+    # obecność pouczenia konsumenckiego, którego regulamin nie zawierał.
+    matches: ["odstąpienie od umowy", "prawo odstąpienia", "odstąpić od umowy"]
+
+  - id: reklamacje
+    label_pl: tryb reklamacyjny
+    severity: required
+    matches: ["reklamacj"]
+
+  - id: zmiany_regulaminu
+    label_pl: zmiany regulaminu
+    severity: required
+    matches: ["zmiana regulaminu", "zmiany regulaminu", "zastrzega sobie prawo do zmiany"]
+
+  - id: postanowienia_koncowe
+    label_pl: postanowienia końcowe
+    severity: required
+    matches: ["postanowienia końcowe", "w sprawach nieuregulowanych"]

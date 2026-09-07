@@ -272,3 +272,62 @@ def test_a_complete_one_line_clause_is_not_reported_as_empty() -> None:
 
     stub = "§ 9. Wejście w życie\nDo uzupełnienia.\n"
     assert check(stub, blueprint).empty_sections == ["wejście w życie"]
+
+
+@pytest.mark.parametrize(
+    ("fixture", "category", "missing"),
+    [
+        ("ai_legal_02_opinia_odpowiedzialnosc.txt", "opinia_prawna", "zastrzeżenia i granice opinii"),
+        ("ai_legal_04_regulamin_platformy.txt", "regulamin", "odstąpienie od umowy przez konsumenta"),
+        ("ai_legal_05_pismo_urzedowe.txt", "pismo_urzedowe", "oznaczenie wnioskodawcy z adresem"),
+        ("ai_legal_06_wezwanie_do_zaplaty.txt", "wezwanie_do_zaplaty", "podpis wzywającego"),
+        ("ai_legal_08_polityka_rodo.txt", "polityka_prywatnosci", "prawo skargi do organu nadzorczego"),
+    ],
+)
+def test_each_blueprint_finds_a_real_omission_in_its_fixture(
+    fixture: str, category: str, missing: str
+) -> None:
+    text = (FIXTURES / fixture).read_text(encoding="utf-8")
+    report = check_category(text, category)
+    assert report.checked
+    assert missing in report.missing_required
+
+
+def test_a_deadline_in_a_complaints_clause_is_not_a_withdrawal_clause() -> None:
+    """An incidental phrase hides a gap instead of finding one.
+
+    "14 dni" as a pattern for the consumer withdrawal clause matched the
+    fourteen days for handling complaints, and reported a regulamin that
+    lacks the withdrawal notice entirely as having one. A blueprint that
+    reports a legal defect as satisfied is worse than no blueprint.
+    """
+    text = (FIXTURES / "ai_legal_04_regulamin_platformy.txt").read_text(encoding="utf-8")
+    assert "14 dni" in text
+    assert "odstąpieni" not in text.casefold()
+    report = check_category(text, "regulamin")
+    assert "odstąpienie od umowy przez konsumenta" in report.missing_required
+
+
+def test_a_word_inside_an_email_address_does_not_satisfy_a_section() -> None:
+    text = (FIXTURES / "ai_legal_05_pismo_urzedowe.txt").read_text(encoding="utf-8")
+    assert "wnioskodawca@" in text
+    report = check_category(text, "pismo_urzedowe")
+    assert "oznaczenie wnioskodawcy z adresem" in report.missing_required
+
+
+def test_no_blueprint_reports_a_false_order_or_numbering_finding_on_its_fixture() -> None:
+    """Order and numbering are conventions, not requirements everywhere.
+
+    RODO prescribes no order for the information duty, so a policy listing
+    retention after rights is correct and must not be flagged.
+    """
+    pairs = [
+        ("ai_legal_02_opinia_odpowiedzialnosc.txt", "opinia_prawna"),
+        ("ai_legal_04_regulamin_platformy.txt", "regulamin"),
+        ("ai_legal_08_polityka_rodo.txt", "polityka_prywatnosci"),
+    ]
+    for fixture, category in pairs:
+        text = (FIXTURES / fixture).read_text(encoding="utf-8")
+        report = check_category(text, category)
+        assert report.order_issues == [], f"{category}: {report.order_issues}"
+        assert report.numbering_issues == [], f"{category}: {report.numbering_issues}"

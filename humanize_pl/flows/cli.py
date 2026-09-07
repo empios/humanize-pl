@@ -13,6 +13,12 @@ import typer
 from rich import print
 
 from humanize_pl.config import Engine, Mode
+from humanize_pl.document import (
+    DocumentType,
+    FormatPolicy,
+    RewriteBackend,
+    build_style_profile,
+)
 from .base import FlowSettings, ItemOutcome, attach_pdf_report
 from .docx_flow import run_docx_flow
 from .replay import (
@@ -37,6 +43,13 @@ def _settings(
     require_anchor: bool,
     offline_models: bool,
     require_models: bool = False,
+    document_type: DocumentType = DocumentType.auto,
+    rewrite_backend: RewriteBackend = RewriteBackend.rules,
+    style_profile: Path | None = None,
+    template: Path | None = None,
+    format_policy: FormatPolicy = FormatPolicy.preserve,
+    require_llm: bool = False,
+    require_renderer: bool = False,
 ) -> FlowSettings:
     return FlowSettings(
         mode=mode,
@@ -46,6 +59,13 @@ def _settings(
         offline_models=offline_models,
         require_models=require_models,
         require_morfeusz=require_models,
+        document_type=document_type,
+        rewrite_backend=rewrite_backend,
+        style_profile=style_profile,
+        template=template,
+        format_policy=format_policy,
+        require_llm=require_llm,
+        require_renderer=require_renderer,
     )
 
 
@@ -77,6 +97,12 @@ def _print_layers(layers: dict) -> None:
             print(f"  [yellow]![/yellow] {_install_hint(rewrite)}")
     for warning in layers.get("warnings", []):
         print(f"  [yellow]![/yellow] {warning}")
+    hosted = layers.get("hosted_model", {})
+    if hosted.get("status") not in {None, "not_requested"}:
+        print(
+            f"[dim]model hostowany:[/dim] {hosted.get('status')} "
+            f"model={hosted.get('model', 'brak')}"
+        )
     print()
 
 
@@ -106,7 +132,10 @@ def _print_item(item: ItemOutcome) -> None:
         return
     flag = "[red]do przeglądu[/red]" if item.needs_review else "[green]ok[/green]"
     arrow = f"{item.signal_before:.2f} → {item.signal_after:.2f}"
-    print(f"{flag} {item.name}: sygnał {arrow}, zmian {item.changes_applied}")
+    print(
+        f"{flag} {item.name}: sygnał {arrow}, zmian {item.changes_applied}, "
+        f"status {item.readiness_status}"
+    )
 
 
 def _print_summary(summary: dict) -> None:
@@ -120,6 +149,10 @@ def _print_summary(summary: dict) -> None:
             f"(delta {summary['mean_signal_delta']:+.2f})"
         )
         print(f"  zastosowane zmiany: {summary['changes_applied']}")
+        print(
+            f"  gotowe: {summary.get('ready', 0)}  "
+            f"gotowe z ostrzeżeniami: {summary.get('ready_with_warnings', 0)}"
+        )
 
 
 def _print_pdf(payload: dict) -> None:
@@ -143,8 +176,8 @@ def docx_command(
     ),
     mode: Mode = typer.Option(Mode.standard, help="conservative, standard, strong"),
     engine: Engine = typer.Option(
-        Engine.hybrid,
-        help="hybrid (pełny stos neuronowy, domyślnie), nlp (Stanza), basic (bez modeli)",
+        Engine.basic,
+        help="basic (domyślnie, bez pobierania modeli), nlp (Stanza), hybrid (lokalne walidatory)",
     ),
     no_rewrite: bool = typer.Option(
         False, "--no-rewrite", help="Tylko diagnoza i bramka, bez redakcji dokumentów"
@@ -162,6 +195,35 @@ def docx_command(
         "--require-models",
         help="Przerwij zamiast po cichu degradować, gdy Stanza/Morfeusz są niedostępne",
     ),
+    document_type: DocumentType = typer.Option(
+        DocumentType.auto,
+        "--document-type",
+        help="auto, client_communication, contract albo filing_official",
+    ),
+    rewrite_backend: RewriteBackend = typer.Option(
+        RewriteBackend.rules,
+        "--rewrite-backend",
+        help="rules albo hybrid (reguły + hostowany model)",
+    ),
+    style_profile: Path = typer.Option(
+        None, "--style-profile", help="Katalog profilu kancelarii"
+    ),
+    template: Path = typer.Option(
+        None, "--template", help="Nadrzędny szablon kancelarii .docx lub .dotx"
+    ),
+    format_policy: FormatPolicy = typer.Option(
+        FormatPolicy.preserve,
+        "--format-policy",
+        help="preserve, audit albo normalize",
+    ),
+    require_llm: bool = typer.Option(
+        False, "--require-llm", help="Przerwij, jeśli hostowany model nie jest dostępny"
+    ),
+    require_renderer: bool = typer.Option(
+        False,
+        "--require-renderer",
+        help="Przerwij, jeśli dokumentu nie można sprawdzić przez LibreOffice",
+    ),
     no_pdf: bool = typer.Option(
         False, "--no-pdf", help="Pomiń raport PDF opisowy (dla odbiorcy nietechnicznego)"
     ),
@@ -173,14 +235,26 @@ def docx_command(
             folder,
             output_directory,
             settings=_settings(
-                mode, engine, no_rewrite, require_anchor, offline_models, require_models
+                mode,
+                engine,
+                no_rewrite,
+                require_anchor,
+                offline_models,
+                require_models,
+                document_type,
+                rewrite_backend,
+                style_profile,
+                template,
+                format_policy,
+                require_llm,
+                require_renderer,
             ),
             pdf=not no_pdf,
             on_item=_print_item,
             on_layers=_print_layers,
         )
-    except RuntimeError as exc:
-        raise typer.BadParameter(str(exc), param_hint="--require-models") from exc
+    except (RuntimeError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
     except FileNotFoundError as exc:
         raise typer.BadParameter(str(exc), param_hint="folder") from exc
 
@@ -219,8 +293,8 @@ def xlsx_command(
     ),
     mode: Mode = typer.Option(Mode.standard, help="conservative, standard, strong"),
     engine: Engine = typer.Option(
-        Engine.hybrid,
-        help="hybrid (pełny stos neuronowy, domyślnie), nlp (Stanza), basic (bez modeli)",
+        Engine.basic,
+        help="basic (domyślnie, bez pobierania modeli), nlp (Stanza), hybrid (lokalne walidatory)",
     ),
     no_rewrite: bool = typer.Option(
         False, "--no-rewrite", help="Tylko diagnoza i bramka, bez kolumny z redakcją"
@@ -238,6 +312,27 @@ def xlsx_command(
         "--require-models",
         help="Przerwij zamiast po cichu degradować, gdy Stanza/Morfeusz są niedostępne",
     ),
+    document_type: DocumentType = typer.Option(
+        DocumentType.auto,
+        "--document-type",
+        help="auto, client_communication, contract albo filing_official",
+    ),
+    rewrite_backend: RewriteBackend = typer.Option(
+        RewriteBackend.rules,
+        "--rewrite-backend",
+        help="rules albo hybrid (reguły + hostowany model)",
+    ),
+    style_profile: Path = typer.Option(
+        None, "--style-profile", help="Katalog profilu kancelarii"
+    ),
+    format_policy: FormatPolicy = typer.Option(
+        FormatPolicy.preserve,
+        "--format-policy",
+        help="Zapis polityki formatowania w raporcie; XLSX nie normalizuje DOCX",
+    ),
+    require_llm: bool = typer.Option(
+        False, "--require-llm", help="Przerwij, jeśli hostowany model nie jest dostępny"
+    ),
 ) -> None:
     """Kolumna .xlsx: diagnoza → redakcja → bramka, wyniki dopisane obok."""
     output_path = output or workbook.with_name(f"{workbook.stem}_flow.xlsx")
@@ -251,7 +346,19 @@ def xlsx_command(
             output_path,
             column=column,
             settings=_settings(
-                mode, engine, no_rewrite, require_anchor, offline_models, require_models
+                mode,
+                engine,
+                no_rewrite,
+                require_anchor,
+                offline_models,
+                require_models,
+                document_type,
+                rewrite_backend,
+                style_profile,
+                None,
+                format_policy,
+                require_llm,
+                False,
             ),
             sheet_name=sheet,
             header_row=header_row or None,
@@ -273,6 +380,46 @@ def xlsx_command(
     _print_pdf(payload)
     if payload["summary"]["failed"]:
         raise typer.Exit(1)
+
+
+@app.command("profile")
+def profile_command(
+    samples: Path = typer.Argument(..., help="Folder z 5–20 zatwierdzonymi plikami .docx"),
+    name: str = typer.Option(..., "--name", help="Nazwa profilu kancelarii"),
+    document_type: DocumentType = typer.Option(
+        ...,
+        "--document-type",
+        help="client_communication, contract albo filing_official",
+    ),
+    style_guide: Path = typer.Option(
+        None, "--style-guide", help="Opcjonalna instrukcja YAML"
+    ),
+    template: Path = typer.Option(
+        None, "--template", help="Opcjonalny szablon .docx lub .dotx"
+    ),
+    output: Path = typer.Option(..., "--output", "-o", help="Katalog wynikowego profilu"),
+) -> None:
+    """Zbuduj zanonimizowany profil stylu kancelarii bez kalibracji detektora."""
+    if document_type == DocumentType.auto:
+        raise typer.BadParameter(
+            "Profil wymaga konkretnego rodzaju dokumentu.", param_hint="--document-type"
+        )
+    try:
+        profile = build_style_profile(
+            source_directory=samples,
+            output_directory=output,
+            name=name,
+            document_type=document_type,
+            style_guide=style_guide,
+            template=template,
+        )
+    except (OSError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    print(f"[green]Zapisano profil:[/green] {output}")
+    print(
+        f"  dokumenty: {profile.document_count}, słowa: {profile.word_count}, "
+        f"typ: {profile.document_type.value}"
+    )
 
 
 @app.command("report")

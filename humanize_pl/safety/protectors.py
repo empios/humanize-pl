@@ -21,6 +21,19 @@ PROTECTED_PATTERNS = [
     r"^\s*(?:\d+\.|[a-z]\)|[ivxlcdm]+\))\s+",
 ]
 
+# Used for text that leaves the process.  The local rule engine keeps its
+# established protection set for compatibility, while the hosted-model path
+# additionally pseudonymises likely parties and direct identifiers.
+SENSITIVE_PATTERNS = [
+    r"\b[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}\b",
+    r"https?://[^\s<>()]+",
+    r"\b(?:\+48\s*)?(?:\d[ -]?){9}\b",
+    r"\b(?:PESEL|NIP|REGON|KRS)\s*[:#]?\s*[A-Z0-9 -]{6,20}\b",
+    r"\bPL\d{26}\b",
+    r"\b[A-ZĄĆĘŁŃÓŚŹŻ]{2,}(?:[- ][A-ZĄĆĘŁŃÓŚŹŻ0-9]{2,})*\b",
+    r"\b[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+(?:[- ][A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+)+\b",
+]
+
 _COMPILED = [re.compile(p, re.IGNORECASE | re.MULTILINE) for p in PROTECTED_PATTERNS]
 
 
@@ -49,7 +62,7 @@ class ProtectedText:
         return result
 
 
-def protect_text(text: str) -> ProtectedText:
+def protect_text(text: str, *, include_sensitive: bool = False) -> ProtectedText:
     mapping: dict[str, str] = {}
     counter = 0
 
@@ -61,7 +74,10 @@ def protect_text(text: str) -> ProtectedText:
         return key
 
     protected = text
-    for pattern in _COMPILED:
+    patterns = list(_COMPILED)
+    if include_sensitive:
+        patterns = [re.compile(p, re.MULTILINE) for p in SENSITIVE_PATTERNS] + patterns
+    for pattern in patterns:
         protected = pattern.sub(repl, protected)
 
     return ProtectedText(text=protected, mapping=mapping)

@@ -15,10 +15,12 @@ from rich import print
 
 from humanize_pl.config import Engine, Mode
 from humanize_pl.core import HumanizeResult, humanize_text
+from humanize_pl.detect import detect_document
 from humanize_pl.io.docx_io import process_docx
+from humanize_pl.io.docx_structure import inventory_docx
 from humanize_pl.reports.report import write_json_report
 from humanize_pl.safety.protectors import protect_text
-from humanize_pl.safety.validators import has_stranded_relative_clause
+from humanize_pl.safety.validators import has_stranded_relative_clause, legal_sensitive_inventory
 
 
 DEFAULT_MANIFEST = Path("docs_tests/ai_generated/manifest.json")
@@ -35,6 +37,7 @@ class BenchmarkDocument:
     type: str = "unknown"
     focus: list[str] = field(default_factory=list)
     source_kind: str = "txt"
+    lawyer_path: Path | None = None
 
 
 @dataclass
@@ -61,6 +64,7 @@ class BenchmarkRow:
     gate_rejections: dict[str, int] = field(default_factory=dict)
     safety: dict[str, Any] = field(default_factory=dict)
     warnings: list[str] = field(default_factory=list)
+    evaluation: dict[str, Any] = field(default_factory=dict)
     error: str | None = None
 
 
@@ -128,6 +132,9 @@ def load_manifest(path: str | Path) -> list[BenchmarkDocument]:
         source_path = path.parent / file_name
         if not source_path.exists():
             raise FileNotFoundError(f"Manifest document not found: {source_path}")
+        lawyer_path = path.parent / item["lawyer_file"] if item.get("lawyer_file") else None
+        if lawyer_path is not None and not lawyer_path.exists():
+            raise FileNotFoundError(f"Lawyer reference not found: {lawyer_path}")
         documents.append(
             BenchmarkDocument(
                 id=item["id"],
@@ -135,6 +142,7 @@ def load_manifest(path: str | Path) -> list[BenchmarkDocument]:
                 type=item.get("type", "unknown"),
                 focus=list(item.get("focus", [])),
                 source_kind="txt",
+                lawyer_path=lawyer_path,
             )
         )
     return sorted(documents, key=lambda doc: doc.id)
@@ -197,6 +205,9 @@ def safety_checks(original: str, rewritten: str) -> dict[str, Any]:
         "numbers_preserved": _numbers(original) == _numbers(rewritten),
         "protected_fragments_preserved": _protected_values(original_protected)
         <= _protected_values(rewritten_protected),
+        "legal_sensitive_content_preserved": (
+            legal_sensitive_inventory(original) == legal_sensitive_inventory(rewritten)
+        ),
     }
     checks["passed"] = all(checks.values())
     return checks
@@ -212,6 +223,7 @@ def render_review_markdown(rows: list[BenchmarkRow]) -> str:
     lines.append(f"- Runs: {aggregate['runs']}")
     lines.append(f"- OK: {aggregate['ok']}")
     lines.append(f"- Failed safety: {aggregate['failed_safety']}")
+    lines.append(f"- Failed quality: {aggregate['failed_quality']}")
     lines.append(f"- Model unavailable: {aggregate['model_unavailable']}")
     lines.append(f"- Accepted changes: {aggregate['accepted_changes']}")
     lines.append(f"- Processing seconds: {aggregate['processing_seconds']:.4f}")
@@ -235,6 +247,21 @@ def render_review_markdown(rows: list[BenchmarkRow]) -> str:
     lines.append("")
     safety_sections = _safety_signal_sections(rows)
     lines.extend(safety_sections or ["Brak sygnałów bezpieczeństwa."])
+    lines.append("")
+    lines.append("## Four-layer release evaluation")
+    lines.append("")
+    lines.append(
+        "Status OK wymaga łącznie: bezpieczeństwa treści, jakości języka, "
+        "zgodności stylu i zachowania formatowania."
+    )
+    for row in sorted(rows, key=lambda item: (item.document_id, item.engine)):
+        layers = row.evaluation or {}
+        labels = [
+            f"{name}={'OK' if value.get('passed') else 'FAIL'}"
+            for name, value in layers.items()
+            if isinstance(value, dict)
+        ]
+        lines.append(f"- {row.document_id}/{row.engine}: " + ", ".join(labels))
     lines.append("")
     lines.append("## Rejected Candidates")
     lines.append("")
@@ -293,8 +320,22 @@ def _run_one(
     report_path = engine_dir / f"{document.id}.json"
     write_json_report(result, report_path)
     payload = json.loads(report_path.read_text(encoding="utf-8"))
-    safety = safety_checks(original_text, result.text if document.source_kind == "txt" else _read_docx_text(output_path))
-    status = "ok" if safety["passed"] else "failed_safety"
+    rewritten_text = result.text if document.source_kind == "txt" else _read_docx_text(output_path)
+    safety = safety_checks(original_text, rewritten_text)
+    evaluation = _four_layer_evaluation(
+        document,
+        original_text=original_text,
+        rewritten_text=rewritten_text,
+        output_path=output_path,
+        safety=safety,
+    )
+    row.evaluation = evaluation
+    if all(layer["passed"] for layer in evaluation.values()):
+        status = "ok"
+    elif not evaluation["safety"]["passed"]:
+        status = "failed_safety"
+    else:
+        status = "failed_quality"
     return _row_from_payload(
         row,
         payload=payload,
@@ -371,6 +412,67 @@ def _row_from_payload(
     return row
 
 
+def _four_layer_evaluation(
+    document: BenchmarkDocument,
+    *,
+    original_text: str,
+    rewritten_text: str,
+    output_path: Path,
+    safety: dict[str, Any],
+) -> dict[str, dict[str, Any]]:
+    before = detect_document(original_text, calibrate_against_default=False)
+    after = detect_document(rewritten_text, calibrate_against_default=False)
+    tolerance_ok = after.ai_signal_score <= before.ai_signal_score + 0.02
+    lawyer_reference = None
+    if document.lawyer_path and document.lawyer_path.exists():
+        lawyer_reference = document.lawyer_path.read_text(encoding="utf-8")
+    language_passed = (
+        bool(safety.get("no_english_markers"))
+        and bool(safety.get("no_bad_split_phrase"))
+        and bool(safety.get("no_stranded_relative_clause"))
+    )
+    reference_distance = None
+    if lawyer_reference is not None:
+        lawyer_signal = detect_document(
+            lawyer_reference, calibrate_against_default=False
+        ).ai_signal_score
+        before_distance = abs(before.ai_signal_score - lawyer_signal)
+        after_distance = abs(after.ai_signal_score - lawyer_signal)
+        reference_distance = {
+            "before": round(before_distance, 4),
+            "after": round(after_distance, 4),
+        }
+        language_passed = language_passed and after_distance <= before_distance + 0.02
+    language = {
+        "passed": language_passed,
+        "lawyer_reference_available": lawyer_reference is not None,
+        "distance_to_lawyer_style": reference_distance,
+    }
+    style = {
+        "passed": tolerance_ok,
+        "signal_before": before.ai_signal_score,
+        "signal_after": after.ai_signal_score,
+        "maximum_allowed_regression": 0.02,
+        "calibrated": False,
+    }
+    formatting: dict[str, Any] = {"passed": True, "not_applicable": True}
+    if document.source_kind == "docx":
+        differences = inventory_docx(document.path).structural_differences(
+            inventory_docx(output_path)
+        )
+        formatting = {
+            "passed": not differences,
+            "not_applicable": False,
+            "inventory_differences": differences,
+        }
+    return {
+        "safety": {"passed": bool(safety.get("passed"))},
+        "language_quality": language,
+        "style_compliance": style,
+        "formatting": formatting,
+    }
+
+
 def _write_summary_csv(rows: list[BenchmarkRow], path: Path) -> None:
     fieldnames = [
         "document_id",
@@ -415,6 +517,7 @@ def _aggregate(rows: list[BenchmarkRow]) -> dict[str, Any]:
         "runs": len(rows),
         "ok": sum(1 for row in rows if row.status == "ok"),
         "failed_safety": sum(1 for row in rows if row.status == "failed_safety"),
+        "failed_quality": sum(1 for row in rows if row.status == "failed_quality"),
         "model_unavailable": sum(1 for row in rows if row.status == "model_unavailable"),
         "accepted_changes": sum(row.accepted_changes for row in rows),
         "rejected_candidates": sum(row.rejected_candidates for row in rows),

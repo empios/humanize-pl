@@ -32,6 +32,8 @@ def write_docx(path, text: str) -> None:
 
 
 def test_docx_flow_writes_the_pdf_next_to_the_json_report(tmp_path) -> None:
+    from pypdf import PdfReader
+
     source = tmp_path / "in"
     source.mkdir()
     write_docx(source / "opinia.docx", AI_TEXT)
@@ -44,6 +46,17 @@ def test_docx_flow_writes_the_pdf_next_to_the_json_report(tmp_path) -> None:
     assert report.read_bytes().startswith(b"%PDF")
     assert payload["pdf_report"] == str(report)
     assert payload["pdf_error"] is None
+    assert len(payload["documents"][0]["applied_changes"]) == payload["summary"][
+        "changes_applied"
+    ]
+    assert payload["documents"][0]["unresolved_findings"]
+    text = "\n".join(page.extract_text() or "" for page in PdfReader(report).pages)
+    assert "Raport zmian" in text
+    assert "Wykaz zastosowanych zmian" in text
+    assert "Uwagi bez automatycznej poprawki" in text
+    assert "Podstawa i ograniczenia analizy" in text
+    assert "Co się zmieniło w tekście" not in text
+    assert "Jak to sprawdzaliśmy" not in text
 
 
 def test_pdf_can_be_turned_off(tmp_path) -> None:
@@ -67,6 +80,8 @@ def write_xlsx(path, openpyxl) -> None:
 
 def test_xlsx_flow_writes_the_pdf_beside_the_workbook(tmp_path) -> None:
     openpyxl = pytest.importorskip("openpyxl")
+    from pypdf import PdfReader
+
     source = tmp_path / "in.xlsx"
     write_xlsx(source, openpyxl)
 
@@ -75,6 +90,112 @@ def test_xlsx_flow_writes_the_pdf_beside_the_workbook(tmp_path) -> None:
     report = tmp_path / "out_raport.pdf"
     assert report.exists()
     assert payload["pdf_report"] == str(report)
+    assert len(payload["rows"][0]["applied_changes"]) == payload["summary"]["changes_applied"]
+    assert payload["rows"][0]["unresolved_findings"]
+    text = "\n".join(page.extract_text() or "" for page in PdfReader(report).pages)
+    assert "Wykaz zastosowanych zmian" in text
+    assert "Uwagi bez automatycznej poprawki" in text
+    assert "Decyzja recenzenta" not in text
+    assert "Komentarz" not in text
+    assert "Status" not in text
+    assert "[ ]" not in text
+
+
+def test_xlsx_pdf_marks_the_exact_changed_tokens() -> None:
+    before, after = pdf_pl._diff_markup(
+        "Organ ma szczególne znaczenie dla sprawy.",
+        "Organ ma duże znaczenie dla sprawy.",
+    )
+
+    assert f"color='{pdf_pl.DIFF_BAD}'><strike>szczególne</strike>" in before
+    assert f"color='{pdf_pl.DIFF_GOOD}'><b>duże</b>" in after
+
+
+def test_xlsx_pdf_uses_the_full_change_register_not_only_examples() -> None:
+    changes = [
+        {
+            "before": f"Zdanie {index} przed.",
+            "after": f"Zdanie {index} po.",
+            "issue": "legal_ai_style_rewrite",
+            "risk": 0.1,
+            "gate_results": [],
+        }
+        for index in range(6)
+    ]
+    payload = _detail_payload(
+        [
+            {
+                "name": "wiersz 2",
+                "status": "ok",
+                "signal_before": 0.6,
+                "signal_after": 0.4,
+                "needs_review": True,
+                "changes_applied": 6,
+                "examples": changes[:4],
+                "applied_changes": changes,
+                "unresolved_findings": [],
+                "constraints": [],
+            }
+        ]
+    )
+    report = pdf_pl._Report(payload, 400, pdf_pl._styles())
+
+    assert len(report._xlsx_change_entries()) == 6
+    assert report._xlsx_unresolved_entries() == []
+
+
+def test_xlsx_pdf_does_not_count_an_entry_without_a_visible_change() -> None:
+    payload = _detail_payload(
+        [
+            {
+                "name": "wiersz 2",
+                "status": "ok",
+                "signal_before": 0.4,
+                "signal_after": 0.4,
+                "needs_review": False,
+                "changes_applied": 1,
+                "examples": [],
+                "applied_changes": [
+                    {
+                        "before": "Treść bez zmiany.",
+                        "after": "Treść bez zmiany.",
+                        "issue": "unknown",
+                    }
+                ],
+                "unresolved_findings": [],
+                "constraints": [],
+            }
+        ]
+    )
+    payload["summary"]["changes_applied"] = 1
+
+    report = pdf_pl._Report(payload, 400, pdf_pl._styles())
+
+    assert report.changes == 0
+    assert report._xlsx_change_entries() == []
+
+
+def test_xlsx_headline_does_not_confuse_gate_review_with_the_score_threshold() -> None:
+    payload = _detail_payload(
+        [
+            {
+                "name": "wiersz 2",
+                "status": "ok",
+                "signal_before": 0.2,
+                "signal_after": 0.2,
+                "needs_review": True,
+                "changes_applied": 0,
+                "examples": [],
+                "applied_changes": [],
+                "unresolved_findings": [],
+                "constraints": [],
+            }
+        ]
+    )
+    report = pdf_pl._Report(payload, 400, pdf_pl._styles())
+
+    assert "powyżej progu" not in report.headline_sentence()
+    assert "wymaga jeszcze przeglądu" in report.headline_sentence()
 
 
 def test_a_missing_dependency_is_reported_not_raised(tmp_path, monkeypatch) -> None:
@@ -378,6 +499,8 @@ def test_xlsx_flow_writes_its_json_report_without_being_asked(tmp_path) -> None:
 
     saved = json.loads(report.read_text(encoding="utf-8"))
     assert saved["rows"][0]["family_counts_before"]
+    assert len(saved["rows"][0]["applied_changes"]) == saved["summary"]["changes_applied"]
+    assert saved["rows"][0]["unresolved_findings"]
 
 
 def test_report_can_be_rebuilt_from_a_finished_workbook(tmp_path) -> None:
@@ -440,6 +563,18 @@ def test_a_multi_step_rewrite_is_shown_as_one_change() -> None:
     )
 
     assert [(row["before"], row["after"]) for row in collapsed] == [("A", "C"), ("D", "E")]
+
+
+def test_a_reverted_or_whitespace_only_rewrite_is_not_shown() -> None:
+    collapsed = pdf_pl._collapse_chains(
+        [
+            {"before": "A", "after": "B", "issue": "x"},
+            {"before": "B", "after": "A", "issue": "y"},
+            {"before": "Bez   zmiany", "after": "Bez zmiany", "issue": "z"},
+        ]
+    )
+
+    assert collapsed == []
 
 
 def test_the_flow_keeps_examples_of_what_it_changed(tmp_path) -> None:

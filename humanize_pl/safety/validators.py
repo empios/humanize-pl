@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from collections import Counter
 import regex as re
 
 from .anchors import content_anchor_retention, content_anchor_tokens
@@ -53,6 +54,31 @@ SENTENCE_TRANSITIONS = (
     "Wynika to z tego, że",
 )
 
+SENSITIVE_INVENTORY_PATTERNS = {
+    "legal_references": (
+        r"\bart\.\s*\d+[a-zA-Z]?(?:\s*§\s*\d+[a-zA-Z]?)?",
+        r"\b(?:ust\.|pkt)\s*\d+[a-zA-Z]?",
+        r"\bDz\.\s*U\.\b[^,.;)]*",
+    ),
+    "dates": (
+        r"\b\d{1,2}[./-]\d{1,2}[./-]\d{2,4}\b",
+        r"\b\d{4}\s*r\.",
+    ),
+    "amounts": (r"\b\d+(?:[,.]\d+)?\s*(?:zł|PLN|EUR|USD|%)\b",),
+    "identifiers": (
+        r"\b(?:PESEL|NIP|REGON|KRS)\s*[:#]?\s*[A-Z0-9 -]{6,20}\b",
+        r"\bPL\d{26}\b",
+    ),
+    "defined_terms_and_quotes": (r"„[^”]+”", r'"[^"]+"'),
+    "party_names": (
+        r"\b[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+(?:[- ][A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+)+\b",
+    ),
+    "legal_modality": (
+        r"\b(?:może|mogą|mógł|mogła|powinien|powinna|powinno|powinni|musi|muszą|"
+        r"zobowiązuje\s+się|jest\s+zobowiązan[ay])\b",
+    ),
+}
+
 
 @dataclass
 class GateCheck:
@@ -70,6 +96,18 @@ class ValidationResult:
 
 def _numbers(text: str) -> list[str]:
     return re.findall(r"\d+(?:[,.]\d+)?", text)
+
+
+def legal_sensitive_inventory(text: str) -> dict[str, Counter[str]]:
+    """Values whose exact preservation matters more than stylistic gain."""
+    inventory: dict[str, Counter[str]] = {}
+    for category, patterns in SENSITIVE_INVENTORY_PATTERNS.items():
+        values: list[str] = []
+        for pattern in patterns:
+            flags = 0 if category == "party_names" else re.IGNORECASE
+            values.extend(match.group(0) for match in re.finditer(pattern, text, flags))
+        inventory[category] = Counter(value.casefold() for value in values)
+    return inventory
 
 
 def _sentence_count(text: str) -> int:
@@ -194,6 +232,17 @@ def validate_candidate(
     if normativity_signature(restored_original) != normativity_signature(restored_candidate):
         return _failed("normativity_preserved", "normativity changed", checks)
     _passed("normativity_preserved", checks)
+
+    source_inventory = legal_sensitive_inventory(restored_original)
+    candidate_inventory = legal_sensitive_inventory(restored_candidate)
+    for category in SENSITIVE_INVENTORY_PATTERNS:
+        if source_inventory[category] != candidate_inventory[category]:
+            return _failed(
+                f"{category}_preserved",
+                f"legally sensitive inventory changed: {category}",
+                checks,
+            )
+        _passed(f"{category}_preserved", checks)
 
     anchor_tokens = content_anchor_tokens(protected.restore(original))
     if len(anchor_tokens) >= 4:

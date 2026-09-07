@@ -59,7 +59,12 @@ class HumanizerSession:
     def humanize(self, text: str, *, include_candidates: bool = False) -> HumanizeResult:
         # Detection is deliberately outside the rewrite pipeline: it must report
         # signals even in conservative mode, where no candidate is generated.
-        diagnosis = detect_document(text)
+        diagnosis = detect_document(
+            text,
+            calibrate_against_default=(
+                self.config.legal_review_profile == LegalReviewProfile.legal_ai_review
+            ),
+        )
         protected = protect_text(text)
         pipeline = LegalPipeline(
             config=self.config,

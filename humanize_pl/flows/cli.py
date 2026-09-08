@@ -422,6 +422,43 @@ def profile_command(
     )
 
 
+@app.command("blueprint")
+def blueprint_command(
+    samples: Path = typer.Argument(..., help="Folder z zatwierdzonymi plikami .docx jednego rodzaju"),
+    category: str = typer.Option(..., "--category", help="Kategoria prawnicza, np. umowa_uslug"),
+    output: Path = typer.Option(..., "--output", "-o", help="Plik YAML z propozycją szkieletu"),
+    label: str = typer.Option(None, "--label", help="Nazwa czytelna dla człowieka"),
+) -> None:
+    """Zaproponuj szkielet struktury na podstawie zatwierdzonych dokumentów."""
+    from humanize_pl.blueprint_learning import learn_from_directory, to_yaml
+    from humanize_pl.categories import CategoryCatalogueError, get
+
+    try:
+        known = get(category)
+    except CategoryCatalogueError as exc:
+        raise typer.BadParameter(str(exc), param_hint="--category") from exc
+    try:
+        learned = learn_from_directory(samples, category=category)
+    except (OSError, ValueError) as exc:
+        raise typer.BadParameter(str(exc), param_hint="samples") from exc
+
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(to_yaml(learned, label_pl=label or known.label_pl), encoding="utf-8")
+
+    print(f"[green]Propozycja szkieletu:[/green] {output}")
+    print(f"  dokumentów: {learned.documents}  numeracja: {learned.numbering or 'brak'}")
+    for section in learned.sections:
+        share = section.documents / learned.documents
+        marker = "wymagana" if section.severity(learned.documents) == "required" else "oczekiwana"
+        print(f"  - {section.label_pl}  [{marker}, {section.documents}/{learned.documents}, {share:.0%}]")
+    for row in learned.skipped:
+        print(f"  [dim]pominięto: {row}[/dim]")
+    print(
+        "\n[yellow]To propozycja, nie gotowy szkielet.[/yellow] Przeczytaj plik, popraw "
+        "progi i wzorce, dopiero potem przenieś go do humanize_pl/data/blueprints/."
+    )
+
+
 @app.command("report")
 def report_command(
     source: Path = typer.Argument(

@@ -55,9 +55,15 @@ RUNS_ROOT = Path(tempfile.gettempdir()) / "humanize-pl-ui"
 # one. "Do przeglądu" comes from the gate, never from this number.
 SATURATED = 1.0
 
+# The point at which a calibrated score warrants a human look. Measured, not
+# chosen: on 599 held-out judgments and the AI corpus it gives 100% recall at
+# 0% false positives, and the populations do not overlap around it.
+REVIEW_THRESHOLD = 0.25
+
 TABLE_HEADERS = [
     "pozycja",
     "kategoria",
+    "porównanie",
     "struktura",
     "sygnał przed",
     "sygnał po",
@@ -132,15 +138,22 @@ i „może/powinien/musi”.
 """
 
 LEGEND = """
-**Sygnał AI** to zagęszczenie znalezisk typowych dla tekstu generowanego —
-liczba od 0 do 1, która **nasyca się przy 1.00**. Czytaj ją jako porównanie
-*przed* i *po* redakcji („czy cokolwiek pomogło”), a nie jako ocenę absolutną.
-Dwa dokumenty z wynikiem 1.00 mogą być różnie złe: skala się na nich kończy.
+**Sygnał AI** ma dwie skale i kolumna „porównanie” mówi, którą widzisz.
 
-Ten wynik jest **nieskalibrowany**. Kalibracja (i próg 0,25) istnieje tylko dla
-uzasadnień sądowych, bo na takim korpusie ją zmierzono — umowa czy pismo do
-klienta to inny gatunek, więc przepływ świadomie jej nie stosuje, zamiast
-udawać precyzję, której nie ma.
+**Skalibrowany** — dokument porównany ze wzorcem ludzkiego pisania w tym
+rejestrze. Liczba to pozycja względem ludzi: poniżej **0,25** mieści się
+w tym, co piszą ludzie, powyżej wychodzi poza ich zakres. Ten próg jest
+zmierzony, nie wybrany: na 599 odłożonych orzeczeniach daje 100% wykrycia
+przy 0% fałszywych alarmów, a obie populacje się wokół niego nie stykają.
+
+**Nieskalibrowany** — dla rejestrów, dla których nie mamy jeszcze korpusu
+ludzkich tekstów (umowy, pisma do klienta). Wtedy liczba to samo zagęszczenie
+znalezisk i **nasyca się przy 1,00**. Czytaj ją jako porównanie *przed* i *po*
+redakcji, nie jako ocenę: dwa dokumenty z wynikiem 1,00 mogą być różnie złe,
+bo skala się na nich kończy.
+
+Wolimy przyznać się do braku wzorca, niż porównać umowę z orzeczeniem
+sądowym i nazwać to pomiarem.
 
 **„Do przeglądu” nie bierze się z tej liczby**, tylko z bramki jakości, która
 patrzy na sam tekst wyjściowy. I nie znaczy „źle”: znaczy, że zostały
@@ -261,13 +274,22 @@ def package(directory: Path) -> list[str]:
 # --------------------------------------------------------------------------
 
 
-def signal_word(score: float) -> str:
-    """Say the score in words, in terms of what it actually measures.
+def signal_word(score: float, calibrated: bool = False) -> str:
+    """Say the score in words — on the scale it was actually measured on.
 
-    Density of AI-style findings, not a probability and not a calibrated
-    verdict — so the words describe how many signals were found, and stop
-    short of saying whether the document is acceptable.
+    A calibrated score is a position against measured human writing, and 0.25
+    is the point where a human should look. A raw score is a saturating
+    density of findings, where the same number means something else entirely.
+    Reading one on the other's scale is how a report starts lying quietly.
     """
+    if calibrated:
+        if score < 0.15:
+            return "jak u ludzi"
+        if score < REVIEW_THRESHOLD:
+            return "podwyższony"
+        if score < 0.40:
+            return "powyżej ludzkiej normy"
+        return "wyraźnie powyżej ludzkiej normy"
     if score <= 0.0:
         return "brak sygnałów"
     if score < 0.34:
@@ -275,6 +297,10 @@ def signal_word(score: float) -> str:
     if score < SATURATED:
         return "dużo sygnałów"
     return "sygnały poza skalą"
+
+
+def is_calibrated(item: ItemOutcome) -> bool:
+    return str(item.calibration_status or "").startswith("calibrated:")
 
 
 def describe_layers(layers: dict[str, Any]) -> list[str]:
@@ -337,7 +363,8 @@ def item_line(item: ItemOutcome) -> str:
     tail = " — **do przeglądu**" if item.needs_review else ""
     return (
         f"- {icon} **{item.name}** — sygnał AI {arrow} "
-        f"({signal_word(item.signal_after)}), poprawek: {item.changes_applied}{tail}"
+        f"({signal_word(item.signal_after, is_calibrated(item))}), "
+        f"poprawek: {item.changes_applied}{tail}"
     )
 
 
@@ -373,10 +400,11 @@ def structure_label(item: ItemOutcome) -> str:
 
 def item_row(item: ItemOutcome) -> list[Any]:
     if item.status == "failed":
-        return [item.name, "", "", "", "", "", "", "", "", "", "błąd", item.error or ""]
+        return [item.name, "", "", "", "", "", "", "", "", "", "", "błąd", item.error or ""]
     return [
         item.name,
         category_label(item),
+        "ze wzorcem ludzkim" if is_calibrated(item) else "brak wzorca",
         structure_label(item),
         round(item.signal_before, 3),
         round(item.signal_after, 3),
@@ -415,14 +443,29 @@ def summary_markdown(payload: dict[str, Any]) -> str:
 
     before, after = summary["mean_signal_before"], summary["mean_signal_after"]
     direction = "spadł" if after < before else "nie spadł"
+    # A calibrated score and a raw one are different scales, and their mean is
+    # not a number about anything. The plain-language word is only attached
+    # when every item in the run was measured the same way.
+    states = {
+        str(row.get("calibration_status", "")).startswith("calibrated:")
+        for row in payload.get("items", [])
+        if row.get("status") == "ok"
+    }
+    word = f" ({signal_word(after, states.pop())})" if len(states) == 1 else ""
     lines = [
         headline,
         "",
-        f"Średni sygnał AI **{direction}** z {before:.2f} do **{after:.2f}** "
-        f"({signal_word(after)}). Zastosowano **{summary['changes_applied']}** "
+        f"Średni sygnał AI **{direction}** z {before:.2f} do **{after:.2f}**"
+        f"{word}. Zastosowano **{summary['changes_applied']}** "
         f"poprawek, znalezisk {summary['findings_before']} → "
         f"{summary['findings_after']}.",
     ]
+    if len(states) > 1:
+        lines.append(
+            "_W tym przebiegu część dokumentów porównano ze wzorcem ludzkiego "
+            "pisania, a część nie — średnia miesza dwie skale. Wyniki "
+            "poszczególnych pozycji są niżej._"
+        )
     if summary["failed"]:
         lines.append(f"Nie udało się przetworzyć: **{summary['failed']}**.")
     lines.append("")

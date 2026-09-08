@@ -102,3 +102,77 @@ def test_near_zero_human_rate_uses_a_floor_instead_of_dividing_by_zero() -> None
     """A single occurrence of a family humans never use must not max the score."""
     assert _exceedance_high(observed=0.4, human_p95=0.0) == 0.0
     assert 0.0 < _exceedance_high(observed=0.7, human_p95=0.0) < 1.0
+
+
+def test_calibration_is_chosen_by_family_and_absent_families_stay_uncalibrated() -> None:
+    """A family with no measured corpus must not borrow another's numbers.
+
+    The SAOS profile is court reasoning. Using it for a contract would compare
+    a document against a register it does not belong to and present the result
+    as a measurement.
+    """
+    from humanize_pl.detect import profile_for_family
+
+    assert profile_for_family("filing_official") is not None
+    assert profile_for_family("contract") is None
+    assert profile_for_family("client_communication") is None
+    assert profile_for_family("nieistniejaca") is None
+
+
+def test_flow_reports_which_profile_calibrated_the_document() -> None:
+    """"Not checked" and "nothing wrong" must not look the same in a report."""
+    from pathlib import Path
+
+    from humanize_pl.config import Engine, Mode
+    from humanize_pl.flows.base import FlowSettings, run_all_layers
+
+    settings = FlowSettings(mode=Mode.standard, engine=Engine.basic, rewrite=False)
+    fixtures = Path("docs_tests/ai_generated")
+
+    filing, _ = run_all_layers(
+        (fixtures / "ai_legal_07_pozew_zaplate.txt").read_text(encoding="utf-8"),
+        name="pozew.docx",
+        settings=settings,
+    )
+    assert filing.calibration_status.startswith("calibrated:")
+    # A calibrated score lives on the human scale, not the saturating one.
+    assert 0.0 < filing.signal_before < 1.0
+
+    contract, _ = run_all_layers(
+        (fixtures / "ai_legal_01_umowa_uslug.txt").read_text(encoding="utf-8"),
+        name="umowa.docx",
+        settings=settings,
+    )
+    assert contract.calibration_status == "uncalibrated:contract"
+
+
+def test_the_operating_point_still_separates_the_populations() -> None:
+    """The threshold is measured, and it has to keep being true.
+
+    Human court reasoning must stay below the review threshold and AI filings
+    above it. If a change to detection or calibration ever closes that gap,
+    the number the report shows a lawyer stops meaning anything.
+    """
+    from pathlib import Path
+
+    from humanize_pl.detect import detect_document, profile_for_family
+    from humanize_pl.detect.calibration import REVIEW_THRESHOLD
+
+    reference = profile_for_family("filing_official")
+    human = (
+        "Sąd ustalił, że powód zawarł z pozwanym umowę sprzedaży, na podstawie "
+        "której wydano towar w dniu 3 marca. Pozwany zapłacił część ceny, a "
+        "reszty nie uiścił mimo wezwania. W ocenie Sądu roszczenie jest zasadne "
+        "co do kwoty głównej. Odsetki należą się od dnia wymagalności."
+    )
+    ai_text = (Path("docs_tests/ai_generated") / "ai_legal_05_pismo_urzedowe.txt").read_text(
+        encoding="utf-8"
+    )
+    ai = detect_document(ai_text, profile=reference, calibrate_against_default=False)
+    assert ai.calibration is not None
+    assert ai.calibration.calibrated_score >= REVIEW_THRESHOLD
+    assert ai.calibration.above_human_range
+
+    plain = detect_document(human, profile=reference, calibrate_against_default=False)
+    assert plain.calibration is not None
+    assert plain.calibration.calibrated_score < REVIEW_THRESHOLD

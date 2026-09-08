@@ -126,9 +126,17 @@ def review_response(
     threshold: float = REVIEW_THRESHOLD,
     require_anchor: bool = True,
     calibrate_against_default: bool = True,
+    profile=None,
 ) -> GateVerdict:
-    """Judge an AI-drafted answer and say what to change, without changing it."""
-    diagnosis = detect_document(text, calibrate_against_default=calibrate_against_default)
+    """Judge an AI-drafted answer and say what to change, without changing it.
+
+    `profile` calibrates the score before it meets the threshold. Without one
+    the raw score is compared instead, and that score saturates - which made
+    the gate demand review of very nearly everything.
+    """
+    diagnosis = detect_document(
+        text, profile=profile, calibrate_against_default=calibrate_against_default
+    )
     calibration = diagnosis.calibration
     score = calibration.calibrated_score if calibration else diagnosis.ai_signal_score
 

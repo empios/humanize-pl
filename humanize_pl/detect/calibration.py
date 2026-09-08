@@ -10,6 +10,24 @@ from .base import DocumentDiagnosis
 PROFILE_DIR = Path(__file__).resolve().parent.parent / "data" / "reference_profiles"
 DEFAULT_PROFILE = "saos_common_2018_2024"
 
+# Which reference profile calibrates which document family.
+#
+# Families, not categories. The detector measures register-level statistics —
+# sentence length and its variance, opening diversity, family rates — and
+# those separate a pleading from a contract far more sharply than they
+# separate a pleading from an appeal. Calibrating all 28 legal categories
+# would need 28 corpora, and only a few registers have sources that are both
+# open and lawfully reusable: court and administrative rulings, procurement
+# contract templates, official correspondence.
+#
+# A family absent from this map is reported uncalibrated rather than
+# calibrated against something adjacent. The SAOS profile is court reasoning;
+# using it for a contract would compare a document against a register it does
+# not belong to and dress the result up as a measurement.
+FAMILY_PROFILES: dict[str, str] = {
+    "filing_official": DEFAULT_PROFILE,
+}
+
 # Families whose human p95 is at or near zero need a floor, otherwise a single
 # occurrence divides by ~0 and saturates the score on its own.
 RATE_FLOOR_PER_1000 = 0.5
@@ -68,6 +86,12 @@ class Calibration:
     def above_human_range(self) -> bool:
         """True when the document warrants human review, not a verdict of AI."""
         return self.calibrated_score >= REVIEW_THRESHOLD
+
+
+def profile_for_family(family: str) -> ReferenceProfile | None:
+    """The profile calibrating `family`, or None when none is measured yet."""
+    name = FAMILY_PROFILES.get(family)
+    return load_profile(name) if name else None
 
 
 @lru_cache(maxsize=8)

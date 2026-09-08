@@ -22,7 +22,7 @@ from humanize_pl.config import Engine, LegalReviewProfile, Mode
 from humanize_pl.core import HumanizerSession, create_humanizer_session
 from humanize_pl.blueprint import check_category
 from humanize_pl.categories import classify_category
-from humanize_pl.detect import detect_document, load_profile
+from humanize_pl.detect import detect_document, load_profile, profile_for_family
 from humanize_pl.document import (
     DocumentType,
     FormatPolicy,
@@ -371,7 +371,10 @@ def run_all_layers(
         guess = type(guess)(resolved_type, 1.0, ("typ wskazany przez użytkownika",))
     category = classify_category(text)
     style_profile = style_profile or settings.load_style_profile()
-    before = detect_document(text, calibrate_against_default=False)
+    # Calibration is chosen by family, and a family with no measured corpus
+    # stays uncalibrated rather than borrowing an adjacent register's numbers.
+    reference = profile_for_family(resolved_type.value)
+    before = detect_document(text, profile=reference, calibrate_against_default=False)
     outcome = ItemOutcome(
         name=name,
         words=before.word_count,
@@ -385,7 +388,10 @@ def run_all_layers(
         document_type_confidence=guess.confidence,
         document_type_evidence=list(guess.evidence),
         legal_category=category.to_json(),
-        calibration_status="uncalibrated_for_document_genre",
+        calibration_status=(
+            f"calibrated:{reference.name}" if reference else
+            f"uncalibrated:{resolved_type.value}"
+        ),
     )
     outcome.warnings.extend(llm_initialization_warnings or [])
     # Two classifiers looked at the same text: the coarse family one and the
@@ -502,7 +508,9 @@ def run_all_layers(
 
     outcome.text_out = text_out
     after = (
-        detect_document(text_out, calibrate_against_default=False) if text_out != text else before
+        detect_document(text_out, profile=reference, calibrate_against_default=False)
+        if text_out != text
+        else before
     )
     outcome.signal_after = _score(after)
     outcome.findings_after = len(after.findings)
@@ -524,6 +532,7 @@ def run_all_layers(
         text_out,
         require_anchor=settings.require_anchor,
         calibrate_against_default=False,
+        profile=reference,
     )
     outcome.needs_review = verdict.needs_revision
     outcome.constraints = verdict.prompt_constraints

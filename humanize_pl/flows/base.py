@@ -371,9 +371,34 @@ def run_all_layers(
         guess = type(guess)(resolved_type, 1.0, ("typ wskazany przez użytkownika",))
     category = classify_category(text)
     style_profile = style_profile or settings.load_style_profile()
-    # Calibration is chosen by family, and a family with no measured corpus
-    # stays uncalibrated rather than borrowing an adjacent register's numbers.
-    reference = profile_for_family(resolved_type.value)
+
+    # The office profile is resolved before the baseline is chosen, because it
+    # can supply that baseline. One that describes a different kind of document
+    # is dropped here rather than half-used later.
+    profile_warnings: list[str] = []
+    if style_profile and style_profile.document_type != resolved_type:
+        profile_warnings.append(
+            "Profil kancelarii dotyczy innego rodzaju dokumentu; nie użyto go do redakcji."
+        )
+        style_profile = None
+
+    # An office's own documents outrank the public corpus for that office's
+    # work: a firm's contracts are a truer yardstick for its drafting than
+    # procurement templates would ever be. Failing that, calibration is chosen
+    # by family, and a family with no measured corpus stays uncalibrated
+    # rather than borrowing an adjacent register's numbers.
+    office_reference = style_profile.reference_profile() if style_profile else None
+    reference = office_reference or profile_for_family(resolved_type.value)
+    if style_profile is not None:
+        # Carried into every run, not left in the profile file: a baseline
+        # measured on AI-assisted drafts silently disables the detector, and
+        # the person reading the report is the one who needs to know.
+        profile_warnings.extend(style_profile.warnings)
+    if office_reference is not None and style_profile.reference_is_indicative:
+        profile_warnings.append(
+            f"Wzorzec kancelarii zmierzono na {style_profile.document_count} "
+            "dokumentach — wynik jest orientacyjny, nie progiem."
+        )
     before = detect_document(text, profile=reference, calibrate_against_default=False)
     outcome = ItemOutcome(
         name=name,
@@ -393,6 +418,7 @@ def run_all_layers(
             f"uncalibrated:{resolved_type.value}"
         ),
     )
+    outcome.warnings.extend(profile_warnings)
     outcome.warnings.extend(llm_initialization_warnings or [])
     # Two classifiers looked at the same text: the coarse family one and the
     # evidence-gated category one. When they disagree, one of them is wrong,
@@ -407,12 +433,6 @@ def run_all_layers(
         outcome.warnings.append(
             "Niska pewność rozpoznania rodzaju dokumentu; rozważ --document-type."
         )
-    if style_profile and style_profile.document_type != resolved_type:
-        outcome.warnings.append(
-            "Profil kancelarii dotyczy innego rodzaju dokumentu; nie użyto go do redakcji."
-        )
-        style_profile = None
-
     text_out = text
     protected_paragraph_indices = protected_paragraph_indices or set()
     if settings.rewrite:

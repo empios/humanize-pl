@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
+
 from datetime import date
 
 from humanize_pl.detect import detect_document
@@ -13,12 +15,19 @@ def build_reference_profile(
     name: str,
     genre: str,
     source: str,
+    families: Iterable[str] | None = None,
 ) -> ReferenceProfile:
     """Measure the human baseline by running our own detectors over human text.
 
     Reusing the detection layer here is deliberate: the resulting rates are
     directly comparable with what the detector reports on a suspect document,
     with no separate feature implementation to drift.
+
+    `families` names families to record even when the corpus contains none of
+    them, at a rate of zero. Without it a profile only carries families it
+    happened to see, and calibration silently stops measuring the rest - so a
+    corpus of genuinely clean writing produces the blindest baseline of all,
+    which is exactly backwards.
     """
     sentence_words: list[float] = []
     cvs: list[float] = []
@@ -27,7 +36,7 @@ def build_reference_profile(
     ttrs: list[float] = []
     anonymisations: list[float] = []
     scores: list[float] = []
-    family_rates: dict[str, list[float]] = {}
+    family_rates: dict[str, list[float]] = {family: [] for family in families or ()}
 
     document_count = 0
     word_count = 0

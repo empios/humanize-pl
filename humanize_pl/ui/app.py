@@ -696,6 +696,7 @@ def run_profile(
             "**tylko** z tego pliku, nie z przykładowych dokumentów."
         )
     )
+    alerts = "".join(f"\n\n⚠️ **{row}**" for row in profile.warnings)
     summary = (
         f"### ✅ Profil gotowy\n\n"
         f"Zbudowany z **{profile.document_count}** dokumentów "
@@ -703,7 +704,7 @@ def run_profile(
         "Pobierz `profile.json` i wskaż go w *Ustawieniach* jako **Profil stylu "
         "kancelarii**. Ustaw też **Rodzaj dokumentu** na "
         f"*{DOCUMENT_TYPE_LABELS[profile.document_type.value]}* — profil "
-        "dotyczący innego rodzaju jest pomijany." + guide_note
+        "dotyczący innego rodzaju jest pomijany." + alerts + guide_note
     )
     return summary, gr.update(value=package(output_directory), visible=True)
 

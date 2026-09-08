@@ -201,6 +201,16 @@ def classify_document(text: str) -> DocumentTypeGuess:
     return DocumentTypeGuess(winner, round(confidence, 2), tuple(hits[winner][:5]))
 
 
+# Below this many documents an office profile is reported as indicative:
+# usable as a picture of house style, not as a calibrated threshold.
+MIN_STABLE_DOCUMENTS = 30
+
+# A submitted document scoring at or above this on the raw detector carries
+# enough AI markers to be worth naming. It is not a verdict on any one file -
+# it is a count, reported so a human can decide whether the sample is sound.
+SUSPECT_SIGNAL = 0.5
+
+
 @dataclass
 class StyleProfile:
     name: str
@@ -213,6 +223,11 @@ class StyleProfile:
     abbreviations: dict[str, str] = field(default_factory=dict)
     voice: list[str] = field(default_factory=list)
     anonymized_examples: list[str] = field(default_factory=list)
+    # The office's own measured baseline, in the same shape as the public
+    # reference profiles. `statistics` above is three numbers computed ad hoc;
+    # this is the full measurement the detector actually calibrates against,
+    # so a firm's documents can serve as the yardstick for its own work.
+    reference: dict[str, Any] | None = None
     template: str | None = None
     warnings: list[str] = field(default_factory=list)
 
@@ -238,6 +253,24 @@ class StyleProfile:
         payload = json.loads(source.read_text(encoding="utf-8"))
         payload["document_type"] = DocumentType(payload["document_type"])
         return cls(**payload)
+
+    def reference_profile(self):
+        """The measured baseline, or None for a profile built before this existed."""
+        if not self.reference:
+            return None
+        from humanize_pl.detect.reference import ReferenceProfile
+
+        return ReferenceProfile.from_json(self.reference)
+
+    @property
+    def reference_is_indicative(self) -> bool:
+        """True when too few documents back the measurement to set a threshold.
+
+        Percentiles need volume. A dozen documents give a usable picture of an
+        office's habits and a useless p95, so the number is reported as a hint
+        rather than a line anyone should be judged against.
+        """
+        return self.document_count < MIN_STABLE_DOCUMENTS
 
     def prompt_text(self) -> str:
         parts = [f"Profil kancelarii: {self.name}."]
@@ -293,6 +326,62 @@ def _profile_statistics(texts: Iterable[str]) -> dict[str, float]:
     }
 
 
+def _ai_marker_warning(texts: list[str]) -> str | None:
+    """Warn when the documents offered as a human baseline look machine-drafted.
+
+    The whole value of an office profile is that it measures how people at
+    that office write. Built from AI-assisted drafts it measures the machine
+    instead, and the tool goes blind to exactly what it was bought to catch -
+    silently, because a blind detector reports low scores, which look like
+    good news.
+    """
+    from humanize_pl.detect import detect_document
+
+    suspect = sum(
+        1
+        for text in texts
+        if detect_document(text, calibrate_against_default=False).ai_signal_score
+        >= SUSPECT_SIGNAL
+    )
+    if not suspect:
+        return None
+    return (
+        f"{suspect} z {len(texts)} dokumentów nosi wyraźne ślady pisania przez AI. "
+        "Wzorzec zbudowany na takich tekstach nauczy narzędzie, że styl AI jest "
+        "normą — i przestanie go wykrywać. Zastąp je dokumentami sprzed użycia "
+        "narzędzi AI albo takimi, które przeszły pełną redakcję."
+    )
+
+
+def _measure_reference(
+    texts: list[str], *, name: str, document_type: DocumentType
+) -> dict[str, Any] | None:
+    """Run the detector over the office's own documents.
+
+    The same measurement the public profiles use, so an office baseline and a
+    corpus baseline are directly comparable and nothing downstream has to know
+    which one it was handed.
+    """
+    from humanize_pl.corpus.profile import build_reference_profile
+    from humanize_pl.detect import load_profile
+
+    # Seeded with the families the public corpus enumerates, so an office
+    # baseline measures the same axes even when its own documents show none
+    # of them - which is the normal case for well-written work.
+    public = load_profile()
+    try:
+        profile = build_reference_profile(
+            texts,
+            name=f"office:{name}",
+            genre=document_type.value,
+            source="dokumenty kancelarii",
+            families=sorted(public.family_rates) if public else None,
+        )
+    except (ValueError, ZeroDivisionError):
+        return None
+    return profile.to_json()
+
+
 def build_style_profile(
     source_directory: str | Path,
     output_directory: str | Path,
@@ -336,6 +425,8 @@ def build_style_profile(
         document_count=len(files),
         word_count=sum(len(_WORD_RE.findall(text)) for text in texts),
         statistics=_profile_statistics(texts),
+        reference=_measure_reference(texts, name=name, document_type=document_type),
+        warnings=[row for row in (_ai_marker_warning(texts),) if row],
         preferred_terms={str(key): str(value) for key, value in dict(preferred).items()},
         forbidden_phrases=[str(value) for value in forbidden],
         abbreviations={str(key): str(value) for key, value in dict(abbreviations).items()},

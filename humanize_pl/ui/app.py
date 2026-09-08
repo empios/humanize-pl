@@ -692,7 +692,7 @@ def run_profile(
     template: str | None,
 ):
     if not files:
-        raise gr.Error("Dodaj od 5 do 20 zatwierdzonych plików .docx.")
+        raise gr.Error("Dodaj co najmniej 5 zatwierdzonych plików .docx.")
     if not name.strip():
         raise gr.Error("Podaj nazwę profilu kancelarii.")
     workspace = new_workspace("profile")
@@ -800,7 +800,7 @@ def build_ui() -> gr.Blocks:
 
             with gr.Tab("Profil kancelarii"):
                 gr.Markdown(
-                    "Opcjonalne. Z 5–20 **zatwierdzonych** dokumentów buduje "
+                    "Opcjonalne. Z **zatwierdzonych** dokumentów (min. 5) buduje "
                     "zanonimizowany opis stylu kancelarii. Nie kalibruje "
                     "detektora i nie kopiuje treści dokumentów.\n\n"
                     "**Co profil realnie robi:** (1) sprawdza gotowy tekst pod "
@@ -811,7 +811,7 @@ def build_ui() -> gr.Blocks:
                     "regułowy niczego pod profil nie przepisuje."
                 )
                 profile_files = gr.File(
-                    label="Zatwierdzone pliki .docx (5–20)",
+                    label="Zatwierdzone pliki .docx (min. 5, im więcej tym lepiej)",
                     file_count="multiple",
                     file_types=[".docx"],
                     type="filepath",

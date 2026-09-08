@@ -318,3 +318,38 @@ def test_a_folder_with_no_dominant_kind_is_refused(tmp_path) -> None:
         build_style_profile(
             source_directory=source, output_directory=tmp_path / "out", name="Mieszana"
         )
+
+
+def test_there_is_no_upper_limit_on_documents(tmp_path) -> None:
+    """A cap at twenty contradicted the stability threshold outright.
+
+    A profile is reported as indicative below thirty documents, so an upper
+    bound of twenty meant no profile could ever stop being indicative. More
+    documents make a better measurement; there is no reason to refuse them.
+    """
+    from humanize_pl.document import MIN_STABLE_DOCUMENTS
+
+    texts = [HUMAN_CONTRACT.format(n=1, m=2) for _ in range(MIN_STABLE_DOCUMENTS)]
+    profile = _office(tmp_path, texts)
+    assert profile.document_count == MIN_STABLE_DOCUMENTS
+    assert profile.reference_is_indicative is False
+
+
+def test_fewer_than_the_minimum_is_refused_with_the_count(tmp_path) -> None:
+    import docx as pydocx
+
+    from humanize_pl.document import MIN_PROFILE_DOCUMENTS, build_style_profile
+
+    source = tmp_path / "za_malo"
+    source.mkdir(parents=True)
+    for index in range(MIN_PROFILE_DOCUMENTS - 1):
+        document = pydocx.Document()
+        for line in HUMAN_CONTRACT.format(n=1, m=2).split("\n"):
+            if line.strip():
+                document.add_paragraph(line)
+        document.save(source / f"d{index}.docx")
+
+    with pytest.raises(ValueError, match=str(MIN_PROFILE_DOCUMENTS)):
+        build_style_profile(
+            source_directory=source, output_directory=tmp_path / "out", name="Mała"
+        )

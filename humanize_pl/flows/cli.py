@@ -384,7 +384,9 @@ def xlsx_command(
 
 @app.command("profile")
 def profile_command(
-    samples: Path = typer.Argument(..., help="Folder z 5–20 zatwierdzonymi plikami .docx"),
+    samples: Path = typer.Argument(
+        ..., help="Folder z zatwierdzonymi plikami .docx (min. 5, im więcej tym lepiej)"
+    ),
     name: str = typer.Option(..., "--name", help="Nazwa profilu kancelarii"),
     document_type: DocumentType = typer.Option(
         DocumentType.auto,

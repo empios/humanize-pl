@@ -205,6 +205,10 @@ def classify_document(text: str) -> DocumentTypeGuess:
 # usable as a picture of house style, not as a calibrated threshold.
 MIN_STABLE_DOCUMENTS = 30
 
+# Fewer than this and the counts mean too little to measure anything: a
+# section in three files out of four looks decisive and is not.
+MIN_PROFILE_DOCUMENTS = 5
+
 # A submitted document scoring at or above this on the raw detector carries
 # enough AI markers to be worth naming. It is not a verdict on any one file -
 # it is a count, reported so a human can decide whether the sample is sound.
@@ -400,7 +404,7 @@ def build_style_profile(
     style_guide: str | Path | None = None,
     template: str | Path | None = None,
 ) -> StyleProfile:
-    """Build a privacy-reduced office profile from 5–20 approved documents.
+    """Build a privacy-reduced office profile from approved documents.
 
     The kind of document is detected rather than asked for. The engine already
     classifies every document it sees, so making someone choose adds a way to
@@ -422,8 +426,15 @@ def build_style_profile(
         and path.suffix.lower() == ".docx"
         and not path.name.startswith("~$")
     )
-    if not 5 <= len(files) <= 20:
-        raise ValueError("Profil kancelarii wymaga od 5 do 20 zatwierdzonych plików DOCX.")
+    # A minimum, and no maximum. More documents make a better measurement,
+    # and an upper bound of twenty contradicted the stability threshold
+    # outright: no profile could ever have carried enough documents to stop
+    # being reported as indicative.
+    if len(files) < MIN_PROFILE_DOCUMENTS:
+        raise ValueError(
+            f"Profil kancelarii wymaga co najmniej {MIN_PROFILE_DOCUMENTS} "
+            f"zatwierdzonych plików DOCX (znaleziono {len(files)})."
+        )
     texts = [docx_text(path) for path in files]
 
     detected = _dominant_type(texts)
@@ -441,10 +452,11 @@ def build_style_profile(
             kept.append(text)
         else:
             excluded.append(path.name)
-    if len(kept) < 5:
+    if len(kept) < MIN_PROFILE_DOCUMENTS:
         raise ValueError(
             f"Rozpoznano rodzaj „{document_type.value}”, ale pasuje do niego tylko "
-            f"{len(kept)} z {len(files)} dokumentów. Wgraj co najmniej 5 jednego rodzaju."
+            f"{len(kept)} z {len(files)} dokumentów. Wgraj co najmniej "
+            f"{MIN_PROFILE_DOCUMENTS} jednego rodzaju."
         )
     texts = kept
 

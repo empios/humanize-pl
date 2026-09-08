@@ -189,3 +189,30 @@ def test_guess_is_frozen() -> None:
     guess = CategoryGuess(get(UNSPECIFIED), 0.0)
     with pytest.raises(Exception):
         guess.confidence = 1.0  # type: ignore[misc]
+
+
+def test_a_performative_marker_counts_toward_the_score() -> None:
+    """The marker that qualifies a category is its strongest evidence.
+
+    A letter opening "Zwracam się z wnioskiem" performs the genre
+    unmistakably, but scored zero for it: gate markers only opened the gate.
+    Lacking incidental vocabulary, such a letter fell through as
+    unrecognised - and an unrecognised document gets no blueprint.
+    """
+    text = (
+        "Poznań, dnia 9 czerwca 2026 r.\n"
+        "Zwracam się z wnioskiem o wydanie zaświadczenia o niezaleganiu w podatkach.\n"
+        "Zaświadczenie jest niezbędne w postępowaniu o udzielenie zamówienia."
+    )
+    guess = classify_category(text)
+    assert guess.category.id == "pismo_urzedowe"
+    assert "zwracam się z wnioskiem" in guess.evidence
+
+
+def test_a_phrase_listed_as_both_gate_and_signal_scores_once() -> None:
+    row = get("wezwanie_do_zaplaty")
+    shared = set(row.requires_any) & set(row.signals_strong + row.signals)
+    assert shared, "test zakłada, że jakaś fraza występuje w obu miejscach"
+    text = " ".join(row.requires_any)
+    _total, evidence = row.score(text.casefold())
+    assert len(evidence) == len(set(evidence)), "fraza policzona dwa razy"

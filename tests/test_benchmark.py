@@ -20,10 +20,16 @@ from humanize_pl.results import HumanizeResult
 
 
 def test_manifest_loads_ai_legal_documents():
+    """The corpus is meant to grow, so its size is not part of the contract.
+
+    What matters is that every entry resolves to a file on disk and carries
+    the provenance the calibration is defended with.
+    """
     documents = load_manifest(Path("docs_tests/ai_generated/manifest.json"))
-    assert len(documents) == 8
+    assert len(documents) >= 8
     assert documents[0].id == "ai_legal_01_umowa_uslug"
-    assert documents[-1].path.exists()
+    assert all(document.path.exists() for document in documents)
+    assert len({document.id for document in documents}) == len(documents)
 
 
 def test_manifest_rejects_missing_files(tmp_path):

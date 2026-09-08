@@ -1,0 +1,16 @@
+POLITYKA PRYWATNOŚCI APLIKACJI MOBILNEJ
+
+§ 1. Administrator danych
+Administratorem danych osobowych jest Mobilio sp. z o.o. z siedzibą we Wrocławiu. Warto wskazać, że kontakt z administratorem możliwy jest pod adresem kontakt@example.test.
+
+§ 2. Zakres i cele przetwarzania
+Należy podkreślić, że aplikacja przetwarza dane konta użytkownika, dane o lokalizacji oraz dane o aktywności w aplikacji. Kluczowe znaczenie ma przetwarzanie w celu świadczenia usługi, obsługi zgłoszeń i doskonalenia funkcjonalności.
+
+§ 3. Podstawy prawne
+Podstawą przetwarzania jest wykonanie umowy, zgoda użytkownika w zakresie danych o lokalizacji oraz prawnie uzasadniony interes administratora. Warto zauważyć, że zgoda może zostać cofnięta w każdym czasie.
+
+§ 4. Okres przechowywania
+Istotnym aspektem jest to, że dane przechowywane są przez okres korzystania z aplikacji, a po jego zakończeniu przez okres przedawnienia roszczeń.
+
+§ 5. Prawa użytkownika
+Użytkownikowi przysługuje prawo dostępu do danych, ich sprostowania, usunięcia oraz ograniczenia przetwarzania. Szczególną rolę odgrywa prawo do przenoszenia danych.

@@ -17,7 +17,9 @@ sections:
   - id: dane_uslugodawcy
     label_pl: oznaczenie usługodawcy
     severity: required
-    matches: ["usługodawcą jest", "operatorem jest", "prowadzonej przez", "z siedzibą w"]
+    # Rdzeń, nie forma: "sklepu prowadzoNEGO przez" i "platformy prowadzoNEJ przez"
+    # to ta sama sekcja. Wzorzec w jednym rodzaju gubi drugi.
+    matches: ["usługodawcą jest", "operatorem jest", "prowadzon", "z siedzibą w"]
 
   - id: definicje
     label_pl: definicje
@@ -27,7 +29,8 @@ sections:
   - id: zakres_uslug
     label_pl: rodzaj i zakres usług
     severity: required
-    matches: ["rodzaj i zakres", "zakres usług", "usługi świadczone", "konto użytkownika"]
+    matches: ["rodzaj i zakres", "zakres usług", "usług świadczon", "konto użytkownika",
+              "sprzedaż towarów", "składanie zamówień"]
 
   - id: warunki_zawarcia
     label_pl: warunki zawierania umowy

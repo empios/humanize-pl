@@ -64,17 +64,25 @@ class LegalCategory:
 
     def score(self, lowered_text: str) -> tuple[int, list[str]]:
         """Weighted hits plus the phrases that produced them."""
-        if self.requires_any and not any(m in lowered_text for m in self.requires_any):
+        gate_hits = [phrase for phrase in self.requires_any if phrase in lowered_text]
+        if self.requires_any and not gate_hits:
             return 0, []
-        evidence: list[str] = []
-        total = 0
+        # A gate marker is the strongest evidence there is - it is what makes
+        # the document perform this genre at all - so it scores as one.
+        # Leaving it at zero meant a letter opening "zwracam się z wnioskiem"
+        # could fall through as unrecognised for lacking incidental vocabulary.
+        evidence: list[str] = list(gate_hits)
+        total = STRONG_WEIGHT * len(gate_hits)
+        counted = set(gate_hits)
         for phrase in self.signals_strong:
-            if phrase in lowered_text:
+            if phrase in lowered_text and phrase not in counted:
                 total += STRONG_WEIGHT
+                counted.add(phrase)
                 evidence.append(phrase)
         for phrase in self.signals:
-            if phrase in lowered_text:
+            if phrase in lowered_text and phrase not in counted:
                 total += SIGNAL_WEIGHT
+                counted.add(phrase)
                 evidence.append(phrase)
         return total, evidence
 

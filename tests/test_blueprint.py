@@ -331,3 +331,19 @@ def test_no_blueprint_reports_a_false_order_or_numbering_finding_on_its_fixture(
         report = check_category(text, category)
         assert report.order_issues == [], f"{category}: {report.order_issues}"
         assert report.numbering_issues == [], f"{category}: {report.numbering_issues}"
+
+
+def test_a_section_is_found_regardless_of_grammatical_gender() -> None:
+    """Polish inflection is not optional.
+
+    "sklepu internetowego prowadzonego przez" and "platformy prowadzonej
+    przez" name the same section. A pattern written in one gender reported
+    the operator designation as missing from every shop regulamin.
+    """
+    for phrase in (
+        "Regulamin sklepu internetowego prowadzonego przez Sigma sp. z o.o.",
+        "Regulamin platformy prowadzonej przez Sigma sp. z o.o.",
+        "Regulamin serwisu prowadzonym przez Sigma sp. z o.o.",
+    ):
+        report = check_category(f"§ 1. Postanowienia ogólne\n{phrase}\n", "regulamin")
+        assert "oznaczenie usługodawcy" not in report.missing_required, phrase

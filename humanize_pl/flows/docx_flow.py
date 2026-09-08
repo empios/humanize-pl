@@ -74,7 +74,12 @@ def run_docx_flow(
     session = settings.session() if settings.rewrite else None
     style_profile = settings.load_style_profile()
     rewriter, llm_warnings = prepare_llm(settings)
-    layers = layer_status(session, rewriter=rewriter, llm_warnings=llm_warnings)
+    layers = layer_status(
+        session,
+        office_profile=style_profile is not None,
+        rewriter=rewriter,
+        llm_warnings=llm_warnings,
+    )
     if on_layers is not None:
         on_layers(layers)
     outcomes: list[ItemOutcome] = []

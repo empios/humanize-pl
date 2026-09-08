@@ -207,6 +207,7 @@ def prepare_llm(
 def layer_status(
     session: HumanizerSession | None,
     *,
+    office_profile: bool = False,
     rewriter: OpenAICompatibleRewriter | None = None,
     llm_warnings: list[str] | None = None,
 ) -> dict[str, Any]:
@@ -222,10 +223,16 @@ def layer_status(
         "detection": {
             "morfeusz": "ready" if detection_morfeusz else "unavailable",
             "stanza": "not_used",
-            "reference_profile": "not_applied_for_genre_aware_flow",
+            # Which baseline applies is decided per document, from its family
+            # and whether an office profile was supplied, so the batch line can
+            # only say what is available. It used to claim no profile was ever
+            # applied, which stopped being true when calibration moved to
+            # families - and a status line that lies is worse than none.
+            "reference_profile": "per_document_family",
             "reference_profile_available": (
                 load_profile().name if load_profile() is not None else "missing"
             ),
+            "office_profile": "supplied" if office_profile else "none",
         }
     }
     if session is None:

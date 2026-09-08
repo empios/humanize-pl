@@ -457,3 +457,86 @@ def test_xlsx_flow_without_headers_starts_at_the_first_row(tmp_path) -> None:
     assert payload["summary"]["items"] == 1
     sheet = openpyxl.load_workbook(str(tmp_path / "out.xlsx")).active
     assert sheet.column_dimensions["H"].width == 48
+
+
+def test_run_command_builds_the_profile_and_uses_it_in_one_pass(tmp_path) -> None:
+    """The whole flow in one command.
+
+    Getting the full treatment used to mean running `profile`, noting where
+    the JSON landed, and passing it back with five more flags. Every step
+    between is a step to get wrong.
+    """
+    import docx as pydocx
+    from typer.testing import CliRunner
+
+    from humanize_pl.flows.cli import app
+
+    contract = (
+        "UMOWA O ŚWIADCZENIE USŁUG\n"
+        "Zawarta w dniu {d}.04.2026 r. w Gdyni pomiędzy Alfa sp. z o.o. a Beta S.A.\n"
+        "§ 1. Przedmiot umowy\n"
+        "Wykonawca sporządzi dokumentację techniczną węzła numer {i} w zakresie z załącznika.\n"
+        "§ 2. Wynagrodzenie\n"
+        "Wynagrodzenie wynosi {k} zł netto, płatne w 21 dni od odbioru bez zastrzeżeń.\n"
+        "§ 3. Rozwiązanie umowy\n"
+        "Każda ze stron może wypowiedzieć umowę z zachowaniem miesięcznego terminu.\n"
+    )
+
+    def write(directory, texts):
+        directory.mkdir(parents=True, exist_ok=True)
+        for index, text in enumerate(texts):
+            document = pydocx.Document()
+            for line in [row for row in text.split("\n") if row.strip()]:
+                document.add_paragraph(line)
+            document.save(directory / f"d{index}.docx")
+
+    samples = tmp_path / "wzorce"
+    write(samples, [contract.format(d=3 + i, i=i, k=28000 + i * 1500) for i in range(6)])
+    source = tmp_path / "wejscie"
+    write(source, [contract.format(d=1, i=99, k=41000)])
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "run",
+            str(source),
+            "--profile-from",
+            str(samples),
+            "-o",
+            str(tmp_path / "wynik"),
+            "--no-pdf",
+        ],
+    )
+    assert result.exit_code == 0, result.output
+    assert "Wzorzec kancelarii" in result.output
+    assert (tmp_path / "wynik" / "profil" / "profile.json").exists()
+    assert (tmp_path / "wynik" / "flow-report.json").exists()
+
+    payload = json.loads((tmp_path / "wynik" / "flow-report.json").read_text(encoding="utf-8"))
+    assert payload["documents"][0]["calibration_status"].startswith("calibrated:office:")
+
+
+def test_run_command_refuses_a_workbook_without_a_column(tmp_path) -> None:
+    from typer.testing import CliRunner
+
+    from humanize_pl.flows.cli import app
+
+    workbook = tmp_path / "dane.xlsx"
+    workbook.write_bytes(b"nie ma znaczenia")
+    result = CliRunner().invoke(app, ["run", str(workbook)])
+    assert result.exit_code != 0
+    assert "kolumn" in result.output.casefold()
+
+
+def test_run_command_refuses_both_profile_options_at_once(tmp_path) -> None:
+    from typer.testing import CliRunner
+
+    from humanize_pl.flows.cli import app
+
+    source = tmp_path / "wejscie"
+    source.mkdir()
+    result = CliRunner().invoke(
+        app,
+        ["run", str(source), "--profile-from", str(source), "--style-profile", str(source)],
+    )
+    assert result.exit_code != 0

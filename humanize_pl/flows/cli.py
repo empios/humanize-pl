@@ -79,7 +79,8 @@ def _print_layers(layers: dict) -> None:
     detection = layers["detection"]
     print(
         f"[dim]detekcja:[/dim] morfeusz={detection['morfeusz']} "
-        f"stanza={detection['stanza']} profil={detection['reference_profile']}"
+        f"stanza={detection['stanza']} "
+        f"wzorzec={'kancelarii' if detection.get('office_profile') == 'supplied' else 'publiczny wg rodziny'}"
     )
     rewrite = layers["rewrite"]
     if rewrite.get("skipped"):
@@ -166,6 +167,142 @@ def _print_pdf(payload: dict) -> None:
         print(f"  raport opisowy (PDF): {payload['pdf_report']}")
     elif payload.get("pdf_error"):
         print(f"  [yellow]![/yellow] {payload['pdf_error']}")
+
+
+@app.command("run")
+def run_command(
+    source: Path = typer.Argument(
+        ..., help="Folder z plikami .docx albo pojedynczy plik .xlsx"
+    ),
+    output: Path = typer.Option(None, "--output", "-o", help="Katalog albo plik wynikowy"),
+    profile_from: Path = typer.Option(
+        None,
+        "--profile-from",
+        help="Zbuduj wzorzec kancelarii z tego folderu i użyj go w tym samym przebiegu",
+    ),
+    style_profile: Path = typer.Option(
+        None, "--style-profile", help="Gotowy profile.json zamiast --profile-from"
+    ),
+    llm: bool = typer.Option(
+        False, "--llm", help="Włącz hostowany model (z .env); przerwij, jeśli niedostępny"
+    ),
+    nlp: bool = typer.Option(
+        False, "--nlp", help="Włącz stos NLP (Stanza + transformery) zamiast trybu basic"
+    ),
+    column: str = typer.Option(None, "--column", "-c", help="Tylko .xlsx: kolumna źródłowa"),
+    sheet: str = typer.Option(None, "--sheet", help="Tylko .xlsx: nazwa arkusza"),
+    header_row: int = typer.Option(1, "--header-row", help="Tylko .xlsx: wiersz nagłówka"),
+    mode: Mode = typer.Option(Mode.standard, help="conservative, standard, strong"),
+    document_type: DocumentType = typer.Option(
+        DocumentType.auto, "--document-type", help="Domyślnie rozpoznawany automatycznie"
+    ),
+    no_rewrite: bool = typer.Option(False, "--no-rewrite", help="Tylko diagnoza, bez redakcji"),
+    no_pdf: bool = typer.Option(False, "--no-pdf", help="Pomiń raport PDF"),
+) -> None:
+    """Cały przebieg jedną komendą: wzorzec kancelarii, diagnoza, redakcja, raport.
+
+    Rozpoznaje po rozszerzeniu, czy pracuje na folderze .docx czy na arkuszu.
+    """
+    from humanize_pl.document import build_style_profile
+
+    if profile_from and style_profile:
+        raise typer.BadParameter(
+            "Podaj --profile-from albo --style-profile, nie oba.", param_hint="--profile-from"
+        )
+    if not source.exists():
+        raise typer.BadParameter(f"Nie ma takiej ścieżki: {source}", param_hint="source")
+
+    is_workbook = source.is_file() and source.suffix.lower() == ".xlsx"
+    if is_workbook and not column:
+        raise typer.BadParameter(
+            "Dla arkusza .xlsx trzeba wskazać kolumnę źródłową.", param_hint="--column"
+        )
+    if not is_workbook and not source.is_dir():
+        raise typer.BadParameter(
+            "Wskaż folder z plikami .docx albo plik .xlsx.", param_hint="source"
+        )
+
+    # The profile is built first because the run that follows calibrates
+    # against it. Its warnings matter more than the profile itself - a
+    # baseline measured on AI-assisted drafts disables the detector silently.
+    if profile_from:
+        profile_directory = (output or source.with_name(f"{source.stem}_flow")) / "profil"
+        try:
+            built = build_style_profile(
+                source_directory=profile_from,
+                output_directory=profile_directory,
+                name=profile_from.name,
+                document_type=document_type,
+            )
+        except (OSError, ValueError) as exc:
+            raise typer.BadParameter(str(exc), param_hint="--profile-from") from exc
+        style_profile = profile_directory / "profile.json"
+        print(
+            f"[green]Wzorzec kancelarii:[/green] {built.document_count} dokumentów, "
+            f"rodzaj {built.document_type.value}"
+            + ("  [yellow](orientacyjny)[/yellow]" if built.reference_is_indicative else "")
+        )
+        for warning in built.warnings:
+            print(f"  [yellow]![/yellow] {warning}")
+        print()
+
+    settings = _settings(
+        mode,
+        Engine.hybrid if nlp else Engine.basic,
+        no_rewrite,
+        False,
+        False,
+        False,
+        document_type,
+        RewriteBackend.hybrid if llm else RewriteBackend.rules,
+        style_profile,
+        None,
+        FormatPolicy.preserve,
+        llm,
+        False,
+    )
+
+    try:
+        if is_workbook:
+            target = output or source.with_name(f"{source.stem}_flow.xlsx")
+            payload = run_xlsx_flow(
+                source,
+                target,
+                column=column,
+                settings=settings,
+                sheet_name=sheet,
+                header_row=header_row or None,
+                pdf=not no_pdf,
+                on_item=_print_item,
+                on_layers=_print_layers,
+            )
+        else:
+            target = output or source.with_name(f"{source.name}_flow")
+            payload = run_docx_flow(
+                source,
+                target,
+                settings=settings,
+                pdf=not no_pdf,
+                on_item=_print_item,
+                on_layers=_print_layers,
+            )
+    except (RuntimeError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    except FileNotFoundError as exc:
+        raise typer.BadParameter(str(exc), param_hint="source") from exc
+
+    _print_summary(payload["summary"])
+    print(f"\n[green]Wyniki:[/green] {target}")
+    if not is_workbook:
+        print(f"  raport: {target / 'flow-report.json'}")
+        print(f"  zestawienie: {target / 'summary.csv'}")
+    elif payload.get("report_path"):
+        print(f"  raport: {payload['report_path']}")
+    if style_profile:
+        print(f"  wzorzec kancelarii: {style_profile}")
+    _print_pdf(payload)
+    if payload["summary"]["failed"]:
+        raise typer.Exit(1)
 
 
 @app.command("docx")

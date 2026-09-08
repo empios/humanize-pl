@@ -35,6 +35,7 @@ from humanize_pl.document import (
 from humanize_pl.llm import LlmConfigurationError, LlmSettings, OpenAICompatibleRewriter
 from humanize_pl.nlp.morfeusz import try_load_morfeusz
 from humanize_pl.gate import GateVerdict, review_response
+from humanize_pl.sentence_splitter import split_sentences
 
 # Kept per item, not per run: the report picks its illustrations from across
 # the batch, and a whole document's changes would bloat the payload.
@@ -619,22 +620,30 @@ def _rewrite_remaining_with_llm(
     style_profile: StyleProfile | None,
     protected_paragraph_indices: set[int],
 ) -> tuple[str, list[dict[str, Any]], int]:
-    """Second and final pass: only paragraphs that still have findings."""
+    """Second and final pass: only the sentences that still have findings.
+
+    One sentence at a time, not the paragraph around it. Both models measured
+    here failed the same way - they changed amounts, party names and
+    może/powinien/musi somewhere in the paragraph they were asked to redraft,
+    six rejections out of nine. Those are not lapses a bigger model fixes;
+    they are opportunities the task itself handed over. An amount in a
+    sentence that is never sent cannot be altered.
+
+    The detector already knows which sentence carries the finding, so the
+    narrower unit costs nothing to locate.
+    """
     lines = text.split("\n")
     nonempty = [index for index, value in enumerate(lines) if value.strip()]
-    findings_by_paragraph: dict[int, list[str]] = {}
+    findings_by_sentence: dict[tuple[int, int], list[str]] = {}
     for finding in diagnosis.findings:
-        findings_by_paragraph.setdefault(finding.paragraph_index, []).append(
-            finding.detail or finding.evidence or finding.family
-        )
+        findings_by_sentence.setdefault(
+            (finding.paragraph_index, finding.sentence_index), []
+        ).append(finding.detail or finding.evidence or finding.family)
     outline = " | ".join(
         lines[line_index].strip()
         for paragraph_index, line_index in enumerate(nonempty)
         if paragraph_index not in protected_paragraph_indices
     )[:1200]
-    editable_indices = [
-        index for index in range(len(nonempty)) if index not in protected_paragraph_indices
-    ]
     changes: list[dict[str, Any]] = []
     rejected = 0
 
@@ -646,21 +655,30 @@ def _rewrite_remaining_with_llm(
     # paragraph rather than a possibly already-rewritten one, which also drops
     # a hidden dependency on iteration order.
     jobs = []
-    for paragraph_index in sorted(findings_by_paragraph):
+    for paragraph_index, sentence_index in sorted(findings_by_sentence):
         if paragraph_index in protected_paragraph_indices:
             continue
         if paragraph_index >= len(nonempty):
             continue
         line_index = nonempty[paragraph_index]
-        before_indices = [index for index in editable_indices if index < paragraph_index]
-        after_indices = [index for index in editable_indices if index > paragraph_index]
+        sentences = split_sentences(lines[line_index])
+        if sentence_index >= len(sentences):
+            continue
+        # The neighbouring sentences travel as context so the rewrite still
+        # reads as part of its paragraph; only the flagged one is replaced.
         jobs.append(
             {
                 "paragraph_index": paragraph_index,
+                "sentence_index": sentence_index,
                 "line_index": line_index,
-                "source": lines[line_index],
-                "previous": lines[nonempty[before_indices[-1]]] if before_indices else "",
-                "following": lines[nonempty[after_indices[0]]] if after_indices else "",
+                "sentences": sentences,
+                "source": sentences[sentence_index],
+                "previous": sentences[sentence_index - 1] if sentence_index else "",
+                "following": (
+                    sentences[sentence_index + 1]
+                    if sentence_index + 1 < len(sentences)
+                    else ""
+                ),
             }
         )
     if not jobs:
@@ -669,13 +687,13 @@ def _rewrite_remaining_with_llm(
     def rewrite(job: dict[str, Any]):
         return rewriter.rewrite_fragment(
             job["source"],
-            fragment_id=f"paragraph-{job['paragraph_index'] + 1}",
+            fragment_id=f"p{job['paragraph_index'] + 1}s{job['sentence_index'] + 1}",
             document_type=document_type,
             style_profile=style_profile,
             previous=job["previous"],
             following=job["following"],
             outline=outline,
-            issues=findings_by_paragraph[job["paragraph_index"]],
+            issues=findings_by_sentence[(job["paragraph_index"], job["sentence_index"])],
         )
 
     workers = max(1, min(rewriter.settings.concurrency, len(jobs)))
@@ -688,21 +706,25 @@ def _rewrite_remaining_with_llm(
             # first. Completion order must never reach the output.
             results = list(pool.map(rewrite, jobs))
 
+    # Applied per paragraph so several accepted sentences in one paragraph
+    # compose instead of overwriting each other.
+    rewritten: dict[int, list[str]] = {}
     for job, result in zip(jobs, results):
         if not result.accepted:
             rejected += 1
             continue
-        lines[job["line_index"]] = result.text.replace("\n", " ")
+        sentences = rewritten.setdefault(job["line_index"], list(job["sentences"]))
+        sentences[job["sentence_index"]] = result.text.replace("\n", " ").strip()
         changes.append(
             {
                 "before": job["source"],
-                "after": lines[job["line_index"]],
+                "after": result.text.replace("\n", " ").strip(),
                 "issue": "llm_rewrite",
                 "risk": 0.45,
                 "semantic_similarity": None,
                 "gate_results": result.validation_checks,
                 "paragraph_index": job["paragraph_index"],
-                "sentence_index": None,
+                "sentence_index": job["sentence_index"],
                 "model_decision": "accepted_by_local_validators",
                 # The model already pays tokens to explain itself, and an
                 # accepted machine edit is exactly the kind a reviewer will
@@ -711,6 +733,9 @@ def _rewrite_remaining_with_llm(
                 "model_rationale": _short_rationale(result.rationale),
             }
         )
+
+    for line_index, sentences in rewritten.items():
+        lines[line_index] = " ".join(sentences)
     return "\n".join(lines), changes, rejected
 
 

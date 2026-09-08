@@ -256,7 +256,7 @@ def test_fragments_are_rewritten_concurrently_but_applied_in_document_order() ->
 
     # Later paragraphs answer faster, so completion order is the reverse of
     # document order.
-    delays = {"paragraph-1": 0.06, "paragraph-2": 0.03, "paragraph-3": 0.0}
+    delays = {"p1s1": 0.06, "p2s1": 0.03, "p3s1": 0.0}
     in_flight = 0
     peak = 0
     lock = threading.Lock()
@@ -401,3 +401,127 @@ def test_a_reply_wrapped_in_prose_and_fences_is_still_read() -> None:
     }
     assert _extract_json_object("[1,2,3]") is None
     assert _extract_json_object("nie ma tu JSON-u") is None
+
+
+def _sentence_handler(rewrite):
+    """Mock endpoint that rewrites whatever single sentence it is handed."""
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        payload = json.loads(request.content)
+        user = _fields(payload["messages"][1]["content"])
+        if not user["fragment_id"]:
+            return _response(
+                {
+                    "fragment_id": "capability-test",
+                    "source": "To jest test połączenia.",
+                    "proposal": "To jest test połączenia.",
+                    "rationale": "test",
+                }
+            )
+        return _response(
+            {
+                "fragment_id": user["fragment_id"],
+                "source": user["source"],
+                "proposal": rewrite(user["source"]),
+                "rationale": "usunięto rozbieg",
+            }
+        )
+
+    return handler
+
+
+def _rewriter(handler):
+    settings = LlmSettings("https://model.test/v1", "legal-pl", "", 5)
+    return OpenAICompatibleRewriter(
+        settings, client=httpx.Client(transport=httpx.MockTransport(handler))
+    )
+
+
+def test_only_the_flagged_sentence_is_sent_not_the_paragraph() -> None:
+    """The amounts a model cannot see are the amounts it cannot change.
+
+    Both models measured here were rejected for altering figures, party names
+    and modality elsewhere in the paragraph they were asked to redraft. Those
+    are opportunities the task handed over, not lapses a larger model fixes.
+    """
+    from humanize_pl.detect import detect_document
+    from humanize_pl.flows.base import _rewrite_remaining_with_llm
+
+    paragraph = (
+        "Warto zauważyć, że współpraca układa się dobrze. "
+        "Wynagrodzenie wynosi 18 500 zł netto i jest płatne w terminie 14 dni."
+    )
+    seen: list[str] = []
+
+    def rewrite(source: str) -> str:
+        seen.append(source)
+        return source.replace("Warto zauważyć, że ", "")
+
+    rewriter = _rewriter(_sentence_handler(rewrite))
+    assert rewriter.probe()
+    result, changes, _rejected = _rewrite_remaining_with_llm(
+        paragraph,
+        detect_document(paragraph, calibrate_against_default=False),
+        rewriter=rewriter,
+        document_type=DocumentType.contract,
+        style_profile=None,
+        protected_paragraph_indices=set(),
+    )
+
+    assert seen, "nic nie poszło do modelu"
+    assert all("18 500" not in sent for sent in seen), "kwota trafiła do modelu"
+    assert all(len(sent) < len(paragraph) for sent in seen)
+    assert "18 500 zł" in result
+    assert changes and changes[0]["sentence_index"] is not None
+
+
+def test_two_accepted_sentences_in_one_paragraph_both_land() -> None:
+    """Applied per paragraph, or the second accepted edit erases the first."""
+    from humanize_pl.detect import detect_document
+    from humanize_pl.flows.base import _rewrite_remaining_with_llm
+
+    paragraph = (
+        "Warto zauważyć, że termin biegnie od doręczenia. "
+        "Należy podkreślić, że strony ustaliły formę pisemną."
+    )
+    rewriter = _rewriter(
+        _sentence_handler(
+            lambda source: source.replace("Warto zauważyć, że ", "").replace(
+                "Należy podkreślić, że ", ""
+            )
+        )
+    )
+    assert rewriter.probe()
+    result, changes, _rejected = _rewrite_remaining_with_llm(
+        paragraph,
+        detect_document(paragraph, calibrate_against_default=False),
+        rewriter=rewriter,
+        document_type=DocumentType.contract,
+        style_profile=None,
+        protected_paragraph_indices=set(),
+    )
+    assert len(changes) >= 2
+    assert "Warto zauważyć" not in result
+    assert "Należy podkreślić" not in result
+    assert "termin biegnie" in result and "formę pisemną" in result
+
+
+def test_a_rejected_sentence_leaves_its_paragraph_untouched() -> None:
+    from humanize_pl.detect import detect_document
+    from humanize_pl.flows.base import _rewrite_remaining_with_llm
+
+    paragraph = "Warto zauważyć, że wynagrodzenie wynosi 18 500 zł netto miesięcznie."
+    # Changing the figure is exactly what the validators exist to refuse.
+    rewriter = _rewriter(_sentence_handler(lambda source: source.replace("18 500", "20 000")))
+    assert rewriter.probe()
+    result, changes, rejected = _rewrite_remaining_with_llm(
+        paragraph,
+        detect_document(paragraph, calibrate_against_default=False),
+        rewriter=rewriter,
+        document_type=DocumentType.contract,
+        style_profile=None,
+        protected_paragraph_indices=set(),
+    )
+    assert rejected >= 1
+    assert changes == []
+    assert result == paragraph

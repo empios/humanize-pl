@@ -59,6 +59,18 @@ GENRE_CONFOUNDED = {"type_token_ratio", "opening_diversity"}
 #      genre. A same-genre human profile would settle it.
 REVIEW_THRESHOLD = 0.25
 
+# Half-width of the band around the threshold where the verdict is not
+# reliable. Measured, not chosen: rebuilding the reference profile from
+# independent samples of the same corpus moves a document's calibrated score
+# by about 0.03, and that spread does NOT shrink with corpus size - it held at
+# 10, 25, 50, 100 and 200 documents alike. The score is built from a dozen
+# signals crossing their percentiles in steps, so it is grainy by construction.
+#
+# A document inside this band therefore gets a coin-flip, and reporting one
+# side of that coin as a verdict would be inventing precision. It is reported
+# as borderline instead.
+UNCERTAIN_BAND = 0.035
+
 
 @dataclass(frozen=True)
 class CalibratedSignal:
@@ -86,6 +98,21 @@ class Calibration:
     def above_human_range(self) -> bool:
         """True when the document warrants human review, not a verdict of AI."""
         return self.calibrated_score >= REVIEW_THRESHOLD
+
+    @property
+    def borderline(self) -> bool:
+        """True when the score is too close to the threshold to call.
+
+        Inside this band the answer changes with which documents happened to
+        be in the reference corpus, so it is not an answer.
+        """
+        return abs(self.calibrated_score - REVIEW_THRESHOLD) <= UNCERTAIN_BAND
+
+    @property
+    def verdict(self) -> str:
+        if self.borderline:
+            return "borderline"
+        return "above_human_range" if self.above_human_range else "within_human_range"
 
 
 def profile_for_family(family: str) -> ReferenceProfile | None:

@@ -60,6 +60,10 @@ SATURATED = 1.0
 # 0% false positives, and the populations do not overlap around it.
 REVIEW_THRESHOLD = 0.25
 
+# Half-width of the band where the verdict is not reliable. See
+# humanize_pl.detect.calibration — it is a measurement, not a preference.
+UNCERTAIN_BAND = 0.035
+
 TABLE_HEADERS = [
     "pozycja",
     "kategoria",
@@ -145,6 +149,12 @@ rejestrze. Liczba to pozycja względem ludzi: poniżej **0,25** mieści się
 w tym, co piszą ludzie, powyżej wychodzi poza ich zakres. Ten próg jest
 zmierzony, nie wybrany: na 599 odłożonych orzeczeniach daje 100% wykrycia
 przy 0% fałszywych alarmów, a obie populacje się wokół niego nie stykają.
+
+Blisko progu pokazujemy **„na granicy"** zamiast werdyktu. To też jest pomiar:
+wynik dokumentu przesuwa się o ok. 0,03 w zależności od tego, jakie teksty
+trafiły do wzorca, a ten rozrzut **nie maleje** przy większym korpusie —
+sprawdzone na 10, 25, 50, 100 i 200 dokumentach. W tym pasie odpowiedź jest
+rzutem monetą i nie udajemy, że jest inaczej.
 
 **Nieskalibrowany** — dla rejestrów, dla których nie mamy jeszcze korpusu
 ludzkich tekstów (umowy, pisma do klienta). Wtedy liczba to samo zagęszczenie
@@ -283,10 +293,15 @@ def signal_word(score: float, calibrated: bool = False) -> str:
     Reading one on the other's scale is how a report starts lying quietly.
     """
     if calibrated:
+        # The band around the threshold is measured: rebuilding the reference
+        # corpus moves a score by about this much, so inside it the answer is
+        # a coin-flip and must not be dressed as a verdict.
+        if abs(score - REVIEW_THRESHOLD) <= UNCERTAIN_BAND:
+            return "na granicy — wynik niepewny"
         if score < 0.15:
             return "jak u ludzi"
         if score < REVIEW_THRESHOLD:
-            return "podwyższony"
+            return "poniżej progu"
         if score < 0.40:
             return "powyżej ludzkiej normy"
         return "wyraźnie powyżej ludzkiej normy"

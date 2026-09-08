@@ -176,3 +176,48 @@ def test_the_operating_point_still_separates_the_populations() -> None:
     plain = detect_document(human, profile=reference, calibrate_against_default=False)
     assert plain.calibration is not None
     assert plain.calibration.calibrated_score < REVIEW_THRESHOLD
+
+
+def test_a_score_near_the_threshold_is_reported_as_borderline() -> None:
+    """Not every score is a verdict.
+
+    Rebuilding the reference corpus from independent samples moves a
+    document's score by about 0.03, and that spread does not shrink with
+    corpus size - it held at 10, 25, 50, 100 and 200 documents alike. Inside
+    that band the answer depends on which texts happened to be in the corpus,
+    so calling it either way would be inventing precision.
+    """
+    from pathlib import Path
+
+    from humanize_pl.detect import detect_document, profile_for_family
+    from humanize_pl.detect.calibration import REVIEW_THRESHOLD, UNCERTAIN_BAND
+
+    reference = profile_for_family("filing_official")
+    fixtures = Path("docs_tests/ai_generated")
+
+    near = detect_document(
+        (fixtures / "ai_legal_15_pozew_dzielo.txt").read_text(encoding="utf-8"),
+        profile=reference,
+        calibrate_against_default=False,
+    ).calibration
+    assert near is not None
+    assert abs(near.calibrated_score - REVIEW_THRESHOLD) <= UNCERTAIN_BAND
+    assert near.borderline
+    assert near.verdict == "borderline"
+
+    far = detect_document(
+        (fixtures / "ai_legal_05_pismo_urzedowe.txt").read_text(encoding="utf-8"),
+        profile=reference,
+        calibrate_against_default=False,
+    ).calibration
+    assert far is not None
+    assert not far.borderline
+    assert far.verdict == "above_human_range"
+
+
+def test_the_band_is_wide_enough_to_cover_the_measured_wobble() -> None:
+    """If the band ever narrows below the observed spread it stops protecting."""
+    from humanize_pl.detect.calibration import UNCERTAIN_BAND
+
+    observed_spread = 0.030
+    assert UNCERTAIN_BAND >= observed_spread

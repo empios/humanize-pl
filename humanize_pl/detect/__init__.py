@@ -2,6 +2,7 @@ from .base import DocumentDiagnosis, FamilySummary, Finding, ParagraphDiagnosis
 from .calibration import (
     Calibration,
     CalibratedSignal,
+    UNCERTAIN_BAND,
     calibrate,
     load_profile,
     profile_for_family,
@@ -20,6 +21,7 @@ __all__ = [
     "ReferenceProfile",
     "calibrate",
     "detect_document",
+    "UNCERTAIN_BAND",
     "load_profile",
     "profile_for_family",
 ]

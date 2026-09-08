@@ -1,0 +1,96 @@
+# Scenariusze do generowania korpusu AI.
+#
+# Jeden prompt powtórzony trzysta razy mierzy prompt, nie model. Korpus
+# powstaje z iloczynu: scenariusz (o czym) × rejestr polecenia (jak proszono)
+# × temperatura. Trzy osie wystarczą, żeby dokumenty nie były wariantami
+# jednego szkieletu.
+#
+# Polecenia celowo NIE proszą o zły tekst. Chodzi o to, jak model pisze, gdy
+# stara się dobrze — bo tak właśnie powstają dokumenty, które narzędzie ma
+# wyłapywać.
+
+# Rejestry polecenia. `{zadanie}` wypełnia scenariusz kategorii.
+styles:
+  - id: zwiezly
+    system: "Jesteś polskim prawnikiem. Piszesz dokumenty po polsku."
+    user: "{zadanie}"
+
+  - id: szczegolowy
+    system: "Jesteś doświadczonym polskim prawnikiem. Piszesz kompletne dokumenty po polsku, z zachowaniem przyjętej struktury i numeracji."
+    user: "{zadanie} Zadbaj o kompletność i poprawną strukturę dokumentu."
+
+  - id: bez_roli
+    system: "Odpowiadaj po polsku."
+    user: "{zadanie}"
+
+categories:
+
+  umowa_uslug:
+    - "Sporządź umowę o świadczenie usług doradztwa podatkowego dla spółki z o.o."
+    - "Napisz umowę o świadczenie usług informatycznych — utrzymanie systemu i wsparcie techniczne."
+    - "Przygotuj umowę o świadczenie usług marketingowych dla sklepu internetowego."
+    - "Sporządź umowę o świadczenie usług księgowych dla jednoosobowej działalności."
+    - "Napisz umowę o świadczenie usług sprzątania biura, rozliczaną miesięcznie."
+    - "Przygotuj umowę o świadczenie usług szkoleniowych dla pracowników spółki."
+    - "Sporządź umowę o świadczenie usług ochrony obiektu."
+    - "Napisz umowę o świadczenie usług tłumaczeniowych rozliczaną za stronę."
+
+  pozew:
+    - "Sporządź pozew o zapłatę 27 300 zł z tytułu niezapłaconych faktur za dostawę towarów."
+    - "Napisz pozew o zapłatę wynagrodzenia z umowy o dzieło, którego zamawiający nie uregulował."
+    - "Przygotuj pozew o zapłatę kary umownej za opóźnienie w wykonaniu robót."
+    - "Sporządź pozew o zapłatę czynszu najmu za trzy miesiące."
+    - "Napisz pozew o zwrot zaliczki po odstąpieniu od umowy sprzedaży."
+    - "Przygotuj pozew o zapłatę odszkodowania za nienależyte wykonanie umowy."
+    - "Sporządź pozew o zapłatę należności z faktury za usługi transportowe."
+    - "Napisz pozew o zapłatę z weksla własnego."
+
+  opinia_prawna:
+    - "Sporządź opinię prawną o odpowiedzialności kontraktowej za nienależyte wykonanie zobowiązania."
+    - "Napisz opinię prawną o dopuszczalności kary umownej za odstąpienie od umowy."
+    - "Przygotuj opinię prawną o skutkach przedawnienia roszczenia o zapłatę."
+    - "Sporządź opinię prawną o odpowiedzialności członka zarządu za zobowiązania spółki."
+    - "Napisz opinię prawną o rozgraniczeniu umowy o dzieło i umowy zlecenia."
+    - "Przygotuj opinię prawną o skutkach wypowiedzenia umowy najmu bez zachowania terminu."
+    - "Sporządź opinię prawną o obowiązkach administratora danych przy powierzeniu przetwarzania."
+    - "Napisz opinię prawną o dopuszczalności zakazu konkurencji po ustaniu zatrudnienia."
+
+  regulamin:
+    - "Sporządź regulamin korzystania z platformy internetowej z kontami użytkowników."
+    - "Napisz regulamin sklepu internetowego sprzedającego odzież konsumentom."
+    - "Przygotuj regulamin serwisu z treściami cyfrowymi w modelu abonamentowym."
+    - "Sporządź regulamin aplikacji mobilnej do rezerwacji usług."
+    - "Napisz regulamin świadczenia usług newslettera."
+    - "Przygotuj regulamin portalu ogłoszeniowego z płatnymi ogłoszeniami."
+    - "Sporządź regulamin programu lojalnościowego dla klientów."
+    - "Napisz regulamin świadczenia usług hostingowych."
+
+  polityka_prywatnosci:
+    - "Sporządź politykę prywatności dla sklepu internetowego przetwarzającego dane klientów."
+    - "Napisz politykę prywatności dla aplikacji mobilnej zbierającej dane lokalizacyjne."
+    - "Przygotuj politykę prywatności dla platformy z kontami użytkowników i newsletterem."
+    - "Sporządź politykę prywatności dla serwisu rekrutacyjnego."
+    - "Napisz politykę prywatności dla strony firmowej z formularzem kontaktowym."
+    - "Przygotuj politykę prywatności dla usługi subskrypcyjnej z płatnościami online."
+    - "Sporządź politykę prywatności dla portalu edukacyjnego dla dzieci."
+    - "Napisz politykę prywatności dla systemu obsługi zgłoszeń klientów."
+
+  wezwanie_do_zaplaty:
+    - "Sporządź przedsądowe wezwanie do zapłaty 27 300 zł z faktury za dostawę towarów."
+    - "Napisz wezwanie do zapłaty zaległego czynszu najmu lokalu użytkowego."
+    - "Przygotuj wezwanie do zapłaty kary umownej za opóźnienie w dostawie."
+    - "Sporządź wezwanie do zapłaty wynagrodzenia za wykonane usługi doradcze."
+    - "Napisz wezwanie do zwrotu nienależnie pobranej zaliczki."
+    - "Przygotuj wezwanie do zapłaty odsetek za opóźnienie w transakcjach handlowych."
+    - "Sporządź wezwanie do zapłaty należności za usługi transportowe."
+    - "Napisz ostateczne przedsądowe wezwanie do zapłaty z terminem 7 dni."
+
+  pismo_urzedowe:
+    - "Sporządź wniosek o udostępnienie informacji publicznej do urzędu miasta."
+    - "Napisz wniosek o wydanie zaświadczenia o niezaleganiu w podatkach."
+    - "Przygotuj wniosek o wydanie wypisu i wyrysu z miejscowego planu zagospodarowania."
+    - "Sporządź wniosek o umorzenie zaległości podatkowej."
+    - "Napisz wniosek o wydanie decyzji o warunkach zabudowy."
+    - "Przygotuj wniosek o rozłożenie należności na raty."
+    - "Sporządź wniosek o sprostowanie oczywistej omyłki w decyzji administracyjnej."
+    - "Napisz wniosek o przywrócenie terminu do wniesienia odwołania."

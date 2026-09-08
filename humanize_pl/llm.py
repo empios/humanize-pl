@@ -264,16 +264,24 @@ class OpenAICompatibleRewriter:
             return self.metadata.status in {"ready", "ready_with_errors"}
         self._probed = True
         started = time.monotonic()
+        # The prompt names every field rather than pointing at "the schema":
+        # when the endpoint refuses grammar-constrained sampling, the schema
+        # is not sent at all, and an instruction referring to it says nothing.
         messages = [
             {
                 "role": "system",
-                "content": "Zwróć wyłącznie obiekt JSON zgodny ze schematem.",
+                "content": (
+                    "Zwróć wyłącznie obiekt JSON z dokładnie czterema polami "
+                    "tekstowymi: fragment_id, source, proposal, rationale. "
+                    "Bez komentarza i bez bloku kodu."
+                ),
             },
             {
                 "role": "user",
                 "content": (
                     'fragment_id="capability-test"; source="To jest test połączenia."; '
-                    "nie zmieniaj tekstu i krótko uzasadnij."
+                    "przepisz source bez zmian do pola proposal, powtórz source "
+                    "znak w znak i krótko uzasadnij w rationale."
                 ),
             },
         ]
@@ -315,33 +323,46 @@ class OpenAICompatibleRewriter:
         genre = GENRE_PROFILES[document_type]
         profile_text = style_profile.prompt_text() if style_profile else "Brak profilu kancelarii."
         issue_text = "; ".join(issues or []) or "pozostałe cechy schematycznego stylu AI"
+        # The output instruction sits last on purpose. Without grammar-constrained
+        # sampling nothing enforces the shape, and an instruction buried before
+        # a paragraph of genre guidance is the one the model forgets.
         system = (
             "Jesteś polskim redaktorem dokumentów prawnych. Redagujesz tylko wskazany "
             "fragment i nie udzielasz porady prawnej. Zachowaj dokładnie wszystkie "
             "placeholdery __PROTECTED_XXXX__, liczby, nazwy, definicje, cytaty, przepisy, "
             "daty, kwoty, terminy i modalność może/powinien/musi. Nie dodawaj faktów. "
-            "Zwróć wyłącznie JSON: fragment_id, source, proposal, rationale. "
             + genre.prompt_text()
             + " "
             + profile_text
+            + " Odpowiadasz wyłącznie jednym obiektem JSON o dokładnie czterech polach "
+            "tekstowych: fragment_id (przepisany bez zmian), source (powtórzony znak "
+            "w znak), proposal (twoja redakcja fragmentu), rationale (jedno zdanie "
+            "uzasadnienia). Bez komentarza i bez bloku kodu."
         )
-        user = {
-            "fragment_id": fragment_id,
-            "source": protected.text,
-            "issues": issue_text,
-            "document_outline": (
-                protect_text(outline, include_sensitive=True).text[:1200] if outline else ""
-            ),
-            "previous_fragment": previous_protected[:1200],
-            "following_fragment": following_protected[:1200],
-        }
+        # Labelled plain text, not a JSON object. Handed an object, a model
+        # without a grammar to hold it echoes the object it was given - keys
+        # and all - instead of producing the answer shape. Measured: every one
+        # of nine fragments came back as a copy of the input.
+        outline_text = (
+            protect_text(outline, include_sensitive=True).text[:1200] if outline else ""
+        )
+        user = "\n".join(
+            [
+                f"fragment_id: {fragment_id}",
+                f"Fragment do redakcji:\n{protected.text}",
+                f"Zauważone problemy: {issue_text}",
+                f"Poprzedni akapit: {previous_protected[:1200] or '(brak)'}",
+                f"Następny akapit: {following_protected[:1200] or '(brak)'}",
+                f"Zarys dokumentu: {outline_text or '(brak)'}",
+            ]
+        )
         started = time.monotonic()
         self.metadata.note_proposal()
         try:
             data, _used_format = self._completion(
                 [
                     {"role": "system", "content": system},
-                    {"role": "user", "content": json.dumps(user, ensure_ascii=False)},
+                    {"role": "user", "content": user},
                 ],
                 use_response_format=bool(self.metadata.supports_response_format),
             )
@@ -466,17 +487,80 @@ class OpenAICompatibleRewriter:
             )
         if not isinstance(content, str):
             raise LlmEndpointError("Treść odpowiedzi modelu nie jest tekstem.")
-        cleaned = re.sub(r"^```(?:json)?\s*|\s*```$", "", content.strip(), flags=re.I)
-        try:
-            payload = json.loads(cleaned)
-        except json.JSONDecodeError as exc:
-            raise LlmEndpointError("Model nie zwrócił poprawnego JSON-u.") from exc
+        payload = _extract_json_object(content)
+        if payload is None:
+            raise LlmEndpointError("Model nie zwrócił poprawnego JSON-u.")
         if not isinstance(payload, dict):
             raise LlmEndpointError("Model zwrócił JSON inny niż obiekt.")
         required = ("fragment_id", "source", "proposal", "rationale")
         if any(not isinstance(payload.get(key), str) for key in required):
             raise LlmEndpointError("W odpowiedzi modelu brakuje wymaganych pól tekstowych.")
         return LlmProposal(**{key: payload[key] for key in required})
+
+
+def _extract_json_object(content: str) -> dict[str, Any] | None:
+    """Find the JSON object in a reply, however the model wrapped it.
+
+    Structured output is not available everywhere: some GGUF builds refuse
+    grammar-constrained sampling outright, and the model then answers in its
+    natural voice - a fenced block with a sentence of explanation on either
+    side. Insisting on a bare object throws away replies that are perfectly
+    good once unwrapped.
+
+    This loosens parsing only. Every guarantee lives after it: the echoed
+    source must match verbatim, the fragment id must match, and the local
+    validators still decide. A tolerant reader changes how many proposals
+    reach those checks, never which ones survive them.
+    """
+
+    def as_object(text: str) -> dict[str, Any] | None:
+        try:
+            value = json.loads(text)
+        except json.JSONDecodeError:
+            return None
+        return value if isinstance(value, dict) else None
+
+    stripped = content.strip()
+    direct = as_object(stripped)
+    if direct is not None:
+        return direct
+
+    fenced = re.search(r"```(?:json)?\s*(.+?)\s*```", stripped, flags=re.I | re.S)
+    if fenced is not None:
+        candidate = as_object(fenced.group(1))
+        if candidate is not None:
+            return candidate
+
+    # Last resort: the first balanced object in the text. Braces inside string
+    # values must not end the scan, and legal text carries them often enough.
+    start = stripped.find("{")
+    while start != -1:
+        depth = 0
+        in_string = False
+        escaped = False
+        for index in range(start, len(stripped)):
+            char = stripped[index]
+            if in_string:
+                if escaped:
+                    escaped = False
+                elif char == "\\":
+                    escaped = True
+                elif char == '"':
+                    in_string = False
+                continue
+            if char == '"':
+                in_string = True
+            elif char == "{":
+                depth += 1
+            elif char == "}":
+                depth -= 1
+                if depth == 0:
+                    candidate = as_object(stripped[start : index + 1])
+                    if candidate is not None:
+                        return candidate
+                    break
+        start = stripped.find("{", start + 1)
+    return None
 
 
 def _safe_error(exc: Exception) -> str:

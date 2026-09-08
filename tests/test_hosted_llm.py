@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 
 import httpx
 import pytest
@@ -23,6 +24,16 @@ def _response(payload: dict) -> httpx.Response:
             ]
         },
     )
+
+
+def _fields(content: str) -> dict[str, str]:
+    """Read the labelled plain-text prompt the rewriter now sends."""
+    fragment_id = re.search(r"fragment_id: (\S+)", content)
+    source = re.search(r"Fragment do redakcji:\n(.*?)\nZauważone problemy:", content, re.S)
+    return {
+        "fragment_id": fragment_id.group(1) if fragment_id else "",
+        "source": source.group(1) if source else "",
+    }
 
 
 def test_url_normalization_accepts_v1_and_full_path() -> None:
@@ -78,7 +89,7 @@ def test_client_probes_and_rewrites_with_strict_json() -> None:
                     "rationale": "test",
                 }
             )
-        user = json.loads(payload["messages"][1]["content"])
+        user = _fields(payload["messages"][1]["content"])
         return _response(
             {
                 "fragment_id": user["fragment_id"],
@@ -254,10 +265,9 @@ def test_fragments_are_rewritten_concurrently_but_applied_in_document_order() ->
         nonlocal in_flight, peak
         payload = json.loads(request.content)
         content = payload["messages"][1]["content"]
-        try:
-            user = json.loads(content)
-        except json.JSONDecodeError:
-            # The capability probe sends a plain sentence, not the JSON body.
+        user = _fields(content)
+        if not user["fragment_id"]:
+            # The capability probe sends a plain sentence, not the labelled body.
             return _response(
                 {
                     "fragment_id": "capability-test",
@@ -321,3 +331,73 @@ def test_report_rationale_is_trimmed_to_one_line() -> None:
     long_reason = "a" * 400
     trimmed = _short_rationale(long_reason)
     assert len(trimmed) == 300 and trimmed.endswith("…")
+
+
+def test_the_prompt_never_hands_the_model_an_object_shaped_like_the_answer() -> None:
+    """A model without a grammar echoes the object it was given.
+
+    Sending the inputs as a JSON object made every one of nine real fragments
+    come back as a copy of that object - fragment_id, source and the context
+    keys, with no proposal and no rationale. Labelled plain text removes the
+    thing there was to copy; the required shape is stated once, last.
+    """
+    seen: list[dict] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        payload = json.loads(request.content)
+        seen.append(payload)
+        user = _fields(payload["messages"][1]["content"])
+        return _response(
+            {
+                "fragment_id": user["fragment_id"] or "capability-test",
+                "source": user["source"] or "To jest test połączenia.",
+                "proposal": (user["source"] or "To jest test połączenia.").replace(
+                    "Warto podkreślić, że ", ""
+                ),
+                "rationale": "usunięto rozbieg",
+            }
+        )
+
+    settings = LlmSettings("https://model.test/v1", "legal-pl", "", 5)
+    rewriter = OpenAICompatibleRewriter(
+        settings, client=httpx.Client(transport=httpx.MockTransport(handler))
+    )
+    assert rewriter.probe()
+    result = rewriter.rewrite_fragment(
+        "Warto podkreślić, że Pracownik musi zapłacić 5000 zł.",
+        fragment_id="paragraph-7",
+        document_type=DocumentType.contract,
+        issues=["discourse_frame"],
+    )
+    assert result.accepted
+
+    user_message = seen[-1]["messages"][1]["content"]
+    with pytest.raises(json.JSONDecodeError):
+        json.loads(user_message)
+    assert "fragment_id: paragraph-7" in user_message
+
+    system = seen[-1]["messages"][0]["content"]
+    assert system.rstrip().endswith("Bez komentarza i bez bloku kodu.")
+
+
+def test_a_reply_wrapped_in_prose_and_fences_is_still_read() -> None:
+    """Endpoints without structured output answer in the model's own voice."""
+    from humanize_pl.llm import _extract_json_object
+
+    wrapped = (
+        'Oto wynik redakcji:\n\n```json\n{"fragment_id": "p-1", "source": "a", '
+        '"proposal": "b", "rationale": "c"}\n```\n\nMam nadzieję, że pomoże.'
+    )
+    assert _extract_json_object(wrapped) == {
+        "fragment_id": "p-1",
+        "source": "a",
+        "proposal": "b",
+        "rationale": "c",
+    }
+    # A brace inside a string value must not end the scan.
+    assert _extract_json_object('Proszę: {"a": "ma } w środku", "b": 2}') == {
+        "a": "ma } w środku",
+        "b": 2,
+    }
+    assert _extract_json_object("[1,2,3]") is None
+    assert _extract_json_object("nie ma tu JSON-u") is None

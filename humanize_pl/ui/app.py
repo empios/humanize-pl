@@ -688,7 +688,6 @@ def run_xlsx(
 def run_profile(
     files: list[str] | None,
     name: str,
-    document_type: str,
     style_guide: str | None,
     template: str | None,
 ):
@@ -696,9 +695,6 @@ def run_profile(
         raise gr.Error("Dodaj od 5 do 20 zatwierdzonych plików .docx.")
     if not name.strip():
         raise gr.Error("Podaj nazwę profilu kancelarii.")
-    resolved = _value(document_type, DOCUMENT_TYPE_LABELS)
-    if resolved == DocumentType.auto.value:
-        raise gr.Error("Profil wymaga konkretnego rodzaju dokumentu.")
     workspace = new_workspace("profile")
     staged = stage_uploads(files, workspace / "input", ".docx")
     if not staged:
@@ -709,7 +705,7 @@ def run_profile(
             source_directory=workspace / "input",
             output_directory=output_directory,
             name=name.strip(),
-            document_type=DocumentType(resolved),
+            document_type=DocumentType.auto,
             style_guide=Path(style_guide) if style_guide else None,
             template=Path(template) if template else None,
         )
@@ -727,12 +723,12 @@ def run_profile(
     alerts = "".join(f"\n\n⚠️ **{row}**" for row in profile.warnings)
     summary = (
         f"### ✅ Profil gotowy\n\n"
-        f"Zbudowany z **{profile.document_count}** dokumentów "
-        f"(**{profile.word_count}** słów), typ: **{profile.document_type.value}**.\n\n"
+        f"Rozpoznany rodzaj: **{DOCUMENT_TYPE_LABELS[profile.document_type.value]}**. "
+        f"Zmierzony na **{profile.document_count}** dokumentach "
+        f"(**{profile.word_count}** słów).\n\n"
         "Pobierz `profile.json` i wskaż go w *Ustawieniach* jako **Profil stylu "
-        "kancelarii**. Ustaw też **Rodzaj dokumentu** na "
-        f"*{DOCUMENT_TYPE_LABELS[profile.document_type.value]}* — profil "
-        "dotyczący innego rodzaju jest pomijany." + alerts + guide_note
+        "kancelarii**. Przy dokumentach innego rodzaju profil jest pomijany — "
+        "narzędzie samo to sprawdza." + alerts + guide_note
     )
     return summary, gr.update(value=package(output_directory), visible=True)
 
@@ -820,19 +816,15 @@ def build_ui() -> gr.Blocks:
                     file_types=[".docx"],
                     type="filepath",
                 )
-                with gr.Row():
-                    profile_name = gr.Textbox(
-                        label="Nazwa profilu", placeholder="np. Kancelaria Kowalski"
-                    )
-                    profile_type = gr.Dropdown(
-                        [
-                            DOCUMENT_TYPE_LABELS[item]
-                            for item in DOCUMENT_TYPES
-                            if item != DocumentType.auto.value
-                        ],
-                        value=DOCUMENT_TYPE_LABELS[DocumentType.contract.value],
-                        label="Rodzaj dokumentów",
-                    )
+                profile_name = gr.Textbox(
+                    label="Nazwa profilu",
+                    placeholder="np. Kancelaria Kowalski",
+                    info=(
+                        "Rodzaj dokumentów rozpoznajemy sami. Wgraj dokumenty "
+                        "jednego rodzaju — dziesięć umów mówi więcej niż dwadzieścia "
+                        "różnych pism."
+                    ),
+                )
                 with gr.Accordion("Dodatkowe pliki (opcjonalne)", open=False):
                     with gr.Row():
                         profile_guide = gr.File(
@@ -963,7 +955,6 @@ def build_ui() -> gr.Blocks:
             inputs=[
                 profile_files,
                 profile_name,
-                profile_type,
                 profile_guide,
                 profile_template,
             ],

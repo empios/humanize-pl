@@ -387,9 +387,9 @@ def profile_command(
     samples: Path = typer.Argument(..., help="Folder z 5–20 zatwierdzonymi plikami .docx"),
     name: str = typer.Option(..., "--name", help="Nazwa profilu kancelarii"),
     document_type: DocumentType = typer.Option(
-        ...,
+        DocumentType.auto,
         "--document-type",
-        help="client_communication, contract albo filing_official",
+        help="Domyślnie rozpoznawany automatycznie z wgranych dokumentów",
     ),
     style_guide: Path = typer.Option(
         None, "--style-guide", help="Opcjonalna instrukcja YAML"
@@ -400,10 +400,6 @@ def profile_command(
     output: Path = typer.Option(..., "--output", "-o", help="Katalog wynikowego profilu"),
 ) -> None:
     """Zbuduj zanonimizowany profil stylu kancelarii bez kalibracji detektora."""
-    if document_type == DocumentType.auto:
-        raise typer.BadParameter(
-            "Profil wymaga konkretnego rodzaju dokumentu.", param_hint="--document-type"
-        )
     try:
         profile = build_style_profile(
             source_directory=samples,

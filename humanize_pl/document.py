@@ -326,6 +326,15 @@ def _profile_statistics(texts: Iterable[str]) -> dict[str, float]:
     }
 
 
+def _dominant_type(texts: list[str]) -> DocumentType | None:
+    """The kind most of these documents are, or None when nothing dominates."""
+    counts = Counter(classify_document(text).document_type for text in texts)
+    if not counts:
+        return None
+    winner, hits = counts.most_common(1)[0]
+    return winner if hits >= 5 else None
+
+
 def _ai_marker_warning(texts: list[str]) -> str | None:
     """Warn when the documents offered as a human baseline look machine-drafted.
 
@@ -387,11 +396,22 @@ def build_style_profile(
     output_directory: str | Path,
     *,
     name: str,
-    document_type: DocumentType,
+    document_type: DocumentType = DocumentType.auto,
     style_guide: str | Path | None = None,
     template: str | Path | None = None,
 ) -> StyleProfile:
-    """Build a privacy-reduced office profile from 5–20 approved documents."""
+    """Build a privacy-reduced office profile from 5–20 approved documents.
+
+    The kind of document is detected rather than asked for. The engine already
+    classifies every document it sees, so making someone choose adds a way to
+    be wrong without adding anything - and nobody was checking the answer, so
+    a folder of six contracts and four pleadings labelled "contract" produced
+    a baseline measured on a blend that matches neither.
+
+    Documents outside the dominant kind are left out of the measurement and
+    named, because ten documents of one kind measure something and twenty of
+    four kinds measure nothing.
+    """
     from humanize_pl.io.docx_io import docx_text
 
     source_directory = Path(source_directory)
@@ -405,6 +425,29 @@ def build_style_profile(
     if not 5 <= len(files) <= 20:
         raise ValueError("Profil kancelarii wymaga od 5 do 20 zatwierdzonych plików DOCX.")
     texts = [docx_text(path) for path in files]
+
+    detected = _dominant_type(texts)
+    excluded: list[str] = []
+    if document_type is DocumentType.auto:
+        if detected is None:
+            raise ValueError(
+                "Nie udało się rozpoznać rodzaju dokumentów. Wskaż go ręcznie "
+                "albo wgraj dokumenty jednego rodzaju."
+            )
+        document_type = detected
+    kept: list[str] = []
+    for path, text in zip(files, texts):
+        if classify_document(text).document_type is document_type:
+            kept.append(text)
+        else:
+            excluded.append(path.name)
+    if len(kept) < 5:
+        raise ValueError(
+            f"Rozpoznano rodzaj „{document_type.value}”, ale pasuje do niego tylko "
+            f"{len(kept)} z {len(files)} dokumentów. Wgraj co najmniej 5 jednego rodzaju."
+        )
+    texts = kept
+
     guide: dict[str, Any] = {}
     if style_guide:
         loaded = yaml.safe_load(Path(style_guide).read_text(encoding="utf-8")) or {}
@@ -422,11 +465,28 @@ def build_style_profile(
     profile = StyleProfile(
         name=name,
         document_type=document_type,
-        document_count=len(files),
+        # The documents actually measured, not the ones offered: excluded
+        # files are named in the warnings and must not inflate the count that
+        # decides whether the baseline is thin.
+        document_count=len(texts),
         word_count=sum(len(_WORD_RE.findall(text)) for text in texts),
         statistics=_profile_statistics(texts),
         reference=_measure_reference(texts, name=name, document_type=document_type),
-        warnings=[row for row in (_ai_marker_warning(texts),) if row],
+        warnings=[
+            row
+            for row in (
+                _ai_marker_warning(texts),
+                (
+                    f"Pominięto {len(excluded)} dokumentów innego rodzaju: "
+                    + ", ".join(excluded)
+                    + ". Wzorzec zmierzono na dokumentach rodzaju "
+                    f"„{document_type.value}”."
+                )
+                if excluded
+                else None,
+            )
+            if row
+        ],
         preferred_terms={str(key): str(value) for key, value in dict(preferred).items()},
         forbidden_phrases=[str(value) for value in forbidden],
         abbreviations={str(key): str(value) for key, value in dict(abbreviations).items()},

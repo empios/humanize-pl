@@ -262,3 +262,59 @@ def test_the_office_warning_reaches_every_run_that_uses_the_profile(tmp_path) ->
     )
     assert any("ślady pisania przez AI" in warning for warning in outcome.warnings)
     assert outcome.calibration_status.startswith("calibrated:office:")
+
+
+def test_the_kind_of_document_is_detected_not_asked_for(tmp_path) -> None:
+    """The engine classifies every document it sees.
+
+    Asking anyway adds a way to be wrong without adding anything, and nobody
+    checked the answer - so a folder of contracts labelled as pleadings
+    produced a baseline measured on the wrong register.
+    """
+    from humanize_pl.document import DocumentType
+
+    profile = _office(
+        tmp_path, [HUMAN_CONTRACT.format(n=i, m=i + 1) for i in range(1, 13, 2)]
+    )
+    assert profile.document_type is DocumentType.contract
+
+
+def test_documents_of_another_kind_are_left_out_and_named(tmp_path) -> None:
+    """Ten documents of one kind measure something; twenty of four measure nothing."""
+    contracts = [HUMAN_CONTRACT.format(n=i, m=i + 1) for i in range(1, 13, 2)]
+    filings = [
+        "Wnoszę o zasądzenie od pozwanego kwoty 4 000 zł wraz z odsetkami ustawowymi. "
+        "Powód wykonał zobowiązanie, pozwany nie zapłacił mimo wezwania.",
+        "Wnoszę o zasądzenie od pozwanego kwoty 9 500 zł wraz z kosztami procesu. "
+        "Pozwany odebrał towar i nie uregulował faktury w terminie.",
+    ]
+    profile = _office(tmp_path, contracts + filings)
+
+    assert profile.document_count == len(contracts), "policzono pominięte dokumenty"
+    assert any("Pominięto" in warning for warning in profile.warnings)
+
+
+def test_a_folder_with_no_dominant_kind_is_refused(tmp_path) -> None:
+    import docx as pydocx
+
+    from humanize_pl.document import build_style_profile
+
+    source = tmp_path / "mieszane"
+    source.mkdir(parents=True)
+    texts = [
+        HUMAN_CONTRACT.format(n=1, m=2),
+        HUMAN_CONTRACT.format(n=3, m=4),
+        "Wnoszę o zasądzenie kwoty 4 000 zł wraz z odsetkami od dnia wymagalności.",
+        "Wnoszę o zasądzenie kwoty 9 500 zł wraz z kosztami procesu według norm.",
+        "Szanowni Państwo, w nawiązaniu do rozmowy przesyłamy podsumowanie ustaleń.",
+    ]
+    for index, text in enumerate(texts):
+        document = pydocx.Document()
+        for line in [row for row in text.split("\n") if row.strip()]:
+            document.add_paragraph(line)
+        document.save(source / f"d{index}.docx")
+
+    with pytest.raises(ValueError, match="rodzaj"):
+        build_style_profile(
+            source_directory=source, output_directory=tmp_path / "out", name="Mieszana"
+        )

@@ -22,6 +22,7 @@ from humanize_pl.config import Engine, LegalReviewProfile, Mode
 from humanize_pl.core import HumanizerSession, create_humanizer_session
 from humanize_pl.blueprint import check_category
 from humanize_pl.categories import classify_category
+from humanize_pl.tone import compare_tone
 from humanize_pl.detect import detect_document, load_profile, profile_for_family
 from humanize_pl.document import (
     DocumentType,
@@ -293,6 +294,10 @@ class ItemOutcome:
     # blueprint this says so explicitly — "not checked" must never read as
     # "nothing wrong".
     blueprint: dict[str, Any] = field(default_factory=dict)
+    # How the document sits against the office's own writing. Separate from
+    # the AI signal: a document written entirely by a person can still be
+    # twice as long-winded as everything else the office sends out.
+    tone: dict[str, Any] = field(default_factory=dict)
     calibration_status: str = "uncalibrated"
     style_compliance: dict[str, Any] = field(default_factory=dict)
     legal_sensitive_check: dict[str, Any] = field(default_factory=dict)
@@ -337,6 +342,7 @@ class ItemOutcome:
             "document_type_evidence": self.document_type_evidence,
             "legal_category": self.legal_category,
             "blueprint": self.blueprint,
+            "tone": self.tone,
             "calibration_status": self.calibration_status,
             "style_compliance": self.style_compliance,
             "legal_sensitive_check": self.legal_sensitive_check,
@@ -577,6 +583,12 @@ def run_all_layers(
         )
     if outcome.style_compliance.get("issues"):
         outcome.warnings.append("Pozostały odstępstwa od profilu stylu.")
+
+    # Measured on the output too, and reported without blocking: house style
+    # is a preference, and a preference that fails documents gets switched off.
+    tone = compare_tone(dict(after.metrics), style_profile)
+    outcome.tone = tone.to_json()
+    outcome.warnings.extend(row.sentence_pl for row in tone.deviations)
 
     # Checked on the text that leaves the flow, not on the input: a rewrite
     # must not be able to drop a required section quietly.

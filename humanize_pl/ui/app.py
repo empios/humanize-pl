@@ -69,6 +69,7 @@ TABLE_HEADERS = [
     "kategoria",
     "porównanie",
     "struktura",
+    "styl kancelarii",
     "sygnał przed",
     "sygnał po",
     "delta",
@@ -396,6 +397,17 @@ def category_label(item: ItemOutcome) -> str:
     return f"{label} ({row.get('confidence', 0):.0%})"
 
 
+def tone_label(item: ItemOutcome) -> str:
+    """Whether the document sounds like the office that is sending it."""
+    row = item.tone or {}
+    if not row.get("checked"):
+        return "brak profilu"
+    count = len(row.get("deviations") or [])
+    if not count:
+        return "jak u was"
+    return f"odbiega ({count})"
+
+
 def structure_label(item: ItemOutcome) -> str:
     """Say whether the document carries the sections its category owes.
 
@@ -415,12 +427,13 @@ def structure_label(item: ItemOutcome) -> str:
 
 def item_row(item: ItemOutcome) -> list[Any]:
     if item.status == "failed":
-        return [item.name, "", "", "", "", "", "", "", "", "", "", "błąd", item.error or ""]
+        return [item.name, "", "", "", "", "", "", "", "", "", "", "", "błąd", item.error or ""]
     return [
         item.name,
         category_label(item),
         "ze wzorcem ludzkim" if is_calibrated(item) else "brak wzorca",
         structure_label(item),
+        tone_label(item),
         round(item.signal_before, 3),
         round(item.signal_after, 3),
         round(item.signal_after - item.signal_before, 3),

@@ -17,7 +17,12 @@ from .structural import paragraph_shape_cv
 SATURATION_PER_1000_WORDS = 18.0
 
 
-def detect_document(text: str, *, profile: ReferenceProfile | None = None) -> DocumentDiagnosis:
+def detect_document(
+    text: str,
+    *,
+    profile: ReferenceProfile | None = None,
+    calibrate_against_default: bool = True,
+) -> DocumentDiagnosis:
     """Locate AI-style signals in `text`.
 
     Runs independently of `Mode`, of the rule engine, and of whether any
@@ -82,6 +87,8 @@ def detect_document(text: str, *, profile: ReferenceProfile | None = None) -> Do
             sentences_per_paragraph=[row.sentence_count for row in paragraph_rows],
         ),
     )
+    if profile is None and not calibrate_against_default:
+        return diagnosis
     return replace(diagnosis, calibration=calibrate(diagnosis, text, profile=profile))
 
 

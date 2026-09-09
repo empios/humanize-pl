@@ -1,0 +1,45 @@
+# Szkielet pisma do organu.
+#
+# Oznaczenie wnioskodawcy jest wymagane, bo pismo bez niego organ pozostawia
+# bez rozpoznania — brak dotkliwszy niż cokolwiek w warstwie stylistycznej.
+
+category: pismo_urzedowe
+label_pl: pismo urzędowe
+check_order: false
+
+sections:
+  - id: data_miejsce
+    label_pl: miejscowość i data
+    severity: required
+    matches: ["dnia", " r."]
+
+  - id: adresat
+    label_pl: oznaczenie organu (adresat)
+    severity: required
+    matches: ["do:", "urząd", "organ", "prezydent", "wójt", "starost"]
+
+  - id: wnioskodawca
+    label_pl: oznaczenie wnioskodawcy z adresem
+    severity: required
+    # NIE samo "wnioskodawca": trafiało w adres e-mail wnioskodawca@...
+    matches: ["wnioskodawca:", "imię i nazwisko", "adres do doręczeń", "zam."]
+
+  - id: zadanie
+    label_pl: treść żądania
+    severity: required
+    matches: ["wnoszę o", "zwracam się", "proszę o"]
+
+  - id: podstawa
+    label_pl: podstawa prawna
+    severity: required
+    matches: ["na podstawie art", "podstawą wniosku", "zgodnie z art"]
+
+  - id: sposob_odpowiedzi
+    label_pl: wskazany sposób doręczenia odpowiedzi
+    severity: expected
+    matches: ["w formie elektronicznej", "na adres", "drogą pocztową"]
+
+  - id: podpis
+    label_pl: podpis wnioskodawcy
+    severity: required
+    matches: ["podpis", "z poważaniem", "z wyrazami szacunku"]

@@ -17,6 +17,12 @@ class Engine(str, Enum):
 
 
 class LegalReviewProfile(str, Enum):
+    client_communication = "client_communication"
+    contract = "contract"
+    filing_official = "filing_official"
+    # Compatibility alias accepted by existing integrations.  New flow code
+    # uses DocumentType and never applies the SAOS reasoning calibration to a
+    # contract or client letter.
     legal_ai_review = "legal_ai_review"
 
 

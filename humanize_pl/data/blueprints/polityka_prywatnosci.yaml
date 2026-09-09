@@ -1,0 +1,61 @@
+# Szkielet polityki prywatności.
+#
+# Sekcje wymagane odpowiadają obowiązkowi informacyjnemu z art. 13 RODO.
+# Brak pouczenia o prawie skargi do organu nadzorczego to nie stylistyka —
+# to brak elementu, którego przepis wymaga wprost.
+
+category: polityka_prywatnosci
+label_pl: polityka prywatności
+numbering: paragraph
+check_order: false
+
+sections:
+  - id: administrator
+    label_pl: tożsamość administratora
+    severity: required
+    matches: ["administratorem danych", "administrator danych"]
+
+  - id: kontakt
+    label_pl: dane kontaktowe (administrator lub IOD)
+    severity: required
+    matches: ["inspektor ochrony danych", "kontakt", "adres e-mail", "@"]
+
+  - id: cele
+    label_pl: cele przetwarzania
+    severity: required
+    matches: ["cele przetwarzania", "cel przetwarzania", "przetwarzane w celu"]
+
+  - id: podstawy
+    label_pl: podstawa prawna przetwarzania
+    severity: required
+    matches: ["podstawa prawna", "podstawy prawne", "podstawą przetwarzania"]
+
+  - id: odbiorcy
+    label_pl: odbiorcy danych
+    severity: required
+    matches: ["odbiorcy danych", "odbiorcami danych", "podmioty przetwarzające"]
+
+  - id: okres
+    label_pl: okres przechowywania
+    severity: required
+    matches: ["okres przechowywania", "przechowywane przez okres"]
+
+  - id: prawa
+    label_pl: prawa osoby, której dane dotyczą
+    severity: required
+    matches: ["prawo dostępu", "prawa osoby", "przysługuje prawo"]
+
+  - id: skarga
+    label_pl: prawo skargi do organu nadzorczego
+    severity: required
+    matches: ["skargi do", "organu nadzorczego", "prezesa urzędu ochrony danych", "uodo"]
+
+  - id: panstwa_trzecie
+    label_pl: przekazywanie do państw trzecich
+    severity: expected
+    matches: ["państwa trzeciego", "poza europejski obszar", "państw trzecich"]
+
+  - id: profilowanie
+    label_pl: informacja o profilowaniu
+    severity: expected
+    matches: ["profilowani", "zautomatyzowanego podejmowania decyzji"]

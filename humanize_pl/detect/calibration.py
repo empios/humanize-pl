@@ -10,6 +10,24 @@ from .base import DocumentDiagnosis
 PROFILE_DIR = Path(__file__).resolve().parent.parent / "data" / "reference_profiles"
 DEFAULT_PROFILE = "saos_common_2018_2024"
 
+# Which reference profile calibrates which document family.
+#
+# Families, not categories. The detector measures register-level statistics —
+# sentence length and its variance, opening diversity, family rates — and
+# those separate a pleading from a contract far more sharply than they
+# separate a pleading from an appeal. Calibrating all 28 legal categories
+# would need 28 corpora, and only a few registers have sources that are both
+# open and lawfully reusable: court and administrative rulings, procurement
+# contract templates, official correspondence.
+#
+# A family absent from this map is reported uncalibrated rather than
+# calibrated against something adjacent. The SAOS profile is court reasoning;
+# using it for a contract would compare a document against a register it does
+# not belong to and dress the result up as a measurement.
+FAMILY_PROFILES: dict[str, str] = {
+    "filing_official": DEFAULT_PROFILE,
+}
+
 # Families whose human p95 is at or near zero need a floor, otherwise a single
 # occurrence divides by ~0 and saturates the score on its own.
 RATE_FLOOR_PER_1000 = 0.5
@@ -41,6 +59,18 @@ GENRE_CONFOUNDED = {"type_token_ratio", "opening_diversity"}
 #      genre. A same-genre human profile would settle it.
 REVIEW_THRESHOLD = 0.25
 
+# Half-width of the band around the threshold where the verdict is not
+# reliable. Measured, not chosen: rebuilding the reference profile from
+# independent samples of the same corpus moves a document's calibrated score
+# by about 0.03, and that spread does NOT shrink with corpus size - it held at
+# 10, 25, 50, 100 and 200 documents alike. The score is built from a dozen
+# signals crossing their percentiles in steps, so it is grainy by construction.
+#
+# A document inside this band therefore gets a coin-flip, and reporting one
+# side of that coin as a verdict would be inventing precision. It is reported
+# as borderline instead.
+UNCERTAIN_BAND = 0.035
+
 
 @dataclass(frozen=True)
 class CalibratedSignal:
@@ -68,6 +98,27 @@ class Calibration:
     def above_human_range(self) -> bool:
         """True when the document warrants human review, not a verdict of AI."""
         return self.calibrated_score >= REVIEW_THRESHOLD
+
+    @property
+    def borderline(self) -> bool:
+        """True when the score is too close to the threshold to call.
+
+        Inside this band the answer changes with which documents happened to
+        be in the reference corpus, so it is not an answer.
+        """
+        return abs(self.calibrated_score - REVIEW_THRESHOLD) <= UNCERTAIN_BAND
+
+    @property
+    def verdict(self) -> str:
+        if self.borderline:
+            return "borderline"
+        return "above_human_range" if self.above_human_range else "within_human_range"
+
+
+def profile_for_family(family: str) -> ReferenceProfile | None:
+    """The profile calibrating `family`, or None when none is measured yet."""
+    name = FAMILY_PROFILES.get(family)
+    return load_profile(name) if name else None
 
 
 @lru_cache(maxsize=8)

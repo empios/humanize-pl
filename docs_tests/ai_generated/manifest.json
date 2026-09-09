@@ -3,49 +3,207 @@
     "id": "ai_legal_01_umowa_uslug",
     "file": "ai_legal_01_umowa_uslug.txt",
     "type": "umowa",
-    "focus": ["strony", "wynagrodzenie", "terminy", "odpowiedzialność", "powtarzalne ramy AI"]
+    "focus": [
+      "strony",
+      "wynagrodzenie",
+      "terminy",
+      "odpowiedzialność",
+      "powtarzalne ramy AI"
+    ],
+    "category": "umowa_uslug",
+    "generated_by": "unknown",
+    "generated_on": "unknown"
   },
   {
     "id": "ai_legal_02_opinia_odpowiedzialnosc",
     "file": "ai_legal_02_opinia_odpowiedzialnosc.txt",
     "type": "opinia prawna",
-    "focus": ["normatywność", "podstawa prawna", "argumentacja", "ostrożne wnioski"]
+    "focus": [
+      "normatywność",
+      "podstawa prawna",
+      "argumentacja",
+      "ostrożne wnioski"
+    ],
+    "category": "opinia_prawna",
+    "generated_by": "unknown",
+    "generated_on": "unknown"
   },
   {
     "id": "ai_legal_03_esej_prawo_pracy",
     "file": "ai_legal_03_esej_prawo_pracy.txt",
     "type": "esej prawniczy",
-    "focus": ["monotonia akapitów", "nominalizacje", "art. 22 § 1", "co do zasady"]
+    "focus": [
+      "monotonia akapitów",
+      "nominalizacje",
+      "art. 22 § 1",
+      "co do zasady"
+    ],
+    "category": "nieokreslony",
+    "generated_by": "unknown",
+    "generated_on": "unknown"
   },
   {
     "id": "ai_legal_04_regulamin_platformy",
     "file": "ai_legal_04_regulamin_platformy.txt",
     "type": "regulamin",
-    "focus": ["obowiązki użytkownika", "zakazy", "odpowiedzialność", "dane osobowe"]
+    "focus": [
+      "obowiązki użytkownika",
+      "zakazy",
+      "odpowiedzialność",
+      "dane osobowe"
+    ],
+    "category": "regulamin",
+    "generated_by": "unknown",
+    "generated_on": "unknown"
   },
   {
     "id": "ai_legal_05_pismo_urzedowe",
     "file": "ai_legal_05_pismo_urzedowe.txt",
     "type": "pismo urzędowe",
-    "focus": ["wniosek", "organ", "termin", "podstawa prawna", "załączniki"]
+    "focus": [
+      "wniosek",
+      "organ",
+      "termin",
+      "podstawa prawna",
+      "załączniki"
+    ],
+    "category": "pismo_urzedowe",
+    "generated_by": "unknown",
+    "generated_on": "unknown"
   },
   {
     "id": "ai_legal_06_wezwanie_do_zaplaty",
     "file": "ai_legal_06_wezwanie_do_zaplaty.txt",
     "type": "wezwanie do zapłaty",
-    "focus": ["kwoty", "odsetki", "termin zapłaty", "bez zmiany roszczenia"]
+    "focus": [
+      "kwoty",
+      "odsetki",
+      "termin zapłaty",
+      "bez zmiany roszczenia"
+    ],
+    "category": "wezwanie_do_zaplaty",
+    "generated_by": "unknown",
+    "generated_on": "unknown"
   },
   {
     "id": "ai_legal_07_pozew_zaplate",
     "file": "ai_legal_07_pozew_zaplate.txt",
     "type": "pismo procesowe",
-    "focus": ["żądanie pozwu", "dowody", "kwoty", "daty", "uzasadnienie"]
+    "focus": [
+      "żądanie pozwu",
+      "dowody",
+      "kwoty",
+      "daty",
+      "uzasadnienie"
+    ],
+    "category": "pozew",
+    "generated_by": "unknown",
+    "generated_on": "unknown"
   },
   {
     "id": "ai_legal_08_polityka_rodo",
     "file": "ai_legal_08_polityka_rodo.txt",
     "type": "polityka prywatności",
-    "focus": ["RODO", "administrator", "cele przetwarzania", "uprawnienia", "cytaty"]
+    "focus": [
+      "RODO",
+      "administrator",
+      "cele przetwarzania",
+      "uprawnienia",
+      "cytaty"
+    ],
+    "category": "polityka_prywatnosci",
+    "generated_by": "unknown",
+    "generated_on": "unknown"
+  },
+  {
+    "id": "ai_legal_09_umowa_it",
+    "file": "ai_legal_09_umowa_it.txt",
+    "type": "umowa",
+    "focus": [
+      "SLA",
+      "wynagrodzenie ryczałtowe",
+      "ograniczenie odpowiedzialności"
+    ],
+    "category": "umowa_uslug",
+    "generated_by": "claude-opus-5",
+    "generated_on": "2026-09-08"
+  },
+  {
+    "id": "ai_legal_10_opinia_zakaz_konkurencji",
+    "file": "ai_legal_10_opinia_zakaz_konkurencji.txt",
+    "type": "opinia prawna",
+    "focus": [
+      "art. 101(2) k.p.",
+      "odszkodowanie minimalne",
+      "skutki braku postanowienia"
+    ],
+    "category": "opinia_prawna",
+    "generated_by": "claude-opus-5",
+    "generated_on": "2026-09-08"
+  },
+  {
+    "id": "ai_legal_11_regulamin_sklepu",
+    "file": "ai_legal_11_regulamin_sklepu.txt",
+    "type": "regulamin",
+    "focus": [
+      "sprzedaż konsumencka",
+      "reklamacje",
+      "dostawa"
+    ],
+    "category": "regulamin",
+    "generated_by": "claude-opus-5",
+    "generated_on": "2026-09-08"
+  },
+  {
+    "id": "ai_legal_12_wezwanie_najem",
+    "file": "ai_legal_12_wezwanie_najem.txt",
+    "type": "wezwanie do zapłaty",
+    "focus": [
+      "czynsz najmu",
+      "rygor sądowy",
+      "odsetki"
+    ],
+    "category": "wezwanie_do_zaplaty",
+    "generated_by": "claude-opus-5",
+    "generated_on": "2026-09-08"
+  },
+  {
+    "id": "ai_legal_13_polityka_aplikacji",
+    "file": "ai_legal_13_polityka_aplikacji.txt",
+    "type": "polityka prywatności",
+    "focus": [
+      "dane lokalizacyjne",
+      "zgoda",
+      "okres przechowywania"
+    ],
+    "category": "polityka_prywatnosci",
+    "generated_by": "claude-opus-5",
+    "generated_on": "2026-09-08"
+  },
+  {
+    "id": "ai_legal_14_pismo_zaswiadczenie",
+    "file": "ai_legal_14_pismo_zaswiadczenie.txt",
+    "type": "pismo urzędowe",
+    "focus": [
+      "zaświadczenie",
+      "Ordynacja podatkowa",
+      "termin organu"
+    ],
+    "category": "pismo_urzedowe",
+    "generated_by": "claude-opus-5",
+    "generated_on": "2026-09-08"
+  },
+  {
+    "id": "ai_legal_15_pozew_dzielo",
+    "file": "ai_legal_15_pozew_dzielo.txt",
+    "type": "pismo procesowe",
+    "focus": [
+      "umowa o dzieło",
+      "odbiór bez zastrzeżeń",
+      "wnioski dowodowe"
+    ],
+    "category": "pozew",
+    "generated_by": "claude-opus-5",
+    "generated_on": "2026-09-08"
   }
 ]
-

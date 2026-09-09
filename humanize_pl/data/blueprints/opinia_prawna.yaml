@@ -1,0 +1,50 @@
+# Szkielet opinii prawnej.
+#
+# Zastrzeżenia są tu `required` nie z pedanterii: opinia bez zakreślenia
+# granic (stan na dzień, oparcie na przekazanych dokumentach) bywa czytana
+# szerzej, niż autor zamierzał.
+
+category: opinia_prawna
+label_pl: opinia prawna
+numbering: roman
+
+sections:
+  - id: przedmiot
+    label_pl: przedmiot opinii (pytanie)
+    severity: required
+    matches: ["przedmiot opinii", "przedmiotem opinii", "pytanie prawne", "zakres opinii"]
+
+  - id: stan_faktyczny
+    label_pl: stan faktyczny
+    severity: required
+    matches: ["stan faktyczny", "stanu faktycznego"]
+
+  - id: podstawa_prawna
+    label_pl: podstawa prawna
+    severity: required
+    matches: ["podstawa prawna", "podstawy prawne", "stan prawny"]
+
+  - id: analiza
+    label_pl: analiza prawna
+    severity: required
+    matches: ["analiza", "ocena prawna", "rozważania"]
+
+  - id: wnioski
+    label_pl: wnioski
+    severity: required
+    matches: ["wnioski", "konkluzje", "podsumowanie"]
+
+  - id: zastrzezenia
+    label_pl: zastrzeżenia i granice opinii
+    severity: required
+    matches: ["zastrzeżenia", "opinia została sporządzona", "stan prawny na dzień"]
+
+  - id: orzecznictwo
+    label_pl: powołane orzecznictwo lub piśmiennictwo
+    severity: expected
+    matches: ["wyrok sn", "orzecznictwo", "sygn. akt", "w doktrynie"]
+
+  - id: podpis
+    label_pl: data i podpis sporządzającego
+    severity: required
+    matches: ["podpis", "radca prawny", "adwokat", "sporządził"]

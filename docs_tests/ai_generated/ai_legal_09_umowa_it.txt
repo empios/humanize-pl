@@ -1,0 +1,15 @@
+UMOWA O ŚWIADCZENIE USŁUG INFORMATYCZNYCH
+
+Zawarta w dniu 12.03.2026 r. w Krakowie pomiędzy Delta Systems sp. z o.o. z siedzibą w Krakowie, zwaną dalej Wykonawcą, a Omega Retail S.A. z siedzibą w Katowicach, zwaną dalej Zamawiającym.
+
+§ 1. Przedmiot umowy
+Warto podkreślić, że przedmiotem niniejszej umowy jest świadczenie usług utrzymania i rozwoju systemu informatycznego Zamawiającego. Zakres usług obejmuje monitorowanie dostępności, usuwanie awarii oraz wprowadzanie zmian funkcjonalnych. Kluczowe znaczenie ma zapewnienie ciągłości działania systemu.
+
+§ 2. Poziom świadczenia usług
+Należy zauważyć, że Wykonawca zobowiązuje się do reakcji na zgłoszenie awarii krytycznej w czasie nie dłuższym niż 4 godziny. Zgłoszenia o niższym priorytecie będą obsługiwane w terminie 2 dni roboczych. Istotnym aspektem jest prowadzenie rejestru zgłoszeń dostępnego dla Zamawiającego.
+
+§ 3. Wynagrodzenie
+Wynagrodzenie ryczałtowe Wykonawcy wynosi 24 000 zł netto miesięcznie. Warto wskazać, że wynagrodzenie obejmuje pulę 40 godzin prac rozwojowych. Prace przekraczające tę pulę rozliczane są według stawki 180 zł netto za godzinę.
+
+§ 4. Odpowiedzialność
+Szczególną rolę odgrywa ograniczenie odpowiedzialności Wykonawcy do wysokości trzykrotności miesięcznego wynagrodzenia. Ograniczenie to nie dotyczy szkód wyrządzonych umyślnie.

@@ -5,14 +5,18 @@ from pathlib import Path
 from humanize_pl.config import Engine, LegalReviewProfile, Mode
 from humanize_pl.core import HumanizeResult, create_humanizer_session
 from humanize_pl.detect import detect_document
+from humanize_pl.io.docx_structure import (
+    document_text,
+    iter_text_units,
+    load_document,
+    replace_unit_text,
+    save_with_inventory_guard,
+)
 
 
 def docx_text(input_path: str | Path) -> str:
-    """Return the document body as newline-separated paragraphs."""
-    from docx import Document  # type: ignore
-
-    doc = Document(str(Path(input_path)))
-    return "\n".join(paragraph.text for paragraph in doc.paragraphs if paragraph.text.strip())
+    """Return body and table-cell text in OOXML order."""
+    return document_text(load_document(input_path))
 
 
 def process_docx(
@@ -31,11 +35,9 @@ def process_docx(
     agreement_gate_enabled: bool = True,
     require_morfeusz: bool = False,
 ) -> tuple[HumanizeResult, dict[str, int]]:
-    from docx import Document  # type: ignore
-
     input_path = Path(input_path)
     output_path = Path(output_path)
-    doc = Document(str(input_path))
+    doc = load_document(input_path)
 
     processed = 0
     changed = 0
@@ -69,14 +71,27 @@ def process_docx(
     # Detection runs once over the whole document. Paragraph-scoped detection
     # would miss the document-level signals (repeated openings and frames),
     # which is precisely where AI legal prose is monotone.
+    profile_value = (
+        legal_review_profile
+        if isinstance(legal_review_profile, LegalReviewProfile)
+        else LegalReviewProfile(legal_review_profile)
+    )
     diagnosis = detect_document(
-        "\n".join(paragraph.text for paragraph in doc.paragraphs if paragraph.text.strip())
+        document_text(doc),
+        calibrate_against_default=(profile_value == LegalReviewProfile.legal_ai_review),
     )
 
-    for paragraph_index, paragraph in enumerate(doc.paragraphs):
-        original = paragraph.text
+    for paragraph_index, unit in enumerate(iter_text_units(doc)):
+        original = unit.text
         if not original.strip():
             empty += 1
+            continue
+        if unit.protected:
+            processed += 1
+            warnings.append(
+                f"Chroniony element pozostawiono bez redakcji: {unit.location} "
+                f"({', '.join(unit.protection_reasons)})."
+            )
             continue
         processed += 1
         result = session.humanize(original, include_candidates=include_candidates)
@@ -96,12 +111,17 @@ def process_docx(
         all_skipped.extend(result.skipped)
         all_candidates.extend(result.all_candidates)
         if result.text != original:
-            paragraph.clear()
-            paragraph.add_run(result.text)
+            replace_unit_text(unit, result.text.replace("\n", " "))
             changed += 1
             all_changes.extend(result.changes)
 
-    doc.save(str(output_path))
+    inventory_differences = save_with_inventory_guard(doc, input_path, output_path)
+    if inventory_differences:
+        changed = 0
+        all_changes = []
+        warnings.append(
+            "Niezgodność inwentarza OOXML; zapisano kopię dokumentu źródłowego."
+        )
     aggregate = HumanizeResult(
         text=str(output_path),
         changed=changed > 0,

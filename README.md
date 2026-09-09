@@ -1,10 +1,11 @@
 # humanize-pl
 
-Deterministyczny silnik kontroli i redakcji AI-generowanych polskich tekstów
-prawniczych.
+Silnik kontroli i redakcji AI-generowanych polskich tekstów prawniczych,
+działający regułowo albo w trybie reguły + hostowany model.
 
-Projekt **nie używa `texthumanize`** i nie używa generatywnego LLM. Nie jest
-parafrazerem ani narzędziem do obchodzenia detektorów AI. Jego celem jest
+Projekt **nie używa `texthumanize`** i nie jest narzędziem do obchodzenia
+detektorów AI. Opcjonalnie korzysta z modelu pod kontrolowanym przez
+użytkownika endpointem OpenAI-compatible. Jego celem jest
 bezpieczne przepisanie roboczego tekstu AI na precyzyjny język prawny:
 umowy, opinie, analizy, pisma, regulaminy i podobne dokumenty prawnicze.
 
@@ -17,9 +18,29 @@ Działa warstwowo:
 5. walidacja bezpieczeństwa i normatywności,
 6. opcjonalna analiza Stanza,
 7. opcjonalny filtr semantyczny sentence-transformers,
-8. zapis DOCX/TXT + raport JSON.
+8. opcjonalna redakcja pozostałych problemów przez hostowany model,
+9. kontrola treści prawnie wrażliwej,
+10. zachowawczy zapis, normalizacja i audyt DOCX,
+11. raport XLSX/PDF/JSON ze statusem gotowości.
 
 ## Co nowego (niewydane)
+
+- frontend przeglądarkowy `humanize-pl-ui` (Gradio) dla obu przepływów, bez wiersza poleceń: wgrywanie plików, wynik opisany słowami, pobieranie poprawionych dokumentów i raportów,
+- rozpoznawanie trzech rodzin dokumentów: komunikacja z klientem, umowa,
+  pismo procesowe lub urzędowe; wynik zawiera pewność i można go nadpisać
+  przez `--document-type`,
+- nowy backend `--rewrite-backend hybrid`: reguły, a następnie hostowany model
+  OpenAI-compatible tylko dla pozostałych problemów,
+- profile kancelarii z 5–20 zatwierdzonych dokumentów, zanonimizowanych
+  przykładów, instrukcji YAML i opcjonalnego szablonu,
+- DOCX analizowany w kolejności OOXML, razem z tabelami; redakcja nie czyści
+  akapitów i zachowuje runy, hiperłącza, zakładki oraz formatowanie mieszane,
+- pola, komentarze, śledzone zmiany, przypisy, kontrolki treści i pola tekstowe
+  są chronione i raportowane jako ostrzeżenia,
+- polityki `preserve`, `audit` i `normalize`, neutralne rodziny stylów A4 oraz
+  tymczasowy render LibreOffice do PDF/PNG, usuwany po audycie,
+- status `ready`, `ready_with_warnings` lub `failed` oraz osobne kontrole stylu,
+  treści prawnie wrażliwej, formatowania i renderowania,
 
 - wykrywanie predykacji (`has_finite_verb`) oparte na morfologii Morfeusz2/SGJP
   zamiast zamkniętej listy ~90 czasowników; poprzednia heurystyka odrzucała 32%
@@ -42,8 +63,9 @@ Działa warstwowo:
   wieloetapowych poprawek tego samego zdania w jedną parę,
 - ocena słowna przy każdej metryce („w normie”, „wyraźnie poniżej normy”) —
   sama liczba nie mówi odbiorcy, czy jest dobrze, czy źle,
-- raport PDF bez nazw plików, wersji narzędzia, nazw modeli i załącznika
-  technicznego; szczegóły implementacyjne zostają w raporcie JSON,
+- raport PDF bez nazw plików, wersji narzędzia, adresów endpointów, tokenów
+  i załącznika technicznego; przy backendzie hostowanym podaje jedynie nazwę
+  modelu i zagregowany wynik jego pracy,
 - `humanize-pl-flow report <folder|json|xlsx>` — sam raport PDF z zakończonej
   pracy, z doczytaniem brakujących pomiarów ze starszych przebiegów DOCX
   i odtworzeniem obu stron pomiaru z gotowego arkusza XLSX,
@@ -67,12 +89,40 @@ Działa warstwowo:
 - test regresji dla błędu `Ponadto za wynagrodzeniem`,
 - wyniki benchmarków pod `docs_tests/results/` są traktowane jako artefakty lokalne i ignorowane przez Git.
 
+## Frontend przeglądarkowy
+
+Kto nie chce pamiętać kilkunastu przełączników, uruchamia to samo w przeglądarce:
+
+```bash
+python -m pip install -e ".[ui]"
+humanize-pl-ui
+```
+
+Otwiera się lokalna strona (`http://127.0.0.1:7860`) z trzema zakładkami:
+dokumenty Word, kolumna arkusza Excel i budowanie profilu kancelarii. Schemat
+pracy to wgranie plików, jeden przycisk i pobranie wyników — poprawionych
+dokumentów, `raport.pdf`, `flow-report.json` i `summary.csv`, spakowanych też
+razem w `wyniki.zip`.
+
+Strona pokazuje wynik zdaniem, nie samą liczbą: ile pozycji wymaga przeglądu,
+czy średni sygnał AI spadł i o ile. Tabela z metrykami oraz log silnika —
+łącznie z informacją o degradacji silnika do `basic` — są zwinięte pod
+wynikiem. Ustawienia mają domyślne wartości identyczne z CLI; wszystko, co
+dotyczy modeli i formatowania, siedzi w sekcji „Zaawansowane”.
+
+Flagi: `--host`, `--port`, `--no-browser` oraz `--share` (publiczny tunel
+Gradio, domyślnie wyłączony). Liczenie jest lokalne; hostowany model dalej
+czyta konfigurację z `.env`, kluczy API nie wpisuje się w przeglądarce.
+Pliki robocze i wyniki trafiają do katalogu tymczasowego systemu, nigdy do
+folderu ze źródłowymi dokumentami.
+
 ## Gotowe przepływy
 
 `humanize-pl-flow` uruchamia wszystkie warstwy jedną komendą:
 
 ```
-diagnoza → redakcja → ponowna diagnoza → bramka jakości
+DOCX/XLSX → rozpoznanie gatunku → reguły → opcjonalny model →
+kontrola znaczenia → styl kancelarii → audyt dokumentu → wynik z ostrzeżeniami
 ```
 
 Pomiar sygnału **przed i po** redakcji jest tu istotą rzeczy. Wcześniej silnik
@@ -81,9 +131,12 @@ czyta się przez to mniej jak tekst AI.
 
 ### Które warstwy NLP są aktywne
 
-Flow domyślnie uruchamia **pełny stos neuronowy** (`--engine hybrid`): Stanza
-do składni, sentence-transformer jako walidator semantyczny i masked-LM jako
-scorer płynności. Wymaga to dodatkowych zależności:
+Flow domyślnie uruchamia lokalny `--engine basic`, dlatego zwykłe polecenie
+nie pobiera modeli z Hugging Face. Opcjonalny `--engine hybrid` oznacza stary,
+lokalny stos walidacyjny: Stanza do składni, sentence-transformer jako
+walidator semantyczny i masked-LM jako scorer płynności. To ustawienie jest
+niezależne od `--rewrite-backend hybrid`, który oznacza reguły + endpoint
+OpenAI-compatible. Lokalny stos wymaga dodatkowych zależności:
 
 ```bash
 python -m pip install -e ".[nlp,transformers,morfeusz,xlsx]"
@@ -125,6 +178,17 @@ niedostępny — nagłówek oznacza taką degradację jako `(degradacja silnika)
 humanize-pl-flow docx docs/ -o wyniki/
 ```
 
+Pełny przebieg dla umów, z hostowanym modelem i normalizacją wyglądu:
+
+```bash
+humanize-pl-flow docx docs/ -o wyniki/ \
+  --document-type contract \
+  --rewrite-backend hybrid \
+  --style-profile profile/kancelaria \
+  --format-policy normalize \
+  --require-llm --require-renderer
+```
+
 ```
 do przeglądu ai_legal_03_esej_prawo_pracy.docx: sygnał 0.72 → 0.60, zmian 11
 do przeglądu claude_real_01.docx: sygnał 0.70 → 0.63, zmian 1
@@ -141,7 +205,61 @@ metrykami i werdyktem bramki oraz `raport.pdf` — opisowy raport po polsku dla
 odbiorcy nietechnicznego (patrz niżej). Błąd jednego pliku nie zatrzymuje
 pozostałych; komenda kończy się kodem `1`, jeżeli którykolwiek zawiódł.
 
-`--no-rewrite` daje samą diagnozę i bramkę, bez zapisu dokumentów.
+`--no-rewrite` daje samą diagnozę i bramkę. `--format-policy audit` zachowuje
+wygląd i tylko go kontroluje, a `normalize` stosuje neutralny szablon A4 albo
+szablon przekazany przez `--template`. Oryginał nigdy nie jest nadpisywany.
+
+#### Hostowany model OpenAI-compatible
+
+Adres, nazwa modelu i opcjonalny token pochodzą wyłącznie ze zmiennych
+procesu albo lokalnego pliku `.env` (wzór: `.env.example`):
+
+```dotenv
+HUMANIZE_PL_LLM_BASE_URL=https://model.example.com/v1
+HUMANIZE_PL_LLM_MODEL=polish-legal-model
+HUMANIZE_PL_LLM_API_KEY=
+HUMANIZE_PL_LLM_TIMEOUT_SECONDS=120
+```
+
+`BASE_URL` może kończyć się na `/v1` albo na pełnym
+`/v1/chat/completions`. Przed partią wykonywany jest test możliwości endpointu.
+Do modelu trafiają tylko zanonimizowane fragmenty z sąsiednim kontekstem,
+profilem gatunku, profilem kancelarii i krótkim konspektem. Nie trafia cały
+DOCX ani jego metadane. Nazwy, kwoty, daty, przepisy, identyfikatory i cytaty
+są zastępowane placeholderami, a następnie przywracane lokalnie.
+
+Przy timeoutach, HTTP 429 i 5xx klient wykonuje najwyżej dwie ponowne próby.
+Potem wynik regułowy jest zapisywany jako `ready_with_warnings`;
+`--require-llm` zamienia to w błąd. URL, token, pełne prompty i surowe
+odpowiedzi nie trafiają do logów ani raportów.
+
+#### Profil kancelarii
+
+```bash
+humanize-pl-flow profile wzorce/ --name "Kancelaria X" \
+  --document-type client_communication \
+  --style-guide styl.yaml --template papier_firmowy.docx \
+  -o profile/kancelaria-x
+```
+
+Profil wymaga 5–20 zatwierdzonych plików. Przechowuje statystyki stylu,
+preferowane terminy, zakazane zwroty, skróty i krótkie zanonimizowane
+przykłady. Nie kopiuje pełnych spraw i nie służy do kalibracji detektora
+„tekstu ludzkiego”.
+
+Publiczne typy API są dostępne bezpośrednio z pakietu:
+
+```python
+from humanize_pl import (
+    DocumentType, RewriteBackend, StyleProfile,
+    FormattingReport, FormatPolicy, ReadinessStatus,
+)
+```
+
+Dotychczasowe `humanize_text()` i `process_docx()` zachowują swoje sygnatury.
+`LegalReviewProfile.legal_ai_review` pozostaje aliasem kompatybilności;
+nowe przepływy używają jawnego gatunku i nie oceniają umów ani komunikacji
+z klientem profilem uzasadnień SAOS.
 
 ### Kolumna w arkuszu XLSX
 
@@ -154,9 +272,28 @@ Dopasowanie nagłówka ignoruje wielkość liter, spacje i polskie znaki
 diakrytyczne, więc `odpowiedz ai` też trafi w `Odpowiedź AI`.
 
 Do arkusza dopisywane są kolumny: `sygnał AI`, `do przeglądu`, `znaleziska`,
-`rodziny`, `ograniczenia do regeneracji` oraz — o ile nie podano
-`--no-rewrite` — `tekst po redakcji`. Kolumna źródłowa nie jest ruszana, a
-wynik zapisywany jest do nowego pliku.
+`zastosowane poprawki`, `rodziny`, `ograniczenia do regeneracji` oraz — o ile
+nie podano `--no-rewrite` — `tekst po redakcji`. Kolumna źródłowa nie jest
+ruszana, a wynik zapisywany jest do nowego pliku. W tekście po redakcji nowe i
+zamienione fragmenty są wyróżnione na zielono i pogrubione. Dopisane kolumny
+mają czytelne nagłówki, dobrane szerokości i zawijanie dłuższej treści; format
+kolumn źródłowych pozostaje bez zmian.
+
+Przy redakcji powstają trzy statyczne arkusze informacyjne:
+
+- `Do akceptacji` — każda faktycznie zastosowana poprawka jako osobny wiersz:
+  `Było`, `Jest po poprawce`, uzasadnienie, poziom ryzyka, wykonane kontrole,
+  bez pól do ręcznego wypełniania. Fragment usunięty lub zastąpiony jest
+  czerwony i przekreślony, a dodany lub poprawiony jest zielony i pogrubiony.
+- `Uwagi bez poprawki` — każde wykrycie nadal obecne po redakcji, z cytatem,
+  zaleceniem i wyjaśnieniem, dlaczego pozostało nierozwiązane.
+- `Podstawa analizy` — prosty opis reguł, korpusu referencyjnego, przebiegu,
+  zabezpieczeń, użytej konfiguracji i ograniczeń metody. Raport mówi wprost,
+  że wspiera redakcję, ale nie zastępuje oceny prawnej.
+
+Arkusz `Do akceptacji` otwiera się jako pierwszy widok. Raport rozróżnia
+wykrycie od poprawki, więc identyczne teksty źródłowy i wynikowy oznaczają
+jawnie „uwaga do ręcznej decyzji”, a nie niewidoczną zmianę.
 
 Obok arkusza wynikowego powstają `<nazwa>_flow_raport.json` (pełny raport
 przebiegu, tak jak w przepływie DOCX) i `<nazwa>_flow_raport.pdf`. Ścieżkę
@@ -179,30 +316,37 @@ offsetem”. Nie odpowiadają na pytanie, które zadaje odbiorca gotowego tekstu
 **co zmierzono, co ta liczba znaczy i czy cokolwiek się poprawiło.**
 
 Dlatego oba przepływy zapisują dodatkowo `raport.pdf` (DOCX) albo
-`<nazwa>_flow_raport.pdf` (XLSX) — po polsku, bez żargonu:
+`<nazwa>_flow_raport.pdf` (XLSX) — po polsku, bez żargonu. Obie wersje mają ten
+sam układ i są statycznym raportem informacyjnym, a nie formularzem do wypełniania:
 
 1. **Najważniejsze liczby** — wskaźnik przed → po na narysowanej skali
    z zaznaczonym progiem przeglądu, liczba zmian, ile pozycji zostaje do
    przejrzenia, plus jedno zdanie podsumowania.
-2. **Co się zmieniło w tekście** — prawdziwe pary „było → jest”, wybrane
-   z przebiegu. Wieloetapowe poprawki tego samego zdania (A→B→C) są sklejane
-   w jedną parę A→C, bo dla czytelnika to jedna zmiana, nie dwie.
-3. **Jak to sprawdzaliśmy** — cztery kroki (diagnoza → poprawki → ponowny
-   pomiar → kontrola) razem z wynikiem każdego z nich.
-4. **Co dokładnie mierzymy** — każda metryka z wartością typową dla człowieka,
+2. **Wykaz zastosowanych zmian** — komplet faktycznie zastosowanych poprawek.
+   Każda ma własną kartę: czerwone przekreślenie pokazuje dokładnie tekst usunięty,
+   zielone pogrubienie tekst dodany, a dalej są rodzaj zmiany, ryzyko,
+   uzasadnienie i wykonane kontrole.
+3. **Uwagi bez automatycznej poprawki** — wykrycia pozostałe po redakcji,
+   wyraźnie oddzielone od zastosowanych zmian, z cytatem i zaleceniem.
+4. **Podstawa i ograniczenia analizy** — charakter metody, korpus referencyjny,
+   przebieg, zabezpieczenia, użyta konfiguracja i zakres odpowiedzialności.
+   Podsekcja gotowości pokazuje rodzaj dokumentu i pewność, zgodność ze
+   stylem, ochronę treści prawnie wrażliwej, jakość formatowania, render,
+   problemy nierozwiązane oraz końcowy status.
+5. **Co dokładnie mierzymy** — każda metryka z wartością typową dla człowieka,
    wynikiem tutaj i **oceną słowną** („w normie”, „wyraźnie poniżej normy”),
    bo samo „0,26” nie mówi odbiorcy nic; oraz tabela zwrotów z kolumną
    „poprawia automat”, która tłumaczy, czemu część liczb nie spada do zera.
-5. **Wyniki pozycja po pozycji** — tabela zbiorcza, a pod nią osobny blok dla
-   każdej pozycji: co w niej poprawiliśmy (było → jest) i jakie uwagi zostają
-   do ręcznej redakcji. Pozycje bez poprawek i bez uwag są tylko zliczone.
-   Przy paczkach powyżej 20 pozycji rozpisujemy najpierw te do przejrzenia,
-   a komplet uwag ląduje w tabeli zbiorczej.
+6. **Wyniki pozycja po pozycji** — tabela zbiorcza prowadząca do odpowiedniego
+   wiersza arkusza albo dokumentu z przekazanego folderu.
+7. **Odpowiedzialność i granice raportu** — wprost: wynik nie dowodzi autorstwa
+   AI, kontrole nie gwarantują poprawności prawnej, a decyzję podejmuje człowiek.
 
 Czego w nim **nie ma**, celowo: nazw plików i ścieżek (pozycje są numerowane
-w kolejności przekazania, rodzaj materiału podany raz na początku), wersji
-narzędzia, nazw modeli i profili, ani załącznika o tym, które warstwy były
-aktywne. To wszystko jest w `flow-report.json` dla osoby technicznej.
+w kolejności przekazania, rodzaj materiału podany raz na początku) ani
+technicznego śladu każdego kandydata. PDF podaje jednak ogólną konfigurację
+i profil porównawczy, aby recenzent znał podstawę wyniku. Pełny
+ślad techniczny pozostaje w `flow-report.json`.
 
 Sam raport jest też pisany pod własny detektor: bez długich myślników jako
 wtrąceń, bez ram typu „warto wskazać”, bez akapitów podsumowujących. Pilnuje
@@ -477,6 +621,13 @@ natywne zależności Morfeusza:
 ```bash
 python -m pip install -e ".[nlp,transformers,morfeusz]"
 python -m humanize_pl.download_models --stanza --transformers --fluency --morfeusz
+```
+
+Z frontendem przeglądarkowym:
+
+```bash
+python -m pip install -e ".[ui]"
+humanize-pl-ui
 ```
 
 Z raportem PDF dla klienta i obsługą arkuszy:

@@ -13,6 +13,12 @@ import typer
 from rich import print
 
 from humanize_pl.config import Engine, Mode
+from humanize_pl.document import (
+    DocumentType,
+    FormatPolicy,
+    RewriteBackend,
+    build_style_profile,
+)
 from .base import FlowSettings, ItemOutcome, attach_pdf_report
 from .docx_flow import run_docx_flow
 from .replay import (
@@ -37,6 +43,13 @@ def _settings(
     require_anchor: bool,
     offline_models: bool,
     require_models: bool = False,
+    document_type: DocumentType = DocumentType.auto,
+    rewrite_backend: RewriteBackend = RewriteBackend.rules,
+    style_profile: Path | None = None,
+    template: Path | None = None,
+    format_policy: FormatPolicy = FormatPolicy.preserve,
+    require_llm: bool = False,
+    require_renderer: bool = False,
 ) -> FlowSettings:
     return FlowSettings(
         mode=mode,
@@ -46,6 +59,13 @@ def _settings(
         offline_models=offline_models,
         require_models=require_models,
         require_morfeusz=require_models,
+        document_type=document_type,
+        rewrite_backend=rewrite_backend,
+        style_profile=style_profile,
+        template=template,
+        format_policy=format_policy,
+        require_llm=require_llm,
+        require_renderer=require_renderer,
     )
 
 
@@ -59,7 +79,8 @@ def _print_layers(layers: dict) -> None:
     detection = layers["detection"]
     print(
         f"[dim]detekcja:[/dim] morfeusz={detection['morfeusz']} "
-        f"stanza={detection['stanza']} profil={detection['reference_profile']}"
+        f"stanza={detection['stanza']} "
+        f"wzorzec={'kancelarii' if detection.get('office_profile') == 'supplied' else 'publiczny wg rodziny'}"
     )
     rewrite = layers["rewrite"]
     if rewrite.get("skipped"):
@@ -77,6 +98,12 @@ def _print_layers(layers: dict) -> None:
             print(f"  [yellow]![/yellow] {_install_hint(rewrite)}")
     for warning in layers.get("warnings", []):
         print(f"  [yellow]![/yellow] {warning}")
+    hosted = layers.get("hosted_model", {})
+    if hosted.get("status") not in {None, "not_requested"}:
+        print(
+            f"[dim]model hostowany:[/dim] {hosted.get('status')} "
+            f"model={hosted.get('model', 'brak')}"
+        )
     print()
 
 
@@ -106,7 +133,10 @@ def _print_item(item: ItemOutcome) -> None:
         return
     flag = "[red]do przeglądu[/red]" if item.needs_review else "[green]ok[/green]"
     arrow = f"{item.signal_before:.2f} → {item.signal_after:.2f}"
-    print(f"{flag} {item.name}: sygnał {arrow}, zmian {item.changes_applied}")
+    print(
+        f"{flag} {item.name}: sygnał {arrow}, zmian {item.changes_applied}, "
+        f"status {item.readiness_status}"
+    )
 
 
 def _print_summary(summary: dict) -> None:
@@ -120,6 +150,10 @@ def _print_summary(summary: dict) -> None:
             f"(delta {summary['mean_signal_delta']:+.2f})"
         )
         print(f"  zastosowane zmiany: {summary['changes_applied']}")
+        print(
+            f"  gotowe: {summary.get('ready', 0)}  "
+            f"gotowe z ostrzeżeniami: {summary.get('ready_with_warnings', 0)}"
+        )
 
 
 def _print_pdf(payload: dict) -> None:
@@ -135,6 +169,142 @@ def _print_pdf(payload: dict) -> None:
         print(f"  [yellow]![/yellow] {payload['pdf_error']}")
 
 
+@app.command("run")
+def run_command(
+    source: Path = typer.Argument(
+        ..., help="Folder z plikami .docx albo pojedynczy plik .xlsx"
+    ),
+    output: Path = typer.Option(None, "--output", "-o", help="Katalog albo plik wynikowy"),
+    profile_from: Path = typer.Option(
+        None,
+        "--profile-from",
+        help="Zbuduj wzorzec kancelarii z tego folderu i użyj go w tym samym przebiegu",
+    ),
+    style_profile: Path = typer.Option(
+        None, "--style-profile", help="Gotowy profile.json zamiast --profile-from"
+    ),
+    llm: bool = typer.Option(
+        False, "--llm", help="Włącz hostowany model (z .env); przerwij, jeśli niedostępny"
+    ),
+    nlp: bool = typer.Option(
+        False, "--nlp", help="Włącz stos NLP (Stanza + transformery) zamiast trybu basic"
+    ),
+    column: str = typer.Option(None, "--column", "-c", help="Tylko .xlsx: kolumna źródłowa"),
+    sheet: str = typer.Option(None, "--sheet", help="Tylko .xlsx: nazwa arkusza"),
+    header_row: int = typer.Option(1, "--header-row", help="Tylko .xlsx: wiersz nagłówka"),
+    mode: Mode = typer.Option(Mode.standard, help="conservative, standard, strong"),
+    document_type: DocumentType = typer.Option(
+        DocumentType.auto, "--document-type", help="Domyślnie rozpoznawany automatycznie"
+    ),
+    no_rewrite: bool = typer.Option(False, "--no-rewrite", help="Tylko diagnoza, bez redakcji"),
+    no_pdf: bool = typer.Option(False, "--no-pdf", help="Pomiń raport PDF"),
+) -> None:
+    """Cały przebieg jedną komendą: wzorzec kancelarii, diagnoza, redakcja, raport.
+
+    Rozpoznaje po rozszerzeniu, czy pracuje na folderze .docx czy na arkuszu.
+    """
+    from humanize_pl.document import build_style_profile
+
+    if profile_from and style_profile:
+        raise typer.BadParameter(
+            "Podaj --profile-from albo --style-profile, nie oba.", param_hint="--profile-from"
+        )
+    if not source.exists():
+        raise typer.BadParameter(f"Nie ma takiej ścieżki: {source}", param_hint="source")
+
+    is_workbook = source.is_file() and source.suffix.lower() == ".xlsx"
+    if is_workbook and not column:
+        raise typer.BadParameter(
+            "Dla arkusza .xlsx trzeba wskazać kolumnę źródłową.", param_hint="--column"
+        )
+    if not is_workbook and not source.is_dir():
+        raise typer.BadParameter(
+            "Wskaż folder z plikami .docx albo plik .xlsx.", param_hint="source"
+        )
+
+    # The profile is built first because the run that follows calibrates
+    # against it. Its warnings matter more than the profile itself - a
+    # baseline measured on AI-assisted drafts disables the detector silently.
+    if profile_from:
+        profile_directory = (output or source.with_name(f"{source.stem}_flow")) / "profil"
+        try:
+            built = build_style_profile(
+                source_directory=profile_from,
+                output_directory=profile_directory,
+                name=profile_from.name,
+                document_type=document_type,
+            )
+        except (OSError, ValueError) as exc:
+            raise typer.BadParameter(str(exc), param_hint="--profile-from") from exc
+        style_profile = profile_directory / "profile.json"
+        print(
+            f"[green]Wzorzec kancelarii:[/green] {built.document_count} dokumentów, "
+            f"rodzaj {built.document_type.value}"
+            + ("  [yellow](orientacyjny)[/yellow]" if built.reference_is_indicative else "")
+        )
+        for warning in built.warnings:
+            print(f"  [yellow]![/yellow] {warning}")
+        print()
+
+    settings = _settings(
+        mode,
+        Engine.hybrid if nlp else Engine.basic,
+        no_rewrite,
+        False,
+        False,
+        False,
+        document_type,
+        RewriteBackend.hybrid if llm else RewriteBackend.rules,
+        style_profile,
+        None,
+        FormatPolicy.preserve,
+        llm,
+        False,
+    )
+
+    try:
+        if is_workbook:
+            target = output or source.with_name(f"{source.stem}_flow.xlsx")
+            payload = run_xlsx_flow(
+                source,
+                target,
+                column=column,
+                settings=settings,
+                sheet_name=sheet,
+                header_row=header_row or None,
+                pdf=not no_pdf,
+                on_item=_print_item,
+                on_layers=_print_layers,
+            )
+        else:
+            target = output or source.with_name(f"{source.name}_flow")
+            payload = run_docx_flow(
+                source,
+                target,
+                settings=settings,
+                pdf=not no_pdf,
+                on_item=_print_item,
+                on_layers=_print_layers,
+            )
+    except (RuntimeError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    except FileNotFoundError as exc:
+        raise typer.BadParameter(str(exc), param_hint="source") from exc
+
+    _print_summary(payload["summary"])
+    print(f"\n[green]Wyniki:[/green] {target}")
+    if not is_workbook:
+        print(f"  raport: {target / 'flow-report.json'}")
+        print(f"  zestawienie: {target / 'summary.csv'}")
+    elif payload.get("report_path"):
+        print(f"  raport: {payload['report_path']}")
+    if style_profile:
+        print(f"  wzorzec kancelarii: {style_profile}")
+    _print_pdf(payload)
+    if payload["summary"]["failed"]:
+        raise typer.Exit(1)
+
+
 @app.command("docx")
 def docx_command(
     folder: Path = typer.Argument(..., help="Folder z plikami .docx"),
@@ -143,8 +313,8 @@ def docx_command(
     ),
     mode: Mode = typer.Option(Mode.standard, help="conservative, standard, strong"),
     engine: Engine = typer.Option(
-        Engine.hybrid,
-        help="hybrid (pełny stos neuronowy, domyślnie), nlp (Stanza), basic (bez modeli)",
+        Engine.basic,
+        help="basic (domyślnie, bez pobierania modeli), nlp (Stanza), hybrid (lokalne walidatory)",
     ),
     no_rewrite: bool = typer.Option(
         False, "--no-rewrite", help="Tylko diagnoza i bramka, bez redakcji dokumentów"
@@ -162,6 +332,35 @@ def docx_command(
         "--require-models",
         help="Przerwij zamiast po cichu degradować, gdy Stanza/Morfeusz są niedostępne",
     ),
+    document_type: DocumentType = typer.Option(
+        DocumentType.auto,
+        "--document-type",
+        help="auto, client_communication, contract albo filing_official",
+    ),
+    rewrite_backend: RewriteBackend = typer.Option(
+        RewriteBackend.rules,
+        "--rewrite-backend",
+        help="rules albo hybrid (reguły + hostowany model)",
+    ),
+    style_profile: Path = typer.Option(
+        None, "--style-profile", help="Katalog profilu kancelarii"
+    ),
+    template: Path = typer.Option(
+        None, "--template", help="Nadrzędny szablon kancelarii .docx lub .dotx"
+    ),
+    format_policy: FormatPolicy = typer.Option(
+        FormatPolicy.preserve,
+        "--format-policy",
+        help="preserve, audit albo normalize",
+    ),
+    require_llm: bool = typer.Option(
+        False, "--require-llm", help="Przerwij, jeśli hostowany model nie jest dostępny"
+    ),
+    require_renderer: bool = typer.Option(
+        False,
+        "--require-renderer",
+        help="Przerwij, jeśli dokumentu nie można sprawdzić przez LibreOffice",
+    ),
     no_pdf: bool = typer.Option(
         False, "--no-pdf", help="Pomiń raport PDF opisowy (dla odbiorcy nietechnicznego)"
     ),
@@ -173,14 +372,26 @@ def docx_command(
             folder,
             output_directory,
             settings=_settings(
-                mode, engine, no_rewrite, require_anchor, offline_models, require_models
+                mode,
+                engine,
+                no_rewrite,
+                require_anchor,
+                offline_models,
+                require_models,
+                document_type,
+                rewrite_backend,
+                style_profile,
+                template,
+                format_policy,
+                require_llm,
+                require_renderer,
             ),
             pdf=not no_pdf,
             on_item=_print_item,
             on_layers=_print_layers,
         )
-    except RuntimeError as exc:
-        raise typer.BadParameter(str(exc), param_hint="--require-models") from exc
+    except (RuntimeError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
     except FileNotFoundError as exc:
         raise typer.BadParameter(str(exc), param_hint="folder") from exc
 
@@ -219,8 +430,8 @@ def xlsx_command(
     ),
     mode: Mode = typer.Option(Mode.standard, help="conservative, standard, strong"),
     engine: Engine = typer.Option(
-        Engine.hybrid,
-        help="hybrid (pełny stos neuronowy, domyślnie), nlp (Stanza), basic (bez modeli)",
+        Engine.basic,
+        help="basic (domyślnie, bez pobierania modeli), nlp (Stanza), hybrid (lokalne walidatory)",
     ),
     no_rewrite: bool = typer.Option(
         False, "--no-rewrite", help="Tylko diagnoza i bramka, bez kolumny z redakcją"
@@ -238,6 +449,27 @@ def xlsx_command(
         "--require-models",
         help="Przerwij zamiast po cichu degradować, gdy Stanza/Morfeusz są niedostępne",
     ),
+    document_type: DocumentType = typer.Option(
+        DocumentType.auto,
+        "--document-type",
+        help="auto, client_communication, contract albo filing_official",
+    ),
+    rewrite_backend: RewriteBackend = typer.Option(
+        RewriteBackend.rules,
+        "--rewrite-backend",
+        help="rules albo hybrid (reguły + hostowany model)",
+    ),
+    style_profile: Path = typer.Option(
+        None, "--style-profile", help="Katalog profilu kancelarii"
+    ),
+    format_policy: FormatPolicy = typer.Option(
+        FormatPolicy.preserve,
+        "--format-policy",
+        help="Zapis polityki formatowania w raporcie; XLSX nie normalizuje DOCX",
+    ),
+    require_llm: bool = typer.Option(
+        False, "--require-llm", help="Przerwij, jeśli hostowany model nie jest dostępny"
+    ),
 ) -> None:
     """Kolumna .xlsx: diagnoza → redakcja → bramka, wyniki dopisane obok."""
     output_path = output or workbook.with_name(f"{workbook.stem}_flow.xlsx")
@@ -251,7 +483,19 @@ def xlsx_command(
             output_path,
             column=column,
             settings=_settings(
-                mode, engine, no_rewrite, require_anchor, offline_models, require_models
+                mode,
+                engine,
+                no_rewrite,
+                require_anchor,
+                offline_models,
+                require_models,
+                document_type,
+                rewrite_backend,
+                style_profile,
+                None,
+                format_policy,
+                require_llm,
+                False,
             ),
             sheet_name=sheet,
             header_row=header_row or None,
@@ -273,6 +517,81 @@ def xlsx_command(
     _print_pdf(payload)
     if payload["summary"]["failed"]:
         raise typer.Exit(1)
+
+
+@app.command("profile")
+def profile_command(
+    samples: Path = typer.Argument(
+        ..., help="Folder z zatwierdzonymi plikami .docx (min. 5, im więcej tym lepiej)"
+    ),
+    name: str = typer.Option(..., "--name", help="Nazwa profilu kancelarii"),
+    document_type: DocumentType = typer.Option(
+        DocumentType.auto,
+        "--document-type",
+        help="Domyślnie rozpoznawany automatycznie z wgranych dokumentów",
+    ),
+    style_guide: Path = typer.Option(
+        None, "--style-guide", help="Opcjonalna instrukcja YAML"
+    ),
+    template: Path = typer.Option(
+        None, "--template", help="Opcjonalny szablon .docx lub .dotx"
+    ),
+    output: Path = typer.Option(..., "--output", "-o", help="Katalog wynikowego profilu"),
+) -> None:
+    """Zbuduj zanonimizowany profil stylu kancelarii bez kalibracji detektora."""
+    try:
+        profile = build_style_profile(
+            source_directory=samples,
+            output_directory=output,
+            name=name,
+            document_type=document_type,
+            style_guide=style_guide,
+            template=template,
+        )
+    except (OSError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    print(f"[green]Zapisano profil:[/green] {output}")
+    print(
+        f"  dokumenty: {profile.document_count}, słowa: {profile.word_count}, "
+        f"typ: {profile.document_type.value}"
+    )
+
+
+@app.command("blueprint")
+def blueprint_command(
+    samples: Path = typer.Argument(..., help="Folder z zatwierdzonymi plikami .docx jednego rodzaju"),
+    category: str = typer.Option(..., "--category", help="Kategoria prawnicza, np. umowa_uslug"),
+    output: Path = typer.Option(..., "--output", "-o", help="Plik YAML z propozycją szkieletu"),
+    label: str = typer.Option(None, "--label", help="Nazwa czytelna dla człowieka"),
+) -> None:
+    """Zaproponuj szkielet struktury na podstawie zatwierdzonych dokumentów."""
+    from humanize_pl.blueprint_learning import learn_from_directory, to_yaml
+    from humanize_pl.categories import CategoryCatalogueError, get
+
+    try:
+        known = get(category)
+    except CategoryCatalogueError as exc:
+        raise typer.BadParameter(str(exc), param_hint="--category") from exc
+    try:
+        learned = learn_from_directory(samples, category=category)
+    except (OSError, ValueError) as exc:
+        raise typer.BadParameter(str(exc), param_hint="samples") from exc
+
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(to_yaml(learned, label_pl=label or known.label_pl), encoding="utf-8")
+
+    print(f"[green]Propozycja szkieletu:[/green] {output}")
+    print(f"  dokumentów: {learned.documents}  numeracja: {learned.numbering or 'brak'}")
+    for section in learned.sections:
+        share = section.documents / learned.documents
+        marker = "wymagana" if section.severity(learned.documents) == "required" else "oczekiwana"
+        print(f"  - {section.label_pl}  [{marker}, {section.documents}/{learned.documents}, {share:.0%}]")
+    for row in learned.skipped:
+        print(f"  [dim]pominięto: {row}[/dim]")
+    print(
+        "\n[yellow]To propozycja, nie gotowy szkielet.[/yellow] Przeczytaj plik, popraw "
+        "progi i wzorce, dopiero potem przenieś go do humanize_pl/data/blueprints/."
+    )
 
 
 @app.command("report")

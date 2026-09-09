@@ -110,8 +110,27 @@ def payload_from_workbook(
     openpyxl = _require_openpyxl()
     path = Path(path)
     workbook = openpyxl.load_workbook(str(path), data_only=True)
-    sheet = workbook[sheet_name] if sheet_name else workbook.active
-    column_index = resolve_column(sheet, column, header_row=header_row)
+    if sheet_name:
+        sheet = workbook[sheet_name]
+        column_index = resolve_column(sheet, column, header_row=header_row)
+    else:
+        # New workbooks open on the reader-friendly acceptance queue. Find the
+        # data sheet carrying the requested source column automatically so report
+        # replay remains backwards-compatible without requiring --sheet.
+        candidates = [workbook.active] + [
+            candidate for candidate in workbook.worksheets if candidate is not workbook.active
+        ]
+        for candidate in candidates:
+            try:
+                column_index = resolve_column(candidate, column, header_row=header_row)
+            except ValueError:
+                continue
+            sheet = candidate
+            break
+        else:
+            # Preserve resolve_column's established, actionable error message.
+            resolve_column(workbook.active, column, header_row=header_row)
+            raise AssertionError("unreachable")
     rewrite_index = _header_column(sheet, REWRITE_COLUMN, header_row)
     review_index = _header_column(sheet, "do przeglądu", header_row)
     constraints_index = _header_column(sheet, "ograniczenia do regeneracji", header_row)

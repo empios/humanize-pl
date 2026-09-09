@@ -31,11 +31,14 @@ import re
 import sys
 from collections import Counter
 from datetime import datetime
+from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any
 from xml.sax.saxutils import escape
 
 from humanize_pl.detect.calibration import REVIEW_THRESHOLD, load_profile
+from humanize_pl.flows.base import collapse_visible_changes, describe_visible_change
+from humanize_pl.gate import FAMILY_CONSTRAINTS
 
 # --- Fonts ------------------------------------------------------------------
 # reportlab's built-in fonts and its bundled Vera face both lack ą, ę, ś, ż and
@@ -85,6 +88,8 @@ GOOD = "#2f7d55"
 WARN = "#b8752a"
 BAD = "#a53a2f"
 ACCENT = "#2f4d7a"
+DIFF_GOOD = "#008000"
+DIFF_BAD = "#c00000"
 
 MAX_EXAMPLES = 4
 EXAMPLE_CHARS = 240
@@ -184,14 +189,14 @@ METRIC_GLOSSARY: dict[str, dict[str, str]] = {
     "sentence_length_cv": {
         "label": "Zróżnicowanie długości zdań",
         "how": "Im wyżej, tym bardziej zdania różnią się długością.",
-        "why": "Tekst z maszyny trzyma zdania w jednej mierze. Człowiek miesza długie z krótkimi.",
+        "why": "Tekst nadmiernie schematyczny trzyma zdania w jednej mierze. Człowiek miesza długie z krótkimi.",
         "direction": "low",
         "scored": True,
     },
     "paragraph_shape_cv": {
         "label": "Zróżnicowanie długości akapitów",
         "how": "Im wyżej, tym bardziej akapity różnią się rozmiarem.",
-        "why": "Tekst z maszyny trzyma się stałych 3–5 zdań na akapit.",
+        "why": "Tekst nadmiernie schematyczny trzyma się stałych 3–5 zdań na akapit.",
         "direction": "low",
         "scored": True,
     },
@@ -237,6 +242,17 @@ PROFILE_ATTRIBUTE = {
 }
 
 ISSUE_WORDS = {
+    "discourse_frame": "rozbieg na początku zdania",
+    "abstract_frame": "ogólnik o znaczeniu",
+    "balanced_pair": "schemat „z jednej strony”",
+    "antithesis": "schemat „nie X, lecz Y”",
+    "concessive_reversal": "szablonowe zastrzeżenie",
+    "practical_implication": "szablon „w praktyce”",
+    "summary_frame": "podsumowanie zamiast wniosku",
+    "tricolon": "trójczłonowe wyliczenie",
+    "empty_emphasis": "wzmocnienie bez treści",
+    "transition_marker": "nadmiar łączników",
+    "repeated_opening": "powtarzające się otwarcie",
     "nominalization": "rzeczownik zamiast czasownika",
     "vague_reference": "odesłanie bez nazwy",
     "bureaucratic_demonstrative": "urzędowy zaimek",
@@ -246,6 +262,32 @@ ISSUE_WORDS = {
     "legal_ai_style_rewrite": "szablonowy zwrot",
     "redundancy_reduction": "powtórzenie",
     "debureaucratization": "urzędowy zwrot",
+    "llm_rewrite": "redakcja modelowa po regułach",
+}
+
+CHANGE_RATIONALES = {
+    "abstract_frame": "Usunięto ogólnik o znaczeniu i pozostawiono meritum zdania.",
+    "nominalization": "Zastąpiono konstrukcję rzeczownikową prostszą formą czasownikową.",
+    "vague_reference": "Zastąpiono niejasne odesłanie bardziej bezpośrednim sformułowaniem.",
+    "ai_artifact_reduction": "Usunięto szablonowy rozbieg, aby zdanie zaczynało się od meritum.",
+    "legal_ai_style_rewrite": "Ograniczono szablonową konstrukcję bez zmiany informacji prawnej.",
+    "redundancy_reduction": "Usunięto powtórzenie bez zmiany informacji prawnej.",
+    "debureaucratization": "Uproszczono urzędową konstrukcję przy zachowaniu treści.",
+    "llm_rewrite": (
+        "Model zaproponował redakcję pozostałego problemu, a lokalne kontrole "
+        "potwierdziły zachowanie treści prawnie wrażliwej."
+    ),
+}
+
+SAFETY_LABELS = {
+    "numbers_preserved": "liczby",
+    "normativity_preserved": "normatywność (np. może/musi)",
+    "legal_anchor_retention": "podstawy i kotwice prawne",
+    "content_anchor_retention": "kluczowe pojęcia",
+    "protected_fragments": "fragmenty chronione",
+    "finite_verb_presence": "kompletność zdania",
+    "balanced_punctuation": "interpunkcję",
+    "semantic_similarity": "zgodność znaczeniową",
 }
 
 
@@ -383,21 +425,85 @@ def _collapse_chains(examples: list[dict]) -> list[dict]:
     A→B, B→C, C→D. Shown as three rows that reads like three separate edits and
     invites the question "why did you change it back". The reader wants A→D.
     """
-    collapsed: list[dict] = []
-    by_before: dict[str, int] = {}
-    for example in examples:
-        before = str(example.get("before", "")).strip()
-        after = str(example.get("after", "")).strip()
-        if not before or not after or before == after:
-            continue
-        index = by_before.pop(before, None)
-        if index is None:
-            collapsed.append(dict(example))
-            index = len(collapsed) - 1
-        else:
-            collapsed[index]["after"] = after
-        by_before[after] = index
-    return collapsed
+    return collapse_visible_changes(examples)
+
+
+def _diff_token_indices(before: str, after: str):
+    """Locate deleted/replaced tokens and inserted/replaced tokens."""
+    token_pattern = re.compile(r"\w+|[^\w\s]+", re.UNICODE)
+    before_matches = list(token_pattern.finditer(before))
+    after_matches = list(token_pattern.finditer(after))
+    before_tokens = [match.group() for match in before_matches]
+    after_tokens = [match.group() for match in after_matches]
+    removed: set[int] = set()
+    added: set[int] = set()
+    for operation, i1, i2, j1, j2 in SequenceMatcher(
+        None, before_tokens, after_tokens, autojunk=False
+    ).get_opcodes():
+        if operation in {"delete", "replace"}:
+            removed.update(range(i1, i2))
+        if operation in {"insert", "replace"}:
+            added.update(range(j1, j2))
+    return before_matches, after_matches, removed, added
+
+
+def _diff_markup(before: str, after: str) -> tuple[str, str]:
+    """Return ReportLab markup with the exact changed tokens made visible."""
+    before = " ".join(str(before).split())
+    after = " ".join(str(after).split())
+    before_matches, after_matches, removed, added = _diff_token_indices(before, after)
+
+    def render(text: str, matches, indices: set[int], *, removed_side: bool) -> str:
+        parts: list[str] = []
+        cursor = 0
+        for index, match in enumerate(matches):
+            if cursor < match.start():
+                parts.append(escape(text[cursor : match.start()]))
+            token = escape(match.group())
+            if index in indices:
+                if removed_side:
+                    token = f"<font color='{DIFF_BAD}'><strike>{token}</strike></font>"
+                else:
+                    token = f"<font color='{DIFF_GOOD}'><b>{token}</b></font>"
+            parts.append(token)
+            cursor = match.end()
+        if cursor < len(text):
+            parts.append(escape(text[cursor:]))
+        return "".join(parts)
+
+    return (
+        render(before, before_matches, removed, removed_side=True),
+        render(after, after_matches, added, removed_side=False),
+    )
+
+
+def _risk_label(value: Any) -> tuple[str, str]:
+    """Translate the internal editing-risk value into a review label."""
+    try:
+        risk = float(value)
+    except (TypeError, ValueError):
+        return "nie określono", MUTED
+    if risk <= 0.12:
+        return "niskie", GOOD
+    if risk <= 0.20:
+        return "umiarkowane", WARN
+    return "podwyższone", BAD
+
+
+def _safety_summary(change: dict[str, Any]) -> str:
+    """List only the concrete safety checks recorded for this accepted edit."""
+    passed = {
+        str(check.get("name", ""))
+        for check in change.get("gate_results", [])
+        if check.get("ok")
+    }
+    checks = [label for name, label in SAFETY_LABELS.items() if name in passed]
+    similarity = change.get("semantic_similarity")
+    if similarity is not None:
+        checks.append(f"podobieństwo znaczeniowe {_fmt(float(similarity))}")
+    if not checks:
+        return "Zmiana przeszła dostępne bramki bezpieczeństwa."
+    return "Sprawdzono: " + ", ".join(checks) + "."
 
 
 def _scale_bar_class():
@@ -447,8 +553,8 @@ def _scale_bar_class():
             canvas.setFillColor(colors.HexColor(MUTED))
             for step in (0.0, 0.25, 0.5, 0.75, 1.0):
                 canvas.drawCentredString(step * self.width, track_y - 8.4 * mm_, _fmt(step))
-            canvas.drawString(0, 1 * mm_, "czyta się jak pisane przez człowieka")
-            canvas.drawRightString(self.width, 1 * mm_, "wyraźnie maszynowe")
+            canvas.drawString(0, 1 * mm_, "mniej cech schematycznych")
+            canvas.drawRightString(self.width, 1 * mm_, "więcej cech schematycznych")
 
             canvas.setFillColor(colors.HexColor(BAD))
             canvas.drawCentredString(
@@ -494,17 +600,35 @@ class _Report:
         self.payload = payload
         self.width = width
         self.s = styles
-        self.rows = payload.get("documents") or payload.get("rows") or []
+        self.is_xlsx = payload.get("flow") == "xlsx"
+        self.rows = [dict(row) for row in (payload.get("documents") or payload.get("rows") or [])]
+        for row in self.rows:
+            if "applied_changes" not in row:
+                continue
+            visible = collapse_visible_changes(row.get("applied_changes") or [])
+            row["applied_changes"] = visible
+            row["examples"] = visible[:MAX_EXAMPLES]
+            row["changes_applied"] = len(visible)
         self.items = [row for row in self.rows if row.get("status") == "ok"]
         self.failed = [row for row in self.rows if row.get("status") != "ok"]
         self.summary = payload.get("summary", {})
         self.settings = payload.get("settings", {})
-        self.profile = load_profile()
+        calibrated_items = [
+            item
+            for item in self.items
+            if not str(item.get("calibration_status", "")).startswith("uncalibrated")
+        ]
+        # Old reports have no calibration_status and retain their historical
+        # SAOS comparison. New genre-aware flows are explicitly uncalibrated
+        # until a matching human corpus exists.
+        self.profile = load_profile() if calibrated_items or not any(
+            "calibration_status" in item for item in self.items
+        ) else None
         self.rebuilt = bool(payload.get("rebuilt"))
         self.changes_known = not self.rebuilt and self.settings.get("rewrite", True)
 
         self.one, self.few, self.many = (
-            ("element", "elementy", "elementów")
+            ("wiersz", "wiersze", "wierszy")
             if payload.get("flow") == "xlsx"
             else ("dokument", "dokumenty", "dokumentów")
         )
@@ -516,7 +640,10 @@ class _Report:
             self.summary.get("mean_signal_after", _mean([i["signal_after"] for i in self.items]))
         )
         self.needs_review = int(self.summary.get("needs_review", 0))
-        self.changes = int(self.summary.get("changes_applied", 0))
+        if all("applied_changes" in item for item in self.items):
+            self.changes = sum(int(item.get("changes_applied", 0)) for item in self.items)
+        else:
+            self.changes = int(self.summary.get("changes_applied", 0))
         self.findings_before = int(
             self.summary.get(
                 "findings_before", sum(i.get("findings_before", 0) for i in self.items)
@@ -588,6 +715,39 @@ class _Report:
         )
         return built
 
+    def review_card(self, title: str, rows: list[tuple[str, str]], *, accent: str = ACCENT):
+        """A compact information card used by detailed PDF reports."""
+        from reportlab.lib import colors
+        from reportlab.platypus import Table, TableStyle
+
+        data = [[self.cell(f"<b>{escape(title)}</b>", "cellhead"), ""]]
+        data.extend(
+            [self.cell(f"<b>{escape(label)}</b>"), self.cell(value)]
+            for label, value in rows
+        )
+        built = Table(
+            data,
+            colWidths=[31 * self.mm, self.width - 31 * self.mm],
+            hAlign="LEFT",
+        )
+        built.setStyle(
+            TableStyle(
+                [
+                    ("SPAN", (0, 0), (1, 0)),
+                    ("BACKGROUND", (0, 0), (1, 0), colors.HexColor(accent)),
+                    ("BACKGROUND", (0, 1), (0, -1), colors.HexColor(BAND)),
+                    ("BOX", (0, 0), (-1, -1), 0.6, colors.HexColor(RULE)),
+                    ("INNERGRID", (0, 1), (-1, -1), 0.3, colors.HexColor(RULE)),
+                    ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                    ("TOPPADDING", (0, 0), (-1, -1), 5),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+                    ("LEFTPADDING", (0, 0), (-1, -1), 6),
+                    ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+                ]
+            )
+        )
+        return built
+
     # -- sections --
 
     def story(self) -> list:
@@ -598,18 +758,20 @@ class _Report:
         repeat their header, and `KeepTogether` keeps each heading with the
         paragraph that explains it.
         """
-        story: list[Any] = []
-        for section in (
+        sections = (
             self.cover,
             self.headline,
-            self.examples,
-            self.process,
+            self.xlsx_changes,
+            self.xlsx_unresolved,
+            self.xlsx_basis,
+            self.readiness_audit,
             self.metrics,
             self.families,
             self.per_item,
-            self.manual_work,
             self.caveats,
-        ):
+        )
+        story: list[Any] = []
+        for section in sections:
             story += section()
         return story
 
@@ -619,7 +781,7 @@ class _Report:
 
         Nazwy plików, ścieżki i nazwa arkusza nie trafiają do raportu. Zakres
         opisuje liczba pozycji i rodzaj materiału, a konkretną pozycję wskazuje
-        numer w części 5.
+        numer w części 6.
         """
         words = int(self.summary.get("words", sum(i.get("words", 0) for i in self.items)))
         count = len(self.items)
@@ -631,12 +793,11 @@ class _Report:
             ("Zakres", f"{scale}, {_thousands(words)} słów"),
             ("Data raportu", self.generated_at),
         ]
+        title = "Raport zmian"
+        subtitle = "Czytelny wykaz poprawek, uwag nierozwiązanych i podstawy analizy"
         return [
-            self.para("Raport z przeglądu tekstu", "title"),
-            self.para(
-                "Co sprawdziliśmy, co znaczą liczby i co się zmieniło po poprawkach",
-                "subtitle",
-            ),
+            self.para(title, "title"),
+            self.para(subtitle, "subtitle"),
             self.table(
                 [[self.cell(f"<b>{escape(key)}</b>"), self.cell(escape(value))]
                  for key, value in rows],
@@ -656,7 +817,7 @@ class _Report:
         )
         tiles = [
             self.head(
-                "Wskaźnik maszynowego stylu",
+                "Wskaźnik stylu schematycznego",
                 "Wychwycone zwroty",
                 "Poprawki automatyczne",
                 f"{self.many.capitalize()} do przejrzenia",
@@ -696,7 +857,7 @@ class _Report:
             )
         elif delta > 0.005:
             moved = (
-                f"Tekst brzmi mniej maszynowo niż przed poprawkami: wskaźnik spadł "
+                f"Tekst ma mniej cech schematycznych niż przed poprawkami: wskaźnik spadł "
                 f"z {_fmt(self.before)} na {_fmt(self.after)}."
             )
         elif self.changes == 0:
@@ -712,18 +873,397 @@ class _Report:
                 "Resztę trzeba przeredagować ręcznie."
             )
         if self.needs_review == 0:
-            verdict = "Żadna pozycja nie przekracza progu, więc nie prosimy o nic więcej."
+            verdict = "Kontrola końcowa nie wskazała żadnej pozycji do dalszego przeglądu."
+        elif count == 1:
+            verdict = f"Ten {self.one} wymaga jeszcze przeglądu przez człowieka."
         elif self.needs_review == count:
             verdict = (
-                f"Wszystkie ({count}) są nadal powyżej progu i wymagają przejrzenia "
-                "przez człowieka."
+                f"Wszystkie ({count}) wymagają jeszcze przeglądu przez człowieka."
             )
         else:
             verdict = (
-                f"Nadal {self.needs_review} z {count} {self.many} jest powyżej progu "
-                "i wymaga przejrzenia przez człowieka."
+                f"Kontrola końcowa wskazała {self.needs_review} z {count} {self.many} "
+                "do dalszego przeglądu przez człowieka."
             )
         return f"{moved} {verdict}"
+
+    def _xlsx_change_entries(self) -> list[tuple[int, dict, int, dict]]:
+        """All visible edits, including payloads created before the full register."""
+        entries: list[tuple[int, dict, int, dict]] = []
+        for position, item in enumerate(self.items, 1):
+            changes = item.get("applied_changes") or item.get("examples", [])
+            for change_index, change in enumerate(_collapse_chains(changes), 1):
+                entries.append((position, item, change_index, change))
+        return entries
+
+    def xlsx_changes(self) -> list:
+        """Printable change register with exact inline additions and removals."""
+        from reportlab.platypus import KeepTogether, Spacer
+
+        entries = self._xlsx_change_entries()
+        story: list[Any] = [self.para("2. Wykaz zastosowanych zmian", "h1")]
+        if not entries:
+            if not self.changes_known:
+                story.append(
+                    self.note(
+                        "Ten PDF odtworzono z gotowego wyniku. Pełny rejestr wykonanych "
+                        "zmian nie był zapisany w starszym raporcie."
+                    )
+                )
+            else:
+                story.append(
+                    self.note(
+                        "Nie zastosowano żadnej poprawki automatycznie. Wykryte problemy "
+                        "znajdują się w części 3 jako uwagi bez automatycznej poprawki."
+                    )
+                )
+            return story
+
+        story.append(
+            self.para(
+                f"Każda z {len(entries)} zmian ma własny, czytelny opis. "
+                f"<font color='{DIFF_BAD}'><strike>Czerwone przekreślenie</strike></font> "
+                "oznacza tekst usunięty lub zastąpiony, a "
+                f"<font color='{DIFF_GOOD}'><b>zielone pogrubienie</b></font> "
+                "tekst dodany lub poprawiony.",
+                "body",
+            )
+        )
+
+        for position, item, change_index, change in entries:
+            before = str(change.get("before", "")).strip()
+            after = str(change.get("after", "")).strip()
+            before_markup, after_markup = _diff_markup(before, after)
+            issue = str(change.get("issue", ""))
+            risk, risk_colour = _risk_label(change.get("risk"))
+            title = (
+                f"{_item_label(position, self.one, item)} | zmiana {change_index} "
+                f"| ryzyko {risk}"
+            )
+            rows = [
+                ("Rodzaj zmiany", escape(ISSUE_WORDS.get(issue, "zmiana redakcyjna"))),
+                ("Było", before_markup),
+                ("Jest po poprawce", after_markup),
+                (
+                    "Uzasadnienie",
+                    escape(
+                        CHANGE_RATIONALES.get(
+                            issue,
+                            describe_visible_change(before, after),
+                        )
+                    ),
+                ),
+                ("Kontrole", escape(_safety_summary(change))),
+            ]
+            story.append(
+                KeepTogether(
+                    [
+                        self.review_card(title, rows, accent=risk_colour),
+                        Spacer(1, 7),
+                    ]
+                )
+            )
+        return story
+
+    def _xlsx_unresolved_entries(self) -> list[tuple[int, dict, dict]]:
+        entries: list[tuple[int, dict, dict]] = []
+        for position, item in enumerate(self.items, 1):
+            findings = item.get("unresolved_findings")
+            if findings is not None:
+                entries.extend((position, item, finding) for finding in findings)
+                continue
+            # Older JSON reports did not retain located findings. Keep their
+            # actionable constraints visible instead of silently reporting zero.
+            for constraint in item.get("constraints", []):
+                entries.append(
+                    (
+                        position,
+                        item,
+                        {
+                            "family": "",
+                            "evidence": "Nie zapisano fragmentu w starszym raporcie.",
+                            "recommendation": str(constraint),
+                            "rewritable": False,
+                        },
+                    )
+                )
+        return entries
+
+    def xlsx_unresolved(self) -> list:
+        """Findings still present after rewriting, never confused with applied edits."""
+        from reportlab.platypus import KeepTogether, Spacer
+
+        entries = self._xlsx_unresolved_entries()
+        story: list[Any] = [self.para("3. Uwagi bez automatycznej poprawki", "h1")]
+        story.append(
+            self.para(
+                "Poniższe pozycje nadal występują po automatycznej redakcji. Nie są "
+                "zastosowanymi zmianami. Wskazują miejsca, których narzędzie nie mogło "
+                "bezpiecznie poprawić automatycznie.",
+                "body",
+            )
+        )
+        if not entries:
+            story.append(
+                self.note("Po automatycznej redakcji nie pozostały żadne wykryte uwagi.")
+            )
+            return story
+
+        for finding_index, (position, item, finding) in enumerate(entries, 1):
+            family = str(finding.get("family", ""))
+            family_entry = self._family_entry(family) if family else None
+            label = family_entry["label"] if family_entry else "uwaga stylistyczna"
+            recommendation = str(
+                finding.get("recommendation")
+                or FAMILY_CONSTRAINTS.get(
+                    family,
+                    "Sprawdź fragment i zdecyduj, czy wymaga ręcznego uproszczenia.",
+                )
+            )
+            if finding.get("rewritable"):
+                reason = (
+                    "Wzorzec pozostał po redakcji; automatyczna kandydatura nie przeszła "
+                    "bezpiecznie wszystkich kontroli."
+                )
+            else:
+                reason = "Brak bezpiecznej reguły automatycznej dla tego typu uwagi."
+            location = []
+            if finding.get("paragraph") is not None:
+                location.append(f"akapit {finding['paragraph']}")
+            if finding.get("sentence") is not None:
+                location.append(f"zdanie {finding['sentence']}")
+            title = f"{_item_label(position, self.one, item)} | uwaga {finding_index}"
+            rows = [
+                ("Rodzaj uwagi", escape(label)),
+                ("Miejsce", escape(", ".join(location) or "pozycja wskazana w nagłówku")),
+                ("Wychwycony fragment", escape(str(finding.get("evidence", "")))),
+                ("Zalecenie", escape(recommendation)),
+                ("Dlaczego człowiek", escape(reason)),
+            ]
+            story.append(
+                KeepTogether(
+                    [
+                        self.review_card(title, rows, accent=WARN),
+                        Spacer(1, 7),
+                    ]
+                )
+            )
+        return story
+
+    def xlsx_basis(self) -> list:
+        """A non-technical statement of method, evidence base and limitations."""
+        layers = self.payload.get("layers", {})
+        detection = layers.get("detection", {})
+        rewrite = layers.get("rewrite", {})
+        if self.profile is None:
+            profile_text = "Profil porównawczy nie był dostępny w tym przebiegu."
+        else:
+            profile_text = (
+                f"Profil {self.profile.name}: {_thousands(self.profile.document_count)} "
+                f"uzasadnień i {_thousands(self.profile.word_count)} słów; "
+                f"źródło: {self.profile.source}; gatunek: {self.profile.genre}."
+            )
+        hosted = layers.get("hosted_model", {})
+        backend = self.settings.get("rewrite_backend", "rules")
+        model_text = (
+            f"; model hostowany {hosted.get('status', 'brak danych')} "
+            f"({hosted.get('model', 'bez nazwy')})"
+            if backend == "hybrid"
+            else ""
+        )
+        reference_name = detection.get("reference_profile", "brak danych")
+        if str(reference_name).startswith("not_applied"):
+            reference_name = "nieskalibrowany dla gatunku"
+        runtime = (
+            f"Tryb {self.settings.get('mode', 'brak danych')}; silnik żądany "
+            f"{self.settings.get('engine', 'brak danych')}; silnik użyty "
+            f"{rewrite.get('engine_used', 'brak danych')}; Morfeusz "
+            f"{detection.get('morfeusz', 'brak danych')}; profil "
+            f"{reference_name}{model_text}."
+        )
+        method_text = (
+            "Reguły językowe, a dla pozostałych problemów hostowany model "
+            "generatywny; każda propozycja modelu przechodzi lokalne walidatory."
+            if backend == "hybrid"
+            else "Deterministyczne reguły językowe bez generatywnej parafrazy."
+        )
+        rows = [
+            self.head("Obszar", "Podstawa działania", "Znaczenie dla recenzenta"),
+            [
+                self.cell("<b>Charakter metody</b>"),
+                self.cell(
+                    method_text
+                ),
+                self.cell("Dla tego samego tekstu i konfiguracji wynik jest powtarzalny."),
+            ],
+            [
+                self.cell("<b>Co wykrywamy</b>"),
+                self.cell(
+                    "Szablonowe otwarcia i podsumowania, ogólniki, powtórzenia, niejasne "
+                    "odesłania, nominalizacje oraz monotonię zdań i akapitów."
+                ),
+                self.cell(
+                    "Wykrycie jest sygnałem do przeglądu, a nie dowodem autorstwa AI ani "
+                    "błędu prawnego."
+                ),
+            ],
+            [
+                self.cell("<b>Punkt odniesienia</b>"),
+                self.cell(escape(profile_text)),
+                self.cell(
+                    "Profil opisuje typowy rozkład cech ludzkiego pisarstwa w określonym "
+                    "gatunku. Inne rodzaje dokumentów mogą zachowywać się inaczej."
+                ),
+            ],
+            [
+                self.cell("<b>Proces</b>"),
+                self.cell(
+                    "Diagnoza, propozycja regułowa, walidacja, ponowna diagnoza i kontrola "
+                    "jakości."
+                ),
+                self.cell(
+                    "Do części 2 trafiają tylko faktycznie zastosowane zmiany. Odrzucone "
+                    "lub nierozwiązane problemy trafiają do części 3."
+                ),
+            ],
+            [
+                self.cell("<b>Kontrole bezpieczeństwa</b>"),
+                self.cell(
+                    "Ochrona liczb, dat, kwot, cytatów i podstaw prawnych; kontrola "
+                    "normatywności, kluczowych pojęć, składni i kompletności zdania."
+                ),
+                self.cell(
+                    "Kontrole ograniczają ryzyko redakcyjne, ale nie gwarantują "
+                    "poprawności prawnej."
+                ),
+            ],
+            [
+                self.cell("<b>Ryzyko redakcyjne</b>"),
+                self.cell(
+                    "Wewnętrzny wskaźnik kandydata, tłumaczony na poziomy: niskie, "
+                    "umiarkowane i podwyższone."
+                ),
+                self.cell(
+                    "Nie jest to prawdopodobieństwo błędu. Poziom pomaga odczytać wagę "
+                    "zmiany w kontekście dokumentu."
+                ),
+            ],
+            [
+                self.cell("<b>Konfiguracja przebiegu</b>"),
+                self.cell(escape(runtime)),
+                self.cell(
+                    "Brak opcjonalnego modelu oznacza tryb uproszczony; podstawowe reguły "
+                    "i walidatory nadal działają."
+                ),
+            ],
+            [
+                self.cell("<b>Ograniczenia</b>"),
+                self.cell(
+                    "Narzędzie nie sprawdza aktualności prawa, poprawności podstawy prawnej, "
+                    "kompletności stanu faktycznego ani trafności rozstrzygnięcia."
+                ),
+                self.cell(
+                    "Końcową odpowiedzialność za dokument ponosi człowiek zatwierdzający "
+                    "treść."
+                ),
+            ],
+        ]
+        return [
+            self.para("4. Podstawa i ograniczenia analizy", "h1"),
+            self.note(
+                "Narzędzie wspiera redakcję, ale nie zastępuje oceny prawnej ani decyzji "
+                "osoby odpowiedzialnej za dokument."
+            ),
+            self.table(
+                rows,
+                [34 * self.mm, self.width - 34 * self.mm - 61 * self.mm, 61 * self.mm],
+            ),
+        ]
+
+    def readiness_audit(self) -> list:
+        """Genre, legal-sensitive, formatting and render status in one place."""
+        from reportlab.platypus import Spacer
+
+        if not self.items:
+            return []
+        rows = [
+            self.head(
+                self.one.capitalize(),
+                "Rodzaj i styl",
+                "Treść prawnie wrażliwa",
+                "Format i render",
+                "Gotowość",
+            )
+        ]
+        for position, item in enumerate(self.items, 1):
+            type_labels = {
+                "client_communication": "komunikacja z klientem",
+                "contract": "umowa",
+                "filing_official": "pismo urzędowe/procesowe",
+            }
+            raw_type = str(item.get("document_type") or "brak danych")
+            document_type = type_labels.get(raw_type, raw_type)
+            confidence = item.get("document_type_confidence")
+            style = item.get("style_compliance") or {}
+            style_text = document_type
+            if isinstance(confidence, (int, float)):
+                style_text += f" ({confidence:.0%})"
+            style_text += "; styl zgodny" if style.get("passed", True) else "; są odstępstwa"
+
+            legal = item.get("legal_sensitive_check") or {}
+            legal_text = (
+                "bez zmian w kotwicach"
+                if legal.get("passed", True)
+                else "wymaga pilnej kontroli"
+            )
+            formatting = item.get("formatting")
+            if formatting:
+                rendered = "render poprawny" if formatting.get("rendered") else "bez renderu"
+                issue_count = len(formatting.get("issues") or [])
+                format_text = f"{rendered}; problemy: {issue_count}"
+            else:
+                format_text = "nie dotyczy / brak danych"
+            readiness = str(item.get("readiness_status") or (
+                "ready_with_warnings" if item.get("needs_review") else "ready"
+            ))
+            colour = GOOD if readiness == "ready" else WARN
+            readiness_label = {
+                "ready": "gotowy",
+                "ready_with_warnings": "gotowy z ostrzeżeniami",
+                "failed": "błąd",
+            }.get(readiness, readiness)
+            rows.append(
+                [
+                    self.cell(escape(_item_label(position, self.one, item))),
+                    self.cell(escape(style_text)),
+                    self.cell(escape(legal_text)),
+                    self.cell(escape(format_text)),
+                    self.cell(
+                        f"<font color='{colour}'><b>{escape(readiness_label)}</b></font>"
+                    ),
+                ]
+            )
+        unresolved = sum(len(item.get("unresolved_findings") or []) for item in self.items)
+        return [
+            self.para("4.1. Gotowość dokumentu do wysłania", "h2"),
+            self.para(
+                "Ocena gotowości łączy wynik redakcji, zgodność z profilem, "
+                "zachowanie treści prawnie wrażliwej oraz audyt wyglądu i render DOCX. "
+                f"Nierozwiązane uwagi: {unresolved}.",
+                "body",
+            ),
+            self.table(
+                rows,
+                [
+                    25 * self.mm,
+                    38 * self.mm,
+                    34 * self.mm,
+                    35 * self.mm,
+                    self.width - 132 * self.mm,
+                ],
+            ),
+            Spacer(1, 4),
+        ]
 
     def examples(self) -> list:
         """Real before/after pairs. The most convincing part of the report."""
@@ -841,15 +1381,22 @@ class _Report:
         ]
 
     def metrics(self) -> list:
+        section = "5"
+        if self.profile is None:
+            signal_explanation = (
+                "To opisowy, nieskalibrowany wskaźnik gęstości wykrytych cech. "
+                "Nie porównujemy go z korpusem uzasadnień SAOS, ponieważ badany "
+                "gatunek może być umową, pismem urzędowym albo komunikacją z klientem."
+            )
+        else:
+            signal_explanation = (
+                "To główna liczba raportu. Przyjmuje wartości od 0 do 1. Tekst "
+                "porównujemy ze zbiorem pism napisanych przez ludzi w odpowiednim profilu."
+            )
         story = [
-            self.para("4. Co dokładnie mierzymy", "h1"),
-            self.para("4.1. Wskaźnik maszynowego stylu", "h2"),
-            self.para(
-                "To główna liczba raportu. Przyjmuje wartości od 0 do 1. Nie bierze się "
-                "znikąd: tekst porównujemy ze zbiorem prawdziwych pism pisanych przez ludzi. "
-                "Wskaźnik pokazuje, jak bardzo tekst odstaje od tego, co u ludzi normalne.",
-                "body",
-            ),
+            self.para(f"{section}. Co dokładnie mierzymy", "h1"),
+            self.para(f"{section}.1. Wskaźnik stylu schematycznego", "h2"),
+            self.para(signal_explanation, "body"),
         ]
         if self.profile is not None:
             story.append(
@@ -859,21 +1406,30 @@ class _Report:
                     "small",
                 )
             )
-        story.append(
-            self.para(
-                f"Wynik <b>{_fmt(REVIEW_THRESHOLD)}</b> i wyżej to prośba o przejrzenie "
-                "tekstu, a nie ocena ani wyrok. Poniżej tej granicy tekst mieści się w tym, "
-                "co zwykle piszą ludzie.",
-                "body",
+        threshold_text = (
+            f"Wynik <b>{_fmt(REVIEW_THRESHOLD)}</b> i wyżej to prośba o przejrzenie "
+            "tekstu, a nie ocena ani wyrok. Poniżej tej granicy tekst mieści się w tym, "
+            "co zwykle piszą ludzie w profilu."
+            if self.profile is not None
+            else (
+                f"Robocza granica <b>{_fmt(REVIEW_THRESHOLD)}</b> porządkuje przegląd, "
+                "ale bez korpusu tego samego gatunku nie jest statystycznym progiem "
+                "tekstu ludzkiego ani dowodem autorstwa."
             )
         )
+        story.append(self.para(threshold_text, "body"))
 
-        story.append(self.para("4.2. Rytm tekstu", "h2"))
+        story.append(self.para(f"{section}.2. Rytm tekstu", "h2"))
+        rhythm_comparison = (
+            "Kolumna „ocena” porównuje wynik po poprawkach z tym, co typowe u ludzi."
+            if self.profile is not None
+            else "Bez korpusu tego samego gatunku kolumna „ocena” pokazuje brak porównania."
+        )
         story.append(
             self.para(
-                "Te liczby opisują rytm, a nie treść. Tekst z maszyny bywa podejrzanie "
-                "równy: zdania jednej długości, akapity jednego rozmiaru. Kolumna „ocena” "
-                "porównuje wynik po poprawkach z tym, co typowe u ludzi.",
+                "Te liczby opisują rytm, a nie treść. Tekst nadmiernie schematyczny bywa "
+                "równy: zdania jednej długości, akapity jednego rozmiaru. "
+                + rhythm_comparison,
                 "body",
             )
         )
@@ -964,9 +1520,12 @@ class _Report:
             counts_after.update(item.get("family_counts_after", {}))
 
         story = [
-            self.para("4.3. Zwroty, których szukamy", "h1"),
             self.para(
-                "Lista zwrotów i konstrukcji, które w polskich tekstach zdradzają maszynę. "
+                "5.3. Zwroty, których szukamy",
+                "h1",
+            ),
+            self.para(
+                "Lista zwrotów i konstrukcji częstych w tekstach nadmiernie schematycznych. "
                 "Kolumna „poprawia automat” wyjaśnia, dlaczego część liczb nie spada do zera: "
                 "niektórych zwrotów nie da się usunąć bez ryzyka zmiany sensu, więc tylko je "
                 "sygnalizujemy.",
@@ -1053,7 +1612,8 @@ class _Report:
         )
 
     def per_item(self) -> list:
-        story = [self.para(f"5. Wyniki: każdy {self.one} osobno", "h1")]
+        section = "6"
+        story = [self.para(f"{section}. Wyniki: każdy {self.one} osobno", "h1")]
         if not self.items and not self.failed:
             story.append(self.para("Brak pozycji do pokazania.", "body"))
             return story
@@ -1301,21 +1861,14 @@ class _Report:
         ]
 
     def caveats(self) -> list:
-        from reportlab.platypus import KeepTogether
-
-        lines = (
-            "<b>Sprawdzamy styl i charakter tekstu, a nie jego treść.</b> Nie weryfikujemy "
-            "przepisów, kwot, dat ani wniosków.",
-            "<b>Poprawiamy ostrożnie.</b> Zmieniamy wyłącznie to, co da się zmienić "
-            "bezpiecznie. Brak poprawek nie znaczy, że nie było czego poprawiać.",
-        )
         return [
-            KeepTogether(
-                [
-                    self.para("7. Czego ten raport nie mówi", "h1"),
-                    *[self.para(f"• {line}", "body") for line in lines],
-                ]
-            )
+            self.para("7. Odpowiedzialność i granice raportu", "h2"),
+            self.para(
+                "<b>Zakres:</b> raport ocenia styl, nie poprawność prawną ani "
+                "autorstwo AI. Automatyczne poprawki ograniczają ryzyko redakcyjne, "
+                "lecz nie zastępują końcowego zatwierdzenia dokumentu.",
+                "small",
+            ),
         ]
 
 
@@ -1412,7 +1965,7 @@ def write_flow_pdf(payload: dict[str, Any], path: str | Path) -> Path:
         rightMargin=18 * mm,
         topMargin=16 * mm,
         bottomMargin=18 * mm,
-        title="Raport z przeglądu tekstu",
+        title="Raport zmian",
     )
     report = _Report(payload, document.width, _styles())
     report.generated_at = datetime.now().strftime("%d.%m.%Y, %H:%M")

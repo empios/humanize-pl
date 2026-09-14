@@ -258,7 +258,7 @@ def test_every_gate_family_has_a_polish_description() -> None:
 def test_every_scored_metric_has_a_polish_description() -> None:
     from humanize_pl.detect.engine import _metrics
 
-    measured = set(_metrics([(0, 0, "Pierwsze zdanie testowe ma kilka słów.")], 6,
+    measured = set(_metrics("Pierwsze zdanie testowe ma kilka słów.", [(0, 0, "Pierwsze zdanie testowe ma kilka słów.")], 6,
                             sentences_per_paragraph=[1]))
     described = set(pdf_pl.METRIC_GLOSSARY) | {"words"}
 

@@ -297,8 +297,8 @@ def test_validator_rejects_content_anchor_drift():
         max_length_ratio=2.0,
     )
     assert not validation.ok
-    # Either normativity or content-anchor check catches this drift
-    assert validation.reason in {"normativity changed", "content anchors changed too much"}
+    # Either deontic modality or content-anchor check catches this drift
+    assert validation.reason in {"deontic drift in category obligation", "content anchors changed too much"}
 
 
 def test_nlp_nominalization_does_not_strand_relative_clause():

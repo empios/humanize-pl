@@ -95,6 +95,7 @@ class LegalPipeline:
         stanza_engine: Any = None,
         semantic: Any = None,
         fluency: Any = None,
+        nli: Any = None,
         morfeusz: Any = None,
         include_candidates: bool = False,
     ) -> None:
@@ -104,6 +105,7 @@ class LegalPipeline:
         self.stanza_engine = stanza_engine
         self.semantic = semantic
         self.fluency = fluency
+        self.nli = nli
         self.morfeusz = morfeusz
         self.include_candidates = include_candidates
 
@@ -347,6 +349,7 @@ class LegalPipeline:
                 max_length_ratio=self.config.length_ratio(),
                 rule=cand.rule,
                 operation_type=cand.operation_type,
+                nli=self.nli,
             )
             features_after = analyze_sentence_features(cand.text)
             if not validation.ok:

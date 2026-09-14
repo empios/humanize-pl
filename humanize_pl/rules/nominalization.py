@@ -165,6 +165,13 @@ def _nlp_candidates(
             if active not in entry.modes:
                 continue
 
+            # A light-verb reduction deletes the complement noun. If that noun
+            # heads a genitive chain ("analizy dokumentów"), the dependents would
+            # be left dangling in the genitive case, producing ungrammatical
+            # Polish ("przeanalizować dokumentów"). Skip rather than emit it.
+            if _reduction_leaves_dangling_genitive(analysis, getattr(dep, "id", None)):
+                continue
+
             repl_form = _generate_matching_form(tok.text, entry.replacement, morfeusz)
             if not repl_form:
                 continue
@@ -213,6 +220,30 @@ def _has_relative_clause_after_removed_noun(sentence: str, noun_end: int) -> boo
     "działać, które zakłócają...".
     """
     return bool(_RELATIVE_AFTER_NOUN_RE.match(sentence[noun_end:]))
+
+
+def _genitive_dependents(analysis, noun_id: int | None) -> list:
+    """Genitive-case noun dependents of a token (a łańcuch dopełniaczowy)."""
+    if analysis is None or noun_id is None:
+        return []
+    return [
+        t for t in analysis.tokens
+        if getattr(t, "head", None) == noun_id
+        and t.upos == "NOUN"
+        and "Case=Gen" in (t.feats or "")
+    ]
+
+
+def _reduction_leaves_dangling_genitive(analysis, noun_id: int | None) -> bool:
+    """True if *noun_id* heads a genitive chain.
+
+    Reducing a light verb (``dokonać weryfikacji poprawności…`` →
+    ``zweryfikować poprawności…``) deletes the complement noun but would leave
+    its genitive-dependent chain behind in the genitive case — ungrammatical
+    Polish (the object of the new verb must be accusative).  Callers use this
+    to skip the reduction rather than emit case-mismatched output.
+    """
+    return bool(_genitive_dependents(analysis, noun_id))
 
 
 # ─── Ger auto-detection helpers ──────────────────────────────────────────────

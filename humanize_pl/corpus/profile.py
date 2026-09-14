@@ -6,7 +6,8 @@ from datetime import date
 
 from humanize_pl.detect import detect_document
 from .normalize import anonymisation_rate
-from humanize_pl.detect.reference import Distribution, ReferenceProfile, windowed_ttr
+from humanize_pl.detect.lexical import mtld, connective_density
+from humanize_pl.detect.reference import Distribution, ReferenceProfile
 
 
 def build_reference_profile(
@@ -31,9 +32,12 @@ def build_reference_profile(
     """
     sentence_words: list[float] = []
     cvs: list[float] = []
+    sentence_burstinesses: list[float] = []
+    sentence_entropies: list[float] = []
     shape_cvs: list[float] = []
     diversities: list[float] = []
-    ttrs: list[float] = []
+    mtlds: list[float] = []
+    densities: list[float] = []
     anonymisations: list[float] = []
     scores: list[float] = []
     family_rates: dict[str, list[float]] = {family: [] for family in families or ()}
@@ -53,9 +57,12 @@ def build_reference_profile(
 
         sentence_words.append(diagnosis.metrics["mean_sentence_words"])
         cvs.append(diagnosis.metrics["sentence_length_cv"])
+        sentence_burstinesses.append(diagnosis.metrics.get("sentence_burstiness", 0.0))
+        sentence_entropies.append(diagnosis.metrics.get("sentence_entropy", 0.0))
         shape_cvs.append(diagnosis.metrics.get("paragraph_shape_cv", 0.0))
         diversities.append(diagnosis.metrics["opening_diversity"])
-        ttrs.append(windowed_ttr(text))
+        mtlds.append(mtld(text))
+        densities.append(connective_density(text))
         anonymisations.append(anonymisation_rate(text))
         scores.append(diagnosis.ai_signal_score)
 
@@ -78,9 +85,12 @@ def build_reference_profile(
         sentence_count=sentence_count,
         sentence_words=Distribution.of(sentence_words),
         sentence_length_cv=Distribution.of(cvs),
+        sentence_burstiness=Distribution.of(sentence_burstinesses),
+        sentence_entropy=Distribution.of(sentence_entropies),
         paragraph_shape_cv=Distribution.of([cv for cv in shape_cvs if cv > 0]),
         opening_diversity=Distribution.of(diversities),
-        windowed_ttr=Distribution.of(ttrs),
+        mtld=Distribution.of(mtlds),
+        connective_density=Distribution.of(densities),
         anonymisation_rate=Distribution.of(anonymisations),
         signal_score=Distribution.of(scores),
         family_rates={

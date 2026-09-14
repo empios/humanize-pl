@@ -8,6 +8,7 @@ from .base import Candidate
 from .kancelaryzmy import kancelaryzm_candidates
 from .lemma_engine import lemma_swap_candidates
 from .nominalization import nominalization_candidates
+from .genitive_chains import genitive_chain_candidates
 from .legal_ai_style import legal_ai_style_candidates
 from .legal_style import legal_style_candidates
 from .passive_voice import passive_candidates
@@ -48,6 +49,7 @@ class RuleEngine:
             kancelaryzm_candidates(sentence, mode=self.mode, analysis=analysis)
         )
         candidates.extend(nominalization_candidates(sentence, mode=self.mode, analysis=analysis))
+        candidates.extend(genitive_chain_candidates(sentence, analysis=analysis, mode=self.mode))
         candidates.extend(
             lemma_swap_candidates(sentence, analysis=analysis, mode=self.mode)
         )

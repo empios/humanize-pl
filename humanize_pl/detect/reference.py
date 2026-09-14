@@ -10,9 +10,7 @@ import regex as re
 
 WORD_RE = re.compile(r"\p{L}+")
 
-# Type-token ratio is length-dependent, so it is averaged over fixed windows
-# instead of computed over whole documents of wildly differing size.
-TTR_WINDOW = 200
+
 
 
 @dataclass(frozen=True)
@@ -42,6 +40,16 @@ class Distribution:
             p99=round(_percentile(ordered, 0.99), 4),
         )
 
+    @property
+    def is_empty(self) -> bool:
+        """True when no values were measured (a zeroed baseline).
+
+        Calibration must not score against an empty baseline: a "high" signal
+        would fall to the rate floor and fabricate a hit, and a "low" signal
+        would only dilute the weighted average.
+        """
+        return self.p50 == 0.0 and self.p95 == 0.0
+
 
 @dataclass(frozen=True)
 class ReferenceProfile:
@@ -64,9 +72,12 @@ class ReferenceProfile:
     sentence_count: int
     sentence_words: Distribution
     sentence_length_cv: Distribution
+    sentence_burstiness: Distribution
+    sentence_entropy: Distribution
     paragraph_shape_cv: Distribution
     opening_diversity: Distribution
-    windowed_ttr: Distribution
+    mtld: Distribution
+    connective_density: Distribution
     anonymisation_rate: Distribution
     signal_score: Distribution
     family_rates: dict[str, Distribution] = field(default_factory=dict)
@@ -78,12 +89,21 @@ class ReferenceProfile:
     @classmethod
     def from_json(cls, payload: dict) -> "ReferenceProfile":
         data = dict(payload)
+        # An old profile's `windowed_ttr` (windowed type-token ratio, scale
+        # ~0.5-0.7) is NOT a substitute for `mtld` (MTLD, scale ~10-30): they
+        # are different metrics on different scales.  We deliberately do NOT
+        # map one to the other — an old profile loads with an empty mtld
+        # distribution instead, which calibration treats as "no baseline".
+
         for key in (
             "sentence_words",
             "sentence_length_cv",
+            "sentence_burstiness",
+            "sentence_entropy",
             "paragraph_shape_cv",
             "opening_diversity",
-            "windowed_ttr",
+            "mtld",
+            "connective_density",
             "anonymisation_rate",
             "signal_score",
         ):
@@ -112,15 +132,7 @@ class ReferenceProfile:
         return cls.from_json(json.loads(Path(path).read_text(encoding="utf-8")))
 
 
-def windowed_ttr(text: str, *, window: int = TTR_WINDOW) -> float:
-    tokens = [token.lower() for token in WORD_RE.findall(text)]
-    if len(tokens) < window:
-        return round(len(set(tokens)) / len(tokens), 4) if tokens else 0.0
-    ratios = [
-        len(set(tokens[start : start + window])) / window
-        for start in range(0, len(tokens) - window + 1, window)
-    ]
-    return round(mean(ratios), 4)
+
 
 
 def _percentile(ordered: list[float], fraction: float) -> float:

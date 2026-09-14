@@ -11,7 +11,7 @@ import numpy as np
 
 DEFAULT_SEMANTIC_MODEL = "sdadas/st-polish-paraphrase-from-distilroberta"
 DEFAULT_FLUENCY_MODEL = "allegro/herbert-base-cased"
-
+DEFAULT_NLI_MODEL = "MoritzLaurer/mDeBERTa-v3-base-mnli-xnli"
 
 @dataclass(frozen=True)
 class TransformerValidationResult:
@@ -19,6 +19,24 @@ class TransformerValidationResult:
     fluency_delta: float | None = None
     semantic_model: str | None = None
     fluency_model: str | None = None
+    nli_model: str | None = None
+
+
+class NLIValidator:
+    """NLI cross-encoder used to prevent hallucinations (contradictions)."""
+
+    def __init__(self, model_name: str | None = None, *, offline: bool = False) -> None:
+        self.model_name = model_name or DEFAULT_NLI_MODEL
+        self.offline = offline
+        self._pipeline = _get_nli_pipeline(self.model_name, offline)
+
+    def check_entailment(self, premise: str, hypothesis: str) -> bool:
+        """Returns True if hypothesis does not contradict the premise."""
+        # pipeline output for single pair: {'label': 'entailment'/'neutral'/'contradiction', 'score': ...}
+        # mDeBERTa-v3-base-mnli-xnli labels might be: 'entailment', 'neutral', 'contradiction'
+        result = self._pipeline({"text": premise, "text_pair": hypothesis})
+        label = result["label"].lower()
+        return "contradiction" not in label
 
 
 class EmbeddingSimilarityValidator:
@@ -101,6 +119,17 @@ def _get_masked_lm(model_name: str, offline: bool):
         )
     model.eval()
     return tokenizer, model
+
+
+@lru_cache(maxsize=2)
+def _get_nli_pipeline(model_name: str, offline: bool):
+    from transformers import pipeline  # type: ignore
+
+    with _offline_env(offline):
+        return pipeline(
+            "text-classification",
+            model=model_name,
+        )
 
 
 @contextmanager

@@ -4,7 +4,8 @@ from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
 
-from .reference import ReferenceProfile, windowed_ttr
+from .lexical import mtld
+from .reference import ReferenceProfile
 from .base import DocumentDiagnosis
 
 PROFILE_DIR = Path(__file__).resolve().parent.parent / "data" / "reference_profiles"
@@ -176,6 +177,38 @@ def calibrate(
         )
     )
 
+    # Shape signals are scored only once a reference profile carries a measured
+    # baseline for them. An empty baseline must not enter the average: a "low"
+    # signal would be dead weight (diluting the score) and a "high" one would
+    # fall to the rate floor and fabricate a hit from nothing.
+    burstiness = diagnosis.metrics.get("sentence_burstiness", 0.0)
+    if not profile.sentence_burstiness.is_empty:
+        signals.append(
+            CalibratedSignal(
+                name="sentence_burstiness",
+                observed=round(burstiness, 4),
+                human_p50=profile.sentence_burstiness.p50,
+                human_p95=profile.sentence_burstiness.p95,
+                direction="low",
+                exceedance=_exceedance_low(burstiness, profile.sentence_burstiness.p50),
+                weight=1.0,
+            )
+        )
+
+    entropy = diagnosis.metrics.get("sentence_entropy", 0.0)
+    if not profile.sentence_entropy.is_empty:
+        signals.append(
+            CalibratedSignal(
+                name="sentence_entropy",
+                observed=round(entropy, 4),
+                human_p50=profile.sentence_entropy.p50,
+                human_p95=profile.sentence_entropy.p95,
+                direction="low",
+                exceedance=_exceedance_low(entropy, profile.sentence_entropy.p50),
+                weight=1.0,
+            )
+        )
+
     # Paragraph shape: AI output clusters near a fixed paragraph size, human
     # legal writing mixes one-line findings with long argument blocks.
     shape_cv = diagnosis.metrics.get("paragraph_shape_cv", 0.0)
@@ -205,10 +238,24 @@ def calibrate(
         )
     )
 
+    connective = diagnosis.metrics.get("connective_density", 0.0)
+    if not profile.connective_density.is_empty:
+        signals.append(
+            CalibratedSignal(
+                name="connective_density",
+                observed=round(connective, 4),
+                human_p50=profile.connective_density.p50,
+                human_p95=profile.connective_density.p95,
+                direction="high",
+                exceedance=_exceedance_high(connective, profile.connective_density.p95),
+                weight=1.0,
+            )
+        )
+
     for name, observed, distribution in (
         ("opening_diversity", diagnosis.metrics.get("opening_diversity", 0.0),
          profile.opening_diversity),
-        ("type_token_ratio", windowed_ttr(text), profile.windowed_ttr),
+        ("type_token_ratio", diagnosis.metrics.get("type_token_ratio", 0.0), profile.mtld),
     ):
         signals.append(
             CalibratedSignal(

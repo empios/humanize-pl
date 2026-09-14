@@ -48,6 +48,7 @@ def sentence_findings(
     out.extend(_abstract_frames(sentence, paragraph_index, sentence_index))
     out.extend(_empty_emphasis(sentence, paragraph_index, sentence_index))
     out.extend(_reference_density(sentence, paragraph_index, sentence_index))
+    out.extend(_typography_artifacts(sentence, paragraph_index, sentence_index))
     out.extend(
         scaffold_findings(
             sentence, paragraph_index=paragraph_index, sentence_index=sentence_index
@@ -60,6 +61,23 @@ def sentence_findings(
     )
     return _dedupe(out)
 
+def _typography_artifacts(
+    sentence: str, paragraph_index: int, sentence_index: int
+) -> Iterator[Finding]:
+    """Flag AI typography habits, such as English em-dashes (—)."""
+    for match in re.finditer(r"\s*(—|--)\s*", sentence):
+        yield Finding(
+            family="typography_artifact",
+            rule="detect:em_dash",
+            evidence=sentence[max(0, match.start() - 10):min(len(sentence), match.end() + 10)],
+            paragraph_index=paragraph_index,
+            sentence_index=sentence_index,
+            char_start=match.start(),
+            char_end=match.end(),
+            weight=0.8,
+            rewritable=True,
+            detail="AI używa angielskiej pauzy zamiast polskich znaków (– lub -)",
+        )
 
 def _discourse_frames(
     sentence: str, paragraph_index: int, sentence_index: int

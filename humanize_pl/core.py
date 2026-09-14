@@ -12,6 +12,7 @@ from .nlp.semantic import (
     DEFAULT_SEMANTIC_MODEL,
     EmbeddingSimilarityValidator,
     MaskedLMFluencyScorer,
+    NLIValidator,
 )
 from .nlp.stanza_engine import StanzaEngine
 from .pipeline import LegalPipeline
@@ -44,6 +45,7 @@ class HumanizerSession:
     stanza_engine: Any = None
     semantic: Any = None
     fluency: Any = None
+    nli: Any = None
     morfeusz: Any = None
     engine_used: str = "basic"
     model_status: dict[str, str] = field(default_factory=dict)
@@ -73,6 +75,7 @@ class HumanizerSession:
             stanza_engine=self.stanza_engine,
             semantic=self.semantic,
             fluency=self.fluency,
+            nli=self.nli,
             morfeusz=self.morfeusz,
             include_candidates=include_candidates,
         )
@@ -188,8 +191,10 @@ def create_humanizer_session(
 
     semantic = None
     fluency = None
+    nli = None
     semantic_model_used = semantic_model or DEFAULT_SEMANTIC_MODEL
     fluency_model_used = fluency_model or DEFAULT_FLUENCY_MODEL
+    nli_model_used = None
     if engine_v == Engine.hybrid:
         model_status["semantic"] = "requested"
         try:
@@ -228,8 +233,26 @@ def create_humanizer_session(
             )
             fluency = None
 
+        model_status["nli"] = "requested"
+        try:
+            nli = NLIValidator(model_name=None, offline=offline_models)
+            nli_model_used = nli.model_name
+            model_status["nli"] = "ready"
+        except Exception as exc:
+            model_status["nli"] = f"unavailable: {type(exc).__name__}"
+            if require_models:
+                raise RuntimeError(
+                    f"Required NLI model unavailable: {type(exc).__name__}: {exc}"
+                ) from exc
+            warnings.append(
+                f"NLI validator unavailable, continuing without it: "
+                f"{type(exc).__name__}: {exc}"
+            )
+            nli = None
+            nli_model_used = None
+
     if engine_v == Engine.hybrid:
-        engine_used = "hybrid" if any([stanza_engine, semantic, fluency]) else "basic"
+        engine_used = "hybrid" if any([stanza_engine, semantic, fluency, nli]) else "basic"
     elif engine_v == Engine.nlp:
         engine_used = "nlp" if stanza_engine is not None else "basic"
 
@@ -256,6 +279,7 @@ def create_humanizer_session(
         stanza_engine=stanza_engine,
         semantic=semantic,
         fluency=fluency,
+        nli=nli,
         morfeusz=morfeusz,
         engine_used=engine_used,
         model_status=model_status,

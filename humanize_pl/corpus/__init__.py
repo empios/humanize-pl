@@ -5,7 +5,8 @@ model lives with the detector that consumes it, and this package only turns
 raw corpora into profiles.
 """
 
-from humanize_pl.detect.reference import Distribution, ReferenceProfile, windowed_ttr
+from humanize_pl.detect.lexical import mtld, connective_density
+from humanize_pl.detect.reference import Distribution, ReferenceProfile
 from .normalize import (
     anonymisation_rate,
     is_usable,
@@ -22,5 +23,6 @@ __all__ = [
     "is_usable",
     "normalize_judgment",
     "strip_markup",
-    "windowed_ttr",
+    "mtld",
+    "connective_density",
 ]

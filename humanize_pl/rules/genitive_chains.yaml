@@ -1,0 +1,38 @@
+# Common genitive chains and their simplified forms.
+# The keys are space-separated lemmas of the nouns in the genitive chain.
+# The value is the suggested replacement (can include prepositions or adjectives).
+
+"cel zapewnić możliwość realizacja":
+  replacement: "aby umożliwić realizację"
+  risk: 0.6
+  modes: ["standard", "strong"]
+
+"tytuł niewykonać przedmiot umowa":
+  replacement: "za niewykonanie umowy"
+  risk: 0.5
+  modes: ["standard", "strong"]
+
+"etap ocena poprawność funkcjonować":
+  replacement: "podczas oceny działania"
+  risk: 0.6
+  modes: ["standard", "strong"]
+
+"zakres możliwość dokonać zmiana":
+  replacement: "w kwestii zmiany"
+  risk: 0.5
+  modes: ["standard", "strong"]
+
+"procedura ocena ryzyko wystąpić":
+  replacement: "procedura oceny ryzyka"
+  risk: 0.4
+  modes: ["standard", "strong"]
+
+"przypadek wystąpić brak możliwość":
+  replacement: "gdy nie ma możliwości"
+  risk: 0.5
+  modes: ["standard", "strong"]
+
+"skutek wejść życie ustawa":
+  replacement: "po wejściu ustawy w życie"
+  risk: 0.6
+  modes: ["standard", "strong"]

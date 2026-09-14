@@ -9,7 +9,8 @@ from humanize_pl.sentence_splitter import split_sentences
 from .base import DocumentDiagnosis, FamilySummary, Finding, ParagraphDiagnosis
 from .calibration import calibrate
 from .signals import WORD_RE, repeated_opening_findings, sentence_findings
-from .structural import paragraph_shape_cv
+from .lexical import mtld, connective_density
+from .structural import paragraph_shape_cv, sentence_length_burstiness, sentence_length_entropy
 
 # Weighted findings per 1000 words at which `ai_signal_score` saturates to 1.0.
 # Provisional engineering default — replace with a value fitted against a human
@@ -82,6 +83,7 @@ def detect_document(
         families=_family_summaries(findings, total_words),
         paragraphs=paragraph_rows,
         metrics=_metrics(
+            text,
             indexed_sentences,
             total_words,
             sentences_per_paragraph=[row.sentence_count for row in paragraph_rows],
@@ -118,6 +120,7 @@ def _family_summaries(findings: list[Finding], word_count: int) -> list[FamilySu
 
 
 def _metrics(
+    text: str,
     indexed_sentences: list[tuple[int, int, str]],
     word_count: int,
     *,
@@ -148,8 +151,11 @@ def _metrics(
     return {
         "mean_sentence_words": round(mean_length, 4),
         "sentence_length_cv": round(variance**0.5 / mean_length, 4) if mean_length else 0.0,
+        "sentence_burstiness": sentence_length_burstiness(lengths),
+        "sentence_entropy": sentence_length_entropy(lengths),
         "opening_diversity": round(len(set(openings)) / len(openings), 4),
-        "type_token_ratio": round(len(set(tokens)) / len(tokens), 4) if tokens else 0.0,
+        "type_token_ratio": mtld(text),
+        "connective_density": connective_density(text),
         "paragraph_shape_cv": paragraph_shape_cv(sentences_per_paragraph),
         "words": float(word_count),
     }

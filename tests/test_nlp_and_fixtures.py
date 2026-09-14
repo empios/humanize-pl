@@ -27,8 +27,11 @@ class FakeToken:
         self.lemma = text.lower()
         self.upos = upos
         self.feats = feats
-        self.head = None
+        self.id = 1
+        self.head = 0
         self.deprel = None
+        self.start_char = 0
+        self.end_char = len(text)
 
 
 class FakeAnalysis:
@@ -206,7 +209,7 @@ def test_quality_gate_cannot_be_bypassed_by_transformer_scores():
     )
     result = pipeline.process_paragraph(original, paragraph_index=0)
     assert result.text == original
-    assert result.rejected[0].reason == "normativity changed"
+    assert result.rejected[0].reason == "deontic drift in category obligation"
     assert not any(gate["name"] == "semantic_similarity" for gate in result.traces[0].gate_results)
 
 
@@ -235,6 +238,7 @@ def test_hybrid_fallback_records_model_status(monkeypatch):
     monkeypatch.setattr(core, "StanzaEngine", BrokenModel)
     monkeypatch.setattr(core, "EmbeddingSimilarityValidator", BrokenModel)
     monkeypatch.setattr(core, "MaskedLMFluencyScorer", BrokenModel)
+    monkeypatch.setattr(core, "NLIValidator", BrokenModel)
 
     result = core.humanize_text("Pracownik wykonuje pracę.", engine="hybrid")
     assert result.engine_used == "basic"
@@ -281,9 +285,18 @@ def test_offline_models_flag_is_passed_to_model_loaders(monkeypatch):
         def delta(self, left: str, right: str) -> float:
             return 0.0
 
+    class FakeNLI:
+        def __init__(self, model_name=None, *, offline: bool = False) -> None:
+            calls["nli"] = offline
+            self.model_name = model_name or "fake-nli"
+
+        def check_entailment(self, left: str, right: str) -> bool:
+            return True
+
     monkeypatch.setattr(core, "StanzaEngine", FakeStanza)
     monkeypatch.setattr(core, "EmbeddingSimilarityValidator", FakeSemantic)
     monkeypatch.setattr(core, "MaskedLMFluencyScorer", FakeFluency)
+    monkeypatch.setattr(core, "NLIValidator", FakeNLI)
 
     result = core.humanize_text(
         "Podsumowując źródła prawa pracy tworzą system.",
@@ -293,7 +306,7 @@ def test_offline_models_flag_is_passed_to_model_loaders(monkeypatch):
         offline_models=True,
     )
     assert result.engine_used == "hybrid"
-    assert calls == {"stanza": True, "semantic": True, "fluency": True}
+    assert calls == {"stanza": True, "semantic": True, "fluency": True, "nli": True}
 
 
 def test_process_docx_reuses_one_humanizer_session(monkeypatch, tmp_path):

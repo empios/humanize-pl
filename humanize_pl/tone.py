@@ -86,10 +86,24 @@ def _phrase(metric: str, direction: str, observed: float, typical: float) -> str
     if metric == "sentence_length_cv":
         if direction == "low":
             return (
-                "Zdania są bardziej równej długości niż w waszych dokumentach — "
+                "Zdania są bardziej równej długości niż w waszych dokumentach - "
                 "wasze teksty mieszają zdania krótkie i długie wyraźniej."
             )
         return "Długość zdań zmienia się mocniej niż w waszych dokumentach."
+    if metric == "sentence_burstiness":
+        if direction == "low":
+            return (
+                "Tekst ma bardzo monotonną rytmikę (tzw. niska wybuchowość). "
+                "Brak w nim ludzkiego przeplatania długich rozważań z krótkimi wnioskami."
+            )
+        return "Tekst charakteryzuje się bardzo rwanym rytmem."
+    if metric == "sentence_entropy":
+        if direction == "low":
+            return (
+                "Struktura tekstu jest wysoce przewidywalna (niska entropia), "
+                "co często cechuje teksty automatyczne."
+            )
+        return "Struktura dokumentu jest bardzo nieprzewidywalna i zróżnicowana."
     if metric == "paragraph_shape_cv":
         if direction == "low":
             return (
@@ -107,10 +121,17 @@ def _phrase(metric: str, direction: str, observed: float, typical: float) -> str
     if metric == "type_token_ratio":
         if direction == "low":
             return (
-                "Słownictwo jest uboższe niż w waszych dokumentach — więcej powtórzeń "
+                "Słownictwo jest uboższe niż w waszych dokumentach - więcej powtórzeń "
                 "tych samych wyrazów."
             )
         return "Słownictwo jest bogatsze niż w waszych dokumentach."
+    if metric == "connective_density":
+        if direction == "high":
+            return (
+                "Tekst zawiera nienaturalnie dużo spójników (np. ponadto, jednakże) "
+                "w porównaniu z waszym stylem. To częsta cecha tekstów od AI."
+            )
+        return "Tekst zawiera mniej spójników logicznych niż wasze dokumenty."
     return f"{metric}: {observed:.3f} wobec zwykłych {typical:.3f}."
 
 
@@ -118,9 +139,12 @@ def _phrase(metric: str, direction: str, observed: float, typical: float) -> str
 _COMPARED: dict[str, str] = {
     "mean_sentence_words": "sentence_words",
     "sentence_length_cv": "sentence_length_cv",
+    "sentence_burstiness": "sentence_burstiness",
+    "sentence_entropy": "sentence_entropy",
     "paragraph_shape_cv": "paragraph_shape_cv",
     "opening_diversity": "opening_diversity",
-    "type_token_ratio": "windowed_ttr",
+    "type_token_ratio": "mtld",
+    "connective_density": "connective_density",
 }
 
 

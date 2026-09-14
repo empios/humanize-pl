@@ -175,6 +175,12 @@ FAMILY_GLOSSARY: dict[str, dict[str, str]] = {
         "example": "„dokonanie zapłaty” zamiast „zapłacić”",
         "auto": "tak",
     },
+    "typography_artifact": {
+        "label": "Maniery typograficzne",
+        "what": "Amerykańskie znaki interpunkcyjne (np. em-dash bez spacji) zamiast polskich.",
+        "example": "\"fakt—wbrew pozorom—nie ma znaczenia\"",
+        "auto": "tak",
+    },
     "repeated_opening": {
         "label": "Powtarzany początek zdania",
         "what": "Ten sam zwrot otwiera zdania w całym dokumencie.",
@@ -190,6 +196,20 @@ METRIC_GLOSSARY: dict[str, dict[str, str]] = {
         "label": "Zróżnicowanie długości zdań",
         "how": "Im wyżej, tym bardziej zdania różnią się długością.",
         "why": "Tekst nadmiernie schematyczny trzyma zdania w jednej mierze. Człowiek miesza długie z krótkimi.",
+        "direction": "low",
+        "scored": True,
+    },
+    "sentence_burstiness": {
+        "label": "Wybuchowość (Burstiness)",
+        "how": "Mierzy zmienność długości zdań na przestrzeni tekstu.",
+        "why": "Teksty AI mają płaską rytmikę, człowiek pisze impulsywnie, przeplatając zdania.",
+        "direction": "low",
+        "scored": True,
+    },
+    "sentence_entropy": {
+        "label": "Entropia strukturalna",
+        "how": "Poziom nieprzewidywalności struktury zdań w akapitach.",
+        "why": "AI używa wysoce przewidywalnych wzorców budowy, prowadząc do niskiej entropii.",
         "direction": "low",
         "scored": True,
     },
@@ -222,23 +242,36 @@ METRIC_GLOSSARY: dict[str, dict[str, str]] = {
         "direction": "high",
         "scored": False,
     },
+    "connective_density": {
+        "label": "Gęstość spójników",
+        "how": "Liczba spójników dyskursywnych (np. ponadto, jednakże) na 1000 słów.",
+        "why": "Modele językowe często nadużywają takich łączników, co sztucznie napusza tekst.",
+        "direction": "low",
+        "scored": True,
+    },
 }
 
 SHAPE_METRIC_ORDER = (
     "sentence_length_cv",
+    "sentence_burstiness",
+    "sentence_entropy",
     "paragraph_shape_cv",
     "mean_sentence_words",
     "opening_diversity",
     "type_token_ratio",
+    "connective_density",
 )
 
 # Reference-profile attribute backing each metric, for the "human" column.
 PROFILE_ATTRIBUTE = {
     "sentence_length_cv": "sentence_length_cv",
+    "sentence_burstiness": "sentence_burstiness",
+    "sentence_entropy": "sentence_entropy",
     "paragraph_shape_cv": "paragraph_shape_cv",
     "mean_sentence_words": "sentence_words",
     "opening_diversity": "opening_diversity",
-    "type_token_ratio": "windowed_ttr",
+    "type_token_ratio": "mtld",
+    "connective_density": "connective_density",
 }
 
 ISSUE_WORDS = {

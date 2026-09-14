@@ -221,3 +221,55 @@ def test_the_band_is_wide_enough_to_cover_the_measured_wobble() -> None:
 
     observed_spread = 0.030
     assert UNCERTAIN_BAND >= observed_spread
+
+
+@requires_profile
+def test_empty_baselines_are_not_scored_and_the_paper_numbers_hold() -> None:
+    """The shipped profile predates the shape signals, so their baselines are
+    empty (zeroed). An empty baseline must not enter the weighted average:
+
+    - a "high" signal (connective density) would fall to the rate floor and
+      fabricate a hit the human corpus never measured,
+    - a "low" signal (burstiness, entropy) would be dead weight diluting the
+      score.
+
+    This test pins the measured outcome on the 15 machine-drafted documents:
+    14 of 15 above the review threshold, the single outlier (the non-compete
+    opinion) at 0.183, and the maximum at 0.724. If calibration starts
+    scoring against an empty baseline again, these numbers move and the
+    paper's reported result can no longer be reproduced from the code.
+    """
+    from pathlib import Path
+
+    from humanize_pl.detect import detect_document, profile_for_family
+
+    reference = profile_for_family("filing_official")
+    fixtures = Path("docs_tests/ai_generated")
+    docs = sorted(fixtures.glob("*.txt"))
+    assert len(docs) == 15
+
+    scores = {}
+    for path in docs:
+        calibration = detect_document(
+            path.read_text(encoding="utf-8"),
+            profile=reference,
+            calibrate_against_default=False,
+        ).calibration
+        assert calibration is not None
+        scores[path.stem] = calibration.calibrated_score
+        # The shape signals must not be scored against an empty baseline.
+        # (Family signals with p95=0 are legitimate: humans never use those
+        # families, and the rate floor keeps a single occurrence from maxing
+        # the score — see test_near_zero_human_rate_uses_a_floor... .)
+        for signal in calibration.signals:
+            if signal.name in ("sentence_burstiness", "sentence_entropy",
+                               "connective_density"):
+                assert not (signal.human_p50 == 0.0 and signal.human_p95 == 0.0), (
+                    f"{signal.name} scored against an empty baseline"
+                )
+
+    above = sum(1 for score in scores.values() if score >= REVIEW_THRESHOLD)
+    assert above == 14
+    assert abs(scores["ai_legal_10_opinia_zakaz_konkurencji"] - 0.183) < 0.001
+    assert abs(max(scores.values()) - 0.724) < 0.001
+    assert abs(min(scores.values()) - 0.183) < 0.001

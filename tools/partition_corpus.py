@@ -7,36 +7,115 @@ umowa_najmu na słabym sygnale "zawarta w dniu"). Podział wg tytułu usuwa te
 zanieczyszczenia i pozwala tworzyć typy nawet z jednego dokumentu (dokument
 szablonowy to pewnik, nie za mało danych).
 
+Dopasowanie idzie po SZKIELETCIE ASCII nazwy (unicodedata.normalize NFKD bez
+znaków diakrytycznych), a nie po dosłownych znakach. Dzięki temu działa
+zarówno na nazwach czystych, jak i na nazwach zepsutych mojibake (bajty
+UTF-8 odczytane jako cp437) - szkielet ASCII jest w obu przypadkach ten sam.
+
 Wynik: JSON {typ: [nazwy plików]} - fundament pod blueprinty per typ (punkt a)
 i NLI klauzula-po-klauzuli (punkt c).
 """
 from __future__ import annotations
 
 import json
+import unicodedata
 from pathlib import Path
 
-# Ordered rules: (type_id, label_pl, predicate on the casefolded title).
-# First match wins, so put the more specific genre before the more general.
-# A title is a genre stem, not the exact file name: "umowa najmu gabinetu
-# stomatologicznego" and "umowa najmu pokoju" are the same type.
+
+_POLISH_MAP = str.maketrans(
+    "ąćęłńóśźżĄĆĘŁŃÓŚŹŻ",
+    "acelnoszzACELNOSZZ",
+)
+
+
+def ascii_skeleton(name: str) -> str:
+    """Szkielet ASCII nazwy: tylko litery cyfry i spacje, małą literą.
+
+    Zostawiamy wyłącznie ASCII (litera/cyfra/spacja) - wszystko inne
+    (diakrytyki, a zwłaszcza resztki mojibake: box-drawing, combining)
+    odrzucamy. Dzięki temu reguły ASCII pasują zarówno do czystych nazw,
+    jak i do nazw zepsutych w różny sposób (cp437, cp1252, podwójne).
+    "Umowa o pracę" -> "umowa o prace"; zepsuta "wspo╠ü┼épracy (B2B)" ->
+    "wspolpracy (b2b)" (po odzyskaniu) lub "wsp  pracy (b2b)" (gdyby
+    odzyskanie nie poszło) - w obu przypadkach reguła "wspolpracy (b2b)"
+    nie trafi, więc reguły piszemy na pewnych, krótkich rdzeniach.
+    """
+    decomposed = unicodedata.normalize("NFKD", name)
+    kept = "".join(
+        c for c in decomposed
+        if (not unicodedata.combining(c)) and (0x20 <= ord(c) < 0x7f)
+    )
+    return kept.translate(_POLISH_MAP).casefold()
+
+
+def recover_title(name: str) -> str:
+    """Odzyskaj prawdziwy tytuł z nazwy pliku.
+
+    Nazwy na dysku są UTF-8 odczytane jako cp437 (mojibake): "Czynny z╠çal"
+    zamiast "Czynny żal". Odwracamy: encode do cp437 (odzyskuje oryginalne
+    bajty UTF-8), decode jako UTF-8.
+
+    Problem: część nazw jest zepsuta MIESZANIE (niektóre znaki przez cp437,
+    inne przez cp1252), więc cała nazwa nie da się odzyskać jednym kodowaniem.
+    Dlatego odzyskujemy GRUPAMI: ciąg ASCII zostaje, a każdy blok znaków
+    nie-ASCII próbujemy odzyskać jako bajty UTF-8 (cp437, potem cp1252, potem
+    podwójnie). Blok, którego nie da się odzyskać, odrzucamy. Czyste nazwy
+    (prawdziwe diakrytyki) nie dadzą się zakodować do cp437 -> zostają.
+    """
+    def _recover_block(block: str) -> str:
+        for enc in ("cp437", "cp1252"):
+            for _ in range(2):  # podwójne mojibake
+                try:
+                    cur = block.encode(enc).decode("utf-8")
+                except (UnicodeEncodeError, UnicodeDecodeError):
+                    break
+                block = cur
+            if all(ord(c) < 0x2500 and not unicodedata.combining(c) for c in block):
+                return unicodedata.normalize("NFC", block)
+        return ""
+
+    out = []
+    i = 0
+    while i < len(name):
+        c = name[i]
+        if ord(c) < 0x80:
+            out.append(c)
+            i += 1
+        else:
+            j = i
+            while j < len(name) and ord(name[j]) >= 0x80:
+                j += 1
+            out.append(_recover_block(name[i:j]))
+            i = j
+    return "".join(out)
+
+
 def _rules() -> list[tuple[str, str, "callable"]]:
-    cf = str.casefold
+    """Ordered rules: (type_id, label_pl, predicate on the ASCII skeleton).
+
+    First match wins, so put the more specific genre before the more general.
+    A title is a genre stem, not the exact file name: "umowa najmu gabinetu
+    stomatologicznego" and "umowa najmu pokoju" are the same type.
+    """
     def has(*needles: str):
-        return lambda t: any(n in cf(t) for n in needles)
+        return lambda t: any(n in t for n in needles)
     return [
-        # --- najem: rental family (najem, dzierżawa, użyczenie lokalu, pośrednictwo w najmie) ---
-        ("umowa_najmu", "umowa najmu / dzierżawy",
-         has("najmu", "dzierżaw", "użyczenia lokalu", "pośrednictwa w najmie")),
-        # --- wypowiedzenie / rozwiązanie umowy o pracę (termination notices) ---
+        # --- wypowiedzenie / rozwiązanie umowy o pracę (termination first!) ---
         ("wypowiedzenie_umowy_o_prace", "wypowiedzenie umowy o pracę",
-         has("wypowiedzenie umowy o pracę")),
+         has("wypowiedzenie umowy o prace")),
         ("rozwiązanie_umowy_o_prace", "rozwiązanie umowy o pracę",
-         has("rozwiązanie umowy o pracę")),
+         has("rozwiązanie umowy o prace")),
         ("wypowiedzenie_umowy_zlecenia", "wypowiedzenie umowy zlecenia",
          has("wypowiedzenie umowy zlecenie")),
         # --- umowa o pracę (the contract itself, not a termination) ---
         ("umowa_o_prace", "umowa o pracę",
-         has("umowa o pracę")),
+         has("o prace")),
+        # --- umowa najmu / dzierżawy ---
+        ("umowa_najmu", "umowa najmu / dzierżawy",
+         has("najmu", "dzierzawy", "uzyczenia lokalu")),
+        # --- pośrednictwo w najmie ---
+        ("umowa_posrednictwa_w_najmie", "umowa pośrednictwa w najmie",
+         has("posrednictwa w najmie")),
         # --- wnioski urlopowe (employment leave requests) ---
         ("wniosek_o_urlop", "wniosek o urlop / dni wolne",
          has("urlopu", "dni wolnych")),
@@ -45,38 +124,38 @@ def _rules() -> list[tuple[str, str, "callable"]]:
          has("wniosek")),
         # --- uchwały ---
         ("uchwała_spółki", "uchwała spółki",
-         has("uchwały spółki", "wzór uchwały spółki")),
+         has("spolki")),
         ("uchwała_wspólnoty", "uchwała wspólnoty mieszkaniowej",
-         has("wspólnoty")),
+         has("wspolnoty")),
         # --- statuty ---
         ("statut", "statut",
          has("statut")),
         # --- pozwy ---
         ("pozew", "pozew",
          has("pozew")),
-        # --- odwołania od decyzji ---
+        # --- odwołania ---
         ("odwołanie_od_decyzji", "odwołanie od decyzji",
-         has("odwołanie od decyzji")),
-        # --- pełnomocnictwa ---
+         has("odwołanie od decyzji", "odwolanie od decyzji")),
         ("odwołanie_pełnomocnictwa", "odwołanie pełnomocnictwa",
-         has("odwołanie pełnomocnictwa")),
+         has("odwolanie pelnomocnictwa")),
+        # --- pełnomocnictwa ---
         ("pełnomocnictwo", "pełnomocnictwo",
-         has("pełnomocnictwo")),
+         has("pelnomocnictwo")),
         # --- regulaminy ---
         ("regulamin", "regulamin",
          has("regulamin")),
         # --- umowa o dzieło ---
         ("umowa_o_dzieło", "umowa o dzieło",
-         has("o dzieło")),
+         has("o dzelo")),
         # --- umowa o świadczenie usług ---
         ("umowa_usług", "umowa o świadczenie usług",
-         has("o świadczenie usług")),
+         has("o swiadczenie uslug")),
         # --- umowa zlecenia ---
         ("umowa_zlecenia", "umowa zlecenie",
          has("umowa zlecenie")),
         # --- NDA ---
         ("umowa_nda", "umowa o zachowaniu poufności (NDA)",
-         has("poufności", "nda")),
+         has("poufnosci", "nda")),
         # --- zakaz konkurencji ---
         ("umowa_o_zakazie_konkurencji", "umowa o zakazie konkurencji",
          has("zakazie konkurencji")),
@@ -85,16 +164,16 @@ def _rules() -> list[tuple[str, str, "callable"]]:
          has("licencji", "wizerunku", "przeniesienie praw autorskich")),
         # --- przedwstępna sprzedaży ---
         ("umowa_przedwstępna", "umowa przedwstępna sprzedaży",
-         has("przedwstępna")),
+         has("przedwstepna")),
         # --- sprzedaż przedsiębiorstwa ---
         ("umowa_sprzedaży_przedsiębiorstwa", "umowa sprzedaży przedsiębiorstwa",
-         has("sprzedaży przedsiębiorstwa")),
+         has("sprzedazy przedsiebiorstwa")),
         # --- sprzedaż serwisu ---
         ("umowa_sprzedaży_serwisu", "umowa sprzedaży serwisu internetowego",
-         has("sprzedaży serwisu")),
+         has("sprzedazy serwisu")),
         # --- współpraca B2B ---
         ("umowa_o_współpracy_b2b", "umowa o współpracy (B2B)",
-         has("współpracy (b2b)")),
+         has("wspolpracy (b2b)")),
         # --- serwis internetowy ---
         ("umowa_o_serwisie", "umowa o stworzenie i prowadzenie serwisu",
          has("serwisu internetowego")),
@@ -109,7 +188,7 @@ def _rules() -> list[tuple[str, str, "callable"]]:
          has("zgoda na", "klauzula rodo")),
         # --- pożyczka ---
         ("umowa_pożyczki", "umowa pożyczki",
-         has("pożyczki")),
+         has("pozyczki")),
         # --- darowizna ---
         ("umowa_darowizny", "umowa darowizny",
          has("darowizny")),
@@ -118,7 +197,7 @@ def _rules() -> list[tuple[str, str, "callable"]]:
          has("zamiany")),
         # --- użyczenie (pojazd) ---
         ("umowa_użyczenia_samochodu", "umowa użyczenia samochodu",
-         has("użyczenia samochodu")),
+         has("uzyczenia samochodu")),
         # --- porozumienie ---
         ("umowa_porozumienia", "umowa porozumienia",
          has("porozumienia")),
@@ -126,7 +205,7 @@ def _rules() -> list[tuple[str, str, "callable"]]:
         ("umowa_posrednictwa_pojazd", "umowa pośrednictwa w sprowadzeniu pojazdu",
          has("sprowadzeniu pojazdu")),
         ("umowa_posrednictwa_sprzedazy_nieruchomosci", "umowa pośrednictwa w sprzedaży nieruchomości",
-         has("pośrednictwa w sprzedaży nieruchomości")),
+         has("posrednictwa w sprzedazy nieruchomosci")),
         # --- podnoszenie kwalifikacji ---
         ("umowa_podnoszenia_kwalifikacji", "umowa o podnoszenie kwalifikacji",
          has("podnoszenie kwalifikacji")),
@@ -135,7 +214,7 @@ def _rules() -> list[tuple[str, str, "callable"]]:
          has("praktyki absolwenckie")),
         # --- media społecznościowe ---
         ("umowa_media_społecznościowe", "umowa o prowadzenie mediów społecznościowych",
-         has("mediów społecznościowych")),
+         has("mediow spolecznosciowych")),
         # --- prace remontowe ---
         ("umowa_remont", "umowa wykonania prac remontowych",
          has("prac remontowych")),
@@ -144,13 +223,13 @@ def _rules() -> list[tuple[str, str, "callable"]]:
          has("ugoda")),
         # --- pismo pracodawcy (kara porządkowa) ---
         ("pismo_kara_porzdkowa", "pismo pracodawcy o karze porządkowej",
-         has("kary porządkowej")),
+         has("kary porzadkowej")),
         # --- zawiadomienie ---
         ("zawiadomienie", "zawiadomienie o możliwości popełnienia przestępstwa",
          has("zawiadomienie")),
         # --- czynny żal ---
         ("czynny_żal", "czynny żal",
-         has("czynny żal")),
+         has("czynny zal")),
         # --- reklamacja ---
         ("reklamacja", "reklamacja",
          has("reklamacja")),
@@ -170,7 +249,7 @@ def partition(directory: str | Path) -> dict[str, list[str]]:
     rules = _rules()
     result: dict[str, list[str]] = {}
     for path in files:
-        title = path.stem
+        title = ascii_skeleton(recover_title(path.stem))
         assigned = None
         for type_id, _label, predicate in rules:
             if predicate(title):

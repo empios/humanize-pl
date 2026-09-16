@@ -26,20 +26,19 @@ import regex as re
 
 from humanize_pl.blueprint import is_heading
 
-# A heading seen in at least this share of the documents is proposed as
-# required; below it but above the second threshold, as expected. Sections
-# rarer than that are one document's idiosyncrasy, not a house pattern.
+# No lower bound on frequency. The source documents are assumed to be
+# correctly constructed, so a section present in even one of them is part of
+# the house style and is kept - never filtered out as "too rare". Frequency is
+# recorded as evidence ("widziana w N/M") and the human decides the severity.
+# REQUIRED_SHARE only drives the *suggested* severity (a section in ~all
+# documents is suggested `required`, otherwise `expected`); it is a proposal
+# the reviewer overrides, not a threshold that drops anything.
 REQUIRED_SHARE = 0.8
-EXPECTED_SHARE = 0.4
 
 # Two headings this similar after normalization are the same section.
 # "Przedmiot umowy" and "Przedmiot Umowy" differ by case; "Wynagrodzenie" and
 # "Wynagrodzenie i płatności" are the same clause named at two lengths.
 SAME_SECTION = 0.75
-
-# Below this many documents the counts mean too little to propose anything:
-# a section in two of three files looks decisive and is not.
-MIN_DOCUMENTS = 5
 
 _NUMBER_PREFIX = re.compile(r"^\s*(§\s*\d+|[IVXLC]+|\d+)\s*[.)]?\s*", re.IGNORECASE)
 _UNIT_PATTERNS = {
@@ -145,11 +144,13 @@ def learn_blueprint(texts: list[str], *, category: str) -> LearnedBlueprint:
     section when one contains the other or they read alike. That is shallow on
     purpose - a reviewer can see why two headings were merged and split them
     again, which they could not do with an opaque similarity model.
+
+    No lower bound on the number of documents: a single approved document is
+    already ground truth for its type, so a one-document category is a valid
+    blueprint, not too little data to guess from.
     """
-    if len(texts) < MIN_DOCUMENTS:
-        raise ValueError(
-            f"Do wyprowadzenia szkieletu potrzeba co najmniej {MIN_DOCUMENTS} dokumentów."
-        )
+    if not texts:
+        raise ValueError("Brak dokumentów do wyprowadzenia szkieletu.")
 
     groups: list[LearnedSection] = []
     for text in texts:
@@ -192,13 +193,12 @@ def learn_blueprint(texts: list[str], *, category: str) -> LearnedBlueprint:
             skipped.append(f"{group.label_pl} (wzorzec zależny od numeru dokumentu)")
             continue
         group.variants = reusable
-        if group.documents / total >= EXPECTED_SHARE:
-            # The shortest variant is the least likely to carry one document's
-            # specifics ("Wynagrodzenie" over "Wynagrodzenie za etap II").
-            group.label_pl = min(group.variants, key=len)
-            kept.append(group)
-        else:
-            skipped.append(f"{group.label_pl} ({group.documents}/{total})")
+        # Keep every section: the source documents are assumed correct, so a
+        # clause present in even one of them belongs in the blueprint. The
+        # shortest variant is the least likely to carry one document's
+        # specifics ("Wynagrodzenie" over "Wynagrodzenie za etap II").
+        group.label_pl = min(group.variants, key=len)
+        kept.append(group)
 
     kept.sort(key=lambda row: (row.median_position, row.identifier))
     return LearnedBlueprint(
@@ -216,11 +216,10 @@ def to_yaml(learned: LearnedBlueprint, *, label_pl: str | None = None) -> str:
         f"# PROPOZYCJA szkieletu — wyprowadzona z {learned.documents} dokumentów.",
         "#",
         "# Do przeczytania i poprawienia przed użyciem. Liczba przy każdej sekcji",
-        f"# mówi, w ilu dokumentach ją znaleziono. Próg `required` to"
-        f" {REQUIRED_SHARE:.0%},",
-        f"# `expected` to {EXPECTED_SHARE:.0%} — ale to statystyka, nie prawo:"
-        " klauzula",
-        "# obowiązkowa może być nieobecna w dokumentach, które akurat dostaliśmy.",
+        "# mówi, w ilu dokumentach ją znaleziono. Nie ma dolnego progu: każda",
+        f"# sekcja jest trzymana, a `required` jest tylko sugestią ({REQUIRED_SHARE:.0%} i",
+        "# wyżej); ostatecznie status nadaje człowiek, bo dokumenty źródłowe są",
+        "# uznane za poprawnie skonstruowane.",
         "",
         f"category: {learned.category}",
         f"label_pl: {label_pl or learned.category}",
@@ -239,7 +238,7 @@ def to_yaml(learned: LearnedBlueprint, *, label_pl: str | None = None) -> str:
         lines.append(f"    matches: [{variants}]")
         lines.append("")
     if learned.skipped:
-        lines.append("# Pominięte jako zbyt rzadkie — dopisz ręcznie, jeśli któraś jest wymagana:")
+        lines.append("# Pominięte (wzorzec zależny od numeru dokumentu) — dopisz ręcznie, jeśli któraś jest wymagana:")
         for row in learned.skipped:
             lines.append(f"#   {row}")
     return "\n".join(lines) + "\n"

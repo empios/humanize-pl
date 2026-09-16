@@ -52,6 +52,10 @@ _ROMAN_VALUES = {"I": 1, "V": 5, "X": 10, "L": 50, "C": 100}
 # "Etykieta: wartość" — a field line, which an unnumbered heading never is.
 _FIELD_LINE = re.compile(r":\s*\S")
 
+# A run of dots / ellipses is a form fill-in blank ("Sąd ………", "W dniu ………"),
+# not a section heading. Headings are complete; only blanks carry this.
+_FORM_BLANK = re.compile(r"(\.\.\.|…)")
+
 # A heading is short, unterminated, and usually numbered. Length alone is not
 # enough: a one-line clause is short too, but it ends in a full stop.
 _MAX_HEADING_CHARS = 90
@@ -229,7 +233,10 @@ def is_heading(line: str) -> bool:
     if _FIELD_LINE.search(stripped):
         return False
     # Unnumbered headings exist ("Postanowienia końcowe"), but only count when
-    # nothing marks the line as running prose.
+    # nothing marks the line as running prose. A line full of fill-in blanks
+    # ("Sąd ………") is a form field, not a heading.
+    if _FORM_BLANK.search(stripped):
+        return False
     return not stripped.endswith((".", ",", ";", ":")) and stripped[:1].isupper()
 
 

@@ -9,6 +9,7 @@ import pytest
 
 from humanize_pl.config import Engine, Mode
 from humanize_pl.flows import FlowSettings, run_all_layers, run_docx_flow, run_xlsx_flow
+from humanize_pl.flows.docx_flow import docx_files
 from humanize_pl.flows.xlsx_flow import CHANGED_TEXT_COLOR, REMOVED_TEXT_COLOR
 
 openpyxl = pytest.importorskip("openpyxl")
@@ -220,6 +221,55 @@ def test_docx_flow_keeps_going_after_a_broken_file(tmp_path) -> None:
 
     assert payload["summary"]["ok"] == 1
     assert payload["summary"]["failed"] == 1
+
+
+def test_docx_flow_resume_skips_finished_documents(tmp_path, monkeypatch) -> None:
+    source = tmp_path / "in"
+    source.mkdir()
+    write_docx(source / "a.docx", AI_TEXT)
+    write_docx(source / "b.docx", AI_TEXT)
+    output = tmp_path / "out"
+
+    # First pass processes only the first document (simulating a killed run).
+    monkeypatch.setattr(
+        "humanize_pl.flows.docx_flow.docx_files",
+        lambda directory: docx_files(directory)[:1],
+    )
+    first = run_docx_flow(source, output, settings=BASIC)
+    assert first["summary"]["ok"] == 1
+    assert (output / "a_humanized.docx").exists()
+    assert not (output / "b_humanized.docx").exists()
+
+    # Second pass resumes: a is replayed from disk, b is processed fresh.
+    monkeypatch.setattr(
+        "humanize_pl.flows.docx_flow.docx_files",
+        lambda directory: docx_files(directory),
+    )
+    resumed = run_docx_flow(source, output, settings=BASIC, resume=True)
+
+    assert resumed["summary"]["ok"] == 2
+    assert (output / "b_humanized.docx").exists()
+    by_name = {doc["name"]: doc for doc in resumed["documents"]}
+    assert by_name["a.docx"]["findings_before"] == first["documents"][0]["findings_before"]
+    assert by_name["a.docx"]["changes_applied"] == first["documents"][0]["changes_applied"]
+    # The replayed detail file carries the register, so no warning is added.
+    assert not any("Rejestr zmian" in warning for warning in by_name["a.docx"]["warnings"])
+
+
+def test_docx_flow_resume_reruns_a_document_without_detail(tmp_path) -> None:
+    """A target file whose detail JSON is missing is re-run, not replayed."""
+    source = tmp_path / "in"
+    source.mkdir()
+    write_docx(source / "a.docx", AI_TEXT)
+    output = tmp_path / "out"
+
+    run_docx_flow(source, output, settings=BASIC_NO_REWRITE)
+    (output / "details" / "a.json").unlink()
+
+    resumed = run_docx_flow(source, output, settings=BASIC_NO_REWRITE, resume=True)
+    assert resumed["summary"]["ok"] == 1
+    by_name = {doc["name"]: doc for doc in resumed["documents"]}
+    assert by_name["a.docx"]["findings_before"] > 0
 
 
 @pytest.mark.parametrize("column", ["B", "2", "Odpowiedź AI", "odpowiedz ai"])

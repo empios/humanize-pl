@@ -198,6 +198,11 @@ def run_command(
     ),
     no_rewrite: bool = typer.Option(False, "--no-rewrite", help="Tylko diagnoza, bez redakcji"),
     no_pdf: bool = typer.Option(False, "--no-pdf", help="Pomiń raport PDF"),
+    resume: bool = typer.Option(
+        False,
+        "--resume",
+        help="Tylko folder .docx: dokończ przerwany przebieg, pominij ukończone dokumenty",
+    ),
 ) -> None:
     """Cały przebieg jedną komendą: wzorzec kancelarii, diagnoza, redakcja, raport.
 
@@ -283,6 +288,7 @@ def run_command(
                 target,
                 settings=settings,
                 pdf=not no_pdf,
+                resume=resume,
                 on_item=_print_item,
                 on_layers=_print_layers,
             )
@@ -364,6 +370,11 @@ def docx_command(
     no_pdf: bool = typer.Option(
         False, "--no-pdf", help="Pomiń raport PDF opisowy (dla odbiorcy nietechnicznego)"
     ),
+    resume: bool = typer.Option(
+        False,
+        "--resume",
+        help="Dokończ przerwany przebieg: pominij dokumenty, które mają już wynik i szczegóły",
+    ),
 ) -> None:
     """Folder .docx: diagnoza → redakcja → ponowna diagnoza → bramka."""
     output_directory = output or folder.with_name(f"{folder.name}_flow")
@@ -387,6 +398,7 @@ def docx_command(
                 require_renderer,
             ),
             pdf=not no_pdf,
+            resume=resume,
             on_item=_print_item,
             on_layers=_print_layers,
         )

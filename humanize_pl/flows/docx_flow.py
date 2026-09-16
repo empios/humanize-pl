@@ -55,6 +55,7 @@ def run_docx_flow(
     *,
     settings: FlowSettings,
     pdf: bool = True,
+    resume: bool = False,
     on_item=None,
     on_layers=None,
 ) -> dict[str, Any]:
@@ -62,6 +63,12 @@ def run_docx_flow(
 
     One humanizer session is reused across documents so optional NLP models
     load once rather than per file.
+
+    With `resume=True`, documents whose detail JSON (and, when the flow
+    writes rewritten documents, the output file) already exist are skipped
+    and their previous outcomes are replayed into the report. A killed batch
+    can therefore continue where it stopped instead of re-running finished
+    documents.
     """
     files = docx_files(input_directory)
     if not files:
@@ -85,6 +92,41 @@ def run_docx_flow(
     outcomes: list[ItemOutcome] = []
 
     for path in files:
+        target = output_directory / f"{path.stem}_humanized.docx"
+        detail_path = details_directory / f"{path.stem}.json"
+        # The detail JSON is written last, so it is the completion marker.
+        # When the flow writes a rewritten document too, that file must be
+        # there as well; in diagnose-only runs the detail file is enough.
+        writes_target = settings.rewrite or settings.format_policy == FormatPolicy.normalize
+        if resume and detail_path.is_file() and (not writes_target or target.is_file()):
+            try:
+                payload = json.loads(detail_path.read_text(encoding="utf-8"))
+                outcome = ItemOutcome.from_json(payload)
+                if "applied_changes" in payload:
+                    outcome.applied_changes = payload["applied_changes"]
+                else:
+                    # Detail file written before the change register was
+                    # persisted. All the numbers a resumed report needs are
+                    # still there (signals, counts, findings); only the
+                    # per-change register is gone. Replaying is far cheaper
+                    # than re-running the document, and the report must not
+                    # pretend the register exists.
+                    outcome.applied_changes = []
+                    outcome.warnings.append(
+                        "Rejestr zmian niedostępny (starszy plik szczegółów); "
+                        "liczby pomiarów są zachowane."
+                    )
+                outcome.unresolved_findings = payload.get("unresolved_findings", [])
+            except Exception as exc:
+                outcome = ItemOutcome(
+                    name=path.name,
+                    status="failed",
+                    error=f"resume: uszkodzony zapis szczegółów: {type(exc).__name__}: {exc}",
+                )
+            outcomes.append(outcome)
+            if on_item is not None:
+                on_item(outcome)
+            continue
         try:
             document = load_document(path)
             units = list(iter_text_units(document))
@@ -101,7 +143,6 @@ def run_docx_flow(
                 llm_prepared=True,
                 llm_initialization_warnings=llm_warnings,
             )
-            target = output_directory / f"{path.stem}_humanized.docx"
             if settings.rewrite or settings.format_policy == FormatPolicy.normalize:
                 formatting = _write_docx(
                     path,
@@ -255,6 +296,12 @@ def _write_detail(path: Path, text: str, outcome: ItemOutcome, verdict) -> None:
         json.dumps(
             {
                 **outcome.to_json(),
+                # `to_json` keeps the report compact and omits the full change
+                # register; the detail file is the one place that must be
+                # self-contained, because a resumed batch replays finished
+                # documents from it without re-running them.
+                "applied_changes": outcome.applied_changes,
+                "unresolved_findings": outcome.unresolved_findings,
                 "findings": [
                     {
                         "family": finding.family,

@@ -358,6 +358,21 @@ class ItemOutcome:
             "formatting": self.formatting,
         }
 
+    @classmethod
+    def from_json(cls, payload: dict[str, Any]) -> "ItemOutcome":
+        """Rebuild an outcome from a `to_json` dict (resume support).
+
+        `signal_delta` is a derived property and `applied_changes` /
+        `unresolved_findings` are report-only fields, so they are excluded
+        from the constructor call.
+        """
+        data = {
+            key: value
+            for key, value in payload.items()
+            if key in cls.__dataclass_fields__ and key != "signal_delta"
+        }
+        return cls(**data)
+
 
 def _score(diagnosis) -> float:
     calibration = diagnosis.calibration

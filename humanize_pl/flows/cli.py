@@ -606,6 +606,52 @@ def blueprint_command(
     )
 
 
+@app.command("nli")
+def nli_command(
+    document: Path = typer.Argument(..., help="Dokument .docx do sprawdzenia"),
+    blueprint: Path = typer.Option(
+        ..., "--blueprint", "-b", help="Plik YAML ze szkieletem struktury"
+    ),
+    env_file: Path = typer.Option(
+        None, "--env-file", help="Plik z konfiguracją modelu (domyślnie .env)"
+    ),
+) -> None:
+    """Sprawdź klauzula po klauzuli, czy dokument pokrywa treść ze szkieletu.
+
+    Wypisuje raport JSON. Werdykt `entailed` znaczy „nie znaleziono braku”, a
+    nie „na pewno jest dobrze”: przy każdej wątpliwości moduł wybiera ocenę
+    łagodną, więc raport wskazuje, co sprawdzić, a nie co zatwierdzić.
+    """
+    import json
+
+    from humanize_pl.blueprint import BlueprintError, _load
+    from humanize_pl.io.docx_io import docx_text
+    from humanize_pl.llm import LlmConfigurationError
+    from humanize_pl.nli import LlmClauseJudge, check_document_against_blueprint
+
+    if not document.is_file():
+        raise typer.BadParameter(f"Nie ma takiego pliku: {document}", param_hint="document")
+    try:
+        skeleton = _load(blueprint)
+    except BlueprintError as exc:
+        raise typer.BadParameter(str(exc), param_hint="--blueprint") from exc
+    try:
+        text = docx_text(document)
+    except (OSError, ValueError, KeyError) as exc:
+        raise typer.BadParameter(str(exc), param_hint="document") from exc
+    try:
+        judge = LlmClauseJudge.from_environment(env_file)
+    except LlmConfigurationError as exc:
+        # Bez modelu nie ma czym sprawdzać. Raport „wszystko pokryte” wydany
+        # przez nieistniejący endpoint byłby gorszy niż brak raportu.
+        raise typer.BadParameter(str(exc), param_hint="--env-file") from exc
+
+    report = check_document_against_blueprint(text, skeleton, judge=judge)
+    # `typer.echo`, nie `print`: `rich` czyta nawiasy kwadratowe w JSON-ie jako
+    # znaczniki formatowania i zjada je po drodze.
+    typer.echo(json.dumps(report.to_json(), ensure_ascii=False, indent=2))
+
+
 @app.command("report")
 def report_command(
     source: Path = typer.Argument(

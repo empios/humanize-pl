@@ -81,6 +81,12 @@ class Section:
     label_pl: str
     matches: tuple[str, ...]
     severity: str = "required"
+    # What the section is supposed to say, one clause per entry. Optional and
+    # empty in every shipped blueprint: `matches` answers "is this section
+    # here", which is all the structural check needs. Only the clause-level
+    # check (`humanize_pl.nli`) reads this, and where it is absent that check
+    # falls back to asking whether the section deals with `label_pl` at all.
+    expects: tuple[str, ...] = ()
 
     @property
     def required(self) -> bool:
@@ -174,12 +180,20 @@ def _load(path: Path) -> DocumentBlueprint:
         matches = tuple(str(v).casefold() for v in row.get("matches") or ())
         if not matches:
             raise BlueprintError(f"Sekcja {identifier} nie ma żadnego wzorca `matches`.")
+        raw_expects = row.get("expects") or ()
+        if isinstance(raw_expects, str) or not isinstance(raw_expects, (list, tuple)):
+            raise BlueprintError(f"Sekcja {identifier}: `expects` musi być listą zdań.")
+        # Kept verbatim, unlike `matches`: this is content a person wrote for a
+        # person to read, and it reaches a report and a prompt, not a substring
+        # test.
+        expects = tuple(line for line in (str(v).strip() for v in raw_expects) if line)
         sections.append(
             Section(
                 id=identifier,
                 label_pl=str(row.get("label_pl", identifier)),
                 matches=matches,
                 severity=severity,
+                expects=expects,
             )
         )
 

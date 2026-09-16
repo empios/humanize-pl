@@ -419,17 +419,42 @@ class OpenAICompatibleRewriter:
         finally:
             self.metadata.note_duration(int((time.monotonic() - started) * 1000))
 
+    def complete_json(
+        self,
+        messages: list[dict[str, str]],
+        *,
+        max_tokens: int | None = None,
+    ) -> dict[str, Any]:
+        """One JSON reply for a question whose shape is not a rewrite proposal.
+
+        The rewrite path constrains sampling to `_JSON_SCHEMA`; a different
+        question - does this clause cover that one - has a different shape, so
+        the format is asked for in the prompt and read back with the same
+        tolerant parser. Transport, retries, auth and redaction policy stay
+        exactly where they are; only the schema differs.
+        """
+        data, _used_format = self._completion(
+            messages, use_response_format=False, max_tokens=max_tokens
+        )
+        payload = _extract_json_object(self._message_content(data))
+        if payload is None:
+            raise LlmEndpointError("Model nie zwrócił poprawnego JSON-u.")
+        return payload
+
     def _completion(
         self,
         messages: list[dict[str, str]],
         *,
         use_response_format: bool,
+        max_tokens: int | None = None,
     ) -> tuple[dict[str, Any], bool]:
         payload: dict[str, Any] = {
             "model": self.settings.model,
             "temperature": 0,
             "messages": messages,
         }
+        if max_tokens is not None:
+            payload["max_tokens"] = max_tokens
         if use_response_format:
             payload["response_format"] = _JSON_SCHEMA
 
@@ -476,7 +501,7 @@ class OpenAICompatibleRewriter:
         raise LlmEndpointError(_safe_error(last_error or RuntimeError("unknown")))
 
     @staticmethod
-    def _parse_proposal(response: dict[str, Any]) -> LlmProposal:
+    def _message_content(response: dict[str, Any]) -> str:
         try:
             content = response["choices"][0]["message"]["content"]
         except (KeyError, IndexError, TypeError) as exc:
@@ -487,7 +512,11 @@ class OpenAICompatibleRewriter:
             )
         if not isinstance(content, str):
             raise LlmEndpointError("Treść odpowiedzi modelu nie jest tekstem.")
-        payload = _extract_json_object(content)
+        return content
+
+    @staticmethod
+    def _parse_proposal(response: dict[str, Any]) -> LlmProposal:
+        payload = _extract_json_object(OpenAICompatibleRewriter._message_content(response))
         if payload is None:
             raise LlmEndpointError("Model nie zwrócił poprawnego JSON-u.")
         if not isinstance(payload, dict):

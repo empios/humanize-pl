@@ -37,11 +37,31 @@ class DocxInventory:
     header_footer_text: tuple[str, ...]
     notes_text: tuple[str, ...]
 
-    def structural_differences(self, other: "DocxInventory") -> list[str]:
+    def structural_differences(
+        self, other: "DocxInventory", *, expected_paragraph_delta: int = 0
+    ) -> list[str]:
+        """Structural drift between two inventories, ignoring a declared change.
+
+        `expected_paragraph_delta` is how many paragraphs the caller said it
+        was going to add, and it is checked for equality rather than as a
+        ceiling. "Paragraphs may grow" would let a rewrite drop one clause
+        while adding another and still pass; "paragraphs must grow by exactly
+        three" fails the moment anything else moves. Every other count stays
+        exact, so this widens the guard in one dimension by one declared
+        amount and nowhere else.
+        """
         differences: list[str] = []
+        if expected_paragraph_delta:
+            observed = other.paragraphs - self.paragraphs
+            if observed != expected_paragraph_delta:
+                differences.append(
+                    f"paragraphs: {self.paragraphs} → {other.paragraphs} "
+                    f"(zapowiedziano {expected_paragraph_delta:+d}, "
+                    f"jest {observed:+d})"
+                )
         comparable = (
             "tables",
-            "paragraphs",
+            *(() if expected_paragraph_delta else ("paragraphs",)),
             "sections",
             "drawings",
             "hyperlinks",
@@ -275,15 +295,30 @@ def inventory_docx(path: str | Path) -> DocxInventory:
     )
 
 
-def save_with_inventory_guard(document: Any, source: Path, target: Path) -> list[str]:
-    """Save a candidate, reverting to a source copy on structural mismatch."""
+def save_with_inventory_guard(
+    document: Any,
+    source: Path,
+    target: Path,
+    *,
+    expected_paragraph_delta: int = 0,
+) -> list[str]:
+    """Save a candidate, reverting to a source copy on structural mismatch.
+
+    `expected_paragraph_delta` lets a caller that deliberately adds
+    paragraphs - a missing clause the document owed its category - say so in
+    advance. It is an exact figure, not a licence to grow: everything else is
+    still compared for equality, and a run that adds three paragraphs while
+    losing one fails as loudly as before.
+    """
     if source.resolve() == target.resolve():
         raise ValueError("Plik wyjściowy nie może nadpisywać oryginału DOCX.")
     target.parent.mkdir(parents=True, exist_ok=True)
     before = inventory_docx(source)
     document.save(str(target))
     after = inventory_docx(target)
-    differences = before.structural_differences(after)
+    differences = before.structural_differences(
+        after, expected_paragraph_delta=expected_paragraph_delta
+    )
     if differences:
         shutil.copy2(source, target)
     return differences

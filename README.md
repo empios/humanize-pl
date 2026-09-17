@@ -116,13 +116,34 @@ czyta konfigurację z `.env`, kluczy API nie wpisuje się w przeglądarce.
 Pliki robocze i wyniki trafiają do katalogu tymczasowego systemu, nigdy do
 folderu ze źródłowymi dokumentami.
 
-## Gotowe przepływy
+## Jedno kanoniczne flow humanizacji
 
-`humanize-pl-flow` uruchamia wszystkie warstwy jedną komendą:
+Głównym i zunifikowanym wejściem do całego silnika jest polecenie `humanize-pl` (polecenie `humanize-pl-flow` pozostaje w pełni kompatybilnym aliasem):
 
 ```
-DOCX/XLSX → rozpoznanie gatunku → reguły → opcjonalny model →
-kontrola znaczenia → styl kancelarii → audyt dokumentu → wynik z ostrzeżeniami
+Wejście (Tekst / DOCX / Folder / XLSX) → rozpoznanie gatunku i wzorca →
+diagnoza AI (przed) → reguły polskie → opcjonalny model hostowany →
+diagnoza AI (po) → bramka jakości i ton → audyt struktury i NLI →
+zapis z zachowaniem formatowania + raporty (PDF, JSON, CSV)
+```
+
+Niezależnie od tego, czy podasz tekst w cudzysłowie, pojedynczy dokument Word, cały folder czy arkusz Excel – wszystko przechodzi przez **dokładnie to samo flow**:
+
+```bash
+# 1. Zwykły tekst w terminalu
+humanize-pl "Podsumowując źródła prawa pracy tworzą system."
+
+# 2. Pojedynczy dokument .docx (z audytem formatowania i raportem PDF)
+humanize-pl umowa.docx -o umowa_poprawiona.docx
+
+# 3. Cały folder z dokumentami .docx
+humanize-pl docs/ -o wyniki/
+
+# 4. Arkusz Excel (wskazana kolumna z odpowiedziami AI)
+humanize-pl odpowiedzi.xlsx --column "Odpowiedź AI"
+
+# 5. Sprawdzenie klauzul umownych modelem przez NLI
+humanize-pl umowa.docx --blueprint szkielet.yaml --nli
 ```
 
 Pomiar sygnału **przed i po** redakcji jest tu istotą rzeczy. Wcześniej silnik
@@ -247,19 +268,40 @@ preferowane terminy, zakazane zwroty, skróty i krótkie zanonimizowane
 przykłady. Nie kopiuje pełnych spraw i nie służy do kalibracji detektora
 „tekstu ludzkiego”.
 
-Publiczne typy API są dostępne bezpośrednio z pakietu:
+Publiczne API oferuje jedną, spójną funkcję `humanize()` obsługującą wszystkie typy wejść:
+
+```python
+from humanize_pl import humanize, FlowResult, FlowSettings
+
+# 1. Zwykły tekst
+result = humanize("Podsumowując źródła prawa pracy tworzą system.")
+print(result.text)
+print(f"Sygnał AI: {result.signal_before:.2f} → {result.signal_after:.2f}")
+
+# 2. Pojedynczy dokument Word (DOCX)
+result = humanize("umowa.docx", "umowa_poprawiona.docx")
+
+# 3. Folder dokumentów DOCX
+result = humanize("dokumenty/", "wyniki/")
+
+# 4. Arkusz Excel (XLSX)
+result = humanize("odpowiedzi.xlsx", column="Odpowiedź AI")
+
+# 5. Weryfikacja semantyczna klauzul ze szkieletem (NLI)
+result = humanize("umowa.docx", blueprint="szkielet.yaml", nli=True)
+```
+
+Typy publiczne są dostępne bezpośrednio z pakietu:
 
 ```python
 from humanize_pl import (
     DocumentType, RewriteBackend, StyleProfile,
     FormattingReport, FormatPolicy, ReadinessStatus,
+    FlowResult, FlowSettings, GateVerdict,
 )
 ```
 
-Dotychczasowe `humanize_text()` i `process_docx()` zachowują swoje sygnatury.
-`LegalReviewProfile.legal_ai_review` pozostaje aliasem kompatybilności;
-nowe przepływy używają jawnego gatunku i nie oceniają umów ani komunikacji
-z klientem profilem uzasadnień SAOS.
+Dotychczasowe `humanize_text()` i `process_docx()` zachowują pełną kompatybilność swoich sygnatur.
 
 ### Kolumna w arkuszu XLSX
 
@@ -448,50 +490,219 @@ Odtworzenie:
 
 ```bash
 python tools/fetch_saos_corpus.py --pages 40 --start-date 2018-01-01 --court-type COMMON
-python tools/build_reference_profile.py --corpus docs_tests/corpus/saos.jsonl \
+python tools/split_corpus.py --corpus docs_tests/corpus/saos.jsonl
+python tools/build_reference_profile.py --corpus docs_tests/corpus/saos_train.jsonl \
   --name saos_common_2018_2024 --genre court_reasoning
 ```
 
-Punkt pracy zmierzony na 599 odłożonych uzasadnieniach (nieużytych do budowy
-profilu) wobec 9 dokumentów AI:
+Podział na train i holdout jest deterministyczny — przynależność wynika z hasha
+identyfikatora orzeczenia, nie z losowania. Dzięki temu dociągnięcie kolejnych
+orzeczeń nie przenosi żadnego dokumentu na drugą stronę i profil nie zaczyna
+po cichu uczyć się na własnym holdoucie.
 
-| próg | recall AI | FPR na tekstach ludzkich |
-|------|-----------|--------------------------|
-| 0.15 | 100%      | 1,17%                    |
-| 0.20 | 100%      | 0,67%                    |
-| 0.25 | 100%      | 0,00%                    |
+Punkt pracy zmierzony na **korpusie dokumentów pełnej długości** (27 pozycji
+z `tools/build_ai_corpus.py`, 244–2778 słów, jeden model, trzy rejestry
+polecenia i trzy temperatury) wobec 300 odłożonych uzasadnień i 51 ludzkich
+umów:
 
-Populacje się nie stykają: maksimum ludzkie 0,215, minimum AI 0,332. Domyślny
-próg przeglądu **0.25** leży w tej luce. Flaga `needs_review` w raporcie oznacza
-„dokument wart przejrzenia przez człowieka", nigdy „napisane przez AI".
+| rodzina | próg | recall AI | FPR |
+|---------|------|-----------|-----|
+| pisma (`filing_official`) | **0.15** | 100% | 3,0% |
+| pisma | 0.20 | 56% | 0,7% |
+| pisma | 0.25 | 22% | 0,0% |
+| umowy (`contract`) | **0.08** | 78% | 5,9% |
+| umowy | 0.12 i wyżej | 0% | 0,0% |
 
-Dwa zastrzeżenia, które trzeba czytać razem z tymi liczbami:
+Flaga `needs_review` w raporcie oznacza „dokument wart przejrzenia przez
+człowieka", nigdy „napisane przez AI".
 
-1. Strona ludzka jest wiarygodna, strona AI **nie** — to 9 dokumentów.
+**Wcześniejsze wydania podawały próg 0.25 przy 86% wykrycia i to nie było
+prawdą dla realnych dokumentów.** Tamten pomiar wykonano na tekstach
+89–160-słowowych, gdzie wynik jest zawyżony i niestabilny: przycięcie
+dokumentu do 150 słów podwaja jego wynik, i dotyczy to również tekstu
+ludzkiego. Strona ludzka była zawsze pełnowymiarowa, więc porównywano
+populację zawyżoną ze stabilną. Na dokumentach pełnej długości próg 0.25
+łapie 22% pism i ani jednej umowy.
+
+**Umowy pozostają słabym przypadkiem** i liczba to mówi: przy progu 0.08
+populacje nadal zachodzą (AI 0,064–0,114, ludzie do 0,114). Powód jest
+strukturalny — patrz niżej.
+
+**Populacje stykają się**: maksimum ludzkie 0,2309, minimum AI 0,1919. Wcześniej
+dokumentacja podawała rozłączność (0,215 vs 0,332) i było to prawdą wyłącznie
+dlatego, że po stronie AI liczono wtedy również osiem tekstów **napisanych ręcznie
+tak, aby zawierały wykrywane wzorce**. Zmierzone osobno: te osiem dostaje 0,318–0,682,
+a siedem realnych wyjść modelu 0,192–0,335. Rozłączność była w znacznej części
+artefaktem fixture'ów.
+
+Trzy zastrzeżenia, które trzeba czytać razem z tymi liczbami:
+
+1. Strona ludzka jest wiarygodna, strona AI **nie** — to 7 dokumentów.
    Potrzebny jest korpus AI z różnymi promptami i modelami.
-2. Obie strony różnią się nie tylko autorstwem, ale i **gatunkiem**
-   (uzasadnienia vs opinie, umowy, pisma). Część separacji może pochodzić
-   z gatunku. Rozstrzygnąłby to profil ludzki w tym samym gatunku, np.
-   zbudowany z własnych dokumentów kancelarii.
+2. Obie strony różniły się nie tylko autorstwem, ale i **gatunkiem**
+   (uzasadnienia vs opinie, umowy, pisma). To zastrzeżenie zostało zmierzone —
+   patrz „Profil umów" niżej.
+3. Strony różnią się też **długością**, i to o rząd wielkości: dokumenty AI mają
+   89–160 słów, uzasadnienia — tysiące. Każdy sygnał rodzinowy jest częstością
+   na 1000 słów, więc w tekście 89-słowowym jedno wystąpienie to 11,2 na 1000
+   i nasyca sygnał samo z siebie. Nowy korpus AI musi składać się z dokumentów
+   pełnej długości, inaczej mierzymy długość zamiast autorstwa.
+
+### Osiem z czternastu rodzin nie działa na dokumentach
+
+Zmierzone na 27 dokumentach korpusu, z rotacją po rejestrach i temperaturach.
+Kolumny mówią, w ilu dokumentach dana rodzina w ogóle się pojawiła:
+
+| rodzina | eseje i opinie (n=6) | umowy, pozwy, regulaminy, wezwania, pisma (n=21) |
+|---------|----------------------|--------------------------------------------------|
+| `typography_artifact` | 6/6 | **21/21** |
+| `nominalization` | 6/6 | **19/21** |
+| `tricolon` | 6/6 | 13/21 |
+| `transition_marker` | 0/6 | 4/21 |
+| `repeated_opening` | 3/6 | **0/21** |
+| `vague_reference` | 2/6 | **0/21** |
+| `discourse_frame` | 1/6 | **0/21** |
+| `abstract_frame` | 1/6 | **0/21** |
+| `summary_frame` | 1/6 | **0/21** |
+| `empty_emphasis` | 1/6 | **0/21** |
+| `antithesis` | 1/6 | **0/21** |
+| `practical_implication` | 1/6 | **0/21** |
+
+Ramy retoryczne — połowa zestawu reguł — **ani razu** nie odpaliły na umowie,
+pozwie, regulaminie, wezwaniu ani piśmie urzędowym. Żyją wyłącznie w prozie
+eseistycznej, bo gatunek dokumentu na nie nie pozwala: umowa nie zaczyna
+paragrafu od „Warto wskazać, że". Tam model zdradza się gęstością
+nominalizacji i angielską pauzą.
+
+To tłumaczy też, dlaczego ręcznie pisane fixture'y wypadały tak wysoko.
+Powstawały w rejestrze eseistycznym, bo tak się naturalnie pisze „tekst
+wyglądający na AI" — i trafiały dokładnie w te osiem rodzin, których realne
+dokumenty nie zawierają.
+
+Konsekwencja dla umów: ich wynik opiera się na trzech sygnałach zamiast
+czternastu, stąd cienki margines w tabeli punktu pracy.
+
+### Profil umów — zastrzeżenie gatunkowe zmierzone
+
+Profil `law_firm_contract` zbudowano z 51 zatwierdzonych dokumentów kancelarii
+z rodziny `contract` (umowy, ugody, regulaminy, statuty; mediana 524 słowa).
+Wszystkie 51 mieści się poniżej progu przeglądu wobec profilu SAOS, więc
+czytają się jako ludzkie według naszej własnej miary — to jedyna kontrola,
+jaka ma znaczenie dla bazy odniesienia. Do repozytorium trafia wyłącznie
+wyprowadzona statystyka; dokumenty źródłowe zostają lokalnie.
+
+Porównanie w **tym samym gatunku** przywraca rozdzielność, której zabrakło
+przy porównaniu międzygatunkowym:
+
+| | ludzie (kancelaria) | AI: wyjście modelu | AI: fixture'y ręczne |
+|---|---|---|---|
+| mediana | 0,0354 | 0,2177 | 0,3054 |
+| skrajna | maks **0,1137** | min **0,2009** | min 0,2880 |
+
+Czyli część wcześniejszego stykania się populacji (0,2309 vs 0,1919) faktycznie
+pochodziła z gatunku, nie z autorstwa. Strona AI to tu jednak **trzy
+dokumenty** — wniosek jest kierunkowy, nie ostateczny.
+
+### Próg przeglądu zależy od rodziny
+
+Wynik skalibrowany to średnia ważona przekroczeń ponad zakres **jednego**
+profilu, więc znaczy „jak daleko poza tych konkretnych ludzi" i przesuwa się
+razem z profilem. Próg 0.25 wybrano, mierząc, gdzie kończą się uzasadnienia
+SAOS (maksimum 0,2309). Dla umów ludzie kończą na 0,1137, więc ten sam próg
+leżałby powyżej całego zakresu AI i rodzina byłaby skalibrowana, a mimo to
+zawsze cicha.
+
+| rodzina | profil | próg |
+|---------|--------|------|
+| `filing_official` | `saos_common_2018_2024` | 0.25 |
+| `contract` | `law_firm_contract` | **0.15** (prowizoryczny) |
+| `client_communication` | brak | nieskalibrowana |
+
+Próg dla umów jest **prowizoryczny**: luka jest szeroka, ale jej strona AI to
+trzy dokumenty. Do przemierzenia, gdy `tools/build_ai_corpus.py` wygeneruje
+korpus wart dopasowywania.
+
+### Warstwa rytmu
+
+Rytm zdań i kształt akapitu były dotąd wyłącznie mierzone — bramka zwracała
+instrukcję do regeneracji i oddawała sprawę modelowi wywołującego.
+`humanize_pl/rhythm/` przenosi granice zdań i akapitów, przechodząc przez te
+same walidatory co każda inna redakcja. Nie zmienia ani jednego słowa: łączy
+zdania przez średnik albo odwrócenie łącznika, dzieli je wyłącznie w punktach,
+które `sentence_flow` już akceptuje.
+
+Celem jest **pasmo p50–p95**, nie maksimum. Dokument z CV 2,5 jest równie
+nieludzki jak ten z 0,4, tylko z drugiej strony, a detektor tego nie widzi —
+punktuje wyłącznie „poniżej mediany". Funkcja celu jest więc dwustronna, a
+pętla zatrzymuje się, gdy dokument wejdzie w pasmo.
+
+Zmierzone na 15 dokumentach korpusu, tryb `standard`, zakres `sentences_only`:
+warstwa ruszyła 10 z nich, w każdym przypadku podnosząc CV w stronę ludzkiej
+mediany (np. 0,4339 → 0,6079), i w żadnym nie zmieniła liczby akapitów.
+Pozostałe pięć albo już mieściło się w paśmie, albo nie miało dopuszczalnej
+operacji — wtedy warstwa odmawia, zamiast szukać na siłę.
+
+**Czego się po niej nie spodziewać.** Zmierzony sufit obu osi razem to około
+0,045 punktu wyniku skalibrowanego, a `UNCERTAIN_BAND` — rozrzut samego wyniku
+przy przebudowie profilu z niezależnych próbek — wynosi 0,035. W DOCX, gdzie
+oś akapitowa jest niedostępna, sufit to 0,014. Warstwa jest zbudowana tak, żeby
+była poprawna i żeby odmawiała w razie wątpliwości, nie żeby rozstrzygała.
+
+Oś akapitowa nie działa w DOCX i nie jest to ustawienie do zmiany:
+`DocxInventory.structural_differences` porównuje liczbę akapitów, a
+rozbieżność powoduje odrzucenie **całej** redakcji dokumentu i przywrócenie
+źródła. Przepływ DOCX wymusza `sentences_only` i mówi o tym w ostrzeżeniach.
+
+W trybie `conservative` warstwa nie działa wcale — ten tryb wybiera ktoś, kto
+nie akceptuje ryzyka strukturalnego, a edycja rytmu jest z definicji
+strukturalna.
+
+### Krótkie teksty a bramka jakości
+
+Poniżej **150 słów** wynik skalibrowany przestaje być pomiarem — z tego samego
+powodu co w zastrzeżeniu 3. Bramka `review_response` ocenia wtedy odpowiedź po
+tym, **ile różnych ram** maszynowych uruchamia, a nie po liczbie: odpowiedź
+maszynowa sięga po sześć rodzin naraz, odpowiedź prawnika po dwie, i to są
+rodziny higieniczne (pauza, nominalizacja), a nie rejestrowe. Wynik jest nadal
+raportowany, ale `score_is_meaningful` mówi wprost, że nie on zdecydował.
+
+Próg 150 słów to ta sama wartość, której `humanize_pl/corpus/normalize.py` używa
+do uznania dokumentu za nadający się do pomiaru.
 
 ### Metryki wykluczone ze scoringu
 
 Pomiar na korpusie pokazał, że dwie metryki opisywane w literaturze
 anglojęzycznej jako wskaźniki AI działają dla tej pary gatunków **odwrotnie**:
 
-| metryka | ludzie (p50) | tekst AI | wniosek |
-|---------|--------------|----------|---------|
-| `type_token_ratio` | 0,66 | 0,72 | AI **wyżej** — odwrotnie niż w literaturze |
-| `opening_diversity` | 0,81 | 1,00 | AI **wyżej** — odwrotnie niż w literaturze |
+| metryka | ludzie (p50) | tekst AI (mediana) | wniosek |
+|---------|--------------|--------------------|---------|
+| `type_token_ratio` (MTLD) | 117,6 | 127,1 | AI **wyżej** — odwrotnie niż w literaturze |
+| `opening_diversity` | 0,83 | 1,00 | AI **wyżej** — odwrotnie niż w literaturze |
 
 Powód jest gatunkowy: uzasadnienia sądowe intensywnie powtarzają nazwy stron,
 terminy prawne i formuły otwierające. Obie metryki są raportowane z etykietą
 `genre_confounded` i mają wagę 0 — użycie ich karałoby ludzkie pisarstwo.
 
-Najsilniejszym pojedynczym dyskryminatorem okazała się **burstiness**: CV
-długości zdań wynosi u ludzi 0,83, a w tekstach AI 0,45–0,53. Podobnie działa
-**kształt akapitu**: CV liczby zdań na akapit to u ludzi 0,92, w tekstach AI
-0,42 — teksty AI trzymają się stałego rozmiaru akapitu.
+Najsilniejszym pojedynczym dyskryminatorem jest **kształt akapitu**: CV liczby
+zdań na akapit wynosi u ludzi 0,90, a w realnych wyjściach modelu 0,35 — teksty
+AI trzymają się stałego rozmiaru akapitu.
+
+| metryka | ludzie (p50) | AI: wyjście modelu | AI: fixture'y pisane ręcznie |
+|---------|--------------|--------------------|------------------------------|
+| `paragraph_shape_cv` | 0,90 | 0,35 | 0,40 |
+| `sentence_length_cv` | 0,80 | **0,73** | 0,56 |
+
+Wcześniejsze wydania opisywały jako najsilniejszy dyskryminator **burstiness**
+długości zdań (ludzie 0,83 vs AI 0,45–0,53). Po rozdzieleniu strony AI według
+proweniencji ta przewaga w dużej mierze znika: realne wyjście modelu ma CV 0,73
+przy ludzkim 0,80, a niskie 0,56 pochodziło z fixture'ów pisanych ręcznie.
+Kształt akapitu trzyma separację w obu grupach — rytm zdań nie.
+
+Sama `sentence_burstiness` jest zresztą tą samą wielkością co `sentence_length_cv`
+w innej skali: po podzieleniu wzoru `(σ−μ)/(σ+μ)` przez `μ` zostaje `(CV−1)/(CV+1)`,
+funkcja ściśle rosnąca. Jest raportowana, ale ma wagę 0 — liczenie jej obok CV
+liczyłoby jeden dowód dwa razy, a na ujemnej skali `_exceedance_low` i tak
+zwracałoby zawsze zero.
 
 ## Sygnały strukturalne
 

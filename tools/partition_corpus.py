@@ -261,10 +261,27 @@ def partition(directory: str | Path) -> dict[str, list[str]]:
     return result
 
 
-def main() -> None:
-    import sys
-    src = sys.argv[1] if len(sys.argv) > 1 else r"C:\Users\empios\Documents\humanize-pl_dokumenty\Dokumenty"
-    out = sys.argv[2] if len(sys.argv) > 2 else r"C:\Users\empios\Documents\humanize-pl_dokumenty\corpus_partition.json"
+def main(argv: list[str] | None = None) -> int:
+    # Was two positional defaults pointing at one developer's Documents
+    # folder, so the tool ran for exactly one person and wrote outside the
+    # repository for everyone else.
+    import argparse
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("source", type=Path, help="Folder z plikami .docx")
+    parser.add_argument(
+        "--output",
+        "-o",
+        type=Path,
+        default=None,
+        help="Plik JSON z podziałem (domyślnie corpus_partition.json obok źródła)",
+    )
+    args = parser.parse_args(argv)
+
+    if not args.source.is_dir():
+        parser.error(f"Nie ma takiego folderu: {args.source}")
+    src = args.source
+    out = args.output or args.source.with_name("corpus_partition.json")
     result = partition(src)
     total = sum(len(v) for v in result.values())
     with open(out, "w", encoding="utf-8") as f:
@@ -276,7 +293,8 @@ def main() -> None:
         print("\nUNMATCHED (review these):")
         for name in result["inne"]:
             print(f"  {name}")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

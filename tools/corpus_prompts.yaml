@@ -9,6 +9,11 @@
 # stara się dobrze — bo tak właśnie powstają dokumenty, które narzędzie ma
 # wyłapywać.
 
+# Trzecia oś. Nagłówek opisywał ją od początku, ale w pliku jej nie było,
+# więc korpus mógł powstać tylko przy jednym ustawieniu próbkowania — a wtedy
+# mierzy to ustawienie razem z modelem.
+temperatures: [0.3, 0.7, 1.0]
+
 # Rejestry polecenia. `{zadanie}` wypełnia scenariusz kategorii.
 styles:
   - id: zwiezly
@@ -94,3 +99,15 @@ categories:
     - "Przygotuj wniosek o rozłożenie należności na raty."
     - "Sporządź wniosek o sprostowanie oczywistej omyłki w decyzji administracyjnej."
     - "Napisz wniosek o przywrócenie terminu do wniesienia odwołania."
+
+  # Obecny w korpusie jako ai_legal_03, a nie miał tu odpowiednika — więc
+  # jedynej kategorii bez własnego szkieletu nie dało się odtworzyć.
+  esej_prawniczy:
+    - "Napisz esej o podporządkowaniu pracowniczym jako cesze stosunku pracy."
+    - "Przygotuj opracowanie o granicach swobody umów w prawie polskim."
+    - "Sporządź esej o funkcji odszkodowawczej kary umownej."
+    - "Napisz opracowanie o dobrej wierze w prawie rzeczowym."
+    - "Przygotuj esej o roli zasad współżycia społecznego w wykładni umów."
+    - "Sporządź opracowanie o przedawnieniu roszczeń majątkowych."
+    - "Napisz esej o zbiegu odpowiedzialności kontraktowej i deliktowej."
+    - "Przygotuj opracowanie o wykładni oświadczeń woli."

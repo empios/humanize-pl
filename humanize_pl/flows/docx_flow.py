@@ -4,11 +4,13 @@ from __future__ import annotations
 
 import csv
 import json
-from pathlib import Path
 import shutil
+from dataclasses import replace
+from pathlib import Path
 from typing import Any
 
 from humanize_pl.detect import detect_document
+from humanize_pl.rhythm import RhythmScope
 from humanize_pl.document import DocumentType, FormatPolicy, ReadinessStatus
 from humanize_pl.docx_quality import (
     FormattingReport,
@@ -25,6 +27,7 @@ from humanize_pl.io.docx_structure import (
     replace_unit_text,
     save_with_inventory_guard,
 )
+
 from .base import (
     FlowSettings,
     ItemOutcome,
@@ -59,7 +62,7 @@ def run_docx_flow(
     on_item=None,
     on_layers=None,
 ) -> dict[str, Any]:
-    """Diagnose, rewrite and gate every .docx in `input_directory`.
+    """Diagnose, rewrite and gate every .docx in `input_directory` (or single file).
 
     One humanizer session is reused across documents so optional NLP models
     load once rather than per file.
@@ -70,12 +73,40 @@ def run_docx_flow(
     can therefore continue where it stopped instead of re-running finished
     documents.
     """
-    files = docx_files(input_directory)
-    if not files:
-        raise FileNotFoundError(f"No .docx files in {input_directory}")
+    # DOCX cannot take a paragraph-count change: `structural_differences`
+    # compares that count, and a mismatch makes this flow restore the source
+    # and discard every edit in the document. Coerced rather than raised - a
+    # bad setting must not kill a batch - and reported, because a silently
+    # ignored option is worse than a refused one.
+    coercion_warning: str | None = None
+    if settings.rhythm_scope != RhythmScope.sentences_only:
+        settings = replace(settings, rhythm_scope=RhythmScope.sentences_only)
+        coercion_warning = (
+            "Oś akapitowa rytmu wyłączona dla DOCX: zmiana liczby akapitów "
+            "unieważniłaby całą redakcję dokumentu."
+        )
 
-    output_directory.mkdir(parents=True, exist_ok=True)
-    details_directory = output_directory / "details"
+    input_path = Path(input_directory)
+    is_single_file = input_path.is_file() and input_path.suffix.lower() == ".docx"
+    if is_single_file:
+        files = [input_path]
+        if output_directory.suffix.lower() == ".docx":
+            single_target_file = output_directory
+            actual_output_dir = output_directory.parent
+        else:
+            actual_output_dir = output_directory
+            single_target_file = actual_output_dir / f"{input_path.stem}_humanized.docx"
+    elif input_path.is_dir():
+        files = docx_files(input_path)
+        if not files:
+            raise FileNotFoundError(f"No .docx files in {input_path}")
+        actual_output_dir = output_directory
+        single_target_file = None
+    else:
+        raise FileNotFoundError(f"No such file or directory: {input_path}")
+
+    actual_output_dir.mkdir(parents=True, exist_ok=True)
+    details_directory = actual_output_dir / "details"
     details_directory.mkdir(parents=True, exist_ok=True)
 
     session = settings.session() if settings.rewrite else None
@@ -92,7 +123,7 @@ def run_docx_flow(
     outcomes: list[ItemOutcome] = []
 
     for path in files:
-        target = output_directory / f"{path.stem}_humanized.docx"
+        target = single_target_file if is_single_file and single_target_file else actual_output_dir / f"{path.stem}_humanized.docx"
         detail_path = details_directory / f"{path.stem}.json"
         # The detail JSON is written last, so it is the completion marker.
         # When the flow writes a rewritten document too, that file must be
@@ -156,6 +187,8 @@ def run_docx_flow(
                 if settings.format_policy == FormatPolicy.audit or settings.require_renderer:
                     render_and_audit(path, formatting, require_renderer=settings.require_renderer)
             outcome.formatting = formatting.to_json()
+            if coercion_warning:
+                outcome.warnings.append(coercion_warning)
             outcome.warnings.extend(formatting.warnings)
             outcome.warnings.extend(formatting.issues)
             if not formatting.inventory_preserved:
@@ -206,12 +239,26 @@ def run_docx_flow(
         "summary": summary,
         "documents": documents,
     }
+    pdf_target = (
+        actual_output_dir / f"{input_path.stem}_raport.pdf"
+        if is_single_file and single_target_file
+        else actual_output_dir / "raport.pdf"
+    )
     if pdf:
-        attach_pdf_report(payload, output_directory / "raport.pdf")
-    (output_directory / "flow-report.json").write_text(
+        attach_pdf_report(payload, pdf_target)
+    report_json_path = (
+        actual_output_dir / f"{input_path.stem}_flow-report.json"
+        if is_single_file and single_target_file
+        else actual_output_dir / "flow-report.json"
+    )
+    report_json_path.write_text(
         json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
-    _write_csv(output_directory / "summary.csv", outcomes)
+    payload["report_path"] = str(report_json_path)
+    if is_single_file:
+        payload["target_docx"] = str(single_target_file or target)
+    if not is_single_file:
+        _write_csv(actual_output_dir / "summary.csv", outcomes)
     return payload
 
 

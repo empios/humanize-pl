@@ -311,6 +311,7 @@ class OpenAICompatibleRewriter:
         following: str = "",
         outline: str = "",
         issues: list[str] | None = None,
+        section_context: str = "",
     ) -> LlmRewriteResult:
         if not self._probed and not self.probe():
             return LlmRewriteResult(source, False, "model_unavailable")
@@ -334,6 +335,13 @@ class OpenAICompatibleRewriter:
             + genre.prompt_text()
             + " "
             + profile_text
+            # Only the section this fragment sits in, never the whole
+            # skeleton. Shown every section a document owes, a model reads a
+            # missing one as an invitation to write it - and this path exists
+            # to redraft one sentence, not to draft clauses. Phrased as a
+            # narrowing ("stays within") rather than an instruction to cover
+            # the clauses, for the same reason.
+            + (f" {section_context}" if section_context else "")
             + " Odpowiadasz wyłącznie jednym obiektem JSON o dokładnie czterech polach "
             "tekstowych: fragment_id (przepisany bez zmian), source (powtórzony znak "
             "w znak), proposal (twoja redakcja fragmentu), rationale (jedno zdanie "
@@ -441,16 +449,90 @@ class OpenAICompatibleRewriter:
             raise LlmEndpointError("Model nie zwrócił poprawnego JSON-u.")
         return payload
 
+    def complete_text(
+        self,
+        messages: list[dict[str, str]],
+        *,
+        max_tokens: int | None = None,
+        temperature: float | None = None,
+    ) -> str:
+        """One plain-text reply, for asking the model to write rather than judge.
+
+        Every other caller here wants a decision back and reads it out of a
+        JSON envelope. Building a corpus wants the prose itself, and it wants
+        the temperature varied: a corpus generated at a single temperature
+        measures that setting as much as it measures the model. Transport,
+        retries, auth and error redaction are unchanged.
+        """
+        data, _used_format = self._completion(
+            messages,
+            use_response_format=False,
+            max_tokens=max_tokens,
+            temperature=temperature,
+        )
+        content = self._message_content(data)
+        if content.strip():
+            # A document cut off mid-clause is not a document. Reported
+            # rather than returned, because a truncated contract silently
+            # entering a corpus is worse than a gap in it.
+            if self._finish_reason(data) == "length":
+                raise LlmEndpointError(
+                    "Odpowiedź ucięta na limicie tokenów — zwiększ max_tokens."
+                )
+            return content
+
+        # An empty body from a reasoning model usually means the token budget
+        # went entirely on the reasoning trace and none was left for the
+        # answer. Measured here: a 4000-token budget produced 4000 completion
+        # tokens, `finish_reason: length`, ~12k characters of
+        # `reasoning_content` and an empty `content`. "Model returned an empty
+        # response" sent people looking at the prompt; this says where the
+        # budget went.
+        reasoning = self._reasoning_length(data)
+        if reasoning:
+            raise LlmEndpointError(
+                f"Model zużył cały budżet na rozumowanie ({reasoning} znaków) "
+                "i nie zdążył napisać odpowiedzi — zwiększ max_tokens albo "
+                "wyłącz tryb rozumowania."
+            )
+        raise LlmEndpointError("Model zwrócił pustą odpowiedź.")
+
+    @staticmethod
+    def _finish_reason(response: dict[str, Any]) -> str:
+        try:
+            return str(response["choices"][0].get("finish_reason") or "")
+        except (KeyError, IndexError, TypeError):
+            return ""
+
+    @staticmethod
+    def _reasoning_length(response: dict[str, Any]) -> int:
+        """Characters of reasoning trace, across the names servers use for it."""
+        try:
+            message = response["choices"][0]["message"]
+        except (KeyError, IndexError, TypeError):
+            return 0
+        if not isinstance(message, dict):
+            return 0
+        for key in ("reasoning_content", "reasoning", "thinking"):
+            value = message.get(key)
+            if isinstance(value, str) and value.strip():
+                return len(value)
+        return 0
+
     def _completion(
         self,
         messages: list[dict[str, str]],
         *,
         use_response_format: bool,
         max_tokens: int | None = None,
+        temperature: float | None = None,
     ) -> tuple[dict[str, Any], bool]:
         payload: dict[str, Any] = {
             "model": self.settings.model,
-            "temperature": 0,
+            # Zero everywhere except corpus generation: a rewrite that varies
+            # between runs cannot be reviewed, and a verdict that varies
+            # cannot be trusted.
+            "temperature": 0 if temperature is None else temperature,
             "messages": messages,
         }
         if max_tokens is not None:

@@ -20,10 +20,12 @@ from typing import Any
 
 from humanize_pl.config import Engine, LegalReviewProfile, Mode
 from humanize_pl.core import HumanizerSession, create_humanizer_session
-from humanize_pl.blueprint import check_category
+from humanize_pl.blueprint import blueprint_for, check_category
 from humanize_pl.categories import classify_category
 from humanize_pl.tone import compare_tone
 from humanize_pl.detect import detect_document, load_profile, profile_for_family
+from humanize_pl.detect.calibration import threshold_for_family
+from humanize_pl.rhythm import RhythmScope, apply_rhythm_pass
 from humanize_pl.document import (
     DocumentType,
     FormatPolicy,
@@ -158,12 +160,19 @@ class FlowSettings:
     offline_models: bool = False
     document_type: DocumentType = DocumentType.auto
     rewrite_backend: RewriteBackend = RewriteBackend.rules
+    # Which rhythm axes may be used. `sentences_only` is the safe default:
+    # DOCX discards the entire rewrite if the paragraph count changes, so a
+    # caller who knows nothing must not be able to trigger that.
+    rhythm: bool = True
+    rhythm_scope: RhythmScope = RhythmScope.sentences_only
     style_profile: Path | None = None
     template: Path | None = None
     format_policy: FormatPolicy = FormatPolicy.preserve
     require_llm: bool = False
     require_renderer: bool = False
     llm_env_file: Path | None = None
+    blueprint: Path | None = None
+    nli: bool = False
 
     def session(self) -> HumanizerSession:
         profile = self.legal_review_profile
@@ -311,6 +320,7 @@ class ItemOutcome:
     legal_sensitive_check: dict[str, Any] = field(default_factory=dict)
     llm: dict[str, Any] = field(default_factory=dict)
     formatting: dict[str, Any] | None = None
+    nli: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         if self.status == "failed":
@@ -356,6 +366,7 @@ class ItemOutcome:
             "legal_sensitive_check": self.legal_sensitive_check,
             "llm": self.llm,
             "formatting": self.formatting,
+            "nli": self.nli,
         }
 
     @classmethod
@@ -499,6 +510,26 @@ def run_all_layers(
         outcome.changes_applied = len(outcome.applied_changes)
         outcome.examples = outcome.applied_changes[:EXAMPLES_PER_ITEM]
 
+        # Rhythm runs on text the rules have already cleaned, and before the
+        # hosted model sees it: the model then reads the shape we intend
+        # rather than the one we were about to change.
+        if settings.rhythm:
+            rhythm = apply_rhythm_pass(
+                text_out,
+                profile=reference,
+                mode=settings.mode,
+                scope=settings.rhythm_scope,
+                protected_paragraph_indices=protected_paragraph_indices,
+            )
+            outcome.warnings.extend(rhythm.warnings)
+            if rhythm.changed:
+                text_out = rhythm.text
+                outcome.applied_changes = collapse_visible_changes(
+                    outcome.applied_changes + rhythm.changes
+                )
+                outcome.changes_applied = len(outcome.applied_changes)
+                outcome.examples = outcome.applied_changes[:EXAMPLES_PER_ITEM]
+
     owned_rewriter = False
     if settings.rewrite and settings.rewrite_backend == RewriteBackend.hybrid:
         if rewriter is None and not llm_prepared:
@@ -521,6 +552,7 @@ def run_all_layers(
                 document_type=resolved_type,
                 style_profile=style_profile,
                 protected_paragraph_indices=protected_paragraph_indices,
+                blueprint=blueprint_for(category.category.id) if category.specified else None,
             )
             outcome.applied_changes = collapse_visible_changes(
                 outcome.applied_changes + llm_changes
@@ -577,11 +609,16 @@ def run_all_layers(
     outcome.family_counts_after = {row.family: row.count for row in after.families}
     outcome.metrics_after = dict(after.metrics)
 
+    # The threshold travels with the profile. A calibrated score says "how far
+    # past these particular humans", so comparing a contract's score against
+    # the number measured on court judgments would be reading two different
+    # scales off one mark.
     verdict = review_response(
         text_out,
         require_anchor=settings.require_anchor,
         calibrate_against_default=False,
         profile=reference,
+        threshold=threshold_for_family(resolved_type.value),
     )
     outcome.needs_review = verdict.needs_revision
     outcome.constraints = verdict.prompt_constraints
@@ -619,8 +656,62 @@ def run_all_layers(
     outcome.blueprint = structure.to_json()
     if structure.checked:
         outcome.warnings.extend(structure.issues)
+
+    if settings.nli or settings.blueprint is not None:
+        from humanize_pl.blueprint import BlueprintError, _load, blueprint_for as get_blueprint
+        from humanize_pl.llm import LlmConfigurationError
+        from humanize_pl.nli import LlmClauseJudge, check_document_against_blueprint
+
+        skeleton = None
+        if settings.blueprint:
+            try:
+                skeleton = _load(settings.blueprint)
+            except (BlueprintError, OSError, ValueError) as exc:
+                outcome.warnings.append(f"Nie udało się załadować szkieletu NLI: {exc}")
+        elif category.specified:
+            try:
+                skeleton = get_blueprint(category.category.id)
+            except Exception:
+                skeleton = None
+
+        if skeleton is not None:
+            try:
+                judge = None
+                try:
+                    judge = LlmClauseJudge.from_environment(settings.llm_env_file)
+                except LlmConfigurationError as exc:
+                    outcome.warnings.append(
+                        f"Weryfikacja NLI pominięta: brak konfiguracji modelu ({exc})"
+                    )
+
+                if judge is not None:
+                    nli_report = check_document_against_blueprint(text_out, skeleton, judge=judge)
+                    outcome.nli = nli_report.to_json()
+                    for issue in nli_report.issues:
+                        outcome.warnings.append(f"NLI: {issue}")
+                    outcome.warnings.extend(nli_report.warnings)
+                    if any(
+                        clause.verdict in {"missing", "absent"}
+                        for sec in nli_report.sections
+                        for clause in sec.clauses
+                    ):
+                        outcome.needs_review = True
+            except Exception as exc:
+                outcome.warnings.append(f"Błąd weryfikacji NLI: {type(exc).__name__}: {exc}")
+
     if outcome.needs_review or outcome.unresolved_findings or outcome.warnings:
         outcome.readiness_status = ReadinessStatus.ready_with_warnings.value
+    # A document missing a section its category owes is not ready to send,
+    # however clean its prose. `BlueprintReport.blocking` has carried this
+    # distinction since blueprints were added and nothing consumed it, so
+    # `blueprint.py` promised that `required` blocks readiness while every
+    # such document still came out as ready_with_warnings.
+    #
+    # This is the document axis, not the processing axis: `status` stays
+    # "ok" because the run itself succeeded, and the CLI exit code (which
+    # keys on processing failures) does not move.
+    if structure.checked and structure.blocking:
+        outcome.readiness_status = ReadinessStatus.failed.value
     if owned_rewriter and rewriter is not None:
         rewriter.close()
     return outcome, verdict
@@ -633,6 +724,44 @@ def _short_rationale(value: str, limit: int = 300) -> str:
     return text if len(text) <= limit else text[: limit - 1].rstrip() + "…"
 
 
+def _section_contexts(text: str, blueprint: Any) -> dict[int, str]:
+    """Map each document line to one sentence about the section it sits in.
+
+    Only the fragment's own section reaches the prompt, never the whole
+    skeleton: a model shown every section a document owes reads a missing one
+    as an invitation to write it, and this pass redrafts one sentence.
+
+    Segmentation is `humanize_pl.nli.locate_sections`, the same code the
+    clause check uses, so the two cannot disagree about where a section
+    starts. It returns text rather than line ranges, so lines are matched back
+    by containment; short lines are skipped because a bare "1." occurs in
+    every section and would match the first one.
+    """
+    if blueprint is None:
+        return {}
+    try:
+        from humanize_pl.nli import locate_sections
+    except ImportError:  # pragma: no cover - nli is part of the package
+        return {}
+
+    lines = text.split("\n")
+    contexts: dict[int, str] = {}
+    for section, part in locate_sections(text, blueprint):
+        if part is None:
+            continue
+        clauses = " ".join(section.expects) if section.expects else ""
+        sentence = (
+            f"Redagowany fragment należy do sekcji „{section.label_pl}”. "
+            f"{clauses} Trzymaj się treści fragmentu i nie dopisuj klauzul, "
+            "których w nim nie ma."
+        )
+        for index, line in enumerate(lines):
+            stripped = line.strip()
+            if len(stripped) > 40 and stripped in part.body and index not in contexts:
+                contexts[index] = " ".join(sentence.split())
+    return contexts
+
+
 def _rewrite_remaining_with_llm(
     text: str,
     diagnosis,
@@ -641,6 +770,7 @@ def _rewrite_remaining_with_llm(
     document_type: DocumentType,
     style_profile: StyleProfile | None,
     protected_paragraph_indices: set[int],
+    blueprint: Any = None,
 ) -> tuple[str, list[dict[str, Any]], int]:
     """Second and final pass: only the sentences that still have findings.
 
@@ -706,6 +836,8 @@ def _rewrite_remaining_with_llm(
     if not jobs:
         return "\n".join(lines), changes, rejected
 
+    section_contexts = _section_contexts(text, blueprint)
+
     def rewrite(job: dict[str, Any]):
         return rewriter.rewrite_fragment(
             job["source"],
@@ -716,6 +848,7 @@ def _rewrite_remaining_with_llm(
             following=job["following"],
             outline=outline,
             issues=findings_by_sentence[(job["paragraph_index"], job["sentence_index"])],
+            section_context=section_contexts.get(job["line_index"], ""),
         )
 
     workers = max(1, min(rewriter.settings.concurrency, len(jobs)))
@@ -826,6 +959,7 @@ def summarise(outcomes: list[ItemOutcome]) -> dict[str, Any]:
             "needs_review": 0,
             "ready": 0,
             "ready_with_warnings": 0,
+            "not_ready": 0,
         }
     return {
         "items": len(outcomes),
@@ -839,6 +973,13 @@ def summarise(outcomes: list[ItemOutcome]) -> dict[str, Any]:
             1
             for item in done
             if item.readiness_status == ReadinessStatus.ready_with_warnings.value
+        ),
+        # Processed successfully but incomplete as a document - a required
+        # section is missing. Counted apart from `failed`, which means the
+        # run itself broke; without this the three readiness counts would no
+        # longer add up to `ok` and the difference would be invisible.
+        "not_ready": sum(
+            1 for item in done if item.readiness_status == ReadinessStatus.failed.value
         ),
         "words": sum(item.words for item in done),
         "changes_applied": sum(item.changes_applied for item in done),

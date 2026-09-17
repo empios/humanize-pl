@@ -1263,7 +1263,10 @@ class _Report:
             readiness_label = {
                 "ready": "gotowy",
                 "ready_with_warnings": "gotowy z ostrzeżeniami",
-                "failed": "błąd",
+                # Not "błąd": the run succeeded and the text is here. What is
+                # missing is a section the document owes its category, which
+                # the reader has to supply before sending it.
+                "failed": "niegotowy — brak wymaganej sekcji",
             }.get(readiness, readiness)
             rows.append(
                 [

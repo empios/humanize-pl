@@ -9,6 +9,7 @@ from .kancelaryzmy import kancelaryzm_candidates
 from .lemma_engine import lemma_swap_candidates
 from .nominalization import nominalization_candidates
 from .genitive_chains import genitive_chain_candidates
+from .house_style import house_style_candidates
 from .legal_ai_style import legal_ai_style_candidates
 from .legal_style import legal_style_candidates
 from .passive_voice import passive_candidates
@@ -21,6 +22,9 @@ from .scoring import score_candidate
 @dataclass
 class RuleEngine:
     mode: Mode = Mode.conservative
+    # Terminology the office wrote down, applied rather than only reported.
+    # Empty for every caller that has no profile, which is most of them.
+    preferred_terms: dict[str, str] | None = None
 
     def generate_candidates(
         self,
@@ -34,6 +38,14 @@ class RuleEngine:
         features = features or analyze_sentence_features(sentence)
         candidates: list[Candidate] = []
         candidates.extend(cleanup_candidates(sentence))
+        # First among the rewrite rules: where the office has named the
+        # term it wants, that decision outranks the engine's generic
+        # preference for a different word.
+        candidates.extend(
+            house_style_candidates(
+                sentence, mode=self.mode, preferred_terms=self.preferred_terms
+            )
+        )
         candidates.extend(legal_style_candidates(sentence, mode=self.mode))
         candidates.extend(ai_artifact_candidates(sentence, mode=self.mode))
         candidates.extend(

@@ -178,6 +178,10 @@ class FlowSettings:
         profile = self.legal_review_profile
         if self.document_type != DocumentType.auto:
             profile = LegalReviewProfile(self.document_type.value)
+        # The office's terminology reaches the rules engine here. It used to
+        # stop at the hosted model's prompt and at a compliance check, so the
+        # part of the engine that actually edits never saw it.
+        office = self.load_style_profile()
         return create_humanizer_session(
             mode=self.mode,
             engine=self.engine,
@@ -185,6 +189,7 @@ class FlowSettings:
             offline_models=self.offline_models,
             require_models=self.require_models,
             require_morfeusz=self.require_morfeusz,
+            preferred_terms=office.preferred_terms if office else None,
         )
 
     def load_style_profile(self) -> StyleProfile | None:

@@ -17,6 +17,7 @@ import json
 from pathlib import Path
 
 from humanize_pl.corpus import build_reference_profile
+from humanize_pl.detect import AI_FAMILIES
 
 DEFAULT_OUTPUT_DIR = Path("humanize_pl/data/reference_profiles")
 
@@ -51,8 +52,16 @@ def main(argv: list[str] | None = None) -> int:
     if not texts:
         parser.error(f"No usable documents in {args.corpus}")
 
+    # `families` is not optional in practice. Without it the profile records
+    # only the families this particular corpus happened to contain, and every
+    # other family silently stops being calibrated - so the cleaner the human
+    # corpus, the blinder the baseline it produces.
     profile = build_reference_profile(
-        texts, name=args.name, genre=args.genre, source=args.source
+        texts,
+        name=args.name,
+        genre=args.genre,
+        source=args.source,
+        families=AI_FAMILIES,
     )
     output = args.output_dir / f"{args.name}.json"
     profile.save(output)

@@ -10,7 +10,12 @@ from .base import DocumentDiagnosis, FamilySummary, Finding, ParagraphDiagnosis
 from .calibration import calibrate
 from .signals import WORD_RE, repeated_opening_findings, sentence_findings
 from .lexical import mtld, connective_density
-from .structural import paragraph_shape_cv, sentence_length_burstiness, sentence_length_entropy
+from .structural import (
+    paragraph_shape_cv,
+    sentence_length_burstiness,
+    sentence_length_cv,
+    sentence_length_entropy,
+)
 
 # Weighted findings per 1000 words at which `ai_signal_score` saturates to 1.0.
 # Provisional engineering default — replace with a value fitted against a human
@@ -138,7 +143,6 @@ def _metrics(
         return {}
 
     mean_length = sum(lengths) / len(lengths)
-    variance = sum((length - mean_length) ** 2 for length in lengths) / len(lengths)
     openings = [
         " ".join(sentence.lower().split()[:2]) for _, _, sentence in indexed_sentences
     ]
@@ -150,7 +154,7 @@ def _metrics(
 
     return {
         "mean_sentence_words": round(mean_length, 4),
-        "sentence_length_cv": round(variance**0.5 / mean_length, 4) if mean_length else 0.0,
+        "sentence_length_cv": sentence_length_cv(lengths),
         "sentence_burstiness": sentence_length_burstiness(lengths),
         "sentence_entropy": sentence_length_entropy(lengths),
         "opening_diversity": round(len(set(openings)) / len(openings), 4),

@@ -27,6 +27,17 @@ DEFAULT_PROFILE = "saos_common_2018_2024"
 # not belong to and dress the result up as a measurement.
 FAMILY_PROFILES: dict[str, str] = {
     "filing_official": DEFAULT_PROFILE,
+    # Measured on 51 approved contract-family documents from one firm, all of
+    # which score below the review threshold against the SAOS profile - so
+    # they read as human by our own measure, which is the only check that
+    # matters for a baseline. Median 524 words.
+    #
+    # It also answers the genre caveat the court-reasoning profile could not:
+    # a contract compared against judgments differs in register as well as
+    # authorship, and part of any separation came from that. Read it knowing
+    # it rests on 51 documents against SAOS's 1804, and on one firm's house
+    # style rather than the register at large.
+    "contract": "law_firm_contract",
 }
 
 # Families whose human p95 is at or near zero need a floor, otherwise a single
@@ -58,7 +69,59 @@ GENRE_CONFOUNDED = {"type_token_ratio", "opening_diversity"}
 #   2. The two sides differ in genre as well as authorship (court reasoning vs
 #      opinions, contracts and letters), so part of the separation may be
 #      genre. A same-genre human profile would settle it.
+#
+# Caveat 1 still stands. Caveat 2 has since been measured: see
+# FAMILY_THRESHOLDS below.
 REVIEW_THRESHOLD = 0.25
+
+# Where each family's human writing stops.
+#
+# The threshold is not a universal constant, because the score is not on a
+# universal scale: it is a weighted mean exceedance above ONE profile's human
+# range, so it means "how far past these particular humans" and moves with
+# the profile. 0.25 was chosen by measuring where SAOS judgments stop
+# (max 0.2309) and sitting just above it. Applying the same method to another
+# family gives another number.
+#
+# Measured against `law_firm_contract`: 51 human contracts top out at 0.1137
+# while AI-drafted contracts start at 0.2009. The global 0.25 sits above the
+# whole AI range there, so a contract could never be flagged - the family
+# would be calibrated and silent, which is worse than uncalibrated.
+#
+# Re-measured on 27 full-length documents from tools/build_ai_corpus.py
+# (244-2778 words, one model, three prompt registers, three temperatures),
+# against 300 held-out SAOS judgments and 51 human contracts:
+#
+#   filing_official   threshold  recall  FPR        contract  recall  FPR
+#                     0.12       100%    6.0%                 0%      0.0%
+#                     0.15       100%    3.0%   <-            0%      0.0%
+#                     0.08        -      -                   78%      5.9%
+#                     0.25        22%    0.0%                 0%      0.0%
+#
+# The old 0.25 catches 22% of real filings and no contracts at all. It was
+# measured on documents of 89-160 words, where the score is inflated and
+# unstable: truncating one document to 150 words doubled its score, and the
+# same happens to human text. The human side was always full-length
+# judgments, so the published operating point compared an inflated
+# population against a stable one.
+#
+# Contracts remain weak and the number below says so: at 0.08 the two
+# populations still overlap (AI 0.064-0.114, human max 0.114). Eight of the
+# fourteen signal families never fire on an actual contract - see
+# AI_FAMILIES - so the score there rests on typography, nominalisation
+# density and sentence shape alone.
+#
+# STILL PROVISIONAL: one model, 18 filings and 9 contracts. Re-measure when
+# the corpus spans several generators.
+FAMILY_THRESHOLDS: dict[str, float] = {
+    "filing_official": 0.15,
+    "contract": 0.08,
+}
+
+
+def threshold_for_family(family: str | None) -> float:
+    """The review threshold that applies to `family`."""
+    return FAMILY_THRESHOLDS.get(family or "", REVIEW_THRESHOLD)
 
 # Half-width of the band around the threshold where the verdict is not
 # reliable. Measured, not chosen: rebuilding the reference profile from
@@ -181,6 +244,20 @@ def calibrate(
     # baseline for them. An empty baseline must not enter the average: a "low"
     # signal would be dead weight (diluting the score) and a "high" one would
     # fall to the rate floor and fabricate a hit from nothing.
+    # Burstiness is reported, never scored, for two independent reasons.
+    #
+    # It carries no information beyond `sentence_length_cv`. Dividing the
+    # (sd - mean) / (sd + mean) formula through by the mean gives
+    # (cv - 1) / (cv + 1), a strictly increasing function of cv - the same
+    # quantity on a compressed scale. Scoring both would count one piece of
+    # evidence twice, and cv already carries the heaviest weight there is.
+    #
+    # Worse, the compressed scale is negative across the whole human range
+    # (cv 0.83 maps to -0.093), and `_exceedance_low` returns 0.0 for any
+    # non-positive median. The signal could therefore never fire: it would
+    # sit in the weighted average contributing a permanent zero, diluting
+    # every document's score - exactly the failure the comment above warns
+    # about for empty baselines.
     burstiness = diagnosis.metrics.get("sentence_burstiness", 0.0)
     if not profile.sentence_burstiness.is_empty:
         signals.append(
@@ -190,8 +267,8 @@ def calibrate(
                 human_p50=profile.sentence_burstiness.p50,
                 human_p95=profile.sentence_burstiness.p95,
                 direction="low",
-                exceedance=_exceedance_low(burstiness, profile.sentence_burstiness.p50),
-                weight=1.0,
+                exceedance=0.0,
+                weight=0.0,
             )
         )
 

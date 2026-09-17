@@ -149,6 +149,24 @@ def paragraph_shape_cv(sentence_counts: list[int]) -> float:
     return round(variance**0.5 / mean_count, 4)
 
 
+def sentence_length_cv(lengths: list[int]) -> float:
+    """Coefficient of variation of sentence lengths.
+
+    The one definition in the project: the detector reports it and the rhythm
+    layer optimises toward it. Two implementations of the same formula would
+    let the layer chase a number the score does not actually contain, and the
+    drift would be invisible because both would look nearly right.
+    """
+    lengths = [length for length in lengths if length]
+    if not lengths:
+        return 0.0
+    mean_length = sum(lengths) / len(lengths)
+    if mean_length <= 0:
+        return 0.0
+    variance = sum((length - mean_length) ** 2 for length in lengths) / len(lengths)
+    return round(variance**0.5 / mean_length, 4)
+
+
 def sentence_length_burstiness(lengths: list[int]) -> float:
     """Burstiness (wybuchowość) of sentence lengths.
     

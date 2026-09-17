@@ -65,10 +65,20 @@ def _safe_split_candidate(
     return Candidate(text, rule, base_score)
 
 
-def sentence_flow_candidates(sentence: str, *, mode: Mode) -> list[Candidate]:
+def sentence_flow_candidates(
+    sentence: str, *, mode: Mode, min_words: int = 32
+) -> list[Candidate]:
+    """Split an over-long sentence at one of four accepted markers.
+
+    `min_words` defaults to the historical threshold so the rule behaves
+    exactly as before for every existing caller. The rhythm layer lowers it
+    for sentences in the top length decile, but never widens the set of split
+    points: those four markers are a risk surface that was measured, and
+    adding to it needs its own evidence.
+    """
     out: list[Candidate] = []
     words = sentence.split()
-    if len(words) < 32:
+    if len(words) < min_words:
         return out
 
     # Ordered by preference: contrastive/additive first, causal last.

@@ -451,3 +451,44 @@ def test_every_shipped_section_declares_what_it_expects() -> None:
             for clause in expected_clauses(section):
                 assert len(clause.split()) >= 4, f"{name}/{section.id}: „{clause}”"
                 assert clause.endswith("."), f"{name}/{section.id}: „{clause}”"
+
+
+def test_a_formatting_warning_does_not_undo_a_blocked_readiness(tmp_path):
+    """The DOCX flow used to overwrite `failed` one call after it was set.
+
+    `run_all_layers` marks a document missing a required section as not
+    ready. The flow then raised every outcome carrying any warning to
+    "ready_with_warnings" unconditionally - and such a document always
+    carries warnings, because the missing section is one of them. So the
+    distinction `BlueprintReport.blocking` exists to draw was undone by the
+    caller, and a document that should not be sent looked merely annotated.
+    """
+    from docx import Document
+
+    from humanize_pl.config import Engine, Mode
+    from humanize_pl.document import ReadinessStatus
+    from humanize_pl.flows.base import FlowSettings
+    from humanize_pl.flows.docx_flow import run_docx_flow
+
+    source = tmp_path / "wejscie"
+    source.mkdir()
+    document = Document()
+    for line in (FIXTURES / "ai_legal_01_umowa_uslug.txt").read_text(
+        encoding="utf-8"
+    ).split("\n"):
+        if line.strip():
+            document.add_paragraph(line)
+    document.save(str(source / "umowa.docx"))
+
+    payload = run_docx_flow(
+        source,
+        tmp_path / "wynik",
+        settings=FlowSettings(mode=Mode.standard, engine=Engine.basic, rewrite=False),
+        pdf=False,
+    )
+
+    item = payload["documents"][0]
+    assert item["blueprint_after"]["blocking"] is True
+    assert item["warnings"], "dokument bez ostrzeżeń nie testuje nadpisania"
+    assert item["readiness_status"] == ReadinessStatus.failed.value
+    assert payload["summary"]["not_ready"] == 1

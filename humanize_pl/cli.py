@@ -28,6 +28,7 @@ These build inputs for a run rather than processing a document:
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -79,6 +80,33 @@ class DefaultGroup(typer.core.TyperGroup):
             args = ["run"] + list(args)
         return super().resolve_command(ctx, args)
 
+
+def _use_utf8_console() -> None:
+    """Make the console able to print what this tool has to say.
+
+    A Windows console defaults to a legacy code page, and `charmap` cannot
+    encode the arrow in the progress line ("sygnał 0.31 → 0.22"). Every run
+    therefore died mid-output with an encoding error after the document had
+    already been processed - the work was done and thrown away at the last
+    step. Polish diacritics survived that page but came out mangled.
+
+    Reconfiguring here rather than asking the user to set PYTHONIOENCODING:
+    the tool writes Polish by design, so a console that cannot show it is the
+    tool's problem.
+    """
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is None:
+            continue
+        try:
+            reconfigure(encoding="utf-8", errors="replace")
+        except (OSError, ValueError):
+            # A redirected or wrapped stream may refuse; printing mangled
+            # output is better than refusing to run.
+            pass
+
+
+_use_utf8_console()
 
 app = typer.Typer(
     cls=DefaultGroup,

@@ -196,7 +196,13 @@ def run_docx_flow(
                 outcome.applied_changes = []
                 outcome.changes_applied = 0
                 outcome.examples = []
-            if outcome.warnings:
+            # Formatting warnings raise the status to "with warnings"; they
+            # must not lower one that is already worse. This line used to
+            # overwrite `failed` unconditionally, so a document missing a
+            # required section came out as merely warned about - the exact
+            # distinction `BlueprintReport.blocking` exists to draw, undone
+            # one call after it was made.
+            if outcome.warnings and outcome.readiness_status == ReadinessStatus.ready.value:
                 outcome.readiness_status = ReadinessStatus.ready_with_warnings.value
             _write_detail(details_directory / f"{path.stem}.json", text, outcome, verdict)
         except Exception as exc:  # one bad document must not stop the batch

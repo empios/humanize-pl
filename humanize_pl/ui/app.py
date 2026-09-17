@@ -69,6 +69,7 @@ TABLE_HEADERS = [
     "kategoria",
     "porównanie",
     "struktura",
+    "klauzule NLI",
     "styl kancelarii",
     "sygnał przed",
     "sygnał po",
@@ -120,26 +121,23 @@ Nic nie jest zmyślane: niepewne fragmenty zostają nietknięte i trafiają
 na listę do przeglądu.
 
 <div class="steps">
-  <div class="step"><b>krok 1</b>Wgraj pliki</div>
+  <div class="step"><b>krok 1</b>Wklej tekst lub wgraj pliki</div>
   <div class="step"><b>krok 2</b>Kliknij „Sprawdź i popraw”</div>
-  <div class="step"><b>krok 3</b>Pobierz wyniki i raport</div>
+  <div class="step"><b>krok 3</b>Zobacz zmiany i pobierz raport</div>
 </div>
 """
 
 ONBOARDING = """
-**Word** — dokumenty. **Excel** — kolumna z odpowiedziami. Domyślne ustawienia
-są dobre. W `wyniki.zip` znajdziesz poprawione pliki, `raport.pdf` dla klienta,
-`flow-report.json` i `summary.csv`.
+**Tekst** — wklejenie tekstu lub plik .txt. **Word** — dokumenty .docx. **Excel** — kolumna z odpowiedziami.
+W `wyniki.zip` (dla Word/Excel) znajdziesz poprawione pliki, `raport.pdf` dla klienta, `flow-report.json` i `summary.csv`.
 
 | ustawienie | kiedy ruszać |
 |---|---|
-| **Backend redakcji** | `hybrid` dokłada twój model; `rules` to same reguły i jest szybkie |
+| **Backend redakcji** | `hybrid` dokłada twój model; `rules` to same reguły i jest natychmiastowe |
+| **Szkielet (Blueprint)** | wymusza kontrolę obowiązkowych sekcji (np. `umowa_uslug`, `pozew`, `regulamin`) |
+| **Weryfikacja NLI** | semantyczne sprawdzanie czy klauzule są pokryte i niesprzeczne (wymaga `.env`) |
 | **Rodzaj dokumentu** | ustaw ręcznie przy profilu — przy `auto` bywa pomijany |
 | **Tryb** | `conservative`, gdy wolisz mniej zmian |
-
-Przy `hybrid` licz na ~50 s na akapit i na to, że większość propozycji modelu
-odpadnie na walidatorach. Tak ma być — to one pilnują kwot, terminów
-i „może/powinien/musi”.
 """
 
 LEGEND = """
@@ -193,6 +191,8 @@ def flow_settings(
     require_renderer: bool,
     style_profile: str | None,
     template: str | None,
+    blueprint: str | None = None,
+    nli: bool = False,
 ) -> FlowSettings:
     """Build the same `FlowSettings` the CLI builds, from form values.
 
@@ -200,6 +200,9 @@ def flow_settings(
     `humanize_pl.flows.cli`; keeping the coupling here means a UI run and a CLI
     run with the same boxes ticked fail on the same missing dependency.
     """
+    bp = None
+    if blueprint and blueprint not in {"(brak)", "", "brak"}:
+        bp = blueprint.strip()
     return FlowSettings(
         mode=Mode(_value(mode, MODE_LABELS)),
         engine=Engine(engine),
@@ -215,6 +218,8 @@ def flow_settings(
         format_policy=FormatPolicy(format_policy),
         require_llm=require_llm,
         require_renderer=require_renderer,
+        blueprint=bp,
+        nli=bool(nli),
     )
 
 
@@ -425,14 +430,47 @@ def structure_label(item: ItemOutcome) -> str:
     return "kompletna"
 
 
+def nli_label(item: ItemOutcome) -> str:
+    """Status weryfikacji logicznej klauzul przez NLI."""
+    row = item.nli or {}
+    if not row:
+        return "nie sprawdzono"
+    verdict = row.get("verdict")
+    if verdict == "entailed":
+        return "zgodne"
+    if verdict == "partial":
+        return "częściowo"
+    if verdict in {"missing", "absent"}:
+        issues = row.get("issues") or []
+        return f"braki ({len(issues)})"
+    return str(verdict)
+
+
 def item_row(item: ItemOutcome) -> list[Any]:
     if item.status == "failed":
-        return [item.name, "", "", "", "", "", "", "", "", "", "", "", "błąd", item.error or ""]
+        return [
+            item.name,
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "błąd",
+            item.error or "",
+        ]
     return [
         item.name,
         category_label(item),
         "ze wzorcem ludzkim" if is_calibrated(item) else "brak wzorca",
         structure_label(item),
+        nli_label(item),
         tone_label(item),
         round(item.signal_before, 3),
         round(item.signal_after, 3),
@@ -599,6 +637,217 @@ def _render(
 # --------------------------------------------------------------------------
 
 
+def get_blueprint_choices() -> list[str]:
+    choices = ["(brak)"]
+    try:
+        from humanize_pl.blueprint import blueprints
+
+        bps = blueprints()
+        choices.extend(sorted(bps.keys()))
+    except Exception:
+        pass
+    return choices
+
+
+def run_text(
+    input_text: str | None,
+    input_file: str | None,
+    *settings_values: Any,
+) -> tuple[str, str, str, str]:
+    source = ""
+    if input_file:
+        try:
+            source = Path(input_file).read_text(encoding="utf-8")
+        except Exception as exc:
+            raise gr.Error(f"Nie można odczytać pliku: {exc}") from exc
+    elif input_text and input_text.strip():
+        source = input_text.strip()
+
+    if not source:
+        raise gr.Error("Wklej tekst do pola lub wybierz plik .txt.")
+
+    settings = flow_settings(*settings_values)
+
+    try:
+        from humanize_pl.flow import humanize
+
+        result = humanize(source, settings=settings)
+    except Exception as exc:
+        raise gr.Error(f"Błąd przetwarzania: {exc}") from exc
+
+    out_text = result.text or source
+
+    status_icon = "⚠️" if result.needs_review else "✅"
+    direction = "spadł" if result.signal_after < result.signal_before else "bez zmian"
+    summary_lines = [
+        f"### {status_icon} Gotowe — sygnał AI {direction} z **{result.signal_before:.2f}** "
+        f"do **{result.signal_after:.2f}** ({signal_word(result.signal_after, False)}).",
+        f"Zastosowano **{result.changes_applied}** poprawek. Gotowość: **{result.readiness_status}**.",
+    ]
+    if result.needs_review:
+        summary_lines.append(
+            "\n> **Uwaga:** Dokument wymaga weryfikacji człowieka — część niepewnych zwrotów "
+            "pozostawiono bez zmian."
+        )
+    summary_md = "\n".join(summary_lines)
+
+    if result.applied_changes:
+        change_items = []
+        for c in result.applied_changes:
+            orig = c.get("original", "")
+            rewr = c.get("rewritten", "")
+            rule = c.get("rule", "reguła")
+            change_items.append(f"- **[{rule}]** „{orig}” → **„{rewr}”**")
+        changes_md = "\n".join(change_items)
+    else:
+        changes_md = "_Brak wprowadzonych zmian. Tekst nie zawierał jednoznacznych problemów do poprawy._"
+
+    gate_lines: list[str] = []
+    if result.verdict:
+        v = result.verdict
+        gate_status = "❌ Wymaga poprawy" if v.needs_revision else "✅ Zatwierdzona"
+        gate_lines.append(
+            f"**Bramka jakości:** {gate_status} (wynik: {v.score:.2f}, próg: {v.threshold:.2f})"
+        )
+        if v.violations:
+            gate_lines.append("\n**Wykryte zastrzeżenia stylistyczne:**")
+            for viol in v.violations:
+                gate_lines.append(f"- {viol.family}: {viol.constraint}")
+
+    if result.blueprint:
+        bp = result.blueprint
+        gate_lines.append(f"\n**Struktura ({bp.get('blueprint', 'szablon')}):**")
+        if bp.get("missing_required"):
+            gate_lines.append(
+                f"- ⚠️ Brakujące sekcje wymagane: {', '.join(bp['missing_required'])}"
+            )
+        if bp.get("missing_expected"):
+            gate_lines.append(
+                f"- ℹ️ Brakujące sekcje oczekiwane: {', '.join(bp['missing_expected'])}"
+            )
+        if bp.get("empty_sections"):
+            gate_lines.append(f"- ⚠️ Sekcje bez treści: {', '.join(bp['empty_sections'])}")
+        if not bp.get("missing_required") and not bp.get("empty_sections"):
+            gate_lines.append("- ✅ Struktura kompletna.")
+
+    if result.nli:
+        n = result.nli
+        gate_lines.append(f"\n**Weryfikacja klauzul NLI:** werdykt = `{n.get('verdict')}`")
+        if n.get("issues"):
+            for issue in n["issues"]:
+                gate_lines.append(f"- ⚠️ {issue}")
+        if n.get("warnings"):
+            for warn in n["warnings"]:
+                gate_lines.append(f"- ℹ️ {warn}")
+
+    gate_md = (
+        "\n".join(gate_lines)
+        if gate_lines
+        else "_Brak dodatkowych uwag strukturalnych lub bramkowych._"
+    )
+
+    return out_text, summary_md, changes_md, gate_md
+
+
+def run_nli_blueprint(text: str, category: str, *, judge: Any = None) -> str:
+    if not text or not text.strip():
+        raise gr.Error("Wklej treść dokumentu do sprawdzenia.")
+    if not category or category == "(brak)":
+        raise gr.Error("Wybierz szkielet struktury (Blueprint).")
+
+    from humanize_pl.blueprint import blueprint_for, check
+
+    bp = blueprint_for(category)
+    if bp is None:
+        raise gr.Error(f"Nie znaleziono szkieletu dla kategorii „{category}”.")
+
+    lines = [f"## Analiza struktury i klauzul: {bp.label_pl} (`{bp.category}`)\n"]
+
+    struct_report = check(text, bp)
+    lines.append("### 1. Zgodność strukturalna (sekcje)")
+    if struct_report.missing_required:
+        lines.append(
+            f"- ❌ **Brak wymaganych sekcji:** {', '.join(struct_report.missing_required)}"
+        )
+    if struct_report.empty_sections:
+        lines.append(f"- ⚠️ **Sekcje bez treści:** {', '.join(struct_report.empty_sections)}")
+    if struct_report.missing_expected:
+        lines.append(
+            f"- ℹ️ **Brakujące sekcje oczekiwane:** {', '.join(struct_report.missing_expected)}"
+        )
+    if struct_report.numbering_issues:
+        for issue in struct_report.numbering_issues:
+            lines.append(f"- ⚠️ **Numeracja:** {issue}")
+    if struct_report.order_issues:
+        for issue in struct_report.order_issues:
+            lines.append(f"- ⚠️ **Kolejność:** {issue}")
+    if not struct_report.issues:
+        lines.append("- ✅ Wszystkie wymagane sekcje są obecne i uporządkowane.")
+
+    lines.append("\n### 2. Semantyczna weryfikacja klauzul (NLI)")
+    try:
+        from humanize_pl.nli import LlmClauseJudge, check_document_against_blueprint
+
+        clause_judge = judge if judge is not None else LlmClauseJudge.from_environment()
+        nli_report = check_document_against_blueprint(text, bp, judge=clause_judge)
+        verdict_icon = "✅" if nli_report.verdict == "entailed" else "⚠️"
+        lines.append(f"**Werdykt całościowy NLI:** {verdict_icon} `{nli_report.verdict}`\n")
+        for s in nli_report.sections:
+            s_icon = (
+                "✅"
+                if s.verdict == "entailed"
+                else ("⚠️" if s.verdict == "partial" else "❌")
+            )
+            lines.append(f"#### {s_icon} Sekcja `{s.section}`: {s.verdict}")
+            for c in s.clauses:
+                c_icon = (
+                    "✅"
+                    if c.verdict == "entailed"
+                    else ("⚠️" if c.verdict == "partial" else "❌")
+                )
+                lines.append(f"  - {c_icon} [{c.verdict}] {c.clause}")
+        if nli_report.warnings:
+            lines.append("\n**Ostrzeżenia silnika:**")
+            for w in nli_report.warnings:
+                lines.append(f"- ℹ️ {w}")
+    except Exception as exc:
+        lines.append(
+            f"\n> ℹ️ *Weryfikacja głęboka NLI z modelem LLM nie mogła zostać ukończona:* `{exc}`. "
+            "Powyżej przedstawiono pełną analizę struktury bez udziału modelu zewnętrznego."
+        )
+
+    return "\n".join(lines)
+
+
+def run_nli_pair(premise: str, hypothesis: str, *, judge: Any = None) -> str:
+    if not premise or not premise.strip() or not hypothesis or not hypothesis.strip():
+        raise gr.Error("Wprowadź zarówno premisę, jak i hipotezę.")
+    try:
+        from humanize_pl.nli import LlmClauseJudge
+
+        clause_judge = judge if judge is not None else LlmClauseJudge.from_environment()
+        verdicts = clause_judge.judge_section(
+            heading="Analiza logiczna",
+            document_clauses=[premise.strip()],
+            expected_clauses=[hypothesis.strip()],
+        )
+        verdict = verdicts[0] if verdicts else "nieokreślony"
+        icon = "✅" if verdict == "entailed" else ("⚠️" if verdict == "partial" else "❌")
+        desc = {
+            "entailed": "Hipoteza wynika logicznie z podanej premisy (zgodność).",
+            "partial": "Hipoteza jest pokryta tylko częściowo przez premisę.",
+            "missing": "Treść hipotezy nie wynika z premisy lub brakuje kluczowych elementów.",
+            "absent": "Całkowity brak pokrycia logicznego.",
+        }.get(verdict, "Wynik nietypowy.")
+        return f"### Wynik weryfikacji NLI: {icon} `{verdict}`\n\n**Opis:** {desc}"
+    except Exception as exc:
+        return (
+            f"### ⚠️ Brak możliwości weryfikacji LLM\n\n"
+            f"Błąd endpointu: `{exc}`.\n\n"
+            "Upewnij się, że w pliku `.env` skonfigurowano model OpenAI-compatible."
+        )
+
+
 def run_docx(files: list[str] | None, pdf: bool, *settings_values: Any):
     if not files:
         raise gr.Error("Dodaj przynajmniej jeden plik .docx.")
@@ -763,6 +1012,31 @@ def build_ui() -> gr.Blocks:
             gr.Markdown(ONBOARDING)
 
         with gr.Tabs():
+            with gr.Tab("Tekst (Szybka humanizacja)"):
+                with gr.Row():
+                    with gr.Column(scale=1):
+                        text_input = gr.Textbox(
+                            label="Wklej tekst do sprawdzenia i poprawy",
+                            placeholder="Wklej tutaj tekst umowy, pisma, opinii prawnej lub odpowiedzi...",
+                            lines=10,
+                        )
+                        text_file = gr.File(
+                            label="Lub wczytaj plik tekstowy (.txt)",
+                            file_types=[".txt"],
+                            type="filepath",
+                        )
+                        text_button = gr.Button("Sprawdź i popraw tekst", variant="primary", size="lg")
+                    with gr.Column(scale=1):
+                        text_output = gr.Textbox(
+                            label="Poprawiony tekst",
+                            lines=14,
+                        )
+                text_summary = gr.Markdown()
+                with gr.Accordion("Wykaz zmian (co i dlaczego zmieniono)", open=True):
+                    text_changes = gr.Markdown("_Po kliknięciu przycisku tutaj pojawi się wykaz zmian._")
+                with gr.Accordion("Bramka jakości i weryfikacja struktury / NLI", open=False):
+                    text_gate = gr.Markdown()
+
             with gr.Tab("Dokumenty Word"):
                 docx_files = gr.File(
                     label="Pliki .docx",
@@ -797,6 +1071,45 @@ def build_ui() -> gr.Blocks:
                     )
                 xlsx_button = gr.Button("Sprawdź i popraw", variant="primary", size="lg")
                 xlsx_out = _results_block("Wiersze")
+
+            with gr.Tab("Weryfikator NLI / Klauzul"):
+                gr.Markdown(
+                    "Semantyczna weryfikacja logiczna klauzul prawnych. "
+                    "Sprawdza pokrycie szkieletu struktury (Blueprint) lub relację "
+                    "między dwoma zdaniami (brak sprzeczności / wynikanie)."
+                )
+                with gr.Tabs():
+                    with gr.Tab("Sprawdź dokument ze szkieletem (Blueprint)"):
+                        with gr.Row():
+                            nli_doc_text = gr.Textbox(
+                                label="Treść dokumentu",
+                                placeholder="Wklej treść umowy lub pisma...",
+                                lines=10,
+                            )
+                            with gr.Column():
+                                bp_choices = get_blueprint_choices()
+                                available_bps = [c for c in bp_choices if c != "(brak)"]
+                                nli_bp_choice = gr.Dropdown(
+                                    label="Wybierz szkielet (Blueprint)",
+                                    choices=available_bps,
+                                    value="umowa_uslug" if "umowa_uslug" in available_bps else (available_bps[0] if available_bps else None),
+                                )
+                                nli_bp_button = gr.Button("Sprawdź pokrycie klauzul", variant="primary", size="lg")
+                        nli_bp_result = gr.Markdown()
+                    with gr.Tab("Para zdań (Premisa → Hipoteza)"):
+                        with gr.Row():
+                            nli_premise = gr.Textbox(
+                                label="Premisa (zdanie źródłowe / klauzula pierwotna)",
+                                placeholder="np. Wykonawca zobowiązuje się zachować w tajemnicy wszelkie informacje poufne przez okres 3 lat od zawarcia umowy.",
+                                lines=3,
+                            )
+                            nli_hypothesis = gr.Textbox(
+                                label="Hipoteza (zdanie sprawdzane / zmienione)",
+                                placeholder="np. Obowiązek poufności wygasa natychmiast po rozwiązaniu umowy.",
+                                lines=3,
+                            )
+                        nli_pair_button = gr.Button("Sprawdź relację logiczną", variant="primary", size="lg")
+                        nli_pair_result = gr.Markdown()
 
             with gr.Tab("Profil kancelarii"):
                 gr.Markdown(
@@ -859,6 +1172,18 @@ def build_ui() -> gr.Blocks:
                     list(DOCUMENT_TYPE_LABELS.values()),
                     value=DOCUMENT_TYPE_LABELS["auto"],
                     label="Rodzaj dokumentu",
+                )
+            with gr.Row():
+                blueprint_choice = gr.Dropdown(
+                    get_blueprint_choices(),
+                    value="(brak)",
+                    label="Szkielet struktury (Blueprint)",
+                    info="wymusza sprawdzanie obowiązkowych sekcji dokumentu",
+                )
+                nli_checkbox = gr.Checkbox(
+                    False,
+                    label="Weryfikacja klauzul NLI",
+                    info="głęboka kontrola logiczna w bramce jakości (wymaga .env)",
                 )
             with gr.Row():
                 rewrite = gr.Checkbox(
@@ -931,8 +1256,15 @@ def build_ui() -> gr.Blocks:
             require_renderer,
             style_profile,
             template,
+            blueprint_choice,
+            nli_checkbox,
         ]
 
+        text_button.click(
+            run_text,
+            inputs=[text_input, text_file, *settings_inputs],
+            outputs=[text_output, text_summary, text_changes, text_gate],
+        )
         docx_button.click(
             run_docx,
             inputs=[docx_files, pdf, *settings_inputs],
@@ -949,6 +1281,16 @@ def build_ui() -> gr.Blocks:
                 *settings_inputs,
             ],
             outputs=list(xlsx_out),
+        )
+        nli_bp_button.click(
+            run_nli_blueprint,
+            inputs=[nli_doc_text, nli_bp_choice],
+            outputs=[nli_bp_result],
+        )
+        nli_pair_button.click(
+            run_nli_pair,
+            inputs=[nli_premise, nli_hypothesis],
+            outputs=[nli_pair_result],
         )
         profile_button.click(
             run_profile,

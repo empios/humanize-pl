@@ -25,8 +25,12 @@ from humanize_pl.ui.app import (  # noqa: E402
     build_ui,
     describe_layers,
     flow_settings,
+    get_blueprint_choices,
     item_row,
     package,
+    run_nli_blueprint,
+    run_nli_pair,
+    run_text,
     stage_uploads,
 )
 
@@ -139,3 +143,82 @@ def test_engine_downgrade_is_stated_not_hidden():
 
 def test_ui_builds():
     assert build_ui() is not None
+
+
+def test_flow_settings_with_blueprint_and_nli():
+    settings = flow_settings(*DEFAULTS, "umowa_uslug", True)
+    assert settings.blueprint == "umowa_uslug"
+    assert settings.nli is True
+
+    # Test "(brak)" maps to None
+    settings_none = flow_settings(*DEFAULTS, "(brak)", False)
+    assert settings_none.blueprint is None
+    assert settings_none.nli is False
+
+
+def test_get_blueprint_choices():
+    choices = get_blueprint_choices()
+    assert "(brak)" in choices
+    assert "umowa_uslug" in choices
+
+
+def test_run_text_success():
+    sample = (
+        "W ramach niniejszego przedsięwzięcia należy podkreślić, że dokonano analizy. "
+        "Warto wskazać, że powyższe okoliczności mają kluczowe znaczenie."
+    )
+    out_text, summary_md, changes_md, gate_md = run_text(
+        sample, None, *DEFAULTS, "(brak)", False
+    )
+    assert isinstance(out_text, str)
+    assert len(out_text) > 0
+    assert "Gotowe" in summary_md
+    assert isinstance(changes_md, str)
+    assert isinstance(gate_md, str)
+
+
+def test_run_text_file_input(tmp_path):
+    txt_file = tmp_path / "sample.txt"
+    txt_file.write_text("W ramach niniejszego projektu dokonano oceny.", encoding="utf-8")
+
+    out_text, summary_md, changes_md, gate_md = run_text(
+        None, str(txt_file), *DEFAULTS, "(brak)", False
+    )
+    assert isinstance(out_text, str)
+    assert "Gotowe" in summary_md
+
+
+def test_run_text_empty_raises_error():
+    import gradio as gr
+
+    with pytest.raises(gr.Error):
+        run_text("", None, *DEFAULTS, "(brak)", False)
+
+
+class DummyJudge:
+    def __init__(self):
+        self.warnings = []
+
+    def judge_section(self, *, heading, document_clauses, expected_clauses):
+        return ["entailed"] * len(expected_clauses)
+
+
+def test_run_nli_blueprint():
+    text = (
+        "UMOWA O ŚWIADCZENIE USŁUG\n\n"
+        "§ 1. Przedmiot umowy\nWykonawca zobowiązuje się do wykonania usług programistycznych.\n\n"
+        "§ 2. Wynagrodzenie\nWynagrodzenie wynosi 10 000 zł."
+    )
+    report = run_nli_blueprint(text, "umowa_uslug", judge=DummyJudge())
+    assert "Analiza struktury i klauzul" in report
+    assert "Zgodność strukturalna" in report
+    assert "Werdykt całościowy NLI" in report
+
+
+def test_run_nli_pair():
+    premise = "Wykonawca ponosi pełną odpowiedzialność za wszelkie szkody wynikłe z niewykonania umowy."
+    hypothesis = "Wykonawca odpowiada za szkody wyrządzone Zamawiającemu."
+    result = run_nli_pair(premise, hypothesis, judge=DummyJudge())
+    assert isinstance(result, str)
+    assert "entailed" in result
+

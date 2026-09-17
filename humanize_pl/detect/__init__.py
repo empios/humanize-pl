@@ -1,4 +1,10 @@
-from .base import DocumentDiagnosis, FamilySummary, Finding, ParagraphDiagnosis
+from .base import (
+    AI_FAMILIES,
+    DocumentDiagnosis,
+    FamilySummary,
+    Finding,
+    ParagraphDiagnosis,
+)
 from .calibration import (
     Calibration,
     CalibratedSignal,
@@ -11,6 +17,7 @@ from .engine import detect_document
 from .reference import Distribution, ReferenceProfile
 
 __all__ = [
+    "AI_FAMILIES",
     "CalibratedSignal",
     "Calibration",
     "Distribution",

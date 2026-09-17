@@ -307,20 +307,54 @@ class ItemOutcome:
     # opposed to the coarse family above. This is the level a structure
     # blueprint attaches to, and the level a lawyer names a document at.
     legal_category: dict[str, Any] = field(default_factory=dict)
+    # Four layers, each measured on the way in and on the way out.
+    #
+    # They used to be measured only on the output, one field each, while the
+    # AI signal had a before/after pair. So the report could say "signal 0.31
+    # -> 0.22" and could not say "four forbidden phrases, now none" - it had
+    # never looked at the input. A document that arrived with three style
+    # departures and left with one showed "1 departure", which reads as a
+    # fault rather than as an improvement of two.
+    #
     # Whether the document carries the sections its category owes. Absent a
     # blueprint this says so explicitly — "not checked" must never read as
     # "nothing wrong".
-    blueprint: dict[str, Any] = field(default_factory=dict)
+    blueprint_before: dict[str, Any] = field(default_factory=dict)
+    blueprint_after: dict[str, Any] = field(default_factory=dict)
     # How the document sits against the office's own writing. Separate from
     # the AI signal: a document written entirely by a person can still be
     # twice as long-winded as everything else the office sends out.
-    tone: dict[str, Any] = field(default_factory=dict)
+    tone_before: dict[str, Any] = field(default_factory=dict)
+    tone_after: dict[str, Any] = field(default_factory=dict)
     calibration_status: str = "uncalibrated"
-    style_compliance: dict[str, Any] = field(default_factory=dict)
+    style_compliance_before: dict[str, Any] = field(default_factory=dict)
+    style_compliance_after: dict[str, Any] = field(default_factory=dict)
     legal_sensitive_check: dict[str, Any] = field(default_factory=dict)
     llm: dict[str, Any] = field(default_factory=dict)
     formatting: dict[str, Any] | None = None
-    nli: dict[str, Any] = field(default_factory=dict)
+    # Clause coverage costs one model call per section, so the "before" side
+    # is only measured when the check is asked for AND a rewrite happened -
+    # otherwise it would be the same text, billed twice.
+    nli_before: dict[str, Any] = field(default_factory=dict)
+    nli_after: dict[str, Any] = field(default_factory=dict)
+
+    # The unsuffixed names are what the PDF report, the replay path and the UI
+    # already read, and they mean "the state the document left in".
+    @property
+    def blueprint(self) -> dict[str, Any]:
+        return self.blueprint_after
+
+    @property
+    def tone(self) -> dict[str, Any]:
+        return self.tone_after
+
+    @property
+    def style_compliance(self) -> dict[str, Any]:
+        return self.style_compliance_after
+
+    @property
+    def nli(self) -> dict[str, Any]:
+        return self.nli_after
 
     def __post_init__(self) -> None:
         if self.status == "failed":
@@ -359,14 +393,24 @@ class ItemOutcome:
             "document_type_confidence": self.document_type_confidence,
             "document_type_evidence": self.document_type_evidence,
             "legal_category": self.legal_category,
-            "blueprint": self.blueprint,
-            "tone": self.tone,
+            # Unsuffixed keys stay for readers that predate the pair; the
+            # suffixed ones are what "what changed" is computed from.
+            "blueprint": self.blueprint_after,
+            "blueprint_before": self.blueprint_before,
+            "blueprint_after": self.blueprint_after,
+            "tone": self.tone_after,
+            "tone_before": self.tone_before,
+            "tone_after": self.tone_after,
             "calibration_status": self.calibration_status,
-            "style_compliance": self.style_compliance,
+            "style_compliance": self.style_compliance_after,
+            "style_compliance_before": self.style_compliance_before,
+            "style_compliance_after": self.style_compliance_after,
             "legal_sensitive_check": self.legal_sensitive_check,
             "llm": self.llm,
             "formatting": self.formatting,
-            "nli": self.nli,
+            "nli": self.nli_after,
+            "nli_before": self.nli_before,
+            "nli_after": self.nli_after,
         }
 
     @classmethod
@@ -382,6 +426,13 @@ class ItemOutcome:
             for key, value in payload.items()
             if key in cls.__dataclass_fields__ and key != "signal_delta"
         }
+        # A detail file written before these layers were paired carries only
+        # the unsuffixed key, and it held the output state. Resuming a batch
+        # from one must not drop it: "not measured" and "measured, clean" read
+        # the same in a report and mean opposite things.
+        for name in ("blueprint", "tone", "style_compliance", "nli"):
+            if f"{name}_after" not in data and payload.get(name):
+                data[f"{name}_after"] = payload[name]
         return cls(**data)
 
 
@@ -458,6 +509,18 @@ def run_all_layers(
             f"uncalibrated:{resolved_type.value}"
         ),
     )
+    # The same three layers the output gets, measured on the way in.
+    #
+    # Without this the report can say "signal 0.31 -> 0.22" and cannot say
+    # "four forbidden phrases, now none", because it never looked at the
+    # input. All three are cheap: two are regex passes and `compare_tone`
+    # reads metrics that `before` already computed. Clause coverage is the
+    # exception and is handled after the rewrite, where its cost can be
+    # weighed against whether anything actually changed.
+    outcome.style_compliance_before = _style_compliance(text, resolved_type, style_profile)
+    outcome.tone_before = compare_tone(dict(before.metrics), style_profile).to_json()
+    outcome.blueprint_before = check_category(text, category.category.id).to_json()
+
     outcome.warnings.extend(profile_warnings)
     outcome.warnings.extend(llm_initialization_warnings or [])
     # Two classifiers looked at the same text: the coarse family one and the
@@ -622,7 +685,7 @@ def run_all_layers(
     )
     outcome.needs_review = verdict.needs_revision
     outcome.constraints = verdict.prompt_constraints
-    outcome.style_compliance = _style_compliance(text_out, resolved_type, style_profile)
+    outcome.style_compliance_after = _style_compliance(text_out, resolved_type, style_profile)
     from humanize_pl.safety.validators import legal_sensitive_inventory
 
     legal_before = legal_sensitive_inventory(text)
@@ -647,13 +710,13 @@ def run_all_layers(
     # Measured on the output too, and reported without blocking: house style
     # is a preference, and a preference that fails documents gets switched off.
     tone = compare_tone(dict(after.metrics), style_profile)
-    outcome.tone = tone.to_json()
+    outcome.tone_after = tone.to_json()
     outcome.warnings.extend(row.sentence_pl for row in tone.deviations)
 
     # Checked on the text that leaves the flow, not on the input: a rewrite
     # must not be able to drop a required section quietly.
     structure = check_category(text_out, category.category.id)
-    outcome.blueprint = structure.to_json()
+    outcome.blueprint_after = structure.to_json()
     if structure.checked:
         outcome.warnings.extend(structure.issues)
 
@@ -686,7 +749,18 @@ def run_all_layers(
 
                 if judge is not None:
                     nli_report = check_document_against_blueprint(text_out, skeleton, judge=judge)
-                    outcome.nli = nli_report.to_json()
+                    outcome.nli_after = nli_report.to_json()
+                    # Clause coverage is the one layer that costs model calls,
+                    # one per section. Measured on the input only when the
+                    # rewrite actually changed something - on identical text
+                    # the answer is identical too, and billing for it twice
+                    # buys nothing.
+                    if text_out != text:
+                        outcome.nli_before = check_document_against_blueprint(
+                            text, skeleton, judge=judge
+                        ).to_json()
+                    else:
+                        outcome.nli_before = outcome.nli_after
                     for issue in nli_report.issues:
                         outcome.warnings.append(f"NLI: {issue}")
                     outcome.warnings.extend(nli_report.warnings)

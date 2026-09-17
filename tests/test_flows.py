@@ -590,3 +590,67 @@ def test_run_command_refuses_both_profile_options_at_once(tmp_path) -> None:
         ["run", str(source), "--profile-from", str(source), "--style-profile", str(source)],
     )
     assert result.exit_code != 0
+
+
+def test_every_layer_is_measured_on_the_way_in_as_well_as_out():
+    """"What changed" needs a left column, and three layers had none.
+
+    The AI signal always had a before/after pair; style compliance, house
+    tone and structure were computed on the output only. So the report could
+    say "signal 0.31 -> 0.22" and could not say "four forbidden phrases, now
+    none" - it had never looked at the input. A document arriving with three
+    style departures and leaving with one showed "1 departure", which reads
+    as a fault rather than an improvement of two.
+    """
+    from humanize_pl.flows.base import run_all_layers
+
+    outcome, _verdict = run_all_layers(AI_TEXT, name="a.docx", settings=BASIC)
+
+    for layer in ("style_compliance", "tone", "blueprint"):
+        assert getattr(outcome, f"{layer}_before"), f"{layer}: brak pomiaru wejściowego"
+        assert getattr(outcome, f"{layer}_after"), f"{layer}: brak pomiaru wyjściowego"
+        # The unsuffixed name keeps meaning "the state it left in", because
+        # the PDF report, the replay path and the UI all read it.
+        assert getattr(outcome, layer) == getattr(outcome, f"{layer}_after")
+
+    payload = outcome.to_json()
+    for layer in ("style_compliance", "tone", "blueprint", "nli"):
+        assert f"{layer}_before" in payload
+        assert f"{layer}_after" in payload
+        assert payload[layer] == payload[f"{layer}_after"]
+
+
+def test_without_a_rewrite_the_two_sides_agree():
+    """Diagnosis-only must not look like an improvement."""
+    from humanize_pl.flows.base import run_all_layers
+
+    outcome, _verdict = run_all_layers(
+        AI_TEXT, name="a.docx", settings=BASIC_NO_REWRITE
+    )
+
+    assert outcome.text_out == AI_TEXT
+    for layer in ("style_compliance", "tone", "blueprint"):
+        assert getattr(outcome, f"{layer}_before") == getattr(outcome, f"{layer}_after")
+
+
+def test_an_older_detail_file_still_resumes():
+    """Detail JSON written before the split carries only the unsuffixed key.
+
+    It held the output state, so it has to land on `_after`. Dropping it
+    would turn "measured, clean" into "not measured", which reads the same
+    in a report and means the opposite.
+    """
+    from humanize_pl.flows.base import ItemOutcome
+
+    legacy = {
+        "name": "stary.docx",
+        "blueprint": {"checked": True, "passed": True},
+        "tone": {"checked": True, "deviations": []},
+        "style_compliance": {"passed": True, "issues": []},
+    }
+    outcome = ItemOutcome.from_json(legacy)
+
+    assert outcome.blueprint_after == {"checked": True, "passed": True}
+    assert outcome.blueprint == outcome.blueprint_after
+    assert outcome.blueprint_before == {}
+    assert outcome.style_compliance_after["passed"] is True

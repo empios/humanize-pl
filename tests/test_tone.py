@@ -180,12 +180,20 @@ def test_ui_names_the_three_states_apart() -> None:
     from humanize_pl.flows.base import ItemOutcome
     from humanize_pl.ui.app import tone_label
 
+    # `tone_after` is the state the document left in, which is what the UI
+    # labels; `tone` remains readable as an alias for it.
     assert tone_label(ItemOutcome(name="x")) == "brak profilu"
-    assert tone_label(ItemOutcome(name="x", tone={"checked": True, "deviations": []})) == "jak u was"
     assert (
-        tone_label(ItemOutcome(name="x", tone={"checked": True, "deviations": [{}, {}]}))
+        tone_label(ItemOutcome(name="x", tone_after={"checked": True, "deviations": []}))
+        == "jak u was"
+    )
+    assert (
+        tone_label(
+            ItemOutcome(name="x", tone_after={"checked": True, "deviations": [{}, {}]})
+        )
         == "odbiega (2)"
     )
+    assert ItemOutcome(name="x", tone_after={"checked": True}).tone == {"checked": True}
 
 
 def test_tmp_helper_is_isolated() -> None:

@@ -626,3 +626,99 @@ def test_an_untouched_text_yields_no_examples() -> None:
     from humanize_pl.flows.replay import reconstruct_examples
 
     assert reconstruct_examples("Termin minął.", "Termin minął.") == []
+
+
+def _axis_rows(items):
+    from humanize_pl.reports.pdf_pl import _Report
+
+    report = _Report.__new__(_Report)
+    report.items = items
+    report.summary = {}
+    return {row[0]: row for row in report._axis_rows()}
+
+
+def test_what_changed_reports_all_three_axes_before_and_after():
+    """The report answers "what was found"; this answers "did it get better"."""
+    rows = _axis_rows(
+        [
+            {
+                "words": 1000,
+                "findings_before": 12,
+                "findings_after": 5,
+                "style_compliance_before": {"issues": ["a", "b"]},
+                "style_compliance_after": {"issues": []},
+                "tone_before": {"checked": True, "deviations": [{}, {}]},
+                "tone_after": {"checked": True, "deviations": [{}]},
+                "blueprint_before": {
+                    "checked": True,
+                    "missing_required": ["podpisy"],
+                    "empty_sections": [],
+                },
+                "blueprint_after": {
+                    "checked": True,
+                    "missing_required": [],
+                    "empty_sections": [],
+                },
+            }
+        ]
+    )
+
+    assert rows["Styl kancelarii"][2:] == ("4", "1")
+    assert rows["Struktura dokumentu"][2:] == ("1", "0")
+    # Density, not a raw count: a 2700-word document and a 300-word one are
+    # not comparable on totals.
+    assert "1000" in rows["Słowa"][1]
+    assert rows["Słowa"][2].startswith("12")
+    assert rows["Słowa"][3].startswith("5")
+
+
+def test_an_axis_with_nothing_behind_it_says_so_instead_of_zero():
+    """"Not checked" and "checked, clean" must not print the same number.
+
+    A lawyer acts differently on each: one means supply a profile or a
+    skeleton, the other means nothing needs doing. Printing 0 for both tells
+    the reader the document passed a check that never ran.
+    """
+    rows = _axis_rows(
+        [
+            {
+                "words": 800,
+                "findings_before": 6,
+                "findings_after": 6,
+                "style_compliance_before": None,
+                "style_compliance_after": None,
+                "tone_before": {"checked": False, "deviations": []},
+                "tone_after": {"checked": False, "deviations": []},
+                "blueprint_before": {"checked": False},
+                "blueprint_after": {"checked": False},
+            }
+        ]
+    )
+
+    assert rows["Styl kancelarii"][2] == "nie dotyczy"
+    assert "brak profilu" in rows["Styl kancelarii"][3]
+    assert rows["Struktura dokumentu"][2] == "nie dotyczy"
+    assert "brak szkieletu" in rows["Struktura dokumentu"][3]
+
+
+def test_a_diagnosis_only_run_shows_equal_columns_not_empty_ones():
+    """--no-rewrite is not an improvement of zero; both sides are the state."""
+    same = {"issues": ["a"]}
+    rows = _axis_rows(
+        [
+            {
+                "words": 500,
+                "findings_before": 4,
+                "findings_after": 4,
+                "style_compliance_before": same,
+                "style_compliance_after": same,
+                "tone_before": {"checked": True, "deviations": []},
+                "tone_after": {"checked": True, "deviations": []},
+                "blueprint_before": {"checked": True, "missing_required": ["x"]},
+                "blueprint_after": {"checked": True, "missing_required": ["x"]},
+            }
+        ]
+    )
+
+    for axis in ("Styl kancelarii", "Słowa", "Struktura dokumentu"):
+        assert rows[axis][2] == rows[axis][3], axis

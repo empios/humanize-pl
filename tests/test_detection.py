@@ -90,3 +90,35 @@ def test_empty_input_is_safe() -> None:
     assert diagnosis.findings == []
     assert diagnosis.ai_signal_score == 0.0
     assert diagnosis.metrics == {}
+
+
+def test_a_density_signal_does_not_claim_to_be_rewritable():
+    """`rewritable` is a promise, and nominalisation density could not keep it.
+
+    The flag drives `findings_rewritable`, which tells the reader how much of
+    what was found the engine could have fixed. Nominalisation density said
+    True for every occurrence. Measured on twelve corpus documents: 69
+    findings, 2 fixed. The rules act on light verb + deverbal noun; what
+    drives the density is bare deverbal nouns, removable only by
+    restructuring the sentence.
+
+    vague_reference_density, computed three lines above it, has always said
+    False for the same reason.
+    """
+    from humanize_pl.detect import detect_document
+
+    # Taken from the generated corpus, not written for the test: the suffix
+    # list matches nominative forms only, so "ustalenia" and
+    # "podporządkowania" do not count and a hand-made sentence easily fails
+    # to trigger the signal it is meant to exercise.
+    text = (
+        "Sformułowanie „pod kierownictwem pracodawcy” wyraża właśnie "
+        "istnienie podporządkowania.\n"
+        "Podporządkowanie dyscyplinarne nie oznacza jednak bezwzględnej "
+        "władzy pracodawcy nad zatrudnionym."
+    )
+    diagnosis = detect_document(text)
+    nominalisation = [f for f in diagnosis.findings if f.family == "nominalization"]
+
+    assert nominalisation, "fixture nie uruchomił sygnału gęstości"
+    assert all(not f.rewritable for f in nominalisation)

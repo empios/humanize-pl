@@ -211,7 +211,27 @@ def _reference_density(
             char_start=0,
             char_end=len(sentence),
             weight=0.4,
-            rewritable=True,
+            # A density, like vague_reference_density above it, not a located
+            # construction - so the engine cannot promise to rewrite it.
+            #
+            # This said True, which put every one of these into
+            # `findings_rewritable` and told the reader the engine could have
+            # fixed them. It cannot. The nominalisation rules act on light
+            # verb + deverbal noun ("dokonać analizy" -> "przeanalizować"),
+            # and what drives the density in real AI filings is bare deverbal
+            # nouns in subject and object position - "podporządkowanie",
+            # "ustalenie", "naruszenie" - which can only be removed by
+            # restructuring the sentence, the one thing this engine refuses
+            # to do.
+            #
+            # Measured on 12 corpus documents: 69 findings, 2 fixed. Light
+            # verbs occur at 3.73 per 1000 words against a nominalisation
+            # density of 6.45, and most of those are not in a rewritable
+            # pair. The signal is worth reporting - AI filings nominalise at
+            # 6.45 per 1000 against 1.68 for human judgments - but it is
+            # something to tell the author about, not something the engine
+            # removes.
+            rewritable=False,
             detail=f"{nominal}/{word_count} tokens",
         )
 

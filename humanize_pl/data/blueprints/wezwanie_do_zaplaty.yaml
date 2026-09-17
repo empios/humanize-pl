@@ -12,38 +12,56 @@ sections:
     label_pl: miejscowość i data
     severity: required
     matches: ["dnia", " r."]
+    expects:
+      - "Wezwanie wskazuje miejscowość i datę sporządzenia."
 
   - id: strony
     label_pl: oznaczenie wierzyciela i dłużnika
     severity: required
     matches: ["wierzyciel", "dłużnik"]
+    expects:
+      - "Wezwanie oznacza wierzyciela w sposób pozwalający go zidentyfikować."
+      - "Wezwanie oznacza dłużnika w sposób pozwalający go zidentyfikować."
 
   - id: kwota
     label_pl: kwota wraz z odsetkami
     severity: required
     matches: ["kwoty", "kwotę", "odsetkami"]
+    expects:
+      - "Wezwanie podaje kwotę główną należności."
+      - "Wezwanie wskazuje odsetki albo sposób ich naliczenia."
 
   - id: podstawa
     label_pl: tytuł zobowiązania
     severity: required
     matches: ["wynika z", "faktur", "z tytułu", "umowy"]
+    expects:
+      - "Wezwanie wskazuje, z czego wynika zobowiązanie — umowy, faktury lub innego tytułu."
 
   - id: termin
     label_pl: termin zapłaty
     severity: required
     matches: ["w terminie", "termin zapłaty", "termin płatności"]
+    expects:
+      - "Wezwanie wyznacza termin, w którym należność ma zostać zapłacona."
 
   - id: rachunek
     label_pl: numer rachunku bankowego
     severity: required
     matches: ["rachunek bankowy", "numer rachunku", "na rachunek", "iban"]
+    expects:
+      - "Wezwanie podaje numer rachunku bankowego do zapłaty."
 
   - id: rygor
     label_pl: rygor skierowania sprawy na drogę sądową
     severity: required
     matches: ["na drogę sądową", "postępowania sądowego", "pod rygorem"]
+    expects:
+      - "Wezwanie uprzedza, co nastąpi po bezskutecznym upływie terminu."
 
   - id: podpis
     label_pl: podpis wzywającego
     severity: required
     matches: ["podpis", "pełnomocnik", "z poważaniem"]
+    expects:
+      - "Wezwanie przewiduje podpis osoby wzywającej."

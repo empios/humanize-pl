@@ -13,38 +13,57 @@ sections:
     label_pl: przedmiot opinii (pytanie)
     severity: required
     matches: ["przedmiot opinii", "przedmiotem opinii", "pytanie prawne", "zakres opinii"]
+    expects:
+      - "Opinia nazywa pytanie prawne, na które odpowiada."
 
   - id: stan_faktyczny
     label_pl: stan faktyczny
     severity: required
     matches: ["stan faktyczny", "stanu faktycznego"]
+    expects:
+      - "Opinia przedstawia okoliczności faktyczne, na których się opiera."
+      - "Opinia wskazuje źródło tych okoliczności albo zastrzega, że przyjmuje je od klienta."
 
   - id: podstawa_prawna
     label_pl: podstawa prawna
     severity: required
     matches: ["podstawa prawna", "podstawy prawne", "stan prawny"]
+    expects:
+      - "Opinia wskazuje przepisy, na których opiera rozstrzygnięcie."
 
   - id: analiza
     label_pl: analiza prawna
     severity: required
     matches: ["analiza", "ocena prawna", "rozważania"]
+    expects:
+      - "Opinia stosuje wskazane przepisy do przedstawionego stanu faktycznego."
+      - "Opinia rozważa argumenty przemawiające przeciw przyjętemu stanowisku."
 
   - id: wnioski
     label_pl: wnioski
     severity: required
     matches: ["wnioski", "konkluzje", "podsumowanie"]
+    expects:
+      - "Opinia formułuje odpowiedź na postawione pytanie."
+      - "Opinia wskazuje zalecane działanie albo ryzyko, które się z nim wiąże."
 
   - id: zastrzezenia
     label_pl: zastrzeżenia i granice opinii
     severity: required
     matches: ["zastrzeżenia", "opinia została sporządzona", "stan prawny na dzień"]
+    expects:
+      - "Opinia określa granice swojej mocy: stan prawny, datę i zakres przyjętych założeń."
 
   - id: orzecznictwo
     label_pl: powołane orzecznictwo lub piśmiennictwo
     severity: expected
     matches: ["wyrok sn", "orzecznictwo", "sygn. akt", "w doktrynie"]
+    expects:
+      - "Opinia powołuje orzeczenia lub piśmiennictwo wspierające przyjęte stanowisko."
 
   - id: podpis
     label_pl: data i podpis sporządzającego
     severity: required
     matches: ["podpis", "radca prawny", "adwokat", "sporządził"]
+    expects:
+      - "Opinia wskazuje datę sporządzenia i osobę, która ją sporządziła."

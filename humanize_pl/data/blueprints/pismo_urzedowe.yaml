@@ -12,34 +12,49 @@ sections:
     label_pl: miejscowość i data
     severity: required
     matches: ["dnia", " r."]
+    expects:
+      - "Pismo wskazuje miejscowość i datę sporządzenia."
 
   - id: adresat
     label_pl: oznaczenie organu (adresat)
     severity: required
     matches: ["do:", "urząd", "organ", "prezydent", "wójt", "starost"]
+    expects:
+      - "Pismo oznacza organ, do którego jest kierowane."
 
   - id: wnioskodawca
     label_pl: oznaczenie wnioskodawcy z adresem
     severity: required
     # NIE samo "wnioskodawca": trafiało w adres e-mail wnioskodawca@...
     matches: ["wnioskodawca:", "imię i nazwisko", "adres do doręczeń", "zam."]
+    expects:
+      - "Pismo oznacza wnioskodawcę imieniem, nazwiskiem lub nazwą."
+      - "Pismo podaje adres wnioskodawcy do doręczeń."
 
   - id: zadanie
     label_pl: treść żądania
     severity: required
     matches: ["wnoszę o", "zwracam się", "proszę o"]
+    expects:
+      - "Pismo formułuje wprost, czego wnioskodawca żąda od organu."
 
   - id: podstawa
     label_pl: podstawa prawna
     severity: required
     matches: ["na podstawie art", "podstawą wniosku", "zgodnie z art"]
+    expects:
+      - "Pismo wskazuje przepis, z którego wywodzi żądanie."
 
   - id: sposob_odpowiedzi
     label_pl: wskazany sposób doręczenia odpowiedzi
     severity: expected
     matches: ["w formie elektronicznej", "na adres", "drogą pocztową"]
+    expects:
+      - "Pismo wskazuje, w jaki sposób ma zostać doręczona odpowiedź."
 
   - id: podpis
     label_pl: podpis wnioskodawcy
     severity: required
     matches: ["podpis", "z poważaniem", "z wyrazami szacunku"]
+    expects:
+      - "Pismo przewiduje podpis wnioskodawcy."

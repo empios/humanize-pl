@@ -13,48 +13,74 @@ sections:
     label_pl: komparycja (data, miejsce, strony)
     severity: required
     matches: ["zawarta w dniu", "zawarto umowę", "pomiędzy"]
+    expects:
+      - "Umowa wskazuje datę i miejsce jej zawarcia."
+      - "Umowa oznacza obie strony w sposób pozwalający je zidentyfikować."
 
   - id: przedmiot
     label_pl: przedmiot umowy
     severity: required
     matches: ["przedmiot umowy", "przedmiotem umowy", "przedmiotem niniejszej umowy"]
+    expects:
+      - "Umowa określa, jakie usługi wykonawca ma świadczyć."
+      - "Zakres usług jest opisany na tyle konkretnie, by dało się stwierdzić ich wykonanie."
 
   - id: termin
     label_pl: termin i sposób wykonania
     severity: required
     matches: ["termin wykonania", "terminy i sposób", "sposób wykonania", "harmonogram"]
+    expects:
+      - "Umowa określa termin lub okres wykonywania usług."
+      - "Umowa wskazuje sposób wykonania usług albo tryb ich odbioru."
 
   - id: wynagrodzenie
     label_pl: wynagrodzenie
     severity: required
     matches: ["wynagrodzenie"]
+    expects:
+      - "Umowa określa wysokość wynagrodzenia albo sposób jego obliczenia."
+      - "Umowa określa termin i sposób zapłaty wynagrodzenia."
 
   - id: odpowiedzialnosc
     label_pl: odpowiedzialność
     severity: required
     matches: ["odpowiedzialność", "odpowiada za"]
+    expects:
+      - "Umowa określa zasady odpowiedzialności za niewykonanie lub nienależyte wykonanie usług."
 
   - id: poufnosc
     label_pl: poufność
     severity: expected
     matches: ["poufnoś", "informacje poufne"]
+    expects:
+      - "Umowa zobowiązuje stronę do zachowania w poufności informacji uzyskanych przy wykonywaniu umowy."
 
   - id: rozwiazanie
     label_pl: rozwiązanie i wypowiedzenie umowy
     severity: required
     matches: ["rozwiązanie umowy", "wypowiedzenie", "odstąpienie od umowy"]
+    expects:
+      - "Umowa określa, w jaki sposób i z jakim skutkiem można ją rozwiązać lub wypowiedzieć."
+      - "Umowa wskazuje termin wypowiedzenia albo przesłanki odstąpienia."
 
   - id: postanowienia_koncowe
     label_pl: postanowienia końcowe
     severity: required
     matches: ["postanowienia końcowe", "w sprawach nieuregulowanych"]
+    expects:
+      - "Umowa wskazuje, jakie przepisy stosuje się w sprawach w niej nieuregulowanych."
+      - "Umowa określa formę wymaganą dla jej zmian."
 
   - id: wlasciwosc
     label_pl: właściwość sądu
     severity: expected
     matches: ["właściwy sąd", "sądem właściwym", "właściwości sądu"]
+    expects:
+      - "Umowa wskazuje sąd właściwy do rozpoznawania sporów z niej wynikających."
 
   - id: podpisy
     label_pl: podpisy stron
     severity: required
     matches: ["podpis", "zamawiający:", "wykonawca:"]
+    expects:
+      - "Dokument przewiduje miejsce na podpisy obu stron."

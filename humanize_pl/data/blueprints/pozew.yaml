@@ -13,43 +13,64 @@ sections:
     label_pl: oznaczenie sądu
     severity: required
     matches: ["sąd rejonowy", "sąd okręgowy", "do sądu"]
+    expects:
+      - "Pozew oznacza sąd, do którego jest wnoszony."
 
   - id: strony
     label_pl: oznaczenie stron
     severity: required
     matches: ["powód", "pozwany"]
+    expects:
+      - "Pozew oznacza powoda wraz z adresem."
+      - "Pozew oznacza pozwanego wraz z adresem."
 
   - id: wps
     label_pl: wartość przedmiotu sporu
     severity: required
     matches: ["wartość przedmiotu sporu", "w.p.s."]
+    expects:
+      - "Pozew wskazuje wartość przedmiotu sporu."
 
   - id: zadanie
     label_pl: żądanie pozwu
     severity: required
     matches: ["wnoszę o zasądzenie", "żądanie", "wnosi o zasądzenie"]
+    expects:
+      - "Pozew formułuje wprost, czego powód domaga się od sądu."
 
   - id: koszty
     label_pl: wniosek o koszty procesu
     severity: expected
     matches: ["koszty procesu", "kosztów zastępstwa", "koszty postępowania"]
+    expects:
+      - "Pozew zawiera wniosek o zasądzenie kosztów procesu."
 
   - id: uzasadnienie
     label_pl: uzasadnienie
     severity: required
     matches: ["uzasadnienie"]
+    expects:
+      - "Pozew przedstawia okoliczności faktyczne uzasadniające żądanie."
+      - "Pozew wskazuje, dlaczego żądanie znajduje oparcie w przepisach."
 
   - id: dowody
     label_pl: wnioski dowodowe
     severity: required
     matches: ["dowody", "dowód z", "wnoszę o dopuszczenie"]
+    expects:
+      - "Pozew wskazuje dowody na poparcie przytoczonych okoliczności."
+      - "Pozew określa, co każdy dowód ma wykazać."
 
   - id: podpis
     label_pl: podpis
     severity: required
     matches: ["podpis", "pełnomocnik powoda", "adwokat", "radca prawny"]
+    expects:
+      - "Pozew przewiduje podpis powoda lub jego pełnomocnika."
 
   - id: zalaczniki
     label_pl: załączniki
     severity: expected
     matches: ["załączniki", "w załączeniu", "załącznik"]
+    expects:
+      - "Pozew wymienia załączone dokumenty."

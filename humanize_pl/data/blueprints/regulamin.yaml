@@ -13,6 +13,8 @@ sections:
     label_pl: postanowienia ogólne
     severity: required
     matches: ["postanowienia ogólne", "niniejszy regulamin określa"]
+    expects:
+      - "Regulamin wskazuje, czego dotyczy i kogo wiąże."
 
   - id: dane_uslugodawcy
     label_pl: oznaczenie usługodawcy
@@ -20,22 +22,33 @@ sections:
     # Rdzeń, nie forma: "sklepu prowadzoNEGO przez" i "platformy prowadzoNEJ przez"
     # to ta sama sekcja. Wzorzec w jednym rodzaju gubi drugi.
     matches: ["usługodawcą jest", "operatorem jest", "prowadzon", "z siedzibą w"]
+    expects:
+      - "Regulamin oznacza usługodawcę nazwą i siedzibą."
+      - "Regulamin podaje dane kontaktowe usługodawcy."
 
   - id: definicje
     label_pl: definicje
     severity: required
     matches: ["definicje", "użyte w regulaminie", "ilekroć w regulaminie"]
+    expects:
+      - "Regulamin definiuje pojęcia, którymi posługuje się w dalszej części."
 
   - id: zakres_uslug
     label_pl: rodzaj i zakres usług
     severity: required
     matches: ["rodzaj i zakres", "zakres usług", "usług świadczon", "konto użytkownika",
               "sprzedaż towarów", "składanie zamówień"]
+    expects:
+      - "Regulamin opisuje, jakie usługi są świadczone drogą elektroniczną."
+      - "Regulamin określa wymagania techniczne konieczne do korzystania z usług."
 
   - id: warunki_zawarcia
     label_pl: warunki zawierania umowy
     severity: required
     matches: ["zawarcie umowy", "warunki zawierania", "rejestrac"]
+    expects:
+      - "Regulamin określa, w którym momencie dochodzi do zawarcia umowy."
+      - "Regulamin opisuje warunki rozwiązania umowy o świadczenie usług."
 
   - id: odstapienie
     label_pl: odstąpienie od umowy przez konsumenta
@@ -43,18 +56,29 @@ sections:
     # NIE "14 dni": ten termin stoi też w klauzuli reklamacyjnej i udawał
     # obecność pouczenia konsumenckiego, którego regulamin nie zawierał.
     matches: ["odstąpienie od umowy", "prawo odstąpienia", "odstąpić od umowy"]
+    expects:
+      - "Regulamin poucza konsumenta o prawie odstąpienia od umowy."
+      - "Regulamin wskazuje termin na odstąpienie i sposób jego wykonania."
 
   - id: reklamacje
     label_pl: tryb reklamacyjny
     severity: required
     matches: ["reklamacj"]
+    expects:
+      - "Regulamin określa, w jaki sposób składa się reklamację."
+      - "Regulamin wskazuje termin rozpatrzenia reklamacji."
 
   - id: zmiany_regulaminu
     label_pl: zmiany regulaminu
     severity: required
     matches: ["zmiana regulaminu", "zmiany regulaminu", "zastrzega sobie prawo do zmiany"]
+    expects:
+      - "Regulamin określa tryb wprowadzania zmian."
+      - "Regulamin wskazuje, w jaki sposób użytkownik jest o zmianie informowany."
 
   - id: postanowienia_koncowe
     label_pl: postanowienia końcowe
     severity: required
     matches: ["postanowienia końcowe", "w sprawach nieuregulowanych"]
+    expects:
+      - "Regulamin wskazuje, jakie przepisy stosuje się w sprawach w nim nieuregulowanych."

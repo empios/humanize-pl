@@ -347,3 +347,107 @@ def test_a_section_is_found_regardless_of_grammatical_gender() -> None:
     ):
         report = check_category(f"§ 1. Postanowienia ogólne\n{phrase}\n", "regulamin")
         assert "oznaczenie usługodawcy" not in report.missing_required, phrase
+
+
+def test_a_missing_required_section_blocks_readiness() -> None:
+    """`required` has to actually block, not just be described as blocking.
+
+    `BlueprintReport.blocking` existed from the start and nothing read it, so
+    the module docstring promised that a missing required section fails
+    readiness while every such document came out `ready_with_warnings` -
+    indistinguishable from one with a stylistic note.
+
+    The processing axis is untouched: `status` stays "ok" because the run
+    itself worked, so batch exit codes do not move.
+    """
+    from humanize_pl.config import Engine, Mode
+    from humanize_pl.document import ReadinessStatus
+    from humanize_pl.flows.base import FlowSettings, run_all_layers
+
+    text = (FIXTURES / "ai_legal_01_umowa_uslug.txt").read_text(encoding="utf-8")
+    outcome, _verdict = run_all_layers(
+        text,
+        name="umowa.docx",
+        settings=FlowSettings(mode=Mode.standard, engine=Engine.basic, rewrite=False),
+    )
+
+    assert outcome.blueprint["blocking"] is True
+    assert outcome.readiness_status == ReadinessStatus.failed.value
+    assert outcome.status == "ok"
+
+
+def test_readiness_counts_add_up_to_the_processed_items() -> None:
+    """`not_ready` exists so the three readiness counts still sum to `ok`."""
+    from humanize_pl.document import ReadinessStatus
+    from humanize_pl.flows.base import ItemOutcome, summarise
+
+    outcomes = [
+        ItemOutcome(name="a", readiness_status=ReadinessStatus.ready.value),
+        ItemOutcome(name="b", readiness_status=ReadinessStatus.ready_with_warnings.value),
+        ItemOutcome(name="c", readiness_status=ReadinessStatus.failed.value),
+        ItemOutcome(name="d", status="failed"),
+    ]
+    summary = summarise(outcomes)
+
+    assert summary["ok"] == 3
+    assert summary["failed"] == 1
+    assert summary["ready"] + summary["ready_with_warnings"] + summary["not_ready"] == 3
+    assert summary["not_ready"] == 1
+
+
+def test_only_the_fragments_own_section_reaches_the_rewrite_prompt() -> None:
+    """The skeleton narrows the prompt; it must not hand over a drafting brief.
+
+    A model shown every section a document owes reads a missing one as an
+    invitation to write it, and this pass exists to redraft one sentence.
+    """
+    from humanize_pl.blueprint import blueprint_for
+    from humanize_pl.flows.base import _section_contexts
+
+    text = (FIXTURES / "ai_legal_01_umowa_uslug.txt").read_text(encoding="utf-8")
+    contexts = _section_contexts(text, blueprint_for("umowa_uslug"))
+
+    assert contexts, "żadna linia nie trafiła do sekcji"
+    for context in contexts.values():
+        # One section named, never a list of them.
+        assert context.count("należy do sekcji") == 1
+        assert "nie dopisuj klauzul" in context
+
+    # Two lines from different sections must not receive the same brief.
+    assert len(set(contexts.values())) > 1
+
+
+def test_no_blueprint_means_no_section_context() -> None:
+    """Categories without a skeleton must not get an empty or invented one."""
+    from humanize_pl.flows.base import _section_contexts
+
+    assert _section_contexts("Dowolny tekst.\nDrugi akapit.", None) == {}
+
+
+def test_every_shipped_section_declares_what_it_expects() -> None:
+    """`expects` is optional in the loader and mandatory in practice.
+
+    Without it `expected_clauses` falls back to the section's own label, so
+    the clause check degrades from "does this section say what it owes" to
+    "does this section mention its own name" - a much weaker question, asked
+    silently. Every shipped blueprint was in that state until the clauses
+    were written.
+    """
+    from humanize_pl.blueprint import blueprints
+    from humanize_pl.nli import expected_clauses
+
+    empty = [
+        f"{name}/{section.id}"
+        for name, blueprint in blueprints().items()
+        for section in blueprint.sections
+        if not section.expects
+    ]
+    assert empty == [], f"sekcje bez expects: {empty}"
+
+    # The clauses have to be worth asking about: a section that only restates
+    # its label adds nothing over the fallback.
+    for name, blueprint in blueprints().items():
+        for section in blueprint.sections:
+            for clause in expected_clauses(section):
+                assert len(clause.split()) >= 4, f"{name}/{section.id}: „{clause}”"
+                assert clause.endswith("."), f"{name}/{section.id}: „{clause}”"

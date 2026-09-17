@@ -16,6 +16,11 @@ def main(
     skip_build: bool = typer.Option(False, "--skip-build", help="Skip wheel build"),
 ) -> None:
     commands: list[list[str]] = [[sys.executable, "-m", "pytest", "-q"]]
+    # A lemma swap whose target has no inflection paradigm can never fire:
+    # `_build_replacement` returns None and the rule is silently dead. The
+    # audit has always detected this and nothing ran it, so two rules shipped
+    # dead. It costs milliseconds, so it goes first.
+    commands.append([sys.executable, "tools/rules_lemma_audit.py"])
     if not skip_lint:
         commands.append([sys.executable, "-m", "ruff", "check", "."])
     if not skip_benchmark:

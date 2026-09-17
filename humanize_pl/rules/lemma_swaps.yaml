@@ -32,6 +32,9 @@
     # `niniejszy` inside legal headers or formula must not be touched.
     forbid_left_lemmas: [art, paragraf, ustawa, kodeks]
     forbid_right_lemmas: [kodeks, ustawa]
+    # Only as a modifier. Standing alone it is a noun, and `ten` does not
+    # substitute for a noun - see powyzszy_to_ten below.
+    require_right_upos: [NOUN, PROPN]
 
 - id: kancelaryzm:przedmiotowy_to_ten
   from_lemma: przedmiotowy
@@ -48,6 +51,7 @@
     # przedmiotowy ustawy") that the substitution would erase.
     forbid_left_lemmas: [zakres, charakter, aspekt]
     forbid_right_lemmas: [zakres, charakter, aspekt]
+    require_right_upos: [NOUN, PROPN]
 
 - id: kancelaryzm:powyzszy_to_ten
   from_lemma: powyższy
@@ -59,7 +63,18 @@
   operation_type: debureaucratization
   targeted_issue: vague_reference
   modes: [standard, strong]
-  guards: {}
+  guards:
+    # Only when it modifies a noun. Substantivised - "Mając powyższe na
+    # uwadze", "Powyższe oznacza, że" - it IS the noun, and swapping it for
+    # `ten` produced "Mając te na uwadze", which is not Polish.
+    #
+    # Two faults compounded there. `powyższe` is homographic (neuter
+    # singular and non-masculine-personal plural), Stanza tagged the
+    # standalone use as plural, and `_build_replacement` copies the token's
+    # features verbatim - so the tagger's choice picked the form. The
+    # inflection table is not at fault: "to" is present and is found for
+    # neuter singular on the first lookup.
+    require_right_upos: [NOUN, PROPN]
 
 - id: kancelaryzm:rzeczony_to_ten
   from_lemma: rzeczony
@@ -74,6 +89,7 @@
   guards:
     forbid_left_lemmas: [art, paragraf, ustawa, kodeks]
     forbid_right_lemmas: [kodeks, ustawa]
+    require_right_upos: [NOUN, PROPN]
 
 - id: kancelaryzm:stosowny_to_odpowiedni
   from_lemma: stosowny

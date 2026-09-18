@@ -949,3 +949,26 @@ def test_without_an_office_profile_the_style_row_does_not_claim_the_office_style
     assert "Styl kancelarii" not in rows
     assert rows["Styl"][1].endswith("(bez profilu kancelarii)")
     assert rows["Styl"][2:] == ("1", "0")
+
+
+def test_markup_removal_is_one_sentence_not_a_card_per_line(tmp_path) -> None:
+    """On the model corpus a thousand "**X**" -> "X" cards made a 303-page
+    report of 32 documents. A chain where a rule then changed the words is
+    still a card of its own."""
+    payload = _drafted_payload(inserted=True)
+    payload["documents"][0]["drafted_sections"] = []
+    payload["documents"][0]["applied_changes"] = [
+        {"before": "**§ 1. Przedmiot umowy**", "after": "§ 1. Przedmiot umowy", "issue": "markdown"},
+        {"before": "# UMOWA", "after": "UMOWA", "issue": "markdown"},
+        {
+            "before": "**Należy wskazać, że** strony zawierają umowę.",
+            "after": "Strony zawierają umowę.",
+            "issue": "markdown",
+        },
+    ]
+    report = pdf_pl._Report(payload, 400, pdf_pl._styles())
+
+    assert report._markup_only_count() == (2, 1)
+    assert len(report._xlsx_change_entries()) == 1
+    text = _pdf_text(payload, tmp_path / "r.pdf")
+    assert "Usunięto znaczniki markdown (**, #, ---) w 2 miejscach, w 1 dokumencie" in text

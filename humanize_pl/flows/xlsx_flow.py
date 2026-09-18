@@ -15,6 +15,7 @@ from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any
 
+from humanize_pl.artifacts import is_markup_only
 from humanize_pl.document import DocumentType, RewriteBackend
 from humanize_pl.reports.axes import AxisRow, axis_rows
 
@@ -292,10 +293,23 @@ def _write_acceptance_sheet(workbook, outcomes: list[ItemOutcome]) -> str:
         for item in outcomes
         if item.status == "ok" and item.findings_before and not item.changes_applied
     )
+    markup_only = sum(
+        1
+        for item in outcomes
+        if item.status == "ok"
+        for change in item.applied_changes
+        if is_markup_only(change)
+    )
     sheet.merge_cells("A3:H3")
     sheet["A3"] = (
         f"Wykrycia: {findings}   |   Zastosowane poprawki: {changes}   |   "
         f"Wiersze z uwagami, ale bez automatycznej poprawki: {findings_without_changes}"
+        + (
+            f"   |   Usunięte znaczniki markdown (bez wpływu na treść, niewypisane "
+            f"pojedynczo): {markup_only}"
+            if markup_only
+            else ""
+        )
     )
     sheet["A3"].fill = summary_fill
     sheet["A3"].font = Font(color="FF1F4E78", bold=True)
@@ -327,6 +341,10 @@ def _write_acceptance_sheet(workbook, outcomes: list[ItemOutcome]) -> str:
             before = str(change.get("before", "")).strip()
             after = str(change.get("after", "")).strip()
             if not before or not after or before == after:
+                continue
+            # Counted in the summary line above, not listed: a row per
+            # "**X**" -> "X" buries the edits that need a decision.
+            if is_markup_only(change):
                 continue
             issue = str(change.get("issue", ""))
             risk_label, risk_fill = _risk_level(change.get("risk"))

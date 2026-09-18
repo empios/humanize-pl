@@ -197,3 +197,16 @@ def strip_markup(
                 }
             )
     return "\n".join(lines), changes
+
+
+def is_markup_only(change: dict[str, Any]) -> bool:
+    """Whether an edit did nothing but take markdown markers off.
+
+    Reports summarise these instead of listing them: a thousand
+    "**Przedmiot umowy**" -> "Przedmiot umowy" cards buried the edits a
+    lawyer has to read. A chain where a rule went on to change the words
+    is not markup-only and stays listed.
+    """
+    before = " ".join(strip_markup(str(change.get("before") or ""))[0].split())
+    after = " ".join(str(change.get("after") or "").split())
+    return bool(before) and before == after

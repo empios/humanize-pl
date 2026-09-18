@@ -745,3 +745,18 @@ def test_a_type_set_by_the_user_still_wins() -> None:
     )
 
     assert outcome.document_type == DocumentType.contract.value
+
+
+def test_the_acceptance_sheet_does_not_list_markup_removals(tmp_path) -> None:
+    """A row per "**X**" -> "X" buried the edits that need a decision; they
+    are counted in the summary line instead."""
+    source = tmp_path / "odpowiedzi.xlsx"
+    write_xlsx(source, [(1, "**Podsumowanie** " + AI_TEXT.replace("\n", " "))])
+    output = tmp_path / "wynik.xlsx"
+
+    run_xlsx_flow(source, output, column="Odpowiedź AI", settings=BASIC, pdf=False, report=False)
+
+    sheet = openpyxl.load_workbook(str(output))["Do akceptacji"]
+    before_cells = [str(sheet.cell(row=row, column=5).value or "") for row in range(6, sheet.max_row + 1)]
+    assert not any(cell.startswith("**") and cell.count("**") == 2 and len(cell) < 20 for cell in before_cells)
+    assert "Usunięte znaczniki markdown" in str(sheet["A3"].value)

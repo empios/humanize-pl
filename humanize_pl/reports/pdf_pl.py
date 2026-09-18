@@ -36,6 +36,7 @@ from pathlib import Path
 from typing import Any, ClassVar
 from xml.sax.saxutils import escape
 
+from humanize_pl.artifacts import is_markup_only
 from humanize_pl.detect.calibration import (
     REVIEW_THRESHOLD,
     load_profile,
@@ -1148,13 +1149,40 @@ class _Report:
         return f"{moved} {verdict}"
 
     def _xlsx_change_entries(self) -> list[tuple[int, dict, int, dict]]:
-        """All visible edits, including payloads created before the full register."""
+        """All visible edits, including payloads created before the full register.
+
+        Markup removals are left out: "**Przedmiot umowy**" -> "Przedmiot
+        umowy" changes nothing a lawyer reviews, and on the model corpus a
+        thousand such cards made a 303-page report of 32 documents. They are
+        counted in `_markup_only_count` and said in one sentence instead. A
+        chain where a rule went on to change the words stays a card.
+        """
         entries: list[tuple[int, dict, int, dict]] = []
         for position, item in enumerate(self.items, 1):
             changes = item.get("applied_changes") or item.get("examples", [])
-            for change_index, change in enumerate(_collapse_chains(changes), 1):
+            visible = [
+                change for change in _collapse_chains(changes) if not is_markup_only(change)
+            ]
+            for change_index, change in enumerate(visible, 1):
                 entries.append((position, item, change_index, change))
         return entries
+
+    @property
+    def _locative(self) -> tuple[str, str, str]:
+        """"w 1 dokumencie", "w 3 dokumentach" - after "w", not the nominative."""
+        if self.is_xlsx:
+            return ("wierszu", "wierszach", "wierszach")
+        return ("dokumencie", "dokumentach", "dokumentach")
+
+    def _markup_only_count(self) -> tuple[int, int]:
+        """(edits, documents) that only removed markdown markers."""
+        edits = documents = 0
+        for item in self.items:
+            changes = item.get("applied_changes") or item.get("examples", [])
+            found = sum(1 for change in _collapse_chains(changes) if is_markup_only(change))
+            edits += found
+            documents += bool(found)
+        return edits, documents
 
     def xlsx_changes(self) -> list:
         """Printable change register with exact inline additions and removals."""
@@ -1162,6 +1190,20 @@ class _Report:
 
         entries = self._xlsx_change_entries()
         story: list[Any] = [self.para("2. Wykaz zastosowanych zmian", "h1")]
+        markup_edits, markup_documents = self._markup_only_count()
+        if markup_edits:
+            story.append(
+                self.note(
+                    f"Usunięto znaczniki markdown (**, #, ---) w {markup_edits} "
+                    f"{_plural(markup_edits, 'miejscu', 'miejscach', 'miejscach')}, w "
+                    f"{markup_documents} "
+                    f"{_plural(markup_documents, *self._locative)}. "
+                    "To zmiany mechaniczne, bez wpływu na treść, więc nie są "
+                    "wypisywane pojedynczo."
+                )
+            )
+        if not entries and markup_edits:
+            return story
         if not entries:
             if not self.changes_known:
                 story.append(

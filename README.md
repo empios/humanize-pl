@@ -604,7 +604,7 @@ kanał, nie styl. Zmierzone na 32 dokumentach modelu wobec 2396 orzeczeń:
 | nagłówek `#` | 30/32 | 0 | usuwa znaczniki |
 | linia `---` | 29/32 | 0 | zamienia na pustą linię |
 | tabela markdown | 6/32 | 0 | zgłasza |
-| zwrot do użytkownika („Poniżej znajdziesz…”) | 12/32 | 0 | zgłasza, blokuje „gotowy” |
+| zwrot do użytkownika, zastrzeżenie „nie stanowi porady prawnej” | 26/32 | 1 | zgłasza, blokuje „gotowy” |
 | pole `[data]`, `[kwota]` | 21/32 | 2 | zgłasza, blokuje „gotowy” |
 
 Te ślady nie wchodzą do wskaźnika stylu (`humanize_pl/artifacts.py`):

@@ -163,3 +163,33 @@ def test_blank_lines_between_numbered_points_survive_the_rules():
 
     assert "\n\n" in protect_text(text).text.split("__PROTECTED")[0]
     assert create_humanizer_session(engine=Engine.basic).humanize(text).text == text
+
+
+def test_a_field_counts_the_same_with_or_without_its_bold():
+    """Measured on the corpus: fields rose 590 -> 619 across a rewrite that
+    added none, because "**……… zł**" hid its blank until the bold came off."""
+    assert find_artifacts("Kwota: **……… zł**").fields == find_artifacts("Kwota: ……… zł").fields
+    assert len(find_artifacts("Kwota: **……… zł**").fields) == 1
+
+
+def test_the_chatbots_other_asides_are_found_too():
+    """Each from a real model document the first pattern missed."""
+    asides = (
+        "Poniżej gotowy wzór wniosku. Uzupełnij pola w nawiasach kwadratowych.",
+        "Poniżej projekt pozwu cywilnego o zapłatę wynagrodzenia z umowy o dzieło.",
+        "Opinia ma charakter ogólny i nie stanowi porady prawnej w konkretnej sprawie.",
+        "*Dokument ma charakter wzorcowy. Przed podpisaniem należy dostosować treść.*",
+        "Chcesz żebym dopasował ten regulamin do Twojej konkretnej branży?",
+        "**Uwaga praktyczna:** jeżeli faktury mają różne terminy płatności, wskaż je.",
+    )
+    for line in asides:
+        assert find_artifacts(line).counts().get("chatbot_frame"), line
+
+
+def test_words_that_only_begin_like_an_aside_are_not_one():
+    """Judgment text the first version of the wider pattern caught."""
+    for line in (
+        "Ławy fundamentowe posadowiono 80 cm poniżej projektowanego poziomu terenu.",
+        "Świadkowie wskazali na zeznania wzajemnie się uzupełniające.",
+    ):
+        assert not find_artifacts(line).counts().get("chatbot_frame"), line

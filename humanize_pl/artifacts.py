@@ -11,7 +11,7 @@ judgments:
     # heading           30 of 32          0
     --- rule line       29 of 32          0 (3 used "***", left alone here)
     markdown table       6 of 32          0
-    chatbot phrasing    12 of 32          0
+    chatbot phrasing    26 of 32          1
     [data]-style field  21 of 32          2
 
 None of this is style, and none of it is scored: the calibrated signal
@@ -41,13 +41,30 @@ _RULE = re.compile(r"^[ \t]*-{3,}[ \t]*$")
 _TABLE_SEPARATOR = re.compile(
     r"^[ \t]*\|?[ \t]*:?-{3,}:?[ \t]*(?:\|[ \t]*:?-{3,}:?[ \t]*)+\|?[ \t]*$"
 )
+# Each alternative measured against the 2396 judgments before it went in
+# (hits there in brackets): the preamble in all its shapes - "Poniżej gotowy
+# wzór", "Poniżej znajduje się wzór", "Poniżej projekt pozwu" (1); the
+# instructions to the user - "Uzupełnij pola", "w nawiasach kwadratowych" (0);
+# the disclaimers - "nie stanowi porady prawnej", "ma charakter wzorcowy"
+# (1), which in an opinion sent by a law firm contradict what it is; offers
+# and questions - "Chcesz, żebym dopasował…" (0). "Twój/Twojego" was
+# measured too and left out: human privacy policies address the user.
 _CHATBOT = re.compile(
-    r"\b(?:poniżej (?:znajdziesz|przedstawiam|zamieszczam|przygotowałem|przygotowałam)"
+    r"\b(?:poniżej\s+(?:znajdziesz|przedstawiam|zamieszczam|przygotowałem|przygotowałam)"
+    r"|poniżej\s+(?:znajduje\s+się\s+)?(?:\*\*)?(?:gotowy\s+|przykładowy\s+|ogólny\s+|kompletny\s+)?"
+    r"(?:do\s+(?:adaptacji|uzupełnienia)\s+)?(?:\*\*)?(?:wzór\b|projekt\b|propozycj)"
     r"|oto (?:gotowy|przykładowy|propozycja|projekt|wzór)"
     r"|mam nadzieję, że (?:to|ten|powyższ)"
     r"|jeśli (?:chcesz|potrzebujesz)[^.\n]{0,40}(?:mogę|daj znać)"
     r"|daj (?:mi )?znać"
-    r"|mogę (?:również|też|także) (?:przygotować|dostosować|napisać|pomóc))",
+    r"|mogę (?:również|też|także) (?:przygotować|dostosować|napisać|pomóc)"
+    r"|nawias(?:ach|ie|y)\s+kwadratow"
+    r"|uzupełnij\b|możesz\s+uzupełnić|dostosuj\b|usuń\s+wiersz"
+    r"|nie\s+stanowi\s+(?:indywidualnej\s+)?porady"
+    r"|ma\s+charakter\s+wzorcowy|jest\s+wzorem|(?:powyższy|poniższy)\s+wzór"
+    r"|chcesz,?\s+(?:żebym|abym)"
+    r"|zalecam\b[^.\n]{0,60}\bprawnik)"
+    r"|(?m:^\W*uwaga\s+praktyczna\b)",
     re.IGNORECASE,
 )
 # A bracket that names a field rather than quoting or annotating. Judgments
@@ -128,10 +145,16 @@ def find_artifacts(text: str) -> ArtifactReport:
             report.found.append(
                 Artifact("chatbot_frame", index, line[start : match.end() + 40].strip())
             )
-        for match in _PLACEHOLDER.finditer(line):
+        # Fields are counted on the line without its markup. "**……… zł**"
+        # hides the blank from a pattern that wants whitespace before it, so
+        # counting on the raw line found fewer fields before the markup came
+        # off than after - 590 -> 619 on the corpus, a rise the rewrite never
+        # caused.
+        plain = _BOLD.sub(lambda match: match.group(1) or match.group(2), line)
+        for match in _PLACEHOLDER.finditer(plain):
             report.found.append(Artifact("placeholder", index, match.group(0)))
             report.fields.append(match.group(0))
-        report.fields.extend(match.group(0) for match in _BLANK.finditer(line))
+        report.fields.extend(match.group(0) for match in _BLANK.finditer(plain))
     return report
 
 

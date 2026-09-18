@@ -36,7 +36,11 @@ from pathlib import Path
 from typing import Any, ClassVar
 from xml.sax.saxutils import escape
 
-from humanize_pl.detect.calibration import REVIEW_THRESHOLD, load_profile
+from humanize_pl.detect.calibration import (
+    REVIEW_THRESHOLD,
+    load_profile,
+    threshold_for_family,
+)
 from humanize_pl.flows.base import collapse_visible_changes, describe_visible_change
 from humanize_pl.gate import FAMILY_CONSTRAINTS
 
@@ -406,12 +410,40 @@ def _plural(count: int, one: str, few: str, many: str) -> str:
     return many
 
 
-def _verdict_colour(score: float) -> str:
-    if score >= REVIEW_THRESHOLD:
+def _verdict_colour(score: float, threshold: float | None = REVIEW_THRESHOLD) -> str:
+    """Colour of a score against the threshold that applied to it.
+
+    `None` when a batch mixes kinds of document with different thresholds:
+    a mean over a contract and a filing has no threshold of its own, and
+    colouring it would pass a verdict nobody measured.
+    """
+    if threshold is None:
+        return INK
+    if score >= threshold:
         return BAD
-    if score >= REVIEW_THRESHOLD * 0.6:
+    if score >= threshold * 0.6:
         return WARN
     return GOOD
+
+
+# Polish names for the kinds of document, as a threshold is quoted for them.
+_FAMILY_NAMES = {
+    "contract": "umowy",
+    "filing_official": "pisma procesowe i urzędowe",
+    "client_communication": "komunikacja z klientem",
+}
+
+
+def _baseline_description(profile: Any) -> str:
+    """What a reference profile is, in words: "1804 uzasadnień sądowych (SAOS)"."""
+    count = int(getattr(profile, "document_count", 0) or 0)
+    genre = str(getattr(profile, "genre", ""))
+    if genre == "court_reasoning":
+        return f"{_thousands(count)} uzasadnień sądowych (SAOS)"
+    if genre == "law_firm_contract":
+        return f"{_thousands(count)} zatwierdzonych umów kancelarii"
+    noun = _plural(count, "dokument kancelarii", "dokumenty kancelarii", "dokumentów kancelarii")
+    return f"{_thousands(count)} {noun}"
 
 
 def _shorten(text: str, limit: int = EXAMPLE_CHARS) -> str:
@@ -552,12 +584,22 @@ def _scale_bar_class():
         the calibration notes.
         """
 
-        def __init__(self, before: float, after: float, width: float):
+        def __init__(
+            self,
+            before: float,
+            after: float,
+            width: float,
+            thresholds: list[float] | None = None,
+        ):
             super().__init__()
             self.before = max(0.0, min(1.0, before))
             self.after = max(0.0, min(1.0, after))
             self.width = width
             self.height = 30 * mm
+            # One threshold per kind of document in the batch. With one, the
+            # scale is split into its two zones; with several, each is drawn
+            # as a line and the readings are not coloured against any.
+            self.thresholds = sorted(set(thresholds or [REVIEW_THRESHOLD]))
 
         def wrap(self, available_width, available_height):
             self.width = min(self.width, available_width)
@@ -568,16 +610,22 @@ def _scale_bar_class():
             mm_ = self.height / 30
             track_y = 13 * mm_
             track_h = 4.5 * mm_
-            cut = REVIEW_THRESHOLD * self.width
+            cut = self.thresholds[0] * self.width
 
-            canvas.setFillColor(colors.HexColor("#e7f0ea"))
-            canvas.rect(0, track_y, cut, track_h, stroke=0, fill=1)
-            canvas.setFillColor(colors.HexColor("#f8e7e4"))
-            canvas.rect(cut, track_y, self.width - cut, track_h, stroke=0, fill=1)
+            if len(self.thresholds) == 1:
+                canvas.setFillColor(colors.HexColor("#e7f0ea"))
+                canvas.rect(0, track_y, cut, track_h, stroke=0, fill=1)
+                canvas.setFillColor(colors.HexColor("#f8e7e4"))
+                canvas.rect(cut, track_y, self.width - cut, track_h, stroke=0, fill=1)
+            else:
+                canvas.setFillColor(colors.HexColor(BAND))
+                canvas.rect(0, track_y, self.width, track_h, stroke=0, fill=1)
 
             canvas.setStrokeColor(colors.HexColor(BAD))
             canvas.setLineWidth(1)
-            canvas.line(cut, track_y - 1.5 * mm_, cut, track_y + track_h + 1.5 * mm_)
+            for value in self.thresholds:
+                x = value * self.width
+                canvas.line(x, track_y - 1.5 * mm_, x, track_y + track_h + 1.5 * mm_)
 
             # The axis sits below the "po" label, not beside it: the two collide
             # whenever a reading lands near a tick, and 0,25 is exactly where
@@ -590,9 +638,16 @@ def _scale_bar_class():
             canvas.drawRightString(self.width, 1 * mm_, "więcej cech schematycznych")
 
             canvas.setFillColor(colors.HexColor(BAD))
-            canvas.drawCentredString(
-                cut, track_y + track_h + 7.4 * mm_, "próg: powyżej warto przejrzeć tekst"
-            )
+            if len(self.thresholds) == 1:
+                canvas.drawCentredString(
+                    cut, track_y + track_h + 7.4 * mm_, "próg: powyżej warto przejrzeć tekst"
+                )
+            else:
+                canvas.drawString(
+                    0,
+                    track_y + track_h + 7.4 * mm_,
+                    "progi zależą od rodzaju dokumentu (zob. 5.1)",
+                )
 
             self._marker(self.before, "przed", above=True)
             self._marker(self.after, "po", above=False)
@@ -605,7 +660,8 @@ def _scale_bar_class():
             x = value * self.width
             track_y = 13 * mm_
             track_h = 4.5 * mm_
-            colour = _colors.HexColor(_verdict_colour(value))
+            threshold = self.thresholds[0] if len(self.thresholds) == 1 else None
+            colour = _colors.HexColor(_verdict_colour(value, threshold))
             canvas.setFillColor(colour)
             canvas.setStrokeColor(colour)
             y = track_y + track_h if above else track_y
@@ -646,17 +702,36 @@ class _Report:
         self.failed = [row for row in self.rows if row.get("status") != "ok"]
         self.summary = payload.get("summary", {})
         self.settings = payload.get("settings", {})
-        calibrated_items = [
-            item
-            for item in self.items
-            if not str(item.get("calibration_status", "")).startswith("uncalibrated")
-        ]
-        # Old reports have no calibration_status and retain their historical
-        # SAOS comparison. New genre-aware flows are explicitly uncalibrated
-        # until a matching human corpus exists.
-        self.profile = load_profile() if calibrated_items or not any(
-            "calibration_status" in item for item in self.items
-        ) else None
+        # Which human baselines the items were actually measured against.
+        #
+        # This used to load the court-judgment profile whenever anything was
+        # calibrated, so a batch of contracts measured against the firm's own
+        # 51 contracts was described as compared with "1804 pism sądowych".
+        # Old reports carry no calibration_status and keep their historical
+        # SAOS comparison.
+        statuses = [str(item.get("calibration_status", "")) for item in self.items]
+        if not any("calibration_status" in item for item in self.items):
+            names = ["saos_common_2018_2024"] if self.items else []
+        else:
+            names = sorted(
+                {status.split(":", 1)[1] for status in statuses if status.startswith("calibrated:")}
+            )
+        self.baselines: list[tuple[str, Any]] = [(name, load_profile(name)) for name in names]
+        self.calibrated = bool(self.baselines)
+        # One loadable profile: its distributions can stand in the "human"
+        # column of the metrics table. Several, or an office profile that
+        # lives outside the shipped set, and no single column is true.
+        loaded = [profile for _, profile in self.baselines if profile is not None]
+        self.profile = loaded[0] if len(self.baselines) == 1 and loaded else None
+
+        # The threshold is per kind of document (0.08 for contracts, 0.15
+        # for filings), not the global 0.25 the report used to quote for all.
+        kinds = sorted({str(item.get("document_type") or "") for item in self.items})
+        self.thresholds = {kind: threshold_for_family(kind) for kind in kinds}
+        distinct = set(self.thresholds.values())
+        self.threshold: float | None = (
+            distinct.pop() if len(distinct) == 1 else (None if distinct else REVIEW_THRESHOLD)
+        )
         self.rebuilt = bool(payload.get("rebuilt"))
         self.changes_known = not self.rebuilt and self.settings.get("rewrite", True)
 
@@ -687,6 +762,28 @@ class _Report:
         )
         self.has_family_data = any("family_counts_before" in item for item in self.items)
         self.has_metric_data = any("metrics_before" in item for item in self.items)
+
+    def _threshold_for(self, item: dict[str, Any]) -> float:
+        return threshold_for_family(str(item.get("document_type") or ""))
+
+    def _baseline_sentence(self) -> str:
+        """Which humans the score was measured against, in one sentence."""
+        parts = []
+        for name, profile in self.baselines:
+            parts.append(
+                _baseline_description(profile)
+                if profile is not None
+                else f"dokumenty kancelarii (wzorzec „{name}”)"
+            )
+        return "Zbiór porównawczy: " + "; ".join(parts) + "."
+
+    def _threshold_sentence(self) -> str:
+        """The threshold that applied, per kind of document in the batch."""
+        rows = [
+            f"<b>{_fmt(value)}</b> dla: {_FAMILY_NAMES.get(kind, kind or 'nieznany rodzaj')}"
+            for kind, value in sorted(self.thresholds.items())
+        ]
+        return "; ".join(rows) or f"<b>{_fmt(REVIEW_THRESHOLD)}</b>"
 
     # -- building blocks --
 
@@ -859,9 +956,9 @@ class _Report:
             ),
             [
                 self.cell(
-                    f"<font size='13' color='{_verdict_colour(self.before)}'>"
+                    f"<font size='13' color='{_verdict_colour(self.before, self.threshold)}'>"
                     f"{_fmt(self.before)}</font> → "
-                    f"<font size='13' color='{_verdict_colour(self.after)}'><b>"
+                    f"<font size='13' color='{_verdict_colour(self.after, self.threshold)}'><b>"
                     f"{_fmt(self.after)}</b></font>"
                 ),
                 self.cell(f"<font size='13'>{self.findings_before} → "
@@ -876,7 +973,9 @@ class _Report:
             self.para("1. Najważniejsze liczby", "h1"),
             self.table(tiles, [self.width / 4] * 4),
             Spacer(1, 8),
-            _scale_bar_class()(self.before, self.after, self.width),
+            _scale_bar_class()(
+                self.before, self.after, self.width, list(self.thresholds.values())
+            ),
             self.para(self.headline_sentence(), "lead"),
         ]
         return story
@@ -1216,14 +1315,10 @@ class _Report:
         layers = self.payload.get("layers", {})
         detection = layers.get("detection", {})
         rewrite = layers.get("rewrite", {})
-        if self.profile is None:
+        if not self.calibrated:
             profile_text = "Profil porównawczy nie był dostępny w tym przebiegu."
         else:
-            profile_text = (
-                f"Profil {self.profile.name}: {_thousands(self.profile.document_count)} "
-                f"uzasadnień i {_thousands(self.profile.word_count)} słów; "
-                f"źródło: {self.profile.source}; gatunek: {self.profile.genre}."
-            )
+            profile_text = self._baseline_sentence()
         hosted = layers.get("hosted_model", {})
         backend = self.settings.get("rewrite_backend", "rules")
         model_text = (
@@ -1546,7 +1641,7 @@ class _Report:
 
     def metrics(self) -> list:
         section = "5"
-        if self.profile is None:
+        if not self.calibrated:
             signal_explanation = (
                 "To opisowy, nieskalibrowany wskaźnik gęstości wykrytych cech. "
                 "Nie porównujemy go z korpusem uzasadnień SAOS, ponieważ badany "
@@ -1562,21 +1657,15 @@ class _Report:
             self.para(f"{section}.1. Wskaźnik stylu schematycznego", "h2"),
             self.para(signal_explanation, "body"),
         ]
-        if self.profile is not None:
-            story.append(
-                self.para(
-                    f"Zbiór porównawczy to {_thousands(self.profile.document_count)} "
-                    "pism sądowych napisanych przez ludzi.",
-                    "small",
-                )
-            )
+        if self.calibrated:
+            story.append(self.para(escape(self._baseline_sentence()), "small"))
         threshold_text = (
-            f"Wynik <b>{_fmt(REVIEW_THRESHOLD)}</b> i wyżej to prośba o przejrzenie "
-            "tekstu, a nie ocena ani wyrok. Poniżej tej granicy tekst mieści się w tym, "
-            "co zwykle piszą ludzie w profilu."
-            if self.profile is not None
+            f"Próg przeglądu: {self._threshold_sentence()}. Wynik na progu i wyżej "
+            "to prośba o przejrzenie tekstu, a nie ocena ani wyrok. Poniżej progu "
+            "tekst mieści się w tym, co zwykle piszą ludzie w zbiorze porównawczym."
+            if self.calibrated
             else (
-                f"Robocza granica <b>{_fmt(REVIEW_THRESHOLD)}</b> porządkuje przegląd, "
+                f"Robocza granica {self._threshold_sentence()} porządkuje przegląd, "
                 "ale bez korpusu tego samego gatunku nie jest statystycznym progiem "
                 "tekstu ludzkiego ani dowodem autorstwa."
             )
@@ -1584,11 +1673,19 @@ class _Report:
         story.append(self.para(threshold_text, "body"))
 
         story.append(self.para(f"{section}.2. Rytm tekstu", "h2"))
-        rhythm_comparison = (
-            "Kolumna „ocena” porównuje wynik po poprawkach z tym, co typowe u ludzi."
-            if self.profile is not None
-            else "Bez korpusu tego samego gatunku kolumna „ocena” pokazuje brak porównania."
-        )
+        if self.profile is not None:
+            rhythm_comparison = (
+                "Kolumna „ocena” porównuje wynik po poprawkach z tym, co typowe u ludzi."
+            )
+        elif self.calibrated:
+            rhythm_comparison = (
+                "Dokumenty tej partii porównano z różnymi zbiorami ludzkich tekstów, "
+                "więc jednej kolumny „ocena” nie da się uczciwie wypełnić."
+            )
+        else:
+            rhythm_comparison = (
+                "Bez korpusu tego samego gatunku kolumna „ocena” pokazuje brak porównania."
+            )
         story.append(
             self.para(
                 "Te liczby opisują rytm, a nie treść. Tekst nadmiernie schematyczny bywa "
@@ -1859,7 +1956,7 @@ class _Report:
                         self.cell(str(item.get("words", 0))),
                         self.cell(
                             f"{_fmt(float(item.get('signal_before', 0.0)))} → "
-                            f"<font color='{_verdict_colour(item_after)}'><b>"
+                            f"<font color='{_verdict_colour(item_after, self._threshold_for(item))}'><b>"
                             f"{_fmt(item_after)}</b></font>"
                         ),
                         self.cell(
@@ -1976,7 +2073,8 @@ class _Report:
                     self.cell(f"<b>{escape(_item_label(position, self.one, item))}</b>"),
                     self.cell(
                         f"wskaźnik {_fmt(float(item.get('signal_before', 0.0)))} → "
-                        f"<font color='{_verdict_colour(after)}'><b>{_fmt(after)}</b></font>"
+                        f"<font color='{_verdict_colour(after, self._threshold_for(item))}'><b>"
+                        f"{_fmt(after)}</b></font>"
                         f" · {status}"
                     ),
                 ]

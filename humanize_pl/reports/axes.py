@@ -101,10 +101,28 @@ def axis_rows(items: list[dict[str, Any]]) -> list[AxisRow]:
         isinstance(item.get("tone_after"), dict) and item["tone_after"].get("checked")
         for item in items
     )
+    # Without an office profile the check still runs, on the phrases banned
+    # for the kind of document - which is not the office's style, and a row
+    # titled "Styl kancelarii" showing 0 -> 0 would claim a check that did
+    # not happen.
+    office = checked_tone or any(
+        isinstance(item.get("style_compliance_after"), dict)
+        and item["style_compliance_after"].get("profile")
+        for item in items
+    )
     if style is None and not checked_tone:
         rows.append(
             AxisRow("house_style", "Styl kancelarii", "odstępstwa od wzorca",
                     None, None, reason="brak profilu kancelarii")
+        )
+    elif not office:
+        rows.append(
+            AxisRow(
+                "house_style", "Styl",
+                "zwroty zakazane dla rodzaju dokumentu (bez profilu kancelarii)",
+                style[0] if style else 0,
+                style[1] if style else 0,
+            )
         )
     else:
         rows.append(

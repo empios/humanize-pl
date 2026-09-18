@@ -855,3 +855,97 @@ def test_a_silent_family_that_was_found_after_all_is_not_called_uninformative(tm
 
     assert pdf_pl.FAMILY_GLOSSARY[found]["label"] not in listed
     assert pdf_pl.FAMILY_GLOSSARY[silent[1]]["label"] in listed
+
+
+def _baseline_payload(items: list[tuple[str, str, float]]) -> dict:
+    """(document_type, calibration_status, signal_after) per item."""
+    return {
+        "flow": "docx",
+        "settings": {"mode": "standard", "engine": "basic", "rewrite": True},
+        "layers": {},
+        "summary": {"items": len(items), "ok": len(items), "failed": 0, "needs_review": 0},
+        "documents": [
+            {
+                "name": f"d{index}.docx",
+                "status": "ok",
+                "words": 900,
+                "signal_before": after + 0.05,
+                "signal_after": after,
+                "findings_before": 2,
+                "findings_after": 1,
+                "document_type": kind,
+                "calibration_status": status,
+            }
+            for index, (kind, status, after) in enumerate(items, 1)
+        ],
+    }
+
+
+def test_a_contract_batch_names_the_contracts_it_was_compared_with(tmp_path) -> None:
+    """The report used to load the court-judgment profile whenever anything
+    was calibrated, and describe contracts measured against the firm's own
+    51 contracts as compared with "pisma sądowe" at the global 0.25."""
+    text = _pdf_text(
+        _baseline_payload([("contract", "calibrated:law_firm_contract", 0.1)]),
+        tmp_path / "r.pdf",
+    )
+
+    assert "51 zatwierdzonych umów kancelarii" in text
+    assert "pism sądowych" not in text and "uzasadnień sądowych" not in text
+    assert "0,08 dla: umowy" in text
+
+
+def test_a_mixed_batch_quotes_each_kinds_threshold(tmp_path) -> None:
+    text = _pdf_text(
+        _baseline_payload(
+            [
+                ("contract", "calibrated:law_firm_contract", 0.1),
+                ("filing_official", "calibrated:saos_common_2018_2024", 0.1),
+            ]
+        ),
+        tmp_path / "r.pdf",
+    )
+
+    assert "0,08 dla: umowy" in text and "0,15 dla: pisma procesowe i urzędowe" in text
+    assert "1 804 uzasadnień sądowych (SAOS)" in text or "1804 uzasadnień sądowych (SAOS)" in text
+    assert "51 zatwierdzonych umów kancelarii" in text
+    assert "progi zależą od rodzaju dokumentu" in text
+
+
+def test_an_office_baseline_is_named_even_when_it_is_not_shipped(tmp_path) -> None:
+    text = _pdf_text(
+        _baseline_payload([("contract", "calibrated:kancelaria_x", 0.1)]),
+        tmp_path / "r.pdf",
+    )
+
+    assert "wzorzec „kancelaria_x”" in text
+
+
+def test_a_score_is_coloured_against_its_own_threshold() -> None:
+    """0.10 is past the contract threshold and well inside the filing one;
+    a mean over both has no threshold of its own and gets no verdict colour."""
+    assert pdf_pl._verdict_colour(0.10, 0.08) == pdf_pl.BAD
+    assert pdf_pl._verdict_colour(0.10, 0.15) != pdf_pl.BAD
+    assert pdf_pl._verdict_colour(0.10, None) == pdf_pl.INK
+
+
+def test_without_an_office_profile_the_style_row_does_not_claim_the_office_style():
+    """The genre's banned phrases are still checked; that is not the office's
+    style, and a row titled "Styl kancelarii" at 0 -> 0 would say it was."""
+    rows = _axis_rows(
+        [
+            {
+                "words": 500,
+                "findings_before": 2,
+                "findings_after": 1,
+                "style_compliance_before": {"issues": ["zakazany zwrot: x"], "profile": None},
+                "style_compliance_after": {"issues": [], "profile": None},
+                "tone_before": {"checked": False, "deviations": []},
+                "tone_after": {"checked": False, "deviations": []},
+            }
+        ]
+    )
+
+    assert "Styl kancelarii" not in rows
+    assert rows["Styl"][1].endswith("(bez profilu kancelarii)")
+    assert rows["Styl"][2:] == ("1", "0")

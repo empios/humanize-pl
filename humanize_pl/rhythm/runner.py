@@ -44,6 +44,11 @@ class RhythmResult:
     text: str
     changes: list[dict[str, Any]] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
+    # Why the pass ran as it did - no profile, too few sentences, the
+    # paragraph axis off. About the process, not the document, so it must
+    # not reach the warnings that decide readiness: on DOCX the paragraph
+    # note alone put 30 of 32 documents below "ready".
+    notes: list[str] = field(default_factory=list)
     skipped_reason: str | None = None
     loss_before: float = 0.0
     loss_after: float = 0.0
@@ -101,10 +106,10 @@ def apply_rhythm_pass(
     if not decision.run:
         result.skipped_reason = decision.reason
         if decision.reason:
-            result.warnings.append(f"Rytm: {decision.reason}")
+            result.notes.append(f"Rytm: {decision.reason}")
         return result
     if decision.reason:
-        result.warnings.append(f"Rytm: {decision.reason}")
+        result.notes.append(f"Rytm: {decision.reason}")
     if objective.inside_band:
         result.skipped_reason = "Rytm dokumentu mieści się w ludzkim zakresie."
         return result

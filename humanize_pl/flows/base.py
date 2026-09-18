@@ -356,6 +356,9 @@ class ItemOutcome:
     # to its user, unfilled fields. See `humanize_pl.artifacts`.
     artifacts_before: dict[str, Any] = field(default_factory=dict)
     artifacts_after: dict[str, Any] = field(default_factory=dict)
+    # How the run went, as opposed to what is wrong with the document:
+    # recorded, but never a reason to hold a document back.
+    notes: list[str] = field(default_factory=list)
 
     # The unsuffixed names are what the PDF report, the replay path and the UI
     # already read, and they mean "the state the document left in".
@@ -433,6 +436,7 @@ class ItemOutcome:
             "drafted_sections": self.drafted_sections,
             "artifacts_before": self.artifacts_before,
             "artifacts_after": self.artifacts_after,
+            "notes": self.notes,
         }
 
     @classmethod
@@ -477,12 +481,25 @@ def run_all_layers(
 ) -> tuple[ItemOutcome, GateVerdict]:
     """Detect, optionally rewrite, re-detect, then gate."""
     guess = classify_document(text)
+    category = classify_category(text)
+    # The family sets the threshold, the human baseline and the formatting
+    # norms, so it is taken from the better of the two classifiers. Measured
+    # on the 32-document model corpus: the family classifier alone was right
+    # 16 times, often at 0.9 confidence (demands for payment read as
+    # contracts, privacy policies as filings); the family of an evidence-gated
+    # category was right 29 times. The family classifier stays as the
+    # fallback for text no category claims.
+    if settings.document_type == DocumentType.auto and category.specified:
+        guess = type(guess)(
+            category.category.family,
+            category.confidence,
+            (f"kategoria: {category.category.label_pl}", *category.evidence[:4]),
+        )
     resolved_type = (
         guess.document_type if settings.document_type == DocumentType.auto else settings.document_type
     )
     if settings.document_type != DocumentType.auto:
         guess = type(guess)(resolved_type, 1.0, ("typ wskazany przez użytkownika",))
-    category = classify_category(text)
     style_profile = style_profile or settings.load_style_profile()
 
     # The office profile is resolved before the baseline is chosen, because it
@@ -612,6 +629,7 @@ def run_all_layers(
                 protected_paragraph_indices=protected_paragraph_indices,
             )
             outcome.warnings.extend(rhythm.warnings)
+            outcome.notes.extend(rhythm.notes)
             if rhythm.changed:
                 text_out = rhythm.text
                 outcome.applied_changes = collapse_visible_changes(

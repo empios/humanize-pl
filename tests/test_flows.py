@@ -689,3 +689,59 @@ def test_the_spreadsheet_gets_a_column_per_axis_that_applies(tmp_path) -> None:
     assert not any(str(header).startswith("Struktura") for header in headers)
     words = sheet.cell(row=2, column=headers.index("Słowa: przed → po") + 1).value
     assert "→" in words
+
+
+def test_a_note_about_the_run_is_not_a_warning_about_the_document() -> None:
+    """On DOCX the rhythm's "paragraph axis off" note put 30 of 32 documents
+    below "ready" - a fact about the tool, charged to every document."""
+    from humanize_pl.flows.base import run_all_layers as run
+
+    outcome, _verdict = run(
+        AI_TEXT, name="x.txt", settings=FlowSettings(mode=Mode.conservative, engine=Engine.basic)
+    )
+
+    assert any(note.startswith("Rytm:") for note in outcome.notes)
+    assert not any(warning.startswith("Rytm:") for warning in outcome.warnings)
+    assert outcome.to_json()["notes"] == outcome.notes
+
+
+DEMAND_FOR_PAYMENT = (
+    "WEZWANIE DO ZAPŁATY\n"
+    "W nawiązaniu do zawartej między stronami umowy o dostawę towarów oraz faktury "
+    "nr 12/2026 informuję, że do dnia dzisiejszego nie uregulowano należności "
+    "wynikającej z faktury.\n"
+    "W związku z powyższym wzywam do zapłaty kwoty 27 300,00 zł w terminie 7 dni od "
+    "dnia otrzymania niniejszego wezwania na rachunek bankowy wierzyciela.\n"
+    "W przypadku braku zapłaty w wyznaczonym terminie sprawa zostanie skierowana na "
+    "drogę postępowania sądowego, co narazi dłużnika na dodatkowe koszty."
+)
+
+
+def test_the_family_comes_from_the_category_when_one_is_recognised() -> None:
+    """The family classifier reads this demand for payment as a contract (one
+    mention of "strony" outweighs the rest); the category classifier knows it
+    is a demand, and a demand is a filing. On the 32-document model corpus the
+    family classifier alone was right 16 times, the category's family 29."""
+    from humanize_pl.document import DocumentType, classify_document
+
+    assert classify_document(DEMAND_FOR_PAYMENT).document_type is DocumentType.contract
+
+    outcome, _verdict = run_all_layers(DEMAND_FOR_PAYMENT, name="w.txt", settings=BASIC)
+
+    assert outcome.document_type == DocumentType.filing_official.value
+    assert outcome.document_type_evidence[0] == "kategoria: wezwanie do zapłaty"
+    assert not any("wskazuje rodzinę" in warning for warning in outcome.warnings)
+
+
+def test_a_type_set_by_the_user_still_wins() -> None:
+    from dataclasses import replace
+
+    from humanize_pl.document import DocumentType
+
+    outcome, _verdict = run_all_layers(
+        DEMAND_FOR_PAYMENT,
+        name="w.txt",
+        settings=replace(BASIC, document_type=DocumentType.contract),
+    )
+
+    assert outcome.document_type == DocumentType.contract.value

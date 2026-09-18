@@ -10,7 +10,9 @@ from __future__ import annotations
 
 from collections import Counter
 from enum import Enum
+
 import regex as re
+
 
 class DeonticModality(Enum):
     OBLIGATION = "obligation"

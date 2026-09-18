@@ -19,14 +19,12 @@ from pathlib import Path
 from typing import Any
 
 from humanize_pl.artifacts import find_artifacts, strip_markup
-from humanize_pl.config import Engine, LegalReviewProfile, Mode
-from humanize_pl.core import HumanizerSession, create_humanizer_session
 from humanize_pl.blueprint import blueprint_for, check_category
 from humanize_pl.categories import classify_category
-from humanize_pl.tone import compare_tone
+from humanize_pl.config import Engine, LegalReviewProfile, Mode
+from humanize_pl.core import HumanizerSession, create_humanizer_session
 from humanize_pl.detect import detect_document, load_profile, profile_for_family
 from humanize_pl.detect.calibration import threshold_for_family
-from humanize_pl.rhythm import RhythmScope, apply_rhythm_pass
 from humanize_pl.document import (
     DocumentType,
     FormatPolicy,
@@ -35,10 +33,12 @@ from humanize_pl.document import (
     StyleProfile,
     classify_document,
 )
+from humanize_pl.gate import GateVerdict, review_response
 from humanize_pl.llm import LlmConfigurationError, LlmSettings, OpenAICompatibleRewriter
 from humanize_pl.nlp.morfeusz import try_load_morfeusz
-from humanize_pl.gate import GateVerdict, review_response
+from humanize_pl.rhythm import RhythmScope, apply_rhythm_pass
 from humanize_pl.sentence_splitter import split_sentences
+from humanize_pl.tone import compare_tone
 
 # Kept per item, not per run: the report picks its illustrations from across
 # the batch, and a whole document's changes would bloat the payload.
@@ -436,7 +436,7 @@ class ItemOutcome:
         }
 
     @classmethod
-    def from_json(cls, payload: dict[str, Any]) -> "ItemOutcome":
+    def from_json(cls, payload: dict[str, Any]) -> ItemOutcome:
         """Rebuild an outcome from a `to_json` dict (resume support).
 
         `signal_delta` is a derived property and `applied_changes` /
@@ -795,7 +795,8 @@ def run_all_layers(
         outcome.warnings.extend(structure.issues)
 
     if settings.nli or settings.blueprint is not None:
-        from humanize_pl.blueprint import BlueprintError, _load, blueprint_for as get_blueprint
+        from humanize_pl.blueprint import BlueprintError, _load
+        from humanize_pl.blueprint import blueprint_for as get_blueprint
         from humanize_pl.llm import LlmConfigurationError
         from humanize_pl.nli import LlmClauseJudge, check_document_against_blueprint
 

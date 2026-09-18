@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-
 from datetime import date
 
 from humanize_pl.detect import detect_document
-from .normalize import anonymisation_rate
-from humanize_pl.detect.lexical import mtld, connective_density
+from humanize_pl.detect.lexical import connective_density, mtld
 from humanize_pl.detect.reference import Distribution, ReferenceProfile
+
+from .normalize import anonymisation_rate
 
 
 def build_reference_profile(

@@ -3,20 +3,21 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from humanize_pl.config import Mode
+
 from .ai_artifacts import ai_artifact_candidates
 from .base import Candidate
-from .kancelaryzmy import kancelaryzm_candidates
-from .lemma_engine import lemma_swap_candidates
-from .nominalization import nominalization_candidates
-from .genitive_chains import genitive_chain_candidates
-from .house_style import house_style_candidates
-from .legal_ai_style import legal_ai_style_candidates
-from .legal_style import legal_style_candidates
-from .passive_voice import passive_candidates
-from .sentence_flow import sentence_flow_candidates
 from .cleanup import cleanup_candidates
 from .features import ParagraphFeatures, SentenceFeatures, analyze_sentence_features
+from .genitive_chains import genitive_chain_candidates
+from .house_style import house_style_candidates
+from .kancelaryzmy import kancelaryzm_candidates
+from .legal_ai_style import legal_ai_style_candidates
+from .legal_style import legal_style_candidates
+from .lemma_engine import lemma_swap_candidates
+from .nominalization import nominalization_candidates
+from .passive_voice import passive_candidates
 from .scoring import score_candidate
+from .sentence_flow import sentence_flow_candidates
 
 
 @dataclass

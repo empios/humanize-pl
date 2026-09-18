@@ -3,6 +3,7 @@ from __future__ import annotations
 import regex as re
 
 from humanize_pl.config import Mode
+
 from .base import Candidate
 
 

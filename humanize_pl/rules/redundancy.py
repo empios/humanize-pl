@@ -3,13 +3,14 @@ from __future__ import annotations
 from dataclasses import replace
 from functools import lru_cache
 from pathlib import Path
-import regex as re
 
+import regex as re
 import yaml
 
 from humanize_pl.config import Mode
 from humanize_pl.nlp.morfeusz import try_load_morfeusz
 from humanize_pl.safety.anchors import content_anchor_tokens
+
 from .base import Candidate
 from .features import LEGAL_REF_PATTERN, ParagraphFeatures
 from .finite_verbs import FINITE_VERB_SUFFIXES, FINITE_VERB_WORDS, PAST_TENSE_SUFFIXES

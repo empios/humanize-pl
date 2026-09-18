@@ -1,18 +1,19 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 from collections import Counter
+from dataclasses import dataclass, field
+
 import regex as re
 
-from .anchors import content_anchor_retention, content_anchor_tokens
-from .protectors import ProtectedText
-from .deontic import extract_deontic_profile, DeonticModality
 from humanize_pl.rules.finite_verbs import has_finite_verb
 from humanize_pl.rules.legal_features import (
     legal_anchor_retention,
     lost_legal_anchors,
-    normativity_signature,
 )
+
+from .anchors import content_anchor_retention, content_anchor_tokens
+from .deontic import DeonticModality, extract_deontic_profile
+from .protectors import ProtectedText
 
 BANNED_WORDS = {
     "surprisingly",

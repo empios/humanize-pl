@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from contextlib import contextmanager
-from functools import lru_cache
 import math
 import os
+from contextlib import contextmanager
+from dataclasses import dataclass
+from functools import lru_cache
 
 import numpy as np
-
 
 DEFAULT_SEMANTIC_MODEL = "sdadas/st-polish-paraphrase-from-distilroberta"
 DEFAULT_FLUENCY_MODEL = "allegro/herbert-base-cased"

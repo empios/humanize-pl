@@ -10,6 +10,7 @@ import yaml
 from humanize_pl.config import Mode
 from humanize_pl.nlp.morfeusz import MorfeuszAnalyzer, try_load_morfeusz
 from humanize_pl.nlp.morphology import ger_to_infinitive
+
 from .base import Candidate
 
 _YAML = Path(__file__).parent / "nominalization.yaml"

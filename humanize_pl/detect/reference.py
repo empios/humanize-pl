@@ -7,7 +7,6 @@ from statistics import mean, pstdev
 
 import regex as re
 
-
 WORD_RE = re.compile(r"\p{L}+")
 
 
@@ -23,11 +22,11 @@ class Distribution:
     p99: float
 
     @classmethod
-    def empty(cls) -> "Distribution":
+    def empty(cls) -> Distribution:
         return cls(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 
     @classmethod
-    def of(cls, values: list[float]) -> "Distribution":
+    def of(cls, values: list[float]) -> Distribution:
         if not values:
             return cls(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
         ordered = sorted(values)
@@ -87,7 +86,7 @@ class ReferenceProfile:
         return payload
 
     @classmethod
-    def from_json(cls, payload: dict) -> "ReferenceProfile":
+    def from_json(cls, payload: dict) -> ReferenceProfile:
         data = dict(payload)
         # An old profile's `windowed_ttr` (windowed type-token ratio, scale
         # ~0.5-0.7) is NOT a substitute for `mtld` (MTLD, scale ~10-30): they
@@ -128,7 +127,7 @@ class ReferenceProfile:
         )
 
     @classmethod
-    def load(cls, path: str | Path) -> "ReferenceProfile":
+    def load(cls, path: str | Path) -> ReferenceProfile:
         return cls.from_json(json.loads(Path(path).read_text(encoding="utf-8")))
 
 

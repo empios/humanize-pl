@@ -11,6 +11,7 @@ from humanize_pl.rules.legal_features import (
     AI_TRANSITION_PATTERN,
     VAGUE_REFERENCE_PATTERN,
 )
+
 from .base import Finding
 from .structural import scaffold_findings, tricolon_findings
 

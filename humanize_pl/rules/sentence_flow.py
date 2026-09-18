@@ -3,9 +3,9 @@ from __future__ import annotations
 import regex as re
 
 from humanize_pl.config import Mode
+
 from .base import Candidate
 from .finite_verbs import has_finite_verb
-
 
 _LEGAL_REF_RE = re.compile(
     r"\bart\.\b|§|\bust\.\b|\bpkt\b|\bDz\.\s*U\.|\bKodeksu\b|\bKonstytucji\b"

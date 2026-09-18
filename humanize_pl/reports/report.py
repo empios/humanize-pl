@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import json
+from collections import Counter
 from pathlib import Path
 from statistics import mean
-from collections import Counter
 from typing import Any
+
 import regex as re
 
 from humanize_pl.core import HumanizeResult

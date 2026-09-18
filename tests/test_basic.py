@@ -19,8 +19,8 @@ def test_passive():
 
 def test_passive_morfeusz_extended():
     """Morfeusz oracle handles participles not in the hardcoded fast-path table."""
-    from humanize_pl.rules.passive_voice import passive_candidates
     from humanize_pl.config import Mode
+    from humanize_pl.rules.passive_voice import passive_candidates
 
     cases = [
         # Feminine noun: nom → acc via Morfeusz
@@ -51,8 +51,8 @@ def test_passive_accusative_morfeusz():
 
 def test_passive_np_adj_agreement():
     """passive_candidates inflects the full NP (adj+noun and noun+adj) to accusative."""
-    from humanize_pl.rules.passive_voice import passive_candidates
     from humanize_pl.config import Mode
+    from humanize_pl.rules.passive_voice import passive_candidates
 
     cases = [
         # prenominal adj + feminine noun
@@ -94,8 +94,8 @@ def test_protected_article():
 
 
 def test_nominalization_dokonac():
-    from humanize_pl.rules.nominalization import nominalization_candidates
     from humanize_pl.config import Mode
+    from humanize_pl.rules.nominalization import nominalization_candidates
 
     cases = [
         # perfective infinitive
@@ -116,8 +116,8 @@ def test_nominalization_dokonac():
 
 
 def test_nominalization_przeprowadzic():
-    from humanize_pl.rules.nominalization import nominalization_candidates
     from humanize_pl.config import Mode
+    from humanize_pl.rules.nominalization import nominalization_candidates
 
     cases = [
         ("Należy przeprowadzić analizę ryzyka.", "przeanalizować", Mode.standard),
@@ -135,8 +135,8 @@ def test_nominalization_przeprowadzic():
 
 def test_nominalization_no_conservative():
     """Nominalization rules are inactive in conservative mode."""
-    from humanize_pl.rules.nominalization import nominalization_candidates
     from humanize_pl.config import Mode
+    from humanize_pl.rules.nominalization import nominalization_candidates
 
     cands = nominalization_candidates("Organ dokonał analizy dokumentów.", mode=Mode.conservative)
     assert cands == []
@@ -144,8 +144,8 @@ def test_nominalization_no_conservative():
 
 def test_nominalization_nlp_path():
     """NLP path handles all conjugated forms via Stanza dep-parse + Morfeusz generate."""
-    from humanize_pl.rules.nominalization import nominalization_candidates
     from humanize_pl.config import Mode
+    from humanize_pl.rules.nominalization import nominalization_candidates
 
     class _T:
         def __init__(self, **kw):
@@ -200,8 +200,8 @@ def test_lix_score():
 
 
 def test_ger_to_infinitive():
-    from humanize_pl.nlp.morphology import ger_to_infinitive
     from humanize_pl.nlp.morfeusz import try_load_morfeusz
+    from humanize_pl.nlp.morphology import ger_to_infinitive
 
     m = try_load_morfeusz()
     assert ger_to_infinitive("analizowania", m) == "analizować"
@@ -212,8 +212,8 @@ def test_ger_to_infinitive():
 
 
 def test_w_celu_ger_candidates():
-    from humanize_pl.rules.nominalization import nominalization_candidates
     from humanize_pl.config import Mode
+    from humanize_pl.rules.nominalization import nominalization_candidates
 
     cands = nominalization_candidates(
         "W celu przeprowadzenia kontroli należy złożyć wniosek.", mode=Mode.standard
@@ -238,8 +238,8 @@ def test_lix_in_sentence_features():
 
 def test_ger_auto_detection_nlp_path():
     """Ger auto-detection fires when light verb is known but noun is a gerundive not in table."""
-    from humanize_pl.rules.nominalization import nominalization_candidates
     from humanize_pl.config import Mode
+    from humanize_pl.rules.nominalization import nominalization_candidates
 
     class _T:
         def __init__(self, **kw):
@@ -266,8 +266,8 @@ def test_ger_auto_detection_nlp_path():
 
 
 def test_co_do_zasady():
-    from humanize_pl.rules.kancelaryzmy import kancelaryzm_candidates
     from humanize_pl.config import Mode
+    from humanize_pl.rules.kancelaryzmy import kancelaryzm_candidates
 
     cases = [
         ("Co do zasady wierzyciel może dochodzić naprawienia szkody.", "zasadniczo"),
@@ -300,8 +300,8 @@ def test_drop_intro_with_new_verbs():
 
 
 def test_kancelaryzmy_b_additions():
-    from humanize_pl.rules.kancelaryzmy import kancelaryzm_candidates
     from humanize_pl.config import Mode
+    from humanize_pl.rules.kancelaryzmy import kancelaryzm_candidates
 
     cases = [
         ("Decyzja jest słuszna, albowiem spełnia wymogi.", "ponieważ"),
@@ -319,8 +319,8 @@ def test_kancelaryzmy_b_additions():
 
 
 def test_split_przy_czym_long_sentence():
-    from humanize_pl.rules.sentence_flow import sentence_flow_candidates
     from humanize_pl.config import Mode
+    from humanize_pl.rules.sentence_flow import sentence_flow_candidates
 
     # 33 words, "przy czym" in the middle, both halves have finite verbs, no legal refs near split
     sentence = (
@@ -337,8 +337,8 @@ def test_split_przy_czym_long_sentence():
 
 
 def test_no_split_przy_czym_short_sentence():
-    from humanize_pl.rules.sentence_flow import sentence_flow_candidates
     from humanize_pl.config import Mode
+    from humanize_pl.rules.sentence_flow import sentence_flow_candidates
 
     # Under 32 words → no split
     sentence = "Organ jest zobowiązany do rozpatrzenia wniosku, przy czym ma prawo do informacji."
@@ -347,8 +347,8 @@ def test_no_split_przy_czym_short_sentence():
 
 
 def test_no_split_przy_czym_near_legal_ref():
-    from humanize_pl.rules.sentence_flow import sentence_flow_candidates
     from humanize_pl.config import Mode
+    from humanize_pl.rules.sentence_flow import sentence_flow_candidates
 
     # "Kodeksu pracy" is within 6 words of the split point → guard fires
     sentence = (
@@ -361,8 +361,8 @@ def test_no_split_przy_czym_near_legal_ref():
 
 
 def test_split_ponieważ_standard_mode():
-    from humanize_pl.rules.sentence_flow import sentence_flow_candidates
     from humanize_pl.config import Mode
+    from humanize_pl.rules.sentence_flow import sentence_flow_candidates
 
     # 32 words, ponieważ split available in standard (not just strong)
     sentence = (

@@ -5,7 +5,7 @@ from pathlib import Path
 
 from typer.testing import CliRunner
 
-import humanize_pl.benchmark as benchmark
+from humanize_pl import benchmark
 from humanize_pl.benchmark import (
     BenchmarkDocument,
     BenchmarkRow,

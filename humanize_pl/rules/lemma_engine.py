@@ -22,6 +22,7 @@ import yaml
 
 from humanize_pl.config import Mode
 from humanize_pl.nlp.inflector import Inflector, load_default, parse_stanza_feats
+
 from .base import Candidate
 
 DEFAULT_RULES_PATH = Path(__file__).resolve().parent / "lemma_swaps.yaml"

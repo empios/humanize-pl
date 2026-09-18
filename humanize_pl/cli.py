@@ -30,7 +30,6 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
-from typing import Any
 
 import click
 import typer
@@ -44,7 +43,7 @@ from humanize_pl.document import (
     RewriteBackend,
     build_style_profile,
 )
-from humanize_pl.flow import FlowResult, humanize
+from humanize_pl.flow import humanize
 from humanize_pl.flows.base import FlowSettings, ItemOutcome, attach_pdf_report
 from humanize_pl.flows.docx_flow import run_docx_flow
 from humanize_pl.flows.replay import (
@@ -59,10 +58,7 @@ from humanize_pl.gate import review_response
 from humanize_pl.io.docx_io import docx_text
 from humanize_pl.reports.report import (
     build_detection_payload,
-    build_json_report,
-    write_batch_json_report,
     write_json_payload,
-    write_json_report,
 )
 from humanize_pl.version import __version__
 

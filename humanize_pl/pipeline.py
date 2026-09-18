@@ -22,7 +22,6 @@ from humanize_pl.safety.syntax import stanza_finite_verb_gate
 from humanize_pl.safety.validators import GateCheck, validate_candidate
 from humanize_pl.sentence_splitter import split_sentences
 
-
 # A masked-LM fluency scorer is structurally biased against AI-artifact removal:
 # "fluent" and "high-probability" are the same thing to a language model, and
 # AI-style discourse frames are high-probability Polish. HerBERT scores

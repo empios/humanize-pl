@@ -1,12 +1,15 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 from difflib import SequenceMatcher
-from typing import Any, Iterable
+from typing import Any
 
 import regex as re
 
-from humanize_pl.nlp.morfeusz import MorfeuszAnalyzer, WHITELIST as MORF_WHITELIST
+from humanize_pl.nlp.morfeusz import WHITELIST as MORF_WHITELIST
+from humanize_pl.nlp.morfeusz import MorfeuszAnalyzer
+
 from .validators import GateCheck
 
 WORD_RE = re.compile(r"\p{L}+")

@@ -14,8 +14,8 @@ from humanize_pl.cli import (
     profile_command,
     report_command,
     run_command,
-    xlsx_command,
     ui_command,
+    xlsx_command,
 )
 
 __all__ = [

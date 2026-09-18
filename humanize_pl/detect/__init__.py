@@ -6,9 +6,9 @@ from .base import (
     ParagraphDiagnosis,
 )
 from .calibration import (
-    Calibration,
-    CalibratedSignal,
     UNCERTAIN_BAND,
+    CalibratedSignal,
+    Calibration,
     calibrate,
     load_profile,
     profile_for_family,
@@ -18,6 +18,7 @@ from .reference import Distribution, ReferenceProfile
 
 __all__ = [
     "AI_FAMILIES",
+    "UNCERTAIN_BAND",
     "CalibratedSignal",
     "Calibration",
     "Distribution",
@@ -28,7 +29,6 @@ __all__ = [
     "ReferenceProfile",
     "calibrate",
     "detect_document",
-    "UNCERTAIN_BAND",
     "load_profile",
     "profile_for_family",
 ]

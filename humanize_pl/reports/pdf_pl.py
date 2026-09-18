@@ -340,7 +340,7 @@ def pdf_available() -> bool:
 
 
 def _covers_polish(path: str) -> bool:
-    from reportlab.pdfbase.ttfonts import TTFont, TTFError
+    from reportlab.pdfbase.ttfonts import TTFError, TTFont
 
     try:
         face = TTFont("probe", path).face
@@ -367,9 +367,9 @@ def _resolve_font_paths() -> tuple[str, str]:
 
 
 def _register_fonts() -> None:
+    from reportlab.lib.fonts import addMapping
     from reportlab.pdfbase import pdfmetrics
     from reportlab.pdfbase.ttfonts import TTFont
-    from reportlab.lib.fonts import addMapping
 
     if BASE_FONT in pdfmetrics.getRegisteredFontNames():
         return

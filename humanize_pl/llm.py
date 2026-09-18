@@ -6,14 +6,15 @@ and raw responses intentionally have no report/log serialization path here.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 import json
 import os
-from pathlib import Path
 import re
 import threading
 import time
-from typing import Any, Mapping
+from collections.abc import Mapping
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any
 
 import httpx
 
@@ -86,7 +87,7 @@ class LlmSettings:
         env_file: str | Path | None = None,
         *,
         environ: Mapping[str, str] | None = None,
-    ) -> "LlmSettings":
+    ) -> LlmSettings:
         file_values: dict[str, str] = {}
         if env_file is not None:
             file_values = _read_env_file(Path(env_file))
@@ -252,7 +253,7 @@ class OpenAICompatibleRewriter:
         if self._owns_client:
             self._client.close()
 
-    def __enter__(self) -> "OpenAICompatibleRewriter":
+    def __enter__(self) -> OpenAICompatibleRewriter:
         return self
 
     def __exit__(self, *_args: object) -> None:
@@ -636,7 +637,7 @@ def _extract_json_object(content: str) -> dict[str, Any] | None:
     if direct is not None:
         return direct
 
-    fenced = re.search(r"```(?:json)?\s*(.+?)\s*```", stripped, flags=re.I | re.S)
+    fenced = re.search(r"```(?:json)?\s*(.+?)\s*```", stripped, flags=re.IGNORECASE | re.DOTALL)
     if fenced is not None:
         candidate = as_object(fenced.group(1))
         if candidate is not None:

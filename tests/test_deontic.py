@@ -1,6 +1,7 @@
-from humanize_pl.safety.deontic import extract_deontic_profile, DeonticModality
-from humanize_pl.safety.validators import validate_candidate
+from humanize_pl.safety.deontic import DeonticModality, extract_deontic_profile
 from humanize_pl.safety.protectors import ProtectedText
+from humanize_pl.safety.validators import validate_candidate
+
 
 def test_extract_deontic_profile():
     # Obligations

@@ -10,7 +10,6 @@ from humanize_pl.reports.report import write_json_report
 from humanize_pl.safety.protectors import protect_text
 from humanize_pl.safety.validators import validate_candidate
 
-
 FIXTURE_PATH = Path(__file__).parent / "fixtures" / "ai_legal_samples.json"
 
 

@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+
 import regex as re
 
 from humanize_pl.rules.finite_verbs import has_finite_verb
-
 
 AI_TRANSITION_PATTERN = re.compile(
     r"\b(?:ponadto|co więcej|dodatkowo|w tym kontekście|warto\s+(?:wskazać|zauważyć|podkreślić)|"

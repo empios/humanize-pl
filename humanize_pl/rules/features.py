@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
+
 import regex as re
 
+from humanize_pl.nlp.frequency import sentence_formality
+from humanize_pl.nlp.morphology import lix_score, mean_dependency_distance
 from humanize_pl.rules.legal_features import analyze_legal_review_features
 from humanize_pl.safety.anchors import content_anchor_tokens
-from humanize_pl.nlp.morphology import lix_score, mean_dependency_distance
-from humanize_pl.nlp.frequency import sentence_formality
 
 
 @dataclass(frozen=True)

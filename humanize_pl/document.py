@@ -6,14 +6,15 @@ types are shared by the command line, the flow reports and Python callers.
 
 from __future__ import annotations
 
-from collections import Counter
-from dataclasses import asdict, dataclass, field
-from enum import Enum
 import json
-from pathlib import Path
 import re
 import shutil
-from typing import Any, Iterable
+from collections import Counter
+from collections.abc import Iterable
+from dataclasses import asdict, dataclass, field
+from enum import Enum
+from pathlib import Path
+from typing import Any
 
 import yaml
 
@@ -251,7 +252,7 @@ class StyleProfile:
         return target
 
     @classmethod
-    def load(cls, directory: str | Path) -> "StyleProfile":
+    def load(cls, directory: str | Path) -> StyleProfile:
         path = Path(directory)
         source = path / "profile.json" if path.is_dir() else path
         payload = json.loads(source.read_text(encoding="utf-8"))

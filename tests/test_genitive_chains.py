@@ -4,6 +4,7 @@ from humanize_pl.config import Mode
 from humanize_pl.nlp.stanza_engine import StanzaEngine
 from humanize_pl.rules.genitive_chains import genitive_chain_candidates
 
+
 @pytest.fixture(scope="module")
 def engine():
     return StanzaEngine()

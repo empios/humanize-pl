@@ -4,9 +4,8 @@ from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
 
-from .lexical import mtld
-from .reference import ReferenceProfile
 from .base import DocumentDiagnosis
+from .reference import ReferenceProfile
 
 PROFILE_DIR = Path(__file__).resolve().parent.parent / "data" / "reference_profiles"
 DEFAULT_PROFILE = "saos_common_2018_2024"

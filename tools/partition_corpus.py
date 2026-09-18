@@ -21,7 +21,6 @@ import json
 import unicodedata
 from pathlib import Path
 
-
 _POLISH_MAP = str.maketrans(
     "ąćęłńóśźżĄĆĘŁŃÓŚŹŻ",
     "acelnoszzACELNOSZZ",
@@ -90,7 +89,7 @@ def recover_title(name: str) -> str:
     return "".join(out)
 
 
-def _rules() -> list[tuple[str, str, "callable"]]:
+def _rules() -> list[tuple[str, str, callable]]:
     """Ordered rules: (type_id, label_pl, predicate on the ASCII skeleton).
 
     First match wins, so put the more specific genre before the more general.

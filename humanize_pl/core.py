@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-import regex as re
 from typing import Any
+
+import regex as re
 
 from .config import Engine, HumanizeConfig, LegalReviewProfile, Mode
 from .detect import detect_document

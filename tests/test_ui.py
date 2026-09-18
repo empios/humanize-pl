@@ -11,16 +11,16 @@ import pytest
 
 pytest.importorskip("gradio", reason="frontend jest opcjonalnym dodatkiem [ui]")
 
-from pathlib import Path  # noqa: E402
+from pathlib import Path
 
-from humanize_pl.config import Engine, Mode  # noqa: E402
-from humanize_pl.document import (  # noqa: E402
+from humanize_pl.config import Engine, Mode
+from humanize_pl.document import (
     DocumentType,
     FormatPolicy,
     RewriteBackend,
 )
-from humanize_pl.flows.base import ItemOutcome  # noqa: E402
-from humanize_pl.ui.app import (  # noqa: E402
+from humanize_pl.flows.base import ItemOutcome
+from humanize_pl.ui.app import (
     TABLE_HEADERS,
     build_ui,
     describe_layers,

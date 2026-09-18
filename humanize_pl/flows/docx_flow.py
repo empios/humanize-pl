@@ -10,13 +10,6 @@ from pathlib import Path
 from typing import Any
 
 from humanize_pl.detect import detect_document
-from humanize_pl.drafting import (
-    UNIT_HEADING,
-    DraftedSection,
-    drafts_from_payload,
-    inserted_line_indices,
-)
-from humanize_pl.rhythm import RhythmScope
 from humanize_pl.document import DocumentType, FormatPolicy, ReadinessStatus
 from humanize_pl.docx_quality import (
     FormattingReport,
@@ -26,6 +19,12 @@ from humanize_pl.docx_quality import (
     normalize_document,
     render_and_audit,
 )
+from humanize_pl.drafting import (
+    UNIT_HEADING,
+    DraftedSection,
+    drafts_from_payload,
+    inserted_line_indices,
+)
 from humanize_pl.io.docx_structure import (
     inventory_docx,
     iter_text_units,
@@ -34,6 +33,7 @@ from humanize_pl.io.docx_structure import (
     replace_unit_text,
     save_with_inventory_guard,
 )
+from humanize_pl.rhythm import RhythmScope
 
 from .base import (
     FlowSettings,

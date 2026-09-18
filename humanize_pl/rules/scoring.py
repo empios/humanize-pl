@@ -9,9 +9,9 @@ from humanize_pl.rules.legal_features import (
     normativity_signature,
 )
 from humanize_pl.safety.anchors import content_anchor_retention
+
 from .base import Candidate
 from .features import ParagraphFeatures, SentenceFeatures
-
 
 LOW_RISK_RULE_PREFIXES = (
     "legal_style:comma_",

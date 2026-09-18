@@ -7,11 +7,11 @@ from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 
-import regex as re
 import yaml
 
 from humanize_pl.config import Mode
 from humanize_pl.nlp.stanza_engine import SentenceAnalysis, TokenInfo
+
 from .base import Candidate
 
 logger = logging.getLogger(__name__)

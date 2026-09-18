@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+
 import regex as re
 
 PROTECTED_PATTERNS = [

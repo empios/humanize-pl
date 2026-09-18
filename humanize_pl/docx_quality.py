@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass, field
-from pathlib import Path
 import re
 import shutil
 import subprocess
 import tempfile
+from dataclasses import asdict, dataclass, field
+from pathlib import Path
 from typing import Any
 from zipfile import ZIP_DEFLATED, ZipFile
 
@@ -120,7 +120,7 @@ def audit_document(document: Any, source_path: str | Path, *, policy: FormatPoli
     heading_levels: list[int] = []
     for paragraph in document.paragraphs:
         style_name = paragraph.style.name if paragraph.style is not None else ""
-        match = re.search(r"(?:Heading|Nagłówek)\s*(\d+)", style_name, re.I)
+        match = re.search(r"(?:Heading|Nagłówek)\s*(\d+)", style_name, re.IGNORECASE)
         if match:
             heading_levels.append(int(match.group(1)))
     for previous, current in zip(heading_levels, heading_levels[1:]):

@@ -3,6 +3,7 @@ from __future__ import annotations
 import regex as re
 
 from humanize_pl.config import Mode
+
 from .base import Candidate
 
 # `niniejszy → ten` lives in lemma_swaps.yaml + lemma_engine.py and is the

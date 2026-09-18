@@ -3,8 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from docx import Document
 import pytest
+from docx import Document
 from typer.testing import CliRunner
 
 from humanize_pl.config import Engine

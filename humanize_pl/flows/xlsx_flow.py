@@ -17,6 +17,7 @@ from typing import Any
 
 from humanize_pl.document import DocumentType, RewriteBackend
 from humanize_pl.reports.axes import AxisRow, axis_rows
+
 from .base import (
     FlowSettings,
     ItemOutcome,
@@ -395,8 +396,9 @@ def _write_acceptance_sheet(workbook, outcomes: list[ItemOutcome]) -> str:
 
 def _write_unresolved_sheet(workbook, outcomes: list[ItemOutcome]) -> str:
     """List every post-rewrite finding that still needs a human decision."""
-    from humanize_pl.gate import FAMILY_CONSTRAINTS
     from openpyxl.styles import Alignment, Border, Font, PatternFill, Side  # type: ignore
+
+    from humanize_pl.gate import FAMILY_CONSTRAINTS
 
     sheet = workbook.create_sheet(_unique_sheet_title(workbook, UNRESOLVED_SHEET_TITLE))
     sheet.sheet_properties.tabColor = "FFFFC000"
@@ -518,8 +520,9 @@ def _write_unresolved_sheet(workbook, outcomes: list[ItemOutcome]) -> str:
 
 def _write_basis_sheet(workbook, layers: dict[str, Any], settings: FlowSettings) -> str:
     """Explain the method, evidence base and limits in non-technical Polish."""
-    from humanize_pl.detect import load_profile
     from openpyxl.styles import Alignment, Border, Font, PatternFill, Side  # type: ignore
+
+    from humanize_pl.detect import load_profile
 
     sheet = workbook.create_sheet(_unique_sheet_title(workbook, BASIS_SHEET_TITLE))
     sheet.sheet_properties.tabColor = "FF5B9BD5"

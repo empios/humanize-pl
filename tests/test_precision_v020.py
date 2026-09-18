@@ -1,7 +1,6 @@
 import json
 
-from humanize_pl.config import Mode
-from humanize_pl.config import HumanizeConfig
+from humanize_pl.config import HumanizeConfig, Mode
 from humanize_pl.core import humanize_text
 from humanize_pl.reports.report import write_json_report
 from humanize_pl.rules.base import Candidate

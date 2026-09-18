@@ -19,8 +19,8 @@ evaluate_engine.py, which runs on real model output from
 docs_tests/ai_generated/ and separates it by provenance.
 """
 
-import random
 import os
+import random
 
 os.makedirs("paper_evaluation/dataset", exist_ok=True)
 
@@ -119,4 +119,4 @@ for cat_name, cat_data in categories.items():
         with open(filename, "w", encoding="utf-8") as f:
             f.write(text)
 
-print(f"Wygenerowano 40 dokumentów testowych w 'paper_evaluation/dataset/'")
+print("Wygenerowano 40 dokumentów testowych w 'paper_evaluation/dataset/'")

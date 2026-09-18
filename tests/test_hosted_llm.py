@@ -29,7 +29,7 @@ def _response(payload: dict) -> httpx.Response:
 def _fields(content: str) -> dict[str, str]:
     """Read the labelled plain-text prompt the rewriter now sends."""
     fragment_id = re.search(r"fragment_id: (\S+)", content)
-    source = re.search(r"Fragment do redakcji:\n(.*?)\nZauważone problemy:", content, re.S)
+    source = re.search(r"Fragment do redakcji:\n(.*?)\nZauważone problemy:", content, re.DOTALL)
     return {
         "fragment_id": fragment_id.group(1) if fragment_id else "",
         "source": source.group(1) if source else "",

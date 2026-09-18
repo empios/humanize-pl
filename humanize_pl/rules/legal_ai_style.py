@@ -4,6 +4,7 @@ import regex as re
 
 from humanize_pl.config import Mode
 from humanize_pl.rules.finite_verbs import has_finite_verb
+
 from .base import Candidate
 from .features import ParagraphFeatures, SentenceFeatures
 

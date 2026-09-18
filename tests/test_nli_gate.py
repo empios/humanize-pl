@@ -1,6 +1,6 @@
-import pytest
-from humanize_pl.safety.validators import validate_candidate
 from humanize_pl.safety.protectors import ProtectedText
+from humanize_pl.safety.validators import validate_candidate
+
 
 class FakeContradictingNLI:
     def check_entailment(self, premise: str, hypothesis: str) -> bool:

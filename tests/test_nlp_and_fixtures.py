@@ -4,19 +4,18 @@ from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 
-import humanize_pl.core as core
+from humanize_pl import core
 from humanize_pl.cli import app
 from humanize_pl.config import Engine, HumanizeConfig, Mode
 from humanize_pl.core import humanize_text
 from humanize_pl.io.docx_io import process_docx
+from humanize_pl.nlp.stanza_engine import SentenceAnalysis, TokenInfo
 from humanize_pl.pipeline import LegalPipeline
 from humanize_pl.reports.report import write_json_report
-from humanize_pl.rules.base import Candidate
 from humanize_pl.results import HumanizeResult
+from humanize_pl.rules.base import Candidate
 from humanize_pl.rules.engine import RuleEngine
-from humanize_pl.nlp.stanza_engine import SentenceAnalysis, TokenInfo
 from humanize_pl.safety.protectors import protect_text
-
 
 FIXTURE_PATH = Path(__file__).parent / "fixtures" / "legal_docs" / "isap_samples.json"
 
@@ -310,8 +309,9 @@ def test_offline_models_flag_is_passed_to_model_loaders(monkeypatch):
 
 
 def test_process_docx_reuses_one_humanizer_session(monkeypatch, tmp_path):
-    import humanize_pl.io.docx_io as docx_io
     from docx import Document
+
+    from humanize_pl.io import docx_io
 
     created_sessions = []
     processed_paragraphs = []
@@ -398,8 +398,8 @@ def test_intra_sentence_redundancy_reduction_is_safe():
 
 
 def test_tautological_adj_pair_is_reduced():
-    from humanize_pl.rules.redundancy import _tautological_adj_candidates
     from humanize_pl.config import Mode
+    from humanize_pl.rules.redundancy import _tautological_adj_candidates
 
     sentence = "Warunki konieczne i niezbędne muszą być spełnione."
     cands = _tautological_adj_candidates(sentence, mode=Mode.standard)
@@ -410,8 +410,8 @@ def test_tautological_adj_pair_is_reduced():
 
 
 def test_tautological_adj_inflected_forms():
-    from humanize_pl.rules.redundancy import _tautological_adj_candidates
     from humanize_pl.config import Mode
+    from humanize_pl.rules.redundancy import _tautological_adj_candidates
 
     # Inflected: koniecznych i niezbędnych (Gen Plur)
     sentence = "Brak dokumentów koniecznych i niezbędnych uniemożliwia rejestrację."
@@ -422,8 +422,8 @@ def test_tautological_adj_inflected_forms():
 
 
 def test_tautological_adj_not_fired_for_non_pair():
-    from humanize_pl.rules.redundancy import _tautological_adj_candidates
     from humanize_pl.config import Mode
+    from humanize_pl.rules.redundancy import _tautological_adj_candidates
 
     # "ważny i prawomocny" — not in the tautology list
     sentence = "Wyrok jest ważny i prawomocny."
@@ -432,8 +432,8 @@ def test_tautological_adj_not_fired_for_non_pair():
 
 
 def test_tautological_adj_not_fired_in_conservative_mode():
-    from humanize_pl.rules.redundancy import redundancy_candidates
     from humanize_pl.config import Mode
+    from humanize_pl.rules.redundancy import redundancy_candidates
 
     sentence = "Analiza jest kompleksowa i wyczerpująca."
     cands = redundancy_candidates(
@@ -446,8 +446,8 @@ def test_tautological_adj_not_fired_in_conservative_mode():
 
 
 def test_tautological_adj_various_pairs():
-    from humanize_pl.rules.redundancy import _tautological_adj_candidates
     from humanize_pl.config import Mode
+    from humanize_pl.rules.redundancy import _tautological_adj_candidates
 
     cases = [
         ("Wymóg jest jasny i oczywisty.", "oczywisty"),

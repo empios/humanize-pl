@@ -4,12 +4,13 @@ from dataclasses import replace
 
 import regex as re
 
-from .reference import ReferenceProfile
 from humanize_pl.sentence_splitter import split_sentences
+
 from .base import DocumentDiagnosis, FamilySummary, Finding, ParagraphDiagnosis
 from .calibration import calibrate
+from .lexical import connective_density, mtld
+from .reference import ReferenceProfile
 from .signals import WORD_RE, repeated_opening_findings, sentence_findings
-from .lexical import mtld, connective_density
 from .structural import (
     paragraph_shape_cv,
     sentence_length_burstiness,

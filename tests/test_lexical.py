@@ -1,5 +1,6 @@
 from humanize_pl.detect.lexical import connective_density, mtld
 
+
 def test_connective_density_counts_target_connectives():
     text = "Zatem sąd uznał, że roszczenie jest zasadne. Ponadto, chociaż powód nie stawił się na rozprawie, to jednakże dowody były jasne."
     # Total words: 20

@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
+import shutil
+from collections.abc import Iterator
 from dataclasses import dataclass, field
 from difflib import SequenceMatcher
 from pathlib import Path
-import shutil
-from typing import Any, Iterator
+from typing import Any
 from zipfile import ZipFile
 
 
@@ -38,7 +39,7 @@ class DocxInventory:
     notes_text: tuple[str, ...]
 
     def structural_differences(
-        self, other: "DocxInventory", *, expected_paragraph_delta: int = 0
+        self, other: DocxInventory, *, expected_paragraph_delta: int = 0
     ) -> list[str]:
         """Structural drift between two inventories, ignoring a declared change.
 
@@ -139,10 +140,10 @@ def _cell_units(table: Any, table_index: int) -> Iterator[TextUnit]:
 
 def iter_text_units(document: Any) -> Iterator[TextUnit]:
     """Yield body paragraphs and table-cell paragraphs in OOXML order."""
-    from docx.table import Table  # type: ignore
-    from docx.text.paragraph import Paragraph  # type: ignore
     from docx.oxml.table import CT_Tbl  # type: ignore
     from docx.oxml.text.paragraph import CT_P  # type: ignore
+    from docx.table import Table  # type: ignore
+    from docx.text.paragraph import Paragraph  # type: ignore
 
     paragraph_index = 0
     table_index = 0

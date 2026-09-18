@@ -96,4 +96,4 @@ class HumanizeResult:
     fluency_model: str | None = None
     warnings: list[str] = field(default_factory=list)
     # Populated regardless of mode or of whether any rewrite was applied.
-    diagnosis: "DocumentDiagnosis | None" = None
+    diagnosis: DocumentDiagnosis | None = None

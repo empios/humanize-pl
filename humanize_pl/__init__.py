@@ -1,5 +1,5 @@
-from .core import HumanizeResult, humanize_text
 from .config import LegalReviewProfile
+from .core import HumanizeResult, humanize_text
 from .document import (
     DocumentType,
     FormatPolicy,

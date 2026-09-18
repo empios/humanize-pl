@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import csv
-from dataclasses import asdict, dataclass, field
 import json
+import tempfile
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from statistics import mean
-import tempfile
 from time import perf_counter
 from typing import Any
 
@@ -21,7 +21,6 @@ from humanize_pl.io.docx_structure import inventory_docx
 from humanize_pl.reports.report import write_json_report
 from humanize_pl.safety.protectors import protect_text
 from humanize_pl.safety.validators import has_stranded_relative_clause, legal_sensitive_inventory
-
 
 DEFAULT_MANIFEST = Path("docs_tests/ai_generated/manifest.json")
 DEFAULT_OUTPUT = Path("docs_tests/results/latest")

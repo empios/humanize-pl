@@ -147,12 +147,6 @@ def _metrics(
     openings = [
         " ".join(sentence.lower().split()[:2]) for _, _, sentence in indexed_sentences
     ]
-    tokens = [
-        token.lower()
-        for _, _, sentence in indexed_sentences
-        for token in WORD_RE.findall(sentence)
-    ]
-
     return {
         "mean_sentence_words": round(mean_length, 4),
         "sentence_length_cv": sentence_length_cv(lengths),

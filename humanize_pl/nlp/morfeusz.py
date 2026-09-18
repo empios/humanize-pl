@@ -169,7 +169,7 @@ class MorfeuszAnalyzer:
             return self._cache[key]
         try:
             raw = self._morfeusz.analyse(word)
-        except Exception:
+        except Exception:  # noqa: BLE001 - native library raises arbitrary exceptions
             self._cache[key] = []
             return []
         out: list[MorfeuszAnalysis] = []
@@ -206,7 +206,7 @@ class MorfeuszAnalyzer:
             return []
         try:
             raw = self._morfeusz.generate(lemma)
-        except Exception:
+        except Exception:  # noqa: BLE001 - native library raises arbitrary exceptions
             return []
         out: list[MorfeuszAnalysis] = []
         for entry in raw:
@@ -264,7 +264,7 @@ def _extract_interp(entry: Any) -> tuple[str, ...] | None:
 def try_load_morfeusz() -> MorfeuszAnalyzer | None:
     try:
         return MorfeuszAnalyzer()
-    except Exception:
+    except Exception:  # noqa: BLE001 - native library raises arbitrary exceptions
         return None
 
 

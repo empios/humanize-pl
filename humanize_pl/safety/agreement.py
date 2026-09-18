@@ -173,7 +173,7 @@ def _analyze(stanza_engine: Any, text: str, cache: dict[str, Any] | None):
         return cache[text]
     try:
         analysis = stanza_engine.analyze_sentence(text)
-    except Exception:
+    except Exception:  # noqa: BLE001 - third-party model raises arbitrary exceptions
         return None
     if cache is not None:
         cache[text] = analysis

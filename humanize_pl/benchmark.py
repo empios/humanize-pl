@@ -578,9 +578,7 @@ def _needs_review_sections(rows: list[BenchmarkRow]) -> list[str]:
 def _accepted_item_needs_review(item: dict[str, Any]) -> bool:
     if (item.get("risk") or 0.0) < 0.15:
         return False
-    if item.get("operation_type") == "ai_artifact_reduction" and _all_gates_passed(item):
-        return False
-    return True
+    return not (item.get("operation_type") == "ai_artifact_reduction" and _all_gates_passed(item))
 
 
 def _all_gates_passed(item: dict[str, Any]) -> bool:

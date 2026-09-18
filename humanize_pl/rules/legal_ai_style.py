@@ -207,7 +207,7 @@ def _abstract_frame_rewrites(sentence: str, *, nlp_confidence: float | None) -> 
         match = regex.search(sentence)
         if not match:
             continue
-        candidate = regex.sub(lambda m: _preserve_case(m.group(0), replacement), sentence, count=1)
+        candidate = regex.sub(lambda m, replacement=replacement: _preserve_case(m.group(0), replacement), sentence, count=1)
         if candidate != sentence:
             out.append(_candidate(candidate, rule, issue, score, risk, nlp_confidence))
 

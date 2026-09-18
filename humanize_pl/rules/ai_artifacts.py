@@ -9,8 +9,8 @@ from .base import Candidate
 
 DISCOURSE_INTRO_PATTERNS: list[tuple[str, str, float, float]] = [
     (
-        r"^\s*(?:warto|należy)\s+(?:również\s+)?(?:wskazać|zauważyć|podkreślić|odnotować|zaznaczyć)"
-        r"\s*,?\s+że\s+",
+        (r"^\s*(?:warto|należy)\s+(?:również\s+)?(?:wskazać|zauważyć|podkreślić|odnotować|zaznaczyć)"
+        r"\s*,?\s+że\s+"),
         "ai_artifact:drop_discourse_intro",
         0.57,
         0.20,

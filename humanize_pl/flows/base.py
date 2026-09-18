@@ -809,8 +809,10 @@ def run_all_layers(
         elif category.specified:
             try:
                 skeleton = get_blueprint(category.category.id)
-            except Exception:
-                skeleton = None
+            except (BlueprintError, OSError, ValueError) as exc:
+                # Said, not swallowed: a broken shipped skeleton used to turn
+                # clause verification off without a word.
+                outcome.warnings.append(f"Nie udało się załadować szkieletu NLI: {exc}")
 
         if skeleton is not None:
             try:
@@ -845,7 +847,7 @@ def run_all_layers(
                         for clause in sec.clauses
                     ):
                         outcome.needs_review = True
-            except Exception as exc:
+            except Exception as exc:  # noqa: BLE001 - reported as a warning; NLI must not fail the item
                 outcome.warnings.append(f"Błąd weryfikacji NLI: {type(exc).__name__}: {exc}")
 
     if outcome.needs_review or outcome.unresolved_findings or outcome.warnings:

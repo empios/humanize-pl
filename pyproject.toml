@@ -76,3 +76,13 @@ path = "humanize_pl/version.py"
 [tool.ruff]
 line-length = 100
 target-version = "py310"
+
+[tool.ruff.lint.flake8-bugbear]
+# typer declares CLI options as default values; that is the library's idiom,
+# not a shared mutable default.
+extend-immutable-calls = ["typer.Option", "typer.Argument"]
+
+[tool.ruff.lint.per-file-ignores]
+# A sample document written as "\n".join([...lines...]) reads as a document;
+# the f-string ruff proposes reads as one long line.
+"tests/*" = ["FLY002"]

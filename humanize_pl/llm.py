@@ -14,7 +14,7 @@ import time
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, TypeVar
 
 import httpx
 
@@ -56,6 +56,10 @@ def _read_env_file(path: Path) -> dict[str, str]:
             value = value[1:-1]
         values[key.strip()] = value
     return values
+
+
+# `typing.Self` arrives in 3.11 and the package supports 3.10.
+_Rewriter = TypeVar("_Rewriter", bound="OpenAICompatibleRewriter")
 
 
 @dataclass(frozen=True)
@@ -253,7 +257,7 @@ class OpenAICompatibleRewriter:
         if self._owns_client:
             self._client.close()
 
-    def __enter__(self) -> OpenAICompatibleRewriter:
+    def __enter__(self: _Rewriter) -> _Rewriter:  # noqa: PYI019 - Self needs 3.11
         return self
 
     def __exit__(self, *_args: object) -> None:
@@ -294,7 +298,7 @@ class OpenAICompatibleRewriter:
             self.metadata.supports_response_format = used_format
             self.metadata.status = "ready"
             return True
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001 - endpoint failures are reported, never raised into the batch
             self.metadata.status = "unavailable"
             self.metadata.warnings.append(_safe_error(exc))
             return False
@@ -422,7 +426,7 @@ class OpenAICompatibleRewriter:
                 rationale=proposal.rationale,
                 validation_checks=checks,
             )
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001 - endpoint failures are reported, never raised into the batch
             self.metadata.note_endpoint_error(_safe_error(exc))
             return LlmRewriteResult(source, False, _safe_error(exc))
         finally:

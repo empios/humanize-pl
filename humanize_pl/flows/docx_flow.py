@@ -155,7 +155,7 @@ def run_docx_flow(
                         "liczby pomiarów są zachowane."
                     )
                 outcome.unresolved_findings = payload.get("unresolved_findings", [])
-            except Exception as exc:
+            except Exception as exc:  # noqa: BLE001 - one bad document must not stop the batch
                 outcome = ItemOutcome(
                     name=path.name,
                     status="failed",
@@ -217,7 +217,7 @@ def run_docx_flow(
             if outcome.warnings and outcome.readiness_status == ReadinessStatus.ready.value:
                 outcome.readiness_status = ReadinessStatus.ready_with_warnings.value
             _write_detail(details_directory / f"{path.stem}.json", text, outcome, verdict)
-        except Exception as exc:  # one bad document must not stop the batch
+        except Exception as exc:  # noqa: BLE001 - one bad document must not stop the batch
             outcome = ItemOutcome(
                 name=path.name, status="failed", error=f"{type(exc).__name__}: {exc}"
             )

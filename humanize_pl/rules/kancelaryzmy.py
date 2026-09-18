@@ -149,7 +149,7 @@ def kancelaryzm_candidates(
             continue
         if _should_skip_light_verb(pattern, sentence, analysis):
             continue
-        combined = regex.sub(lambda m: _preserve_case(m.group(0), replacement), combined)
+        combined = regex.sub(lambda m, replacement=replacement: _preserve_case(m.group(0), replacement), combined)
         applied.append(pattern)
     if combined != sentence:
         candidates.append(Candidate(combined, "kancelaryzm:combined", 0.65))
@@ -161,7 +161,7 @@ def kancelaryzm_candidates(
             continue
         if _should_skip_light_verb(pattern, sentence, analysis):
             continue
-        candidate = regex.sub(lambda m: _preserve_case(m.group(0), replacement), sentence, count=1)
+        candidate = regex.sub(lambda m, replacement=replacement: _preserve_case(m.group(0), replacement), sentence, count=1)
         if candidate != sentence:
             candidates.append(Candidate(candidate, f"kancelaryzm:{pattern}", 0.55))
     return candidates

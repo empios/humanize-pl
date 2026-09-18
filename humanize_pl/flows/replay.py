@@ -282,7 +282,7 @@ def backfill_payload(payload: dict[str, Any]) -> int:
             before_text = docx_text(source)
             rewritten = output_directory / f"{Path(str(item['name'])).stem}_humanized.docx"
             after_text = docx_text(rewritten) if rewritten.is_file() else before_text
-        except Exception:  # a document deleted or replaced since the run
+        except Exception:  # noqa: BLE001, S112 - a document deleted or replaced since the run
             continue
 
         before = detect_document(before_text)

@@ -341,9 +341,7 @@ def _looks_like_finite_verb(word: str) -> bool:
         return True
     if len(word) >= 6 and word.endswith(FINITE_VERB_SUFFIXES):
         return True
-    if len(word) >= 5 and word.endswith(PAST_TENSE_SUFFIXES):
-        return True
-    return False
+    return bool(len(word) >= 5 and word.endswith(PAST_TENSE_SUFFIXES))
 
 
 def _sentence_case(text: str) -> str:

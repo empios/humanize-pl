@@ -201,7 +201,7 @@ def _operation_type(rule: str) -> str:
         return "sentence_split"
     if rule.startswith("passive_"):
         return "voice_transform"
-    if rule.startswith("cleanup:") or rule.startswith("cleanup_") or "comma" in rule:
+    if rule.startswith(("cleanup:", "cleanup_")) or "comma" in rule:
         return "cleanup"
     if rule.startswith("kancelaryzm:"):
         return "debureaucratization"
@@ -217,7 +217,7 @@ def _operation_type(rule: str) -> str:
 def _stage_for_rule(rule: str) -> str:
     if rule.startswith("split_"):
         return "coherence_gate"
-    if rule.startswith("cleanup:") or rule.startswith("cleanup_") or "comma" in rule:
+    if rule.startswith(("cleanup:", "cleanup_")) or "comma" in rule:
         return "quality_gate"
     if rule.startswith("ai_artifact:"):
         return "ai_artifact_review"

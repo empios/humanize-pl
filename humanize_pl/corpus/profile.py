@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from datetime import date
+from datetime import datetime
 
 from humanize_pl.detect import detect_document
 from humanize_pl.detect.lexical import connective_density, mtld
@@ -79,7 +79,7 @@ def build_reference_profile(
         name=name,
         genre=genre,
         source=source,
-        built_on=date.today().isoformat(),
+        built_on=datetime.now().astimezone().date().isoformat(),
         document_count=document_count,
         word_count=word_count,
         sentence_count=sentence_count,

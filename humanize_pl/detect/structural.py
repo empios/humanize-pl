@@ -49,8 +49,8 @@ SCAFFOLD_PATTERNS: list[tuple[str, str, str, float]] = [
         0.6,
     ),
     (
-        r"\bstanowi\s+(?:jedno|jedną|jeden)\s+z\s+(?:kluczowych|najważniejszych|"
-        r"podstawowych|istotnych)\b",
+        (r"\bstanowi\s+(?:jedno|jedną|jeden)\s+z\s+(?:kluczowych|najważniejszych|"
+        r"podstawowych|istotnych)\b"),
         "abstract_frame",
         "stanowi_jedno_z",
         0.7,

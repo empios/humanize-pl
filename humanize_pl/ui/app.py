@@ -244,7 +244,7 @@ def _value(choice: str, labels: dict[str, str]) -> str:
 
 def new_workspace(kind: str) -> Path:
     RUNS_ROOT.mkdir(parents=True, exist_ok=True)
-    stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    stamp = datetime.now().astimezone().strftime("%Y%m%d-%H%M%S")
     return Path(tempfile.mkdtemp(prefix=f"{kind}-{stamp}-", dir=RUNS_ROOT))
 
 
@@ -521,10 +521,10 @@ def summary_markdown(payload: dict[str, Any]) -> str:
     lines = [
         headline,
         "",
-        f"Średni sygnał AI **{direction}** z {before:.2f} do **{after:.2f}**"
+        (f"Średni sygnał AI **{direction}** z {before:.2f} do **{after:.2f}**"
         f"{word}. Zastosowano **{summary['changes_applied']}** "
         f"poprawek, znalezisk {summary['findings_before']} → "
-        f"{summary['findings_after']}.",
+        f"{summary['findings_after']}."),
     ]
     if len(states) > 1:
         lines.append(
@@ -567,7 +567,7 @@ def stream_run(
                 lambda line: events.put(("log", line)),
                 lambda item: events.put(("item", item)),
             )
-        except BaseException as exc:  # surfaced to the browser below
+        except BaseException as exc:  # noqa: BLE001 - surfaced to the browser below
             box["error"] = exc
         finally:
             events.put(finished)
@@ -638,13 +638,15 @@ def _render(
 
 
 def get_blueprint_choices() -> list[str]:
+    from humanize_pl.blueprint import BlueprintError, blueprints
+
     choices = ["(brak)"]
     try:
-        from humanize_pl.blueprint import blueprints
-
         bps = blueprints()
         choices.extend(sorted(bps.keys()))
-    except Exception:
+    except (BlueprintError, OSError, ValueError):
+        # A broken skeleton file leaves the choice list short rather than
+        # taking the form down; the flow itself reports the file.
         pass
     return choices
 
@@ -680,8 +682,8 @@ def run_text(
     status_icon = "⚠️" if result.needs_review else "✅"
     direction = "spadł" if result.signal_after < result.signal_before else "bez zmian"
     summary_lines = [
-        f"### {status_icon} Gotowe — sygnał AI {direction} z **{result.signal_before:.2f}** "
-        f"do **{result.signal_after:.2f}** ({signal_word(result.signal_after, False)}).",
+        (f"### {status_icon} Gotowe — sygnał AI {direction} z **{result.signal_before:.2f}** "
+        f"do **{result.signal_after:.2f}** ({signal_word(result.signal_after, False)})."),
         f"Zastosowano **{result.changes_applied}** poprawek. Gotowość: **{result.readiness_status}**.",
     ]
     if result.needs_review:
@@ -810,7 +812,7 @@ def run_nli_blueprint(text: str, category: str, *, judge: Any = None) -> str:
             lines.append("\n**Ostrzeżenia silnika:**")
             for w in nli_report.warnings:
                 lines.append(f"- ℹ️ {w}")
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001 - surfaced to the user in the interface
         lines.append(
             f"\n> ℹ️ *Weryfikacja głęboka NLI z modelem LLM nie mogła zostać ukończona:* `{exc}`. "
             "Powyżej przedstawiono pełną analizę struktury bez udziału modelu zewnętrznego."
@@ -840,7 +842,7 @@ def run_nli_pair(premise: str, hypothesis: str, *, judge: Any = None) -> str:
             "absent": "Całkowity brak pokrycia logicznego.",
         }.get(verdict, "Wynik nietypowy.")
         return f"### Wynik weryfikacji NLI: {icon} `{verdict}`\n\n**Opis:** {desc}"
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001 - surfaced to the user in the interface
         return (
             f"### ⚠️ Brak możliwości weryfikacji LLM\n\n"
             f"Błąd endpointu: `{exc}`.\n\n"
@@ -1138,7 +1140,8 @@ def build_ui() -> gr.Blocks:
                         "różnych pism."
                     ),
                 )
-                with gr.Accordion("Dodatkowe pliki (opcjonalne)", open=False):
+                # Nested on purpose: the indentation is the layout.
+                with gr.Accordion("Dodatkowe pliki (opcjonalne)", open=False):  # noqa: SIM117
                     with gr.Row():
                         profile_guide = gr.File(
                             label="Instrukcja stylu (YAML)",

@@ -314,8 +314,8 @@ def test_nlp_nominalization_does_not_strand_relative_clause():
 
     cases = [
         (
-            "Użytkownik nie może również podejmować działań, "
-            "które zakłócają funkcjonowanie platformy.",
+            ("Użytkownik nie może również podejmować działań, "
+            "które zakłócają funkcjonowanie platformy."),
             "działań",
             "działanie",
         ),

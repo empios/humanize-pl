@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from typing import ClassVar
 
 import pytest
 from typer.testing import CliRunner
@@ -318,9 +319,9 @@ def test_process_docx_reuses_one_humanizer_session(monkeypatch, tmp_path):
 
     class FakeSession:
         config = HumanizeConfig(mode=Mode.standard, engine=Engine.nlp)
-        warnings: list[str] = []
+        warnings: ClassVar[list[str]] = []
         engine_used = "nlp"
-        model_status = {
+        model_status: ClassVar[dict[str, str]] = {
             "stanza": "ready",
             "semantic": "not_requested",
             "fluency": "not_requested",

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import itertools
 from dataclasses import dataclass, replace
 
 import regex as re
@@ -177,7 +178,7 @@ def analyze_paragraph_features(sentences: list[str]) -> ParagraphFeatures:
     repeated_opening_count = sum(count - 1 for count in opening_counts.values() if count > 1)
     repeated_frame_count = sum(count - 1 for count in frame_counts.values() if count > 1)
     overlaps: list[float] = []
-    for left, right in zip(sentence_anchors, sentence_anchors[1:]):
+    for left, right in itertools.pairwise(sentence_anchors):
         if not left or not right:
             continue
         overlaps.append(len(left & right) / len(left | right))

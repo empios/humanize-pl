@@ -62,7 +62,7 @@ def main(
             analyzer = MorfeuszAnalyzer()
             sample = analyzer.analyses("pracownikiem")
             print(f"[green]Morfeusz2 ready.[/green] Sample analyses for 'pracownikiem': {len(sample)}")
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001 - diagnostic: report any failure to load
             print(f"[red]Morfeusz2 unavailable:[/red] {type(exc).__name__}: {exc}")
             print(
                 "[yellow]Hint:[/yellow] Morfeusz2 bundles a native SGJP dictionary. "

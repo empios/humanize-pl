@@ -611,15 +611,15 @@ def _write_basis_sheet(workbook, layers: dict[str, Any], settings: FlowSettings)
         ),
         (
             "Co jest wykrywane",
-            "Szablonowe otwarcia i podsumowania, ogólniki, powtórzenia, niejasne odesłania, "
-            "nominalizacje oraz monotonia zdań i akapitów.",
+            ("Szablonowe otwarcia i podsumowania, ogólniki, powtórzenia, niejasne odesłania, "
+            "nominalizacje oraz monotonia zdań i akapitów."),
             "Wykrycie jest sygnałem do przeglądu, a nie dowodem autorstwa AI ani błędu prawnego.",
         ),
         (
             "Punkt odniesienia",
             profile_basis,
-            "Profil pokazuje typowy rozkład cech ludzkiego pisarstwa w określonym gatunku; "
-            "inne gatunki dokumentów mogą zachowywać się inaczej.",
+            ("Profil pokazuje typowy rozkład cech ludzkiego pisarstwa w określonym gatunku; "
+            "inne gatunki dokumentów mogą zachowywać się inaczej."),
         ),
         (
             "Proces",
@@ -628,26 +628,26 @@ def _write_basis_sheet(workbook, layers: dict[str, Any], settings: FlowSettings)
         ),
         (
             "Kontrole bezpieczeństwa",
-            "Ochrona liczb, dat, kwot, cytatów i podstaw prawnych; kontrola normatywności "
-            "(np. może/musi/powinien), kotwic treści, składni i kompletności zdania.",
+            ("Ochrona liczb, dat, kwot, cytatów i podstaw prawnych; kontrola normatywności "
+            "(np. może/musi/powinien), kotwic treści, składni i kompletności zdania."),
             "Przejście kontroli ogranicza ryzyko redakcyjne, ale nie gwarantuje poprawności prawnej.",
         ),
         (
             "Ryzyko redakcyjne",
-            "Wewnętrzny wskaźnik ryzyka kandydata, tłumaczony na poziomy: niskie, "
-            "umiarkowane i podwyższone.",
+            ("Wewnętrzny wskaźnik ryzyka kandydata, tłumaczony na poziomy: niskie, "
+            "umiarkowane i podwyższone."),
             "To nie jest prawdopodobieństwo błędu ani ocena autorstwa lub poprawności prawnej.",
         ),
         (
             "Konfiguracja przebiegu",
             runtime,
-            "Brak opcjonalnego modelu może oznaczać pracę w trybie uproszczonym; "
-            "podstawowe reguły i walidatory nadal działają.",
+            ("Brak opcjonalnego modelu może oznaczać pracę w trybie uproszczonym; "
+            "podstawowe reguły i walidatory nadal działają."),
         ),
         (
             "Ograniczenia",
-            "Narzędzie nie sprawdza aktualności prawa, poprawności podstawy prawnej, "
-            "kompletności stanu faktycznego ani trafności rozstrzygnięcia.",
+            ("Narzędzie nie sprawdza aktualności prawa, poprawności podstawy prawnej, "
+            "kompletności stanu faktycznego ani trafności rozstrzygnięcia."),
             "Końcową odpowiedzialność za dokument ponosi człowiek zatwierdzający treść.",
         ),
     ]
@@ -786,7 +786,7 @@ def run_xlsx_flow(
                 llm_prepared=True,
                 llm_initialization_warnings=llm_warnings,
             )
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001 - one bad row must not stop the sheet
             outcome = ItemOutcome(name=name, status="failed", error=f"{type(exc).__name__}: {exc}")
             outcomes.append(outcome)
             if on_item is not None:
@@ -929,10 +929,10 @@ def _empty_column_message(workbook, sheet, column: str, column_index: int, start
 
     letter = get_column_letter(column_index)
     lines = [
-        f"Kolumna „{column}” (={letter}) w arkuszu „{sheet.title}” nie ma żadnych "
-        f"niepustych komórek od wiersza {start_row}.",
-        f"Arkusz ma zakres {sheet.dimensions} "
-        f"({sheet.max_row} wierszy, {sheet.max_column} kolumn).",
+        (f"Kolumna „{column}” (={letter}) w arkuszu „{sheet.title}” nie ma żadnych "
+        f"niepustych komórek od wiersza {start_row}."),
+        (f"Arkusz ma zakres {sheet.dimensions} "
+        f"({sheet.max_row} wierszy, {sheet.max_column} kolumn)."),
     ]
     if len(workbook.sheetnames) > 1:
         others = ", ".join(f"„{name}”" for name in workbook.sheetnames if name != sheet.title)

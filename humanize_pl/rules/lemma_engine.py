@@ -204,7 +204,7 @@ def load_rules(path: Path | str | None) -> list[LemmaSwapRule]:
         return []
     try:
         raw = yaml.safe_load(path.read_text(encoding="utf-8")) or []
-    except Exception:
+    except (OSError, yaml.YAMLError):
         return []
     if not isinstance(raw, list):
         return []

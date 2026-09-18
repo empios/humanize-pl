@@ -121,7 +121,7 @@ def enumerate_lemma(morfeusz: Any, lemma: str) -> dict[str, dict[str, str]]:
     forms_by_upos: dict[str, dict[str, str]] = {}
     try:
         results = morfeusz.generate(lemma)
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001 - tool: skip a lemma the analyser rejects
         sys.stderr.write(f"generate({lemma!r}) raised {type(exc).__name__}: {exc}\n")
         return {}
     for entry in results:

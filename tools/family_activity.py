@@ -22,7 +22,7 @@ from __future__ import annotations
 import argparse
 import json
 from collections import Counter, defaultdict
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 from humanize_pl.categories import catalogue
@@ -57,7 +57,7 @@ def measure(corpus: Path) -> dict:
     return {
         "source": corpus.as_posix(),
         "generators": sorted(generators),
-        "measured_on": datetime.now(UTC).date().isoformat(),
+        "measured_on": datetime.now(timezone.utc).date().isoformat(),
         "families": {
             family: {
                 "documents": documents[family],

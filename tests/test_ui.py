@@ -181,7 +181,7 @@ def test_run_text_file_input(tmp_path):
     txt_file = tmp_path / "sample.txt"
     txt_file.write_text("W ramach niniejszego projektu dokonano oceny.", encoding="utf-8")
 
-    out_text, summary_md, changes_md, gate_md = run_text(
+    out_text, summary_md, _changes_md, _gate_md = run_text(
         None, str(txt_file), *DEFAULTS, "(brak)", False
     )
     assert isinstance(out_text, str)

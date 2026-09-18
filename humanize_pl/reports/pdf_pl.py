@@ -33,7 +33,7 @@ from collections import Counter
 from datetime import datetime
 from difflib import SequenceMatcher
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar
 from xml.sax.saxutils import escape
 
 from humanize_pl.detect.calibration import REVIEW_THRESHOLD, load_profile
@@ -1769,7 +1769,7 @@ class _Report:
         return story + self._silent_families(counts_before)
 
     # Where, in Polish, for "W {…} model nie użył…".
-    _DOCUMENT_FAMILY_WHERE = {
+    _DOCUMENT_FAMILY_WHERE: ClassVar[dict[str, str]] = {
         "contract": "umowach, regulaminach i politykach",
         "filing_official": "pismach procesowych i urzędowych",
         "client_communication": "opiniach i tekstach dla klienta",
@@ -2180,7 +2180,7 @@ def write_flow_pdf(payload: dict[str, Any], path: str | Path) -> Path:
         title="Raport zmian",
     )
     report = _Report(payload, document.width, _styles())
-    report.generated_at = datetime.now().strftime("%d.%m.%Y, %H:%M")
+    report.generated_at = datetime.now().astimezone().strftime("%d.%m.%Y, %H:%M")
 
     def decorate(canvas, doc) -> None:
         canvas.saveState()

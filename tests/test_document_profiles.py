@@ -283,10 +283,10 @@ def test_documents_of_another_kind_are_left_out_and_named(tmp_path) -> None:
     """Ten documents of one kind measure something; twenty of four measure nothing."""
     contracts = [HUMAN_CONTRACT.format(n=i, m=i + 1) for i in range(1, 13, 2)]
     filings = [
-        "Wnoszę o zasądzenie od pozwanego kwoty 4 000 zł wraz z odsetkami ustawowymi. "
-        "Powód wykonał zobowiązanie, pozwany nie zapłacił mimo wezwania.",
-        "Wnoszę o zasądzenie od pozwanego kwoty 9 500 zł wraz z kosztami procesu. "
-        "Pozwany odebrał towar i nie uregulował faktury w terminie.",
+        ("Wnoszę o zasądzenie od pozwanego kwoty 4 000 zł wraz z odsetkami ustawowymi. "
+        "Powód wykonał zobowiązanie, pozwany nie zapłacił mimo wezwania."),
+        ("Wnoszę o zasądzenie od pozwanego kwoty 9 500 zł wraz z kosztami procesu. "
+        "Pozwany odebrał towar i nie uregulował faktury w terminie."),
     ]
     profile = _office(tmp_path, contracts + filings)
 

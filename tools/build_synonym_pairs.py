@@ -56,7 +56,7 @@ def _make_morfeusz_filter(pos_tag: str):
                 mrf = morfeusz2.Morfeusz()
                 analyses = mrf.analyse(lemma)
                 cache[lemma] = any(pos_tag in str(a[2][2]).lower() for a in analyses)
-            except Exception:
+            except Exception:  # noqa: BLE001 - tool: skip an entry that fails to parse
                 cache[lemma] = True
         return cache[lemma]
 

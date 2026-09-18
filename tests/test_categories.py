@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import dataclasses
 from pathlib import Path
 
 import pytest
@@ -187,7 +188,7 @@ def test_pinned_family_that_contradicts_the_category_is_reported() -> None:
 
 def test_guess_is_frozen() -> None:
     guess = CategoryGuess(get(UNSPECIFIED), 0.0)
-    with pytest.raises(Exception):
+    with pytest.raises(dataclasses.FrozenInstanceError):
         guess.confidence = 1.0  # type: ignore[misc]
 
 

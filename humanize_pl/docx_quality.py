@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import itertools
 import re
 import shutil
 import subprocess
@@ -123,7 +124,7 @@ def audit_document(document: Any, source_path: str | Path, *, policy: FormatPoli
         match = re.search(r"(?:Heading|Nagłówek)\s*(\d+)", style_name, re.IGNORECASE)
         if match:
             heading_levels.append(int(match.group(1)))
-    for previous, current in zip(heading_levels, heading_levels[1:]):
+    for previous, current in itertools.pairwise(heading_levels):
         if current > previous + 1:
             report.issues.append(
                 f"Hierarchia nagłówków przeskakuje z poziomu {previous} na {current}."
@@ -323,8 +324,7 @@ def render_and_audit(
                     str(temp_path),
                     str(source),
                 ],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
+                capture_output=True,
                 text=True,
                 timeout=120,
                 check=False,

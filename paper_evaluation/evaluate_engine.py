@@ -99,10 +99,10 @@ def summarise(results: list[dict], label: str) -> list[str]:
     return [
         f"### {label} (n={len(results)})",
         "",
-        f"- sygnał przed: mediana {statistics.median(befores):.4f}, "
-        f"zakres {min(befores):.4f}–{max(befores):.4f}",
-        f"- sygnał po: mediana {statistics.median(afters):.4f}, "
-        f"zakres {min(afters):.4f}–{max(afters):.4f}",
+        (f"- sygnał przed: mediana {statistics.median(befores):.4f}, "
+        f"zakres {min(befores):.4f}–{max(befores):.4f}"),
+        (f"- sygnał po: mediana {statistics.median(afters):.4f}, "
+        f"zakres {min(afters):.4f}–{max(afters):.4f}"),
         f"- powyżej progu {REVIEW_THRESHOLD} przed redakcją: {above}/{len(befores)}",
         f"- zastosowanych zmian łącznie: {sum(r['changes'] for r in results)}",
         "",
@@ -129,14 +129,14 @@ def main(argv: list[str] | None = None) -> int:
     lines = [
         "# Wyniki działania silnika Humanize-PL",
         "",
-        f"Tryb `{args.mode}`, silnik `{args.engine}`. Korpus: `{CORPUS}`, "
-        f"{len(results)} dokumentów.",
+        (f"Tryb `{args.mode}`, silnik `{args.engine}`. Korpus: `{CORPUS}`, "
+        f"{len(results)} dokumentów."),
         "",
-        "Wyniki są rozdzielone według proweniencji. Dokumenty pisane ręcznie "
+        ("Wyniki są rozdzielone według proweniencji. Dokumenty pisane ręcznie "
         "powstały tak, by zawierać wykrywane wzorce, więc mierzą zdolność "
         "silnika do znalezienia tego, co w nich zasadzono — nie jego "
         "skuteczność na tekście modelu. Wniosku nie należy formułować dla "
-        "obu grup łącznie.",
+        "obu grup łącznie."),
         "",
     ]
     lines += summarise(real, "Realne wyjście modelu")
@@ -161,13 +161,13 @@ def main(argv: list[str] | None = None) -> int:
         "",
         "## Ograniczenia",
         "",
-        "1. Strona AI jest mała i pochodzi z jednego modelu. Korpus pełnej "
-        "wielkości buduje `tools/build_ai_corpus.py`.",
-        "2. Dokumenty AI są o rząd wielkości krótsze od uzasadnień, na których "
+        ("1. Strona AI jest mała i pochodzi z jednego modelu. Korpus pełnej "
+        "wielkości buduje `tools/build_ai_corpus.py`."),
+        ("2. Dokumenty AI są o rząd wielkości krótsze od uzasadnień, na których "
         "zbudowano profil ludzki, a każdy sygnał rodzinowy to częstość na "
-        "1000 słów.",
-        "3. Obie strony różnią się też gatunkiem. Rozstrzygnąłby to profil "
-        "ludzki w gatunku umów i opinii.",
+        "1000 słów."),
+        ("3. Obie strony różnią się też gatunkiem. Rozstrzygnąłby to profil "
+        "ludzki w gatunku umów i opinii."),
         "",
     ]
 

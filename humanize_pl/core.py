@@ -204,7 +204,6 @@ def create_humanizer_session(
     nli = None
     semantic_model_used = semantic_model or DEFAULT_SEMANTIC_MODEL
     fluency_model_used = fluency_model or DEFAULT_FLUENCY_MODEL
-    nli_model_used = None
     if engine_v == Engine.hybrid:
         model_status["semantic"] = "requested"
         try:
@@ -246,7 +245,6 @@ def create_humanizer_session(
         model_status["nli"] = "requested"
         try:
             nli = NLIValidator(model_name=None, offline=offline_models)
-            nli_model_used = nli.model_name
             model_status["nli"] = "ready"
         except Exception as exc:
             model_status["nli"] = f"unavailable: {type(exc).__name__}"
@@ -259,7 +257,6 @@ def create_humanizer_session(
                 f"{type(exc).__name__}: {exc}"
             )
             nli = None
-            nli_model_used = None
 
     if engine_v == Engine.hybrid:
         engine_used = "hybrid" if any([stanza_engine, semantic, fluency, nli]) else "basic"

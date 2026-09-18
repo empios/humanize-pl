@@ -62,6 +62,15 @@ _FORM_BLANK = re.compile(r"(\.\.\.|…)")
 # enough: a one-line clause is short too, but it ends in a full stop.
 _MAX_HEADING_CHARS = 90
 
+# What follows a unit number, for telling a title from an ustęp.
+_UNIT_PREFIX = re.compile(r"^(?:§\s*\d+\p{Ll}?|[IVXLC]+|\d+)[.)]?\s*")
+# A title is a few words ("Przedmiot umowy", "Stan faktyczny"); a line
+# longer than this after its number is running text. One that also ends
+# like a sentence needs fewer words to count as one: "1. Umowa wchodzi
+# w życie." is an ustęp, "1. Kary umowne." may still be a title.
+_MAX_TITLE_WORDS = 8
+_MAX_TERMINATED_TITLE_WORDS = 3
+
 
 class BlueprintError(RuntimeError):
     pass
@@ -240,18 +249,34 @@ def blueprint_for(category: str) -> DocumentBlueprint | None:
     return blueprints().get(category)
 
 
+def _heading_rank(line: str) -> int:
+    """1 for a top-level unit ("§ 3", "III.", an unnumbered title), 2 below it."""
+    stripped = line.strip()
+    if _ARABIC_UNIT.match(stripped) and not _PARAGRAPH_UNIT.match(stripped):
+        return 2
+    return 1
+
+
 def is_heading(line: str) -> bool:
     """A short, unterminated, usually numbered line."""
     stripped = line.strip()
     if not stripped or len(stripped) > _MAX_HEADING_CHARS:
         return False
-    numbered = bool(
+    unit = (
         _PARAGRAPH_UNIT.match(stripped)
         or _ROMAN_UNIT.match(stripped)
         or _ARABIC_UNIT.match(stripped)
     )
-    if numbered:
-        return True
+    if unit:
+        # A number opens a heading and an ustęp alike. "§ 7. Postanowienia
+        # końcowe" is a heading; "1. W sprawach nieuregulowanych stosuje się
+        # przepisy Kodeksu cywilnego." under it is the section's body. Read
+        # as a heading, every ustęp made the section above it look empty -
+        # the way most Polish contracts are written, human ones included.
+        title = _UNIT_PREFIX.sub("", stripped, count=1).strip()
+        words = len(title.split())
+        sentence = title.endswith((".", ";", ":")) and words > _MAX_TERMINATED_TITLE_WORDS
+        return words <= _MAX_TITLE_WORDS and not sentence
     # A label carrying its own value ("Wartość przedmiotu sporu: 27 300 zł")
     # is a field, not a heading. Read as a heading it looks like a section
     # whose body was never written, which is the opposite of the truth.
@@ -318,8 +343,20 @@ def check(text: str, blueprint: DocumentBlueprint) -> BlueprintReport:
     heading_indices = [index for index, line in enumerate(lines) if is_heading(line)]
 
     def words_after(index: int) -> int:
-        stop = next((row for row in heading_indices if row > index), len(lines))
-        return sum(len(lines[row].split()) for row in range(index + 1, stop))
+        # Up to the next heading of the same rank or higher: "V. Analiza
+        # prawna" with its body under "1. Istota kary umownej." is not an
+        # empty section, and stopping at the first heading of any rank said
+        # it was.
+        rank = _heading_rank(lines[index])
+        stop = next(
+            (row for row in heading_indices if row > index and _heading_rank(lines[row]) <= rank),
+            len(lines),
+        )
+        return sum(
+            len(lines[row].split())
+            for row in range(index + 1, stop)
+            if row not in heading_indices
+        )
 
     order: list[tuple[int, str]] = []
     for section in blueprint.sections:
@@ -340,7 +377,14 @@ def check(text: str, blueprint: DocumentBlueprint) -> BlueprintReport:
         order.append((position, section.id))
         # Emptiness is only decidable when the match landed on a heading: in
         # running prose there is no boundary to measure the section against.
-        if position in heading_indices and words_after(position) < MIN_SECTION_WORDS:
+        # And only for a unit with a body: "Sąd Rejonowy w Krakowie" over
+        # "Wydział I Cywilny" is a designation block whose content is the
+        # line itself, not a heading waiting for text.
+        if (
+            section.unit
+            and position in heading_indices
+            and words_after(position) < MIN_SECTION_WORDS
+        ):
             report.empty_sections.append(section.label_pl)
 
     if blueprint.numbering:

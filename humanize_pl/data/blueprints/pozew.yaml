@@ -12,6 +12,7 @@ sections:
   - id: sad
     label_pl: oznaczenie sądu
     severity: required
+    unit: false
     matches: ["sąd rejonowy", "sąd okręgowy", "do sądu"]
     expects:
       - "Pozew oznacza sąd, do którego jest wnoszony."
@@ -19,6 +20,7 @@ sections:
   - id: strony
     label_pl: oznaczenie stron
     severity: required
+    unit: false
     matches: ["powód", "pozwany"]
     expects:
       - "Pozew oznacza powoda wraz z adresem."
@@ -27,6 +29,7 @@ sections:
   - id: wps
     label_pl: wartość przedmiotu sporu
     severity: required
+    unit: false
     matches: ["wartość przedmiotu sporu", "w.p.s."]
     expects:
       - "Pozew wskazuje wartość przedmiotu sporu."
@@ -64,6 +67,7 @@ sections:
   - id: podpis
     label_pl: podpis
     severity: required
+    unit: false
     matches: ["podpis", "pełnomocnik powoda", "adwokat", "radca prawny"]
     expects:
       - "Pozew przewiduje podpis powoda lub jego pełnomocnika."

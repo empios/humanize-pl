@@ -508,3 +508,77 @@ def test_a_formatting_warning_does_not_undo_a_blocked_readiness(tmp_path):
     assert item["warnings"], "dokument bez ostrzeżeń nie testuje nadpisania"
     assert item["readiness_status"] == ReadinessStatus.failed.value
     assert payload["summary"]["not_ready"] == 1
+
+
+def test_numbered_clauses_under_a_unit_are_its_body_not_headings() -> None:
+    """How Polish contracts are written: "§ 7. Postanowienia końcowe" and
+    under it "1. …", "2. …". Read as headings, the ustępy made every such
+    section look empty - human contracts included."""
+    from humanize_pl.blueprint import check_category
+
+    text = (
+        "Umowa zawarta w dniu 3 marca 2026 r. pomiędzy Zamawiającym a Wykonawcą.\n"
+        "§ 1. Przedmiot umowy\n"
+        "1. Przedmiotem umowy jest świadczenie usług doradczych.\n"
+        "2. Wykonawca wykona usługi z należytą starannością.\n"
+        "§ 7. Postanowienia końcowe\n"
+        "1. W sprawach nieuregulowanych stosuje się przepisy Kodeksu cywilnego.\n"
+        "2. Zmiany umowy wymagają formy pisemnej pod rygorem nieważności."
+    )
+
+    assert check_category(text, "umowa_uslug").empty_sections == []
+
+
+def test_a_bare_or_titled_unit_is_still_a_heading() -> None:
+    from humanize_pl.blueprint import is_heading
+
+    for line in ("§ 7.", "§ 7. Postanowienia końcowe", "§ 2a. Odpowiedzialność",
+                 "II. Stan faktyczny", "1. Postanowienia ogólne"):
+        assert is_heading(line), line
+    for line in ("1. Umowa wchodzi w życie.",
+                 "1) Zamawiający zapłaci wynagrodzenie w terminie 14 dni."):
+        assert not is_heading(line), line
+
+
+def test_a_court_designation_block_is_not_an_empty_section() -> None:
+    """"Sąd Rejonowy w Krakowie" over "Wydział I Cywilny": the line is the
+    content. It looked empty once markup no longer hid its heading shape."""
+    text = (
+        "Sąd Rejonowy w Krakowie\n"
+        "Wydział I Cywilny\n"
+        "Powód: Alfa sp. z o.o. z siedzibą w Krakowie\n"
+        "Pozwany: Beta sp. z o.o. z siedzibą w Warszawie\n"
+        "Wartość przedmiotu sporu: 27 300 zł\n"
+        "POZEW O ZAPŁATĘ\n"
+        "Wnoszę o zasądzenie od pozwanego na rzecz powoda kwoty 27 300 zł wraz z odsetkami."
+    )
+
+    assert "oznaczenie sądu" not in check_category(text, "pozew").empty_sections
+
+
+def test_a_section_with_numbered_subsections_is_not_empty() -> None:
+    """"V. Analiza prawna" and its body under "1. Istota kary umownej." -
+    counting stopped at the first heading of any rank."""
+    text = (
+        "OPINIA PRAWNA\n"
+        "I. Przedmiot opinii\n"
+        "Przedmiotem opinii jest dopuszczalność zastrzeżenia kary umownej w umowie.\n"
+        "V. Analiza prawna\n"
+        "1. Istota kary umownej.\n"
+        "Zgodnie z art. 483 k.c. dłużnik może być obowiązany do zapłaty określonej sumy.\n"
+        "2. Odstąpienie od umowy.\n"
+        "Kara umowna może zostać zastrzeżona także na wypadek odstąpienia od umowy.\n"
+        "VI. Wnioski\n"
+        "Zastrzeżenie kary umownej za odstąpienie od umowy jest co do zasady dopuszczalne."
+    )
+
+    assert "analiza prawna" not in check_category(text, "opinia_prawna").empty_sections
+    # A top-level unit with nothing under it is still empty.
+    starved = text.replace(
+        "V. Analiza prawna\n1. Istota kary umownej.\n"
+        "Zgodnie z art. 483 k.c. dłużnik może być obowiązany do zapłaty określonej sumy.\n"
+        "2. Odstąpienie od umowy.\n"
+        "Kara umowna może zostać zastrzeżona także na wypadek odstąpienia od umowy.\n",
+        "V. Analiza prawna\n",
+    )
+    assert "analiza prawna" in check_category(starved, "opinia_prawna").empty_sections

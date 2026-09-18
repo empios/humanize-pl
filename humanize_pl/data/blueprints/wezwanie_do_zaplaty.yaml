@@ -11,6 +11,7 @@ sections:
   - id: data_miejsce
     label_pl: miejscowość i data
     severity: required
+    unit: false
     matches: ["dnia", " r."]
     expects:
       - "Wezwanie wskazuje miejscowość i datę sporządzenia."
@@ -18,6 +19,7 @@ sections:
   - id: strony
     label_pl: oznaczenie wierzyciela i dłużnika
     severity: required
+    unit: false
     matches: ["wierzyciel", "dłużnik"]
     expects:
       - "Wezwanie oznacza wierzyciela w sposób pozwalający go zidentyfikować."
@@ -62,6 +64,7 @@ sections:
   - id: podpis
     label_pl: podpis wzywającego
     severity: required
+    unit: false
     matches: ["podpis", "pełnomocnik", "z poważaniem"]
     expects:
       - "Wezwanie przewiduje podpis osoby wzywającej."

@@ -64,6 +64,7 @@ sections:
   - id: podpis
     label_pl: data i podpis sporządzającego
     severity: required
+    unit: false
     matches: ["podpis", "radca prawny", "adwokat", "sporządził"]
     expects:
       - "Opinia wskazuje datę sporządzenia i osobę, która ją sporządziła."

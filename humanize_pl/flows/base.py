@@ -381,7 +381,12 @@ class ItemOutcome:
     def __post_init__(self) -> None:
         if self.status == "failed":
             self.readiness_status = ReadinessStatus.failed.value
-        elif self.needs_review:
+        # Only ever lowers "ready". An outcome rebuilt by `from_json` arrives
+        # with its readiness already decided, and this used to overwrite a
+        # stored "failed" - a document missing a required section - with
+        # "ready_with_warnings" whenever it also needed review: every such
+        # document in a resumed batch came back one grade better.
+        elif self.needs_review and self.readiness_status == ReadinessStatus.ready.value:
             self.readiness_status = ReadinessStatus.ready_with_warnings.value
 
     @property

@@ -760,3 +760,18 @@ def test_the_acceptance_sheet_does_not_list_markup_removals(tmp_path) -> None:
     before_cells = [str(sheet.cell(row=row, column=5).value or "") for row in range(6, sheet.max_row + 1)]
     assert not any(cell.startswith("**") and cell.count("**") == 2 and len(cell) < 20 for cell in before_cells)
     assert "Usunięte znaczniki markdown" in str(sheet["A3"].value)
+
+
+def test_a_resumed_outcome_keeps_its_readiness() -> None:
+    """from_json rebuilt the outcome and __post_init__ overwrote a stored
+    "failed" with "ready_with_warnings" because it also needed review: a
+    resumed batch promoted every document missing a required section."""
+    from humanize_pl.flows.base import ItemOutcome
+
+    stored = ItemOutcome(name="umowa.docx", needs_review=True)
+    stored.readiness_status = "failed"
+
+    rebuilt = ItemOutcome.from_json(stored.to_json())
+
+    assert rebuilt.readiness_status == "failed"
+    assert ItemOutcome(name="x", needs_review=True).readiness_status == "ready_with_warnings"

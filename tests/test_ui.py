@@ -222,3 +222,58 @@ def test_run_nli_pair():
     assert isinstance(result, str)
     assert "entailed" in result
 
+
+
+def test_the_form_can_switch_drafting_off():
+    settings = flow_settings(*DEFAULTS, "(brak)", False, False)
+
+    assert settings.draft_missing is False
+    assert flow_settings(*DEFAULTS).draft_missing is True
+
+
+def _ui_payload(**row):
+    base = {
+        "name": "umowa.docx",
+        "status": "ok",
+        "calibration_status": "calibrated:law_firm_contract",
+    }
+    return {
+        "summary": {
+            "ok": 1,
+            "failed": 0,
+            "needs_review": 1,
+            "mean_signal_before": 0.2,
+            "mean_signal_after": 0.1,
+            "changes_applied": 3,
+            "findings_before": 4,
+            "findings_after": 2,
+        },
+        "documents": [{**base, **row}],
+    }
+
+
+def test_the_summary_says_a_model_wrote_part_of_the_document():
+    """The clauses are unmarked in the document; a user of the browser who
+    never opens the PDF must still be told."""
+    from humanize_pl.ui.app import summary_markdown
+
+    text = summary_markdown(
+        _ui_payload(
+            drafted_sections=[{"label_pl": "odpowiedzialność", "inserted": True}],
+            artifacts_after={"fields": 2},
+        )
+    )
+
+    assert "Model dopisał **1**" in text
+    assert "części 1.2" in text
+    assert "Pola do uzupełnienia w wynikach: **2**" in text
+
+
+def test_the_summary_reads_the_rows_the_flows_actually_write():
+    """It read payload["items"], which no flow writes, so the plain-language
+    word for the score never appeared."""
+    from humanize_pl.ui.app import signal_word, summary_markdown
+
+    text = summary_markdown(_ui_payload())
+
+    assert f"({signal_word(0.1, True)})" in text

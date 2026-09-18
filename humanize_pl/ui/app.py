@@ -193,6 +193,7 @@ def flow_settings(
     template: str | None,
     blueprint: str | None = None,
     nli: bool = False,
+    draft_missing: bool = True,
 ) -> FlowSettings:
     """Build the same `FlowSettings` the CLI builds, from form values.
 
@@ -220,6 +221,7 @@ def flow_settings(
         require_renderer=require_renderer,
         blueprint=bp,
         nli=bool(nli),
+        draft_missing=bool(draft_missing),
     )
 
 
@@ -382,6 +384,9 @@ def item_line(item: ItemOutcome) -> str:
     icon = "⚠️" if item.needs_review else "✅"
     arrow = f"{item.signal_before:.2f} → {item.signal_after:.2f}"
     tail = " — **do przeglądu**" if item.needs_review else ""
+    drafted = sum(1 for row in item.drafted_sections if row.get("inserted", True))
+    if drafted:
+        tail += f" — **dopisane sekcje: {drafted}**"
     return (
         f"- {icon} **{item.name}** — sygnał AI {arrow} "
         f"({signal_word(item.signal_after, is_calibrated(item))}), "
@@ -512,10 +517,12 @@ def summary_markdown(payload: dict[str, Any]) -> str:
     # A calibrated score and a raw one are different scales, and their mean is
     # not a number about anything. The plain-language word is only attached
     # when every item in the run was measured the same way.
+    rows = payload.get("documents") or payload.get("rows") or []
+    done = [row for row in rows if row.get("status") == "ok"]
+    # Read from "items" once, which no flow writes, so this word and the
+    # mixed-scale note below never appeared.
     states = {
-        str(row.get("calibration_status", "")).startswith("calibrated:")
-        for row in payload.get("items", [])
-        if row.get("status") == "ok"
+        str(row.get("calibration_status", "")).startswith("calibrated:") for row in done
     }
     word = f" ({signal_word(after, states.pop())})" if len(states) == 1 else ""
     lines = [
@@ -531,6 +538,23 @@ def summary_markdown(payload: dict[str, Any]) -> str:
             "_W tym przebiegu część dokumentów porównano ze wzorcem ludzkiego "
             "pisania, a część nie — średnia miesza dwie skale. Wyniki "
             "poszczególnych pozycji są niżej._"
+        )
+    # Said here, not only in the PDF: the drafted clauses enter the document
+    # unmarked, and a reader who never opens the report must still learn
+    # that it contains text a model wrote.
+    drafted = sum(
+        1 for row in done for draft in row.get("drafted_sections") or [] if draft.get("inserted", True)
+    )
+    if drafted:
+        lines.append(
+            f"✍️ Model dopisał **{drafted}** brakujących sekcji, w dokumencie bez "
+            "oznaczenia. Każdą trzeba przeczytać i zatwierdzić: pełna lista jest "
+            "w raporcie PDF, w części 1.2."
+        )
+    fields = sum(int((row.get("artifacts_after") or {}).get("fields") or 0) for row in done)
+    if fields:
+        lines.append(
+            f"🖊️ Pola do uzupełnienia w wynikach: **{fields}** (np. [data], ……)."
         )
     if summary["failed"]:
         lines.append(f"Nie udało się przetworzyć: **{summary['failed']}**.")
@@ -1188,6 +1212,14 @@ def build_ui() -> gr.Blocks:
                     label="Weryfikacja klauzul NLI",
                     info="głęboka kontrola logiczna w bramce jakości (wymaga .env)",
                 )
+                draft_checkbox = gr.Checkbox(
+                    True,
+                    label="Dopisuj brakujące sekcje",
+                    info=(
+                        "model pisze sekcje wymagane przez szkielet dokumentu; "
+                        "w tekście bez oznaczenia, w raporcie w całości (wymaga modelu)"
+                    ),
+                )
             with gr.Row():
                 rewrite = gr.Checkbox(
                     True,
@@ -1261,6 +1293,7 @@ def build_ui() -> gr.Blocks:
             template,
             blueprint_choice,
             nli_checkbox,
+            draft_checkbox,
         ]
 
         text_button.click(

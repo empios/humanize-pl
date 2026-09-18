@@ -800,3 +800,58 @@ def test_no_drafts_no_section(tmp_path) -> None:
     text = "\n".join(page.extract_text() or "" for page in PdfReader(report).pages)
 
     assert "Sekcje dopisane przez model" not in text
+
+
+def _family_payload(document_type: str, counts: dict[str, int]) -> dict:
+    return {
+        "flow": "docx",
+        "settings": {"mode": "standard", "engine": "basic", "rewrite": True},
+        "layers": {},
+        "summary": {"items": 1, "ok": 1, "failed": 0, "needs_review": 0},
+        "documents": [
+            {
+                "name": "umowa.docx",
+                "status": "ok",
+                "words": 900,
+                "signal_before": 0.1,
+                "signal_after": 0.05,
+                "findings_before": sum(counts.values()),
+                "findings_after": 0,
+                "document_type": document_type,
+                "family_counts_before": counts,
+                "family_counts_after": {},
+            }
+        ],
+    }
+
+
+def _pdf_text(payload: dict, path) -> str:
+    from pypdf import PdfReader
+
+    report = pdf_pl.write_flow_pdf(payload, path)
+    return " ".join(
+        " ".join((page.extract_text() or "").split()) for page in PdfReader(report).pages
+    )
+
+
+def test_a_contract_report_says_which_absences_prove_nothing(tmp_path) -> None:
+    """The table lists what was found, so a family missing from it reads as
+    checked and clean. In a contract, most of them are missing from AI-written
+    contracts too, and their absence tells the reader nothing."""
+    text = _pdf_text(_family_payload("contract", {"nominalization": 4}), tmp_path / "r.pdf")
+
+    assert "niczego więc nie dowodzi" in text
+    assert "umowach, regulaminach i politykach" in text
+    assert pdf_pl.FAMILY_GLOSSARY["discourse_frame"]["label"] in text
+
+
+def test_a_silent_family_that_was_found_after_all_is_not_called_uninformative(tmp_path) -> None:
+    from humanize_pl.detect.activity import activity_for
+
+    silent = activity_for("contract").silent
+    found = silent[0]
+    text = _pdf_text(_family_payload("contract", {found: 2}), tmp_path / "r.pdf")
+    listed = text.split("z tej listy:")[1].split("Ich brak")[0]
+
+    assert pdf_pl.FAMILY_GLOSSARY[found]["label"] not in listed
+    assert pdf_pl.FAMILY_GLOSSARY[silent[1]]["label"] in listed

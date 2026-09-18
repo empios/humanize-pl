@@ -1815,7 +1815,7 @@ class _Report:
                     "W tym zestawie nie znaleźliśmy ani jednego z tych zwrotów.", "body"
                 )
             )
-            return story
+            return story + self._silent_families(counts_before)
 
         rows = [self.head("Rodzaj zwrotu", "Przykład", "Poprawia automat", "Wystąpienia")]
         for family, count in counts_before.most_common():
@@ -1844,6 +1844,54 @@ class _Report:
                 ],
             )
         )
+        return story + self._silent_families(counts_before)
+
+    # Where, in Polish, for "W {…} model nie użył…".
+    _DOCUMENT_FAMILY_WHERE = {
+        "contract": "umowach, regulaminach i politykach",
+        "filing_official": "pismach procesowych i urzędowych",
+        "client_communication": "opiniach i tekstach dla klienta",
+    }
+
+    def _silent_families(self, found: Counter[str]) -> list:
+        """Which absences in the table above prove nothing.
+
+        The table lists what was found, so every family missing from it reads
+        as checked and clean. For most of them in a contract or a filing that
+        is empty: the model the corpus was generated with never produced them
+        in such documents either, so a human text and an AI one both show
+        none. Said once per kind of document in the batch, with the size of
+        the measurement, because one generator is thin ground for more.
+        """
+        from humanize_pl.detect.activity import activity_for
+
+        story: list[Any] = []
+        kinds = sorted({str(item.get("document_type") or "") for item in self.items})
+        for kind in kinds:
+            activity = activity_for(kind)
+            where = self._DOCUMENT_FAMILY_WHERE.get(kind)
+            if activity is None or where is None:
+                continue
+            # A family found here despite never appearing in the corpus is
+            # evidence after all, and stays out of the "proves nothing" list.
+            silent = [name for name in activity.silent if not found.get(name)]
+            if not silent:
+                continue
+            labels = ", ".join(self._family_entry(name)["label"] for name in silent)
+            generators = ", ".join(activity.generators) or "jeden model"
+            documents = activity.documents
+            story.append(
+                self.note(
+                    f"W {where} model, na którym to mierzyliśmy, nie użył ani razu "
+                    f"{len(silent)} z {len(activity.hits)} rodzajów zwrotów z tej listy: "
+                    f"{escape(labels)}. Ich brak niczego więc nie dowodzi, bo tak samo "
+                    "wygląda tekst napisany przez model. Pomiar: "
+                    f"{documents} {_plural(documents, 'dokument', 'dokumenty', 'dokumentów')} "
+                    f"{_plural(documents, 'wygenerowany', 'wygenerowane', 'wygenerowanych')} "
+                    f"przez {escape(generators)}. Inny model może pisać "
+                    "inaczej, dlatego nadal ich szukamy."
+                )
+            )
         return story
 
     @staticmethod

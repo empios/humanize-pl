@@ -106,10 +106,10 @@ REVIEW_THRESHOLD = 0.25
 # population against a stable one.
 #
 # Contracts remain weak and the number below says so: at 0.08 the two
-# populations still overlap (AI 0.064-0.114, human max 0.114). Eight of the
-# fourteen signal families never fire on an actual contract - see
-# AI_FAMILIES - so the score there rests on typography, nominalisation
-# density and sentence shape alone.
+# populations still overlap (AI 0.064-0.114, human max 0.114). Ten of the
+# fourteen signal families never fire even on AI-written contracts - see
+# data/family_activity.json - so the score there rests on typography,
+# nominalisation density, enumeration and sentence shape alone.
 #
 # STILL PROVISIONAL: one model, 18 filings and 9 contracts. Re-measure when
 # the corpus spans several generators.

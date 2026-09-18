@@ -149,3 +149,17 @@ def test_a_docx_loses_its_markdown_and_keeps_its_paragraphs(tmp_path):
     assert texts[0] == "WEZWANIE DO ZAPŁATY"
     assert texts[1] == ""
     assert "**" not in texts[2]
+
+
+def test_blank_lines_between_numbered_points_survive_the_rules():
+    """The enumeration protector's leading whitespace swallowed the newline of a blank
+    line, and the spacing cleanup then stripped it: a real model contract lost
+    53 of its 92 blank lines. A .txt output has no other paragraph breaks."""
+    from humanize_pl.config import Engine
+    from humanize_pl.core import create_humanizer_session
+    from humanize_pl.safety.protectors import protect_text
+
+    text = "Zawarta pomiędzy:\n\n1. Spółką X\n\n§ 1. Przedmiot umowy\n\n1. Zamawiający zleca usługi.\n\n2. Usługi obejmują:"
+
+    assert "\n\n" in protect_text(text).text.split("__PROTECTED")[0]
+    assert create_humanizer_session(engine=Engine.basic).humanize(text).text == text

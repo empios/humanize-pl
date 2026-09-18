@@ -17,8 +17,11 @@ PROTECTED_PATTERNS = [
     # Quoted text
     r"„[^”]+”",
     r"\"[^\"]+\"",
-    # Enumerations
-    r"^\s*(?:\d+\.|[a-z]\)|[ivxlcdm]+\))\s+",
+    # Enumerations. Spaces and tabs only: with `\s`, `^` on a blank line let
+    # the pattern swallow the newline before "1.", the placeholder then sat
+    # at the start of a paragraph, and the spacing cleanup stripped it - a
+    # real model contract lost 53 of its 92 blank lines that way.
+    r"^[ \t]*(?:\d+\.|[a-z]\)|[ivxlcdm]+\))[ \t]+",
 ]
 
 # Used for text that leaves the process.  The local rule engine keeps its

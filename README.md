@@ -513,6 +513,19 @@ umów:
 | umowy (`contract`) | **0.08** | 78% | 5,9% |
 | umowy | 0.12 i wyżej | 0% | 0,0% |
 
+**Ten punkt pracy jest nieaktualny.** Pomiar liczył markdownowe linie `---`
+i separatory tabel `|---|` jako angielską pauzę: z 268 „pauz” w korpusie 259
+było markdownem, a 9 pauzami. Po poprawce detektora, przy tych samych progach:
+
+| rodzina | próg | recall AI | FPR |
+|---------|------|-----------|-----|
+| pisma | 0.15 | 50% (6/12) | 2,4% (592 odłożone uzasadnienia) |
+| umowy | 0.08 | **0% (0/9)** | – |
+
+Wyniki umów AI spadły do 0,016–0,061, poniżej ludzkich. Wykrywanie umów
+opierało się więc na markdownie, nie na stylu. Progi czekają na ponowny
+pomiar; markdown wykrywa teraz osobna warstwa (patrz „Ślady narzędzia” niżej).
+
 Flaga `needs_review` w raporcie oznacza „dokument wart przejrzenia przez
 człowieka", nigdy „napisane przez AI".
 
@@ -548,17 +561,17 @@ Trzy zastrzeżenia, które trzeba czytać razem z tymi liczbami:
    i nasyca sygnał samo z siebie. Nowy korpus AI musi składać się z dokumentów
    pełnej długości, inaczej mierzymy długość zamiast autorstwa.
 
-### Osiem z czternastu rodzin nie działa na dokumentach
+### Jedenaście z czternastu rodzin nie działa na dokumentach
 
 Zmierzone na 27 dokumentach korpusu, z rotacją po rejestrach i temperaturach.
 Kolumny mówią, w ilu dokumentach dana rodzina w ogóle się pojawiła:
 
 | rodzina | eseje i opinie (n=6) | umowy, pozwy, regulaminy, wezwania, pisma (n=21) |
 |---------|----------------------|--------------------------------------------------|
-| `typography_artifact` | 6/6 | **21/21** |
 | `nominalization` | 6/6 | **19/21** |
 | `tricolon` | 6/6 | 13/21 |
 | `transition_marker` | 0/6 | 4/21 |
+| `typography_artifact` | 2/6 | **1/21** |
 | `repeated_opening` | 3/6 | **0/21** |
 | `vague_reference` | 2/6 | **0/21** |
 | `discourse_frame` | 1/6 | **0/21** |
@@ -567,12 +580,36 @@ Kolumny mówią, w ilu dokumentach dana rodzina w ogóle się pojawiła:
 | `empty_emphasis` | 1/6 | **0/21** |
 | `antithesis` | 1/6 | **0/21** |
 | `practical_implication` | 1/6 | **0/21** |
+| `balanced_pair` | 0/6 | **0/21** |
+| `concessive_reversal` | 0/6 | **0/21** |
 
 Ramy retoryczne — połowa zestawu reguł — **ani razu** nie odpaliły na umowie,
 pozwie, regulaminie, wezwaniu ani piśmie urzędowym. Żyją wyłącznie w prozie
 eseistycznej, bo gatunek dokumentu na nie nie pozwala: umowa nie zaczyna
-paragrafu od „Warto wskazać, że". Tam model zdradza się gęstością
-nominalizacji i angielską pauzą.
+paragrafu od „Warto wskazać, że". Wcześniejsza wersja tej tabeli podawała
+angielską pauzę w 21 z 21 dokumentów; były to markdownowe linie `---`.
+Stylistycznie model zdradza się tu tylko gęstością nominalizacji
+i wyliczeniami, a te występują też u ludzi. Raport mówi przy każdej partii,
+których zwrotów brak niczego nie dowodzi (`humanize_pl/data/family_activity.json`).
+
+### Ślady narzędzia
+
+Tym, co naprawdę odróżnia surowy tekst z modelu od dokumentu kancelarii, jest
+kanał, nie styl. Zmierzone na 27 dokumentach modelu wobec 2396 orzeczeń:
+
+| ślad | dokumenty modelu | orzeczenia | co robi silnik |
+|------|------------------|------------|----------------|
+| pogrubienie `**…**` | 25/27 | 1 | usuwa znaczniki |
+| nagłówek `#` | 26/27 | 0 | usuwa znaczniki |
+| linia `---` | 25/27 | 0 | zamienia na pustą linię |
+| tabela markdown | 5/27 | 0 | zgłasza |
+| zwrot do użytkownika („Poniżej znajdziesz…”) | 12/27 | 0 | zgłasza, blokuje „gotowy” |
+| pole `[data]`, `[kwota]` | 17/27 | 2 | zgłasza, blokuje „gotowy” |
+
+Te ślady nie wchodzą do wskaźnika stylu (`humanize_pl/artifacts.py`):
+wskaźnik mierzyłby wtedy, z jakiego okna skopiowano tekst. Myślnik na początku
+linii (756 orzeczeń) i wykropkowanie (52 orzeczenia) nie są śladami modelu;
+wykropkowanie liczy się jednak jako pole do uzupełnienia.
 
 To tłumaczy też, dlaczego ręcznie pisane fixture'y wypadały tak wysoko.
 Powstawały w rejestrze eseistycznym, bo tak się naturalnie pisze „tekst

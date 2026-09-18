@@ -64,8 +64,14 @@ def sentence_findings(
 def _typography_artifacts(
     sentence: str, paragraph_index: int, sentence_index: int
 ) -> Iterator[Finding]:
-    """Flag AI typography habits, such as English em-dashes (—)."""
-    for match in re.finditer(r"\s*(—|--)\s*", sentence):
+    """Flag AI typography habits, such as English em-dashes (—).
+
+    A double hyphen counts only on its own. Inside "---" or "|---|---|" it is
+    markdown, which `humanize_pl.artifacts` reports as what it is: measured
+    on 27 model documents, 259 of the 268 "em dashes" found here were rule
+    lines and table separators, and 9 were dashes.
+    """
+    for match in re.finditer(r"\s*(—|(?<!-)--(?!-))\s*", sentence):
         yield Finding(
             family="typography_artifact",
             rule="detect:em_dash",

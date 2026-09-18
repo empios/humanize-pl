@@ -21,7 +21,7 @@
         "summary_frame": 1,
         "transition_marker": 0,
         "tricolon": 37,
-        "typography_artifact": 45,
+        "typography_artifact": 3,
         "vague_reference": 2
       }
     },
@@ -41,7 +41,7 @@
         "summary_frame": 0,
         "transition_marker": 3,
         "tricolon": 25,
-        "typography_artifact": 138,
+        "typography_artifact": 0,
         "vague_reference": 0
       }
     },
@@ -61,7 +61,7 @@
         "summary_frame": 0,
         "transition_marker": 2,
         "tricolon": 11,
-        "typography_artifact": 85,
+        "typography_artifact": 6,
         "vague_reference": 0
       }
     }

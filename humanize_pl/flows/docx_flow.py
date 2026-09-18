@@ -204,6 +204,8 @@ def run_docx_flow(
                 outcome.applied_changes = []
                 outcome.changes_applied = 0
                 outcome.examples = []
+                # The file written is the source copy, markdown and all.
+                outcome.artifacts_after = outcome.artifacts_before
                 if outcome.drafted_sections:
                     _drafts_not_inserted(outcome)
             # Formatting warnings raise the status to "with warnings"; they

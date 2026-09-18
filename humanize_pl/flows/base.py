@@ -18,6 +18,7 @@ from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any
 
+from humanize_pl.artifacts import find_artifacts, strip_markup
 from humanize_pl.config import Engine, LegalReviewProfile, Mode
 from humanize_pl.core import HumanizerSession, create_humanizer_session
 from humanize_pl.blueprint import blueprint_for, check_category
@@ -351,6 +352,10 @@ class ItemOutcome:
     # is the only record that a machine wrote them and the report prints
     # every one in full.
     drafted_sections: list[dict[str, Any]] = field(default_factory=list)
+    # Traces of the tool rather than the style - markdown, a chatbot's aside
+    # to its user, unfilled fields. See `humanize_pl.artifacts`.
+    artifacts_before: dict[str, Any] = field(default_factory=dict)
+    artifacts_after: dict[str, Any] = field(default_factory=dict)
 
     # The unsuffixed names are what the PDF report, the replay path and the UI
     # already read, and they mean "the state the document left in".
@@ -426,6 +431,8 @@ class ItemOutcome:
             "nli_before": self.nli_before,
             "nli_after": self.nli_after,
             "drafted_sections": self.drafted_sections,
+            "artifacts_before": self.artifacts_before,
+            "artifacts_after": self.artifacts_after,
         }
 
     @classmethod
@@ -535,6 +542,7 @@ def run_all_layers(
     outcome.style_compliance_before = _style_compliance(text, resolved_type, style_profile)
     outcome.tone_before = compare_tone(dict(before.metrics), style_profile).to_json()
     outcome.blueprint_before = check_category(text, category.category.id).to_json()
+    outcome.artifacts_before = find_artifacts(text).to_json()
 
     outcome.warnings.extend(profile_warnings)
     outcome.warnings.extend(llm_initialization_warnings or [])
@@ -555,7 +563,11 @@ def run_all_layers(
     protected_paragraph_indices = protected_paragraph_indices or set()
     if settings.rewrite:
         session = session or settings.session()
-        result = session.humanize(text)
+        # Markdown off first, so the rules read "§ 1. Przedmiot umowy" rather
+        # than "**§ 1. Przedmiot umowy**". Line for line, so every index that
+        # follows - protected paragraphs, DOCX units - still holds.
+        unmarked, markup_changes = strip_markup(text, protected=protected_paragraph_indices)
+        result = session.humanize(unmarked)
         text_out = result.text
         if protected_paragraph_indices:
             source_lines = text.split("\n")
@@ -570,7 +582,7 @@ def run_all_layers(
                 outcome.warnings.append(
                     "Zmieniła się liczba fragmentów DOCX; odrzucono wariant regułowy."
                 )
-        raw_changes = [
+        raw_changes = markup_changes + [
             {
                 "before": change.original,
                 "after": change.rewritten,
@@ -714,6 +726,31 @@ def run_all_layers(
     # says about its prose.
     outcome.needs_review = verdict.needs_revision or bool(outcome.drafted_sections)
     outcome.constraints = verdict.prompt_constraints
+
+    # What the rules may not remove, because removing it is a decision about
+    # content: a chatbot's aside to its user, a table, a field nobody filled.
+    # Each keeps the document from reading as ready.
+    artifacts = find_artifacts(text_out)
+    outcome.artifacts_after = artifacts.to_json()
+    remaining = artifacts.counts()
+    if remaining.get("chatbot_frame"):
+        example = outcome.artifacts_after["examples"]["chatbot_frame"][0]
+        outcome.warnings.append(
+            f"Tekst zawiera zwroty czatbota skierowane do użytkownika (np. „{example}”); "
+            "usuń je przed wysłaniem."
+        )
+    if remaining.get("markdown_table"):
+        outcome.warnings.append(
+            "Tekst zawiera tabelę w składni markdown; przenieś ją do tabeli w edytorze."
+        )
+    if artifacts.fields:
+        count = len(artifacts.fields)
+        outcome.warnings.append(
+            f"Dokument ma {count} {_plural_pl(count, 'pole', 'pola', 'pól')} do uzupełnienia "
+            f"(np. „{artifacts.fields[0]}”)."
+        )
+    if remaining.get("chatbot_frame") or remaining.get("markdown_table") or artifacts.fields:
+        outcome.needs_review = True
     outcome.style_compliance_after = _style_compliance(text_out, resolved_type, style_profile)
     from humanize_pl.safety.validators import legal_sensitive_inventory
 
@@ -835,6 +872,15 @@ def _short_rationale(value: str, limit: int = 300) -> str:
     return text if len(text) <= limit else text[: limit - 1].rstrip() + "…"
 
 
+def _plural_pl(count: int, one: str, few: str, many: str) -> str:
+    """1 pole, 2 pola, 5 pól, 22 pola, 12 pól."""
+    if count == 1:
+        return one
+    if count % 10 in (2, 3, 4) and count % 100 not in (12, 13, 14):
+        return few
+    return many
+
+
 def _supply_missing_sections(
     text: str,
     category: Any,
@@ -886,13 +932,7 @@ def _supply_missing_sections(
     # the PDF.
     for draft in result.drafts:
         count = draft.blanks
-        places = (
-            "miejsce"
-            if count == 1
-            else "miejsca"
-            if count % 10 in (2, 3, 4) and count % 100 not in (12, 13, 14)
-            else "miejsc"
-        )
+        places = _plural_pl(count, "miejsce", "miejsca", "miejsc")
         blanks = f", {count} {places} do uzupełnienia („…”)" if count else ""
         outcome.warnings.append(
             f"Dopisano sekcję „{draft.label_pl}”{blanks}. Tekst zaproponował "

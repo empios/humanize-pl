@@ -954,6 +954,28 @@ class _Report:
             rows.append(("Słowa", "znaleziska na 1000 słów",
                          str(found_before), str(found_after)))
 
+        # Traces of the tool: markdown and a chatbot's asides. Zero here is
+        # a real result, not an empty check - human documents almost never
+        # carry them - so the row shows whenever the layer ran.
+        measured = [item for item in self.items if isinstance(item.get("artifacts_after"), dict)
+                    and item["artifacts_after"]]
+        if measured:
+            def traces(payload: dict) -> int:
+                counts = payload.get("counts") or {}
+                return sum(count for kind, count in counts.items() if kind != "placeholder")
+
+            def fields(payload: dict) -> int:
+                return int(payload.get("fields") or 0)
+
+            before_traces = sum(traces(item.get("artifacts_before") or {}) for item in measured)
+            after_traces = sum(traces(item["artifacts_after"]) for item in measured)
+            rows.append(("Ślady czatbota", "markdown (**, #, ---, tabele) i zwroty do użytkownika",
+                         str(before_traces), str(after_traces)))
+            before_fields = sum(fields(item.get("artifacts_before") or {}) for item in measured)
+            after_fields = sum(fields(item["artifacts_after"]) for item in measured)
+            rows.append(("Gotowość do wysłania", "pola do uzupełnienia ([data], ……)",
+                         str(before_fields), str(after_fields)))
+
         # Axis 3 - structure. Counted only over items that had a skeleton.
         checked = [
             item for item in self.items

@@ -106,10 +106,17 @@ REVIEW_THRESHOLD = 0.25
 # population against a stable one.
 #
 # Contracts remain weak and the number below says so: at 0.08 the two
-# populations still overlap (AI 0.064-0.114, human max 0.114). Ten of the
+# populations still overlap (AI 0.064-0.114, human max 0.114). Eleven of the
 # fourteen signal families never fire even on AI-written contracts - see
-# data/family_activity.json - so the score there rests on typography,
-# nominalisation density, enumeration and sentence shape alone.
+# data/family_activity.json - so the score there rests on nominalisation
+# density, enumeration and sentence shape alone.
+#
+# SUPERSEDED, numbers kept for the record: the table above was measured while
+# the dash detector counted markdown "---" and "|---|" as em dashes. With that
+# fixed and these thresholds unchanged, filings are caught 6 of 12 (FPR 2.4%
+# on 592 held-out judgments) and contracts 0 of 9 (AI 0.016-0.061). Markdown
+# is now reported by `humanize_pl.artifacts`, outside the score. The
+# thresholds stay until they are re-measured on purpose.
 #
 # STILL PROVISIONAL: one model, 18 filings and 9 contracts. Re-measure when
 # the corpus spans several generators.

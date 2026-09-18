@@ -113,7 +113,8 @@ REVIEW_THRESHOLD = 0.25
 # SUPERSEDED, numbers kept for the record: the table above was measured while
 # the dash detector counted markdown "---" and "|---|" as em dashes. With that
 # fixed and these thresholds unchanged, filings are caught 6 of 12 (FPR 2.4%
-# on 592 held-out judgments) and contracts 0 of 9 (AI 0.016-0.061). Markdown
+# on 592 held-out judgments) and contracts 0 of 12 (AI 0.016-0.061; corpus
+# completed to 32 documents). Markdown
 # is now reported by `humanize_pl.artifacts`, outside the score. The
 # thresholds stay until they are re-measured on purpose.
 #

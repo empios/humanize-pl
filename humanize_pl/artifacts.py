@@ -3,16 +3,16 @@
 A model answering through an API writes markdown - "**§ 1. Przedmiot
 umowy**", "# Wezwanie do zapłaty", "---" between sections - addresses its
 user ("Poniżej znajdziesz gotowy wzór…"), and leaves fields for someone to
-fill ("[data]", "[kwota]"). Measured on 27 model documents against 2396 court
+fill ("[data]", "[kwota]"). Measured on 32 model documents against 2396 court
 judgments:
 
     trace               model documents   judgments
-    **bold**            25 of 27          1
-    # heading           26 of 27          0
-    --- rule line       25 of 27          0 (3 used "***", left alone here)
-    markdown table       5 of 27          0
-    chatbot phrasing    12 of 27          0
-    [data]-style field  17 of 27          2
+    **bold**            30 of 32          1
+    # heading           30 of 32          0
+    --- rule line       29 of 32          0 (3 used "***", left alone here)
+    markdown table       6 of 32          0
+    chatbot phrasing    12 of 32          0
+    [data]-style field  21 of 32          2
 
 None of this is style, and none of it is scored: the calibrated signal
 measures how a text is written, and letting "**" into it would make the

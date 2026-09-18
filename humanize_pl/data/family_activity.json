@@ -6,8 +6,8 @@
   "measured_on": "2026-09-18",
   "families": {
     "client_communication": {
-      "documents": 6,
-      "words": 8182,
+      "documents": 8,
+      "words": 9737,
       "hits": {
         "abstract_frame": 1,
         "antithesis": 2,
@@ -15,19 +15,19 @@
         "concessive_reversal": 0,
         "discourse_frame": 1,
         "empty_emphasis": 1,
-        "nominalization": 52,
+        "nominalization": 68,
         "practical_implication": 1,
         "repeated_opening": 8,
         "summary_frame": 1,
         "transition_marker": 0,
-        "tricolon": 37,
+        "tricolon": 38,
         "typography_artifact": 3,
         "vague_reference": 2
       }
     },
     "contract": {
-      "documents": 9,
-      "words": 14937,
+      "documents": 12,
+      "words": 17135,
       "hits": {
         "abstract_frame": 0,
         "antithesis": 0,
@@ -35,12 +35,12 @@
         "concessive_reversal": 0,
         "discourse_frame": 0,
         "empty_emphasis": 0,
-        "nominalization": 48,
+        "nominalization": 63,
         "practical_implication": 0,
         "repeated_opening": 0,
         "summary_frame": 0,
         "transition_marker": 3,
-        "tricolon": 25,
+        "tricolon": 26,
         "typography_artifact": 0,
         "vague_reference": 0
       }

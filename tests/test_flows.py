@@ -654,3 +654,38 @@ def test_an_older_detail_file_still_resumes():
     assert outcome.blueprint == outcome.blueprint_after
     assert outcome.blueprint_before == {}
     assert outcome.style_compliance_after["passed"] is True
+
+
+def test_the_flow_report_carries_what_changed_as_numbers(tmp_path) -> None:
+    """The PDF's before/after table, readable by a script aggregating a batch."""
+    source = tmp_path / "in"
+    source.mkdir()
+    write_docx(source / "opinia.docx", AI_TEXT)
+
+    payload = run_docx_flow(source, tmp_path / "out", settings=BASIC, pdf=False)
+    rows = {row["key"]: row for row in payload["summary"]["what_changed"]}
+
+    assert rows["words"]["applicable"] is True
+    assert rows["words"]["before"] >= rows["words"]["after"]
+    # No skeleton for this text: said, not zeroed.
+    assert rows["structure"]["applicable"] is False
+    assert rows["structure"]["before"] is None
+    assert "szkieletu" in rows["structure"]["reason"]
+
+
+def test_the_spreadsheet_gets_a_column_per_axis_that_applies(tmp_path) -> None:
+    """One column per axis - but no column of "nie dotyczy": an answer cell
+    has no skeleton, so there is no structure column at all."""
+    source = tmp_path / "odpowiedzi.xlsx"
+    write_xlsx(source, [(1, AI_TEXT.replace("\n", " "))])
+    output = tmp_path / "wynik.xlsx"
+
+    run_xlsx_flow(source, output, column="Odpowiedź AI", settings=BASIC, pdf=False, report=False)
+
+    sheet = openpyxl.load_workbook(str(output))["Sheet"]
+    headers = [cell.value for cell in sheet[1]]
+    assert "Słowa: przed → po" in headers
+    assert "Ślady czatbota: przed → po" in headers
+    assert not any(str(header).startswith("Struktura") for header in headers)
+    words = sheet.cell(row=2, column=headers.index("Słowa: przed → po") + 1).value
+    assert "→" in words

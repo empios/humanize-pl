@@ -29,7 +29,13 @@ from humanize_pl.document import (
     ReadinessStatus,
     RewriteBackend,
 )
-from humanize_pl.flows.base import FlowSettings, ItemOutcome, attach_pdf_report, run_all_layers
+from humanize_pl.flows.base import (
+    FlowSettings,
+    ItemOutcome,
+    attach_pdf_report,
+    run_all_layers,
+    what_changed,
+)
 from humanize_pl.flows.docx_flow import run_docx_flow
 from humanize_pl.flows.xlsx_flow import run_xlsx_flow
 from humanize_pl.gate import GateVerdict
@@ -414,6 +420,7 @@ def humanize(
                 "mean_signal_before": outcome.signal_before,
                 "mean_signal_after": outcome.signal_after,
                 "mean_signal_delta": outcome.signal_delta,
+                "what_changed": what_changed([outcome.to_json()]),
             },
             "documents": [outcome.to_json()],
         }

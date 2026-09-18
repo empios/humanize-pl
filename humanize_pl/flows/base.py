@@ -1205,4 +1205,13 @@ def summarise(outcomes: list[ItemOutcome]) -> dict[str, Any]:
         "mean_signal_before": round(sum(i.signal_before for i in done) / len(done), 4),
         "mean_signal_after": round(sum(i.signal_after for i in done) / len(done), 4),
         "mean_signal_delta": round(sum(i.signal_delta for i in done) / len(done), 4),
+        # The report's "Co się zmieniło" table, as numbers, so a batch can be
+        # aggregated without the PDF. Same rows the PDF prints.
+        "what_changed": what_changed([item.to_json() for item in done]),
     }
+
+
+def what_changed(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    from humanize_pl.reports.axes import axis_rows
+
+    return [row.to_json() for row in axis_rows(items)]

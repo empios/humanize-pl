@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any
 
 from humanize_pl.document import DocumentType, RewriteBackend
+from humanize_pl.reports.axes import AxisRow, axis_rows
 from .base import (
     FlowSettings,
     ItemOutcome,
@@ -183,7 +184,7 @@ def _format_output_columns(
     for offset, header in enumerate(headers):
         column = first_column + offset
         letter = get_column_letter(column)
-        sheet.column_dimensions[letter].width = OUTPUT_COLUMN_WIDTHS[header]
+        sheet.column_dimensions[letter].width = OUTPUT_COLUMN_WIDTHS.get(header, 18)
 
         for row_index in rows:
             sheet.cell(row=row_index, column=column).alignment = Alignment(
@@ -758,6 +759,7 @@ def run_xlsx_flow(
     start_row = (header_row + 1) if header_row else 1
     outcomes: list[ItemOutcome] = []
     written_rows: list[int] = []
+    axes_by_row: dict[int, list[AxisRow]] = {}
 
     for row_index in range(start_row, sheet.max_row + 1):
         # Cached formula result first; fall back to the raw cell for files that
@@ -802,10 +804,34 @@ def run_xlsx_flow(
         for offset, cell_value in enumerate(values):
             sheet.cell(row=row_index, column=first_column + offset, value=cell_value)
         written_rows.append(row_index)
+        axes_by_row[row_index] = axis_rows([outcome.to_json()])
 
         outcomes.append(outcome)
         if on_item is not None:
             on_item(outcome)
+
+    # "Co się zmieniło" per row, one column per axis - but only the axes that
+    # apply to at least one row. A column of "nie dotyczy" (no office
+    # profile, no skeleton for an answer cell) says nothing a reader needs.
+    applicable = [
+        row.key
+        for row in next(iter(axes_by_row.values()), [])
+        if any(
+            axis.applicable for axes in axes_by_row.values() for axis in axes if axis.key == row.key
+        )
+    ]
+    for key in applicable:
+        column = first_column + len(headers)
+        label = next(axis for axes in axes_by_row.values() for axis in axes if axis.key == key)
+        headers.append(f"{label.axis}: przed → po")
+        for row_index, axes in axes_by_row.items():
+            axis = next(item for item in axes if item.key == key)
+            text_value = (
+                f"{axis.shown(axis.before)} → {axis.shown(axis.after)}"
+                if axis.applicable
+                else "nie dotyczy"
+            )
+            sheet.cell(row=row_index, column=column, value=text_value)
 
     # Headers are written only once a row has been processed. Writing them up
     # front widened `max_column` on an empty sheet, which then misreported the

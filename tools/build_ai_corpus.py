@@ -24,6 +24,7 @@ from __future__ import annotations
 import argparse
 import json
 import time
+from dataclasses import replace
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -109,6 +110,22 @@ def messages_for(job: dict[str, Any]) -> list[dict[str, str]]:
     ]
 
 
+def job_key(job: dict[str, Any]) -> tuple[str, str, str, float]:
+    return (job["category"], job["scenario"], job["style"]["id"], float(job["temperature"]))
+
+
+def done_keys(out_dir: Path) -> set[tuple[str, str, str, float]]:
+    """Grid positions the manifest already holds a document for."""
+    path = out_dir / "manifest.json"
+    if not path.exists():
+        return set()
+    return {
+        (row["category"], row["scenario"], row["prompt_style"], float(row["temperature"]))
+        for row in json.loads(path.read_text(encoding="utf-8"))
+        if (out_dir / row["file"]).exists()
+    }
+
+
 def next_index(out_dir: Path) -> int:
     """Continue the existing numbering instead of overwriting it.
 
@@ -141,10 +158,26 @@ def main(argv: list[str] | None = None) -> int:
         help="Wypisz, o co runner zapyta, i nie wywołuj modelu",
     )
     parser.add_argument("--delay", type=float, default=0.5)
+    parser.add_argument(
+        "--missing-only",
+        action="store_true",
+        help="Tylko pozycje siatki, których nie ma jeszcze w manifeście",
+    )
+    parser.add_argument(
+        "--timeout",
+        type=float,
+        default=None,
+        help="Limit czasu na jedno wywołanie w sekundach (nadpisuje .env)",
+    )
     args = parser.parse_args(argv)
 
     styles, temperatures, categories = load_grid(args.prompts)
     jobs = plan(categories, styles, temperatures, per_category=args.per_category)
+    if args.missing_only:
+        # A run that lost documents to timeouts is completed rather than
+        # repeated: repeating would ask for the surviving 27 again and add a
+        # second, differently sampled copy of each to the corpus.
+        jobs = [job for job in jobs if job_key(job) not in done_keys(args.out)]
 
     print(f"Siatka: {len(categories)} kategorii × {args.per_category} = {len(jobs)} dokumentów")
     print(f"Rejestry: {[s['id'] for s in styles]}   temperatury: {temperatures}")
@@ -172,6 +205,12 @@ def main(argv: list[str] | None = None) -> int:
         settings = LlmSettings.from_environment(args.env_file)
     except LlmConfigurationError as exc:
         parser.error(str(exc))
+    if args.timeout:
+        # The five documents lost on the first run all died on ReadTimeout,
+        # and they were the long ones - an opinion, a privacy policy, a
+        # regulamin, a contract. A timeout that drops the longest documents
+        # biases the corpus toward short ones.
+        settings = replace(settings, timeout_seconds=args.timeout)
 
     args.out.mkdir(parents=True, exist_ok=True)
     manifest_path = args.out / "manifest.json"
@@ -254,6 +293,14 @@ def main(argv: list[str] | None = None) -> int:
                     # control for length rather than discover it later.
                     "words": words,
                 }
+            )
+            # Saved after every document, not once at the end: a run that
+            # dies on the fourth of five leaves three documents on disk, and
+            # without their entries they carry no model, register or
+            # temperature - text of unknown provenance, the thing this tool
+            # exists to prevent.
+            manifest_path.write_text(
+                json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
             )
             print(f"  [{words:>5} słów] {name}  styl={job['style']['id']} temp={job['temperature']}")
             index += 1

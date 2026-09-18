@@ -883,124 +883,24 @@ class _Report:
 
     # --- Co się zmieniło, oś po osi -------------------------------------
 
-    # Three axes, and an axis with nothing behind it must say so rather than
-    # print a zero. "No office profile supplied", "no skeleton for this
-    # category" and "checked, clean" are three different pieces of
-    # information and a lawyer acts differently on each; collapsing them into
-    # 0 tells the reader the document passed a check that never ran.
-    _NOT_APPLICABLE = "nie dotyczy"
-
     def _axis_rows(self) -> list[tuple[str, str, str, str]]:
-        """(axis, measure, before, after) for the three humanisation axes."""
+        """(axis, measure, before, after) as the table prints them.
 
-        def summed(key: str, inner) -> tuple[int, int] | None:
-            """Total across items, or None when no item carried the layer."""
-            before = after = 0
-            seen = False
-            for item in self.items:
-                left, right = item.get(f"{key}_before"), item.get(f"{key}_after")
-                if not isinstance(right, dict):
-                    continue
-                seen = True
-                after += inner(right)
-                before += inner(left) if isinstance(left, dict) else inner(right)
-            return (before, after) if seen else None
+        Computed in `humanize_pl.reports.axes`, which flow-report.json and
+        the spreadsheet read too; an axis with nothing behind it prints
+        "nie dotyczy" and why, never a zero.
+        """
+        from humanize_pl.reports.axes import axis_rows
 
-        def style_issues(payload: dict) -> int:
-            return len(payload.get("issues") or [])
-
-        def tone_deviations(payload: dict) -> int:
-            return len(payload.get("deviations") or [])
-
-        def missing_sections(payload: dict) -> int:
-            if not payload.get("checked"):
-                return 0
-            return len(payload.get("missing_required") or []) + len(
-                payload.get("empty_sections") or []
+        return [
+            (
+                row.axis,
+                row.measure,
+                row.shown(row.before),
+                row.shown(row.after) if row.applicable else row.reason,
             )
-
-        rows: list[tuple[str, str, str, str]] = []
-
-        # Axis 1 - house style. Two measures share a row because a lawyer
-        # reads them as one question: does this still sound like us.
-        style = summed("style_compliance", style_issues)
-        tone = summed("tone", tone_deviations)
-        checked_tone = any(
-            isinstance(item.get("tone_after"), dict)
-            and item["tone_after"].get("checked")
-            for item in self.items
-        )
-        if style is None and not checked_tone:
-            rows.append(("Styl kancelarii", "odstępstwa od wzorca",
-                         self._NOT_APPLICABLE, "brak profilu kancelarii"))
-        else:
-            before = (style[0] if style else 0) + (tone[0] if tone else 0)
-            after = (style[1] if style else 0) + (tone[1] if tone else 0)
-            rows.append(("Styl kancelarii", "zwroty zakazane i odstępstwa od wzorca",
-                         str(before), str(after)))
-
-        # Axis 2 - words. Density, not raw counts: a 2700-word document and a
-        # 300-word one are not comparable on totals.
-        words = sum(int(item.get("words") or 0) for item in self.items)
-        found_before = sum(int(item.get("findings_before") or 0) for item in self.items)
-        found_after = sum(int(item.get("findings_after") or 0) for item in self.items)
-        if words:
-            rows.append((
-                "Słowa", "znaleziska na 1000 słów",
-                _fmt(found_before * 1000 / words, 1),
-                _fmt(found_after * 1000 / words, 1),
-            ))
-        else:
-            rows.append(("Słowa", "znaleziska na 1000 słów",
-                         str(found_before), str(found_after)))
-
-        # Traces of the tool: markdown and a chatbot's asides. Zero here is
-        # a real result, not an empty check - human documents almost never
-        # carry them - so the row shows whenever the layer ran.
-        measured = [item for item in self.items if isinstance(item.get("artifacts_after"), dict)
-                    and item["artifacts_after"]]
-        if measured:
-            def traces(payload: dict) -> int:
-                counts = payload.get("counts") or {}
-                return sum(count for kind, count in counts.items() if kind != "placeholder")
-
-            def fields(payload: dict) -> int:
-                return int(payload.get("fields") or 0)
-
-            before_traces = sum(traces(item.get("artifacts_before") or {}) for item in measured)
-            after_traces = sum(traces(item["artifacts_after"]) for item in measured)
-            rows.append(("Ślady czatbota", "markdown (**, #, ---, tabele) i zwroty do użytkownika",
-                         str(before_traces), str(after_traces)))
-            before_fields = sum(fields(item.get("artifacts_before") or {}) for item in measured)
-            after_fields = sum(fields(item["artifacts_after"]) for item in measured)
-            rows.append(("Gotowość do wysłania", "pola do uzupełnienia ([data], ……)",
-                         str(before_fields), str(after_fields)))
-
-        # Axis 3 - structure. Counted only over items that had a skeleton.
-        checked = [
-            item for item in self.items
-            if isinstance(item.get("blueprint_after"), dict)
-            and item["blueprint_after"].get("checked")
+            for row in axis_rows(self.items)
         ]
-        if not checked:
-            rows.append(("Struktura dokumentu", "brakujące sekcje wymagane",
-                         self._NOT_APPLICABLE, "brak szkieletu dla tej kategorii"))
-        else:
-            structure = summed("blueprint", missing_sections)
-            before, after = structure if structure else (0, 0)
-            measure = f"brakujące sekcje wymagane (sprawdzono {len(checked)} z {len(self.items)})"
-            # A gap closed by a clause the model wrote is not a gap a lawyer
-            # closed, and the row must not read as if it were.
-            drafted = sum(
-                1
-                for item in self.items
-                for row in item.get("drafted_sections") or []
-                if row.get("inserted", True)
-            )
-            if drafted:
-                measure += f"; {drafted} dopisał model, zob. 1.2"
-            rows.append(("Struktura dokumentu", measure, str(before), str(after)))
-        return rows
 
     def what_changed(self) -> list:
         """The three axes, before and after, in one place.

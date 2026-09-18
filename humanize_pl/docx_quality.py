@@ -265,9 +265,15 @@ def apply_template_style_parts(target: str | Path, template: str | Path) -> None
 
 
 def compare_inventories(
-    before: DocxInventory, after_path: str | Path, report: FormattingReport
+    before: DocxInventory,
+    after_path: str | Path,
+    report: FormattingReport,
+    *,
+    expected_paragraph_delta: int = 0,
 ) -> None:
-    differences = before.structural_differences(inventory_docx(after_path))
+    differences = before.structural_differences(
+        inventory_docx(after_path), expected_paragraph_delta=expected_paragraph_delta
+    )
     report.inventory_differences = differences
     report.inventory_preserved = not differences
     if differences:

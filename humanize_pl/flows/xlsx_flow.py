@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import re
 import unicodedata
+from dataclasses import replace
 from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any
@@ -720,6 +721,12 @@ def run_xlsx_flow(
     on_layers=None,
 ) -> dict[str, Any]:
     openpyxl = _require_openpyxl()
+
+    # A cell is an answer, not a document. Its structure is still reported,
+    # but a "§ 6. Postanowienia końcowe" written into row 17 of a spreadsheet
+    # would complete nothing and corrupt the answer.
+    if settings.draft_missing:
+        settings = replace(settings, draft_missing=False)
 
     # Two handles on the same file. `data_only=True` yields the cached results
     # of formulas, which is what a column of AI answers pulled from another

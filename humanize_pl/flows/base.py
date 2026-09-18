@@ -165,6 +165,10 @@ class FlowSettings:
     # caller who knows nothing must not be able to trigger that.
     rhythm: bool = True
     rhythm_scope: RhythmScope = RhythmScope.sentences_only
+    # Write the sections a document owes its category when they are
+    # missing. Needs the hosted model; without one nothing is drafted and
+    # the gap is reported as before.
+    draft_missing: bool = True
     style_profile: Path | None = None
     template: Path | None = None
     format_policy: FormatPolicy = FormatPolicy.preserve
@@ -342,6 +346,11 @@ class ItemOutcome:
     # otherwise it would be the same text, billed twice.
     nli_before: dict[str, Any] = field(default_factory=dict)
     nli_after: dict[str, Any] = field(default_factory=dict)
+    # Clauses a model wrote for sections the document did not have. They
+    # enter the document unmarked, by the owner's decision, so this list
+    # is the only record that a machine wrote them and the report prints
+    # every one in full.
+    drafted_sections: list[dict[str, Any]] = field(default_factory=list)
 
     # The unsuffixed names are what the PDF report, the replay path and the UI
     # already read, and they mean "the state the document left in".
@@ -416,6 +425,7 @@ class ItemOutcome:
             "nli": self.nli_after,
             "nli_before": self.nli_before,
             "nli_after": self.nli_after,
+            "drafted_sections": self.drafted_sections,
         }
 
     @classmethod
@@ -655,6 +665,18 @@ def run_all_layers(
         else:
             outcome.llm = {"backend": "rules_fallback", "status": "unavailable"}
 
+    # Supply the sections the document owes its category, then measure.
+    #
+    # Here rather than after the structure check further down, because
+    # everything that measures "the state the document left in" has to see
+    # the drafted clauses: they are text a model wrote and can carry the very
+    # signal this engine exists to report. Drafting after measurement would
+    # ship model prose that no check had looked at.
+    if settings.draft_missing and settings.rewrite:
+        text_out = _supply_missing_sections(
+            text_out, category, rewriter=rewriter, outcome=outcome
+        )
+
     outcome.text_out = text_out
     after = (
         detect_document(text_out, profile=reference, calibrate_against_default=False)
@@ -688,13 +710,23 @@ def run_all_layers(
         profile=reference,
         threshold=threshold_for_family(resolved_type.value),
     )
-    outcome.needs_review = verdict.needs_revision
+    # A clause a model wrote is never ready to send unread, whatever the gate
+    # says about its prose.
+    outcome.needs_review = verdict.needs_revision or bool(outcome.drafted_sections)
     outcome.constraints = verdict.prompt_constraints
     outcome.style_compliance_after = _style_compliance(text_out, resolved_type, style_profile)
     from humanize_pl.safety.validators import legal_sensitive_inventory
 
     legal_before = legal_sensitive_inventory(text)
     legal_after = legal_sensitive_inventory(text_out)
+    # Drafted clauses are new text by design and passed their own gate
+    # (`invented_particulars`). What this check guards is that the rewrite of
+    # the text that was already there moved nothing, so their contribution
+    # is taken back out before comparing.
+    for draft in outcome.drafted_sections:
+        added = legal_sensitive_inventory(f"{draft['heading']}\n{draft['text']}")
+        for kind, values in added.items():
+            legal_after[kind] = legal_after[kind] - values
     changed_categories = [
         category for category in legal_before if legal_before[category] != legal_after[category]
     ]
@@ -801,6 +833,72 @@ def _short_rationale(value: str, limit: int = 300) -> str:
     """Collapse the model's reason to one report-sized line."""
     text = " ".join(str(value or "").split())
     return text if len(text) <= limit else text[: limit - 1].rstrip() + "…"
+
+
+def _supply_missing_sections(
+    text: str,
+    category: Any,
+    *,
+    rewriter: OpenAICompatibleRewriter | None,
+    outcome: ItemOutcome,
+) -> str:
+    """Draft the required sections the document lacks and put them in place.
+
+    Only `required` sections, never `expected`: the skeleton marks a
+    confidentiality clause as expected because a services contract without
+    one is often simply a different contract, and supplying it would change
+    what was agreed rather than complete it.
+    """
+    from humanize_pl.drafting import (
+        draft_missing_sections,
+        drafted_payload,
+        insert_drafts,
+    )
+
+    if not category.specified:
+        return text
+    blueprint = blueprint_for(category.category.id)
+    if blueprint is None:
+        return text
+    structure = check_category(text, category.category.id)
+    if not structure.checked or not structure.missing_required:
+        return text
+    if rewriter is None:
+        # Said, because the structure check below will report the same gaps
+        # and a reader would otherwise assume the tool tried and failed.
+        outcome.warnings.append(
+            "Brakujących sekcji nie dopisano: wymaga to modelu hostowanego "
+            "(--rewrite-backend hybrid)."
+        )
+        return text
+
+    result = draft_missing_sections(
+        text, blueprint, list(structure.missing_required), client=rewriter
+    )
+    outcome.warnings.extend(result.warnings)
+    if not result.any_drafted:
+        return text
+
+    outcome.drafted_sections = drafted_payload(result)
+    # Said in the warnings as well as the report section, because the
+    # warnings reach every surface - console, JSON, UI - and a clause a
+    # machine wrote must not be discoverable only by the reader who opens
+    # the PDF.
+    for draft in result.drafts:
+        count = draft.blanks
+        places = (
+            "miejsce"
+            if count == 1
+            else "miejsca"
+            if count % 10 in (2, 3, 4) and count % 100 not in (12, 13, 14)
+            else "miejsc"
+        )
+        blanks = f", {count} {places} do uzupełnienia („…”)" if count else ""
+        outcome.warnings.append(
+            f"Dopisano sekcję „{draft.label_pl}”{blanks}. Tekst zaproponował "
+            "model, wymaga zatwierdzenia przez prawnika."
+        )
+    return insert_drafts(text, result.drafts)
 
 
 def _section_contexts(text: str, blueprint: Any) -> dict[int, str]:

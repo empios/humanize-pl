@@ -722,3 +722,81 @@ def test_a_diagnosis_only_run_shows_equal_columns_not_empty_ones():
 
     for axis in ("Styl kancelarii", "Słowa", "Struktura dokumentu"):
         assert rows[axis][2] == rows[axis][3], axis
+
+
+def _drafted_payload(*, inserted: bool) -> dict:
+    return {
+        "flow": "docx",
+        "settings": {"mode": "standard", "engine": "basic", "rewrite": True},
+        "layers": {},
+        "summary": {"items": 1, "ok": 1, "failed": 0, "needs_review": 1},
+        "documents": [
+            {
+                "name": "umowa.docx",
+                "status": "ok",
+                "words": 400,
+                "signal_before": 0.3,
+                "signal_after": 0.2,
+                "findings_before": 3,
+                "findings_after": 1,
+                "readiness_status": "ready_with_warnings",
+                "blueprint_before": {
+                    "checked": True, "missing_required": ["odpowiedzialność"], "empty_sections": []
+                },
+                "blueprint_after": {
+                    "checked": True, "missing_required": [], "empty_sections": []
+                },
+                "drafted_sections": [
+                    {
+                        "section_id": "odpowiedzialnosc",
+                        "label_pl": "odpowiedzialność",
+                        "heading": "§ 2a. Odpowiedzialność",
+                        "text": "Odpowiedzialność Wykonawcy jest ograniczona do kwoty … .",
+                        "expects": ["Umowa określa zasady odpowiedzialności."],
+                        "after_line": 5,
+                        "rank": 4,
+                        "blanks": 1,
+                        "inserted": inserted,
+                    }
+                ],
+            }
+        ],
+    }
+
+
+def test_every_drafted_clause_is_listed_in_full_near_the_front(tmp_path) -> None:
+    """The clause is unmarked in the document by the owner's decision, so the
+    report is the only place that says a model wrote it."""
+    from pypdf import PdfReader
+
+    report = pdf_pl.write_flow_pdf(_drafted_payload(inserted=True), tmp_path / "r.pdf")
+    pages = [page.extract_text() or "" for page in PdfReader(report).pages]
+    text = "\n".join(pages)
+
+    assert "Sekcje dopisane przez model" in text
+    assert "ograniczona do kwoty" in text
+    assert "§ 2a. Odpowiedzialność" in text
+    # Before the per-item detail, not buried in it.
+    assert text.index("Sekcje dopisane przez model") < text.index("Co się zmieniło") + 2000
+    assert "dopisał model" in text
+
+
+def test_a_draft_that_did_not_reach_the_file_is_reported_as_a_proposal(tmp_path) -> None:
+    from pypdf import PdfReader
+
+    report = pdf_pl.write_flow_pdf(_drafted_payload(inserted=False), tmp_path / "r.pdf")
+    text = "\n".join(page.extract_text() or "" for page in PdfReader(report).pages)
+
+    assert "nie wstawiono" in text
+    assert "wyłącznie jako propozycja" in text
+
+
+def test_no_drafts_no_section(tmp_path) -> None:
+    from pypdf import PdfReader
+
+    payload = _drafted_payload(inserted=True)
+    payload["documents"][0]["drafted_sections"] = []
+    report = pdf_pl.write_flow_pdf(payload, tmp_path / "r.pdf")
+    text = "\n".join(page.extract_text() or "" for page in PdfReader(report).pages)
+
+    assert "Sekcje dopisane przez model" not in text

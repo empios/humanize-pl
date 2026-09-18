@@ -795,6 +795,7 @@ class _Report:
             self.cover,
             self.headline,
             self.what_changed,
+            self.drafted_sections,
             self.xlsx_changes,
             self.xlsx_unresolved,
             self.xlsx_basis,
@@ -965,11 +966,18 @@ class _Report:
         else:
             structure = summed("blueprint", missing_sections)
             before, after = structure if structure else (0, 0)
-            rows.append((
-                "Struktura dokumentu",
-                f"brakujące sekcje wymagane (sprawdzono {len(checked)} z {len(self.items)})",
-                str(before), str(after),
-            ))
+            measure = f"brakujące sekcje wymagane (sprawdzono {len(checked)} z {len(self.items)})"
+            # A gap closed by a clause the model wrote is not a gap a lawyer
+            # closed, and the row must not read as if it were.
+            drafted = sum(
+                1
+                for item in self.items
+                for row in item.get("drafted_sections") or []
+                if row.get("inserted", True)
+            )
+            if drafted:
+                measure += f"; {drafted} dopisał model, zob. 1.2"
+            rows.append(("Struktura dokumentu", measure, str(before), str(after)))
         return rows
 
     def what_changed(self) -> list:
@@ -1002,6 +1010,78 @@ class _Report:
                     "pochodzą z ponownego pomiaru, a nie z przebiegu redakcji.",
                     "small",
                 )
+            )
+        return story
+
+    def drafted_sections(self) -> list:
+        """Every clause the model wrote, in full, before anything else.
+
+        The clauses enter the document unmarked, by the owner's decision, so
+        this is the only place that says a machine wrote them. It sits right
+        after the before/after table and is not folded into the per-item
+        detail at the back: a reader who stops after the first page must
+        still learn that the document contains text nobody has approved.
+        """
+        from reportlab.platypus import KeepTogether, Spacer
+
+        rows_by_item = [
+            (position, item, row)
+            for position, item in enumerate(self.items, 1)
+            for row in item.get("drafted_sections") or []
+        ]
+        if not rows_by_item:
+            return []
+
+        inserted = sum(1 for _, _, row in rows_by_item if row.get("inserted", True))
+        story: list[Any] = [
+            self.para("1.2. Sekcje dopisane przez model, do zatwierdzenia", "h2"),
+            self.note(
+                f"Model dopisał {len(rows_by_item)} "
+                f"{_plural(len(rows_by_item), 'sekcję', 'sekcje', 'sekcji')}, których "
+                "dokument wymagał według szkieletu swojej kategorii. W dokumencie "
+                "nie są oznaczone. Każdą trzeba przeczytać i zatwierdzić przed "
+                "wysłaniem, a miejsca „…” uzupełnić danymi, których model nie znał "
+                "i których nie wolno mu było wymyślić."
+                + (
+                    ""
+                    if inserted == len(rows_by_item)
+                    else f" {len(rows_by_item) - inserted} z nich nie weszło do pliku, "
+                    "bo zapis został wycofany. Są tu wyłącznie jako propozycja."
+                )
+            ),
+            Spacer(1, 6),
+        ]
+        for index, (position, item, row) in enumerate(rows_by_item, 1):
+            label = str(row.get("label_pl", ""))
+            title = f"{_item_label(position, self.one, item)} | dopisana sekcja {index}"
+            # Blanks in colour, whichever way the model wrote them: "…" as
+            # asked, or a dotted line as in a paper form.
+            body = re.sub(
+                r"…+|\.{3,}",
+                lambda match: f"<font color='{BAD}'><b>{match.group(0)}</b></font>",
+                escape(str(row.get("text", ""))),
+            ).replace("\n", "<br/>")
+            heading = str(row.get("heading") or "")
+            status = (
+                "wstawiono do dokumentu, bez oznaczenia"
+                if row.get("inserted", True)
+                else "<b>nie wstawiono</b>, zapis dokumentu wycofano"
+            )
+            card = [
+                ("Sekcja", escape(label)),
+                ("Status", status),
+            ]
+            if heading:
+                card.append(("Nagłówek", escape(heading)))
+            card.append(("Treść", body))
+            blanks = int(row.get("blanks") or 0)
+            if blanks:
+                card.append(("Do uzupełnienia", f"{blanks} {_plural(blanks, 'miejsce', 'miejsca', 'miejsc')} „…”"))
+            expects = [str(line) for line in row.get("expects") or []]
+            if expects:
+                card.append(("Wymóg szkieletu", escape(" ".join(expects))))
+            story.append(
+                KeepTogether([self.review_card(title, card, accent=BAD), Spacer(1, 7)])
             )
         return story
 

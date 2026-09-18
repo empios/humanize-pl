@@ -43,7 +43,9 @@ MIN_SECTION_WORDS = 4
 
 # Leading unit markers: "§ 3.", "III.", "3.", "3)" — the shapes Polish legal
 # drafting actually uses for a top-level unit.
-_PARAGRAPH_UNIT = re.compile(r"^\s*§\s*(\d+)")
+# The optional letter is how Polish drafting adds a unit between two
+# existing ones without renumbering: "§ 2a" sits after "§ 2".
+_PARAGRAPH_UNIT = re.compile(r"^\s*§\s*(\d+)(\p{Ll}?)(?!\p{L})")
 _ROMAN_UNIT = re.compile(r"^\s*([IVXLC]+)[.)]\s+\p{Lu}")
 _ARABIC_UNIT = re.compile(r"^\s*(\d+)[.)]\s+\p{Lu}")
 
@@ -87,6 +89,11 @@ class Section:
     # check (`humanize_pl.nli`) reads this, and where it is absent that check
     # falls back to asking whether the section deals with `label_pl` at all.
     expects: tuple[str, ...] = ()
+    # Whether the section is a numbered unit of the document ("§ 4.
+    # Odpowiedzialność") or sits outside the numbering - the preamble naming
+    # the parties, the signature block. Only matters when a missing section
+    # is supplied: a signature block does not get a "§" of its own.
+    unit: bool = True
 
     @property
     def required(self) -> bool:
@@ -187,6 +194,9 @@ def _load(path: Path) -> DocumentBlueprint:
         # person to read, and it reaches a report and a prompt, not a substring
         # test.
         expects = tuple(line for line in (str(v).strip() for v in raw_expects) if line)
+        unit = row.get("unit", True)
+        if not isinstance(unit, bool):
+            raise BlueprintError(f"Sekcja {identifier}: `unit` musi być true albo false.")
         sections.append(
             Section(
                 id=identifier,
@@ -194,6 +204,7 @@ def _load(path: Path) -> DocumentBlueprint:
                 matches=matches,
                 severity=severity,
                 expects=expects,
+                unit=unit,
             )
         )
 
@@ -254,20 +265,22 @@ def is_heading(line: str) -> bool:
     return not stripped.endswith((".", ",", ";", ":")) and stripped[:1].isupper()
 
 
-def _unit_numbers(lines: list[str], numbering: str) -> list[tuple[int, str]]:
+def _unit_numbers(lines: list[str], numbering: str) -> list[tuple[int, str, bool]]:
+    """(value, as written, added between existing units) for each unit."""
     pattern = {
         "paragraph": _PARAGRAPH_UNIT,
         "roman": _ROMAN_UNIT,
         "arabic": _ARABIC_UNIT,
     }[numbering]
-    found: list[tuple[int, str]] = []
+    found: list[tuple[int, str, bool]] = []
     for line in lines:
         match = pattern.match(line.strip())
         if not match:
             continue
         raw = match.group(1)
         value = _roman_to_int(raw) if numbering == "roman" else int(raw)
-        found.append((value, raw))
+        suffix = match.group(2) if numbering == "paragraph" else ""
+        found.append((value, raw + suffix, bool(suffix)))
     return found
 
 
@@ -277,7 +290,12 @@ def _numbering_issues(lines: list[str], numbering: str) -> list[str]:
         return []
     issues: list[str] = []
     expected = found[0][0]
-    for value, raw in found:
+    for value, raw, added in found:
+        # "§ 2a" and "§ 2b" after "§ 2" neither repeat nor skip: they are the
+        # one way to add a unit that leaves every reference to "§ 3" pointing
+        # where it did.
+        if added and value == expected - 1:
+            continue
         if value == expected:
             expected += 1
             continue

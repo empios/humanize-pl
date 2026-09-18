@@ -219,6 +219,59 @@ def replace_unit_text(unit: TextUnit, replacement: str) -> None:
     unit.text = replacement
 
 
+# Copied properties that would add something the inventory counts or change
+# what is around the new paragraph: a section break carried in `w:pPr`, a
+# tracked-change mark, and list numbering - a paragraph that joined an
+# automatic "§ 1, § 2, ..." list would renumber every unit below it, the one
+# thing a "§ 2a" heading exists to avoid.
+_NOT_COPIED = (
+    "w:sectPr",
+    "w:numPr",
+    "w:pPrChange",
+    "w:rPrChange",
+    "w:ins",
+    "w:del",
+    "w:moveFrom",
+    "w:moveTo",
+)
+
+
+def new_paragraph_like(model: Any, text: str) -> Any:
+    """A new `w:p` carrying `text` in the formatting of the `model` paragraph.
+
+    Only paragraph properties and the first run's character properties are
+    copied - enough for the clause to look like its neighbours, and nothing
+    that belongs to the neighbour itself (bookmarks, fields, comments).
+    """
+    from copy import deepcopy
+
+    from docx.oxml import OxmlElement  # type: ignore
+    from docx.oxml.ns import qn  # type: ignore
+
+    def cleaned(element: Any) -> Any:
+        copy = deepcopy(element)
+        for name in _NOT_COPIED:
+            for node in copy.findall(".//" + qn(name)):
+                node.getparent().remove(node)
+        return copy
+
+    paragraph = OxmlElement("w:p")
+    properties = model._p.find(qn("w:pPr"))
+    if properties is not None:
+        paragraph.append(cleaned(properties))
+    run = OxmlElement("w:r")
+    first_run = model._p.find(".//" + qn("w:r"))
+    run_properties = first_run.find(qn("w:rPr")) if first_run is not None else None
+    if run_properties is not None:
+        run.append(cleaned(run_properties))
+    node = OxmlElement("w:t")
+    node.text = text
+    node.set(qn("xml:space"), "preserve")
+    run.append(node)
+    paragraph.append(run)
+    return paragraph
+
+
 def document_text(document: Any, *, include_protected: bool = True) -> str:
     return "\n".join(
         unit.text for unit in iter_text_units(document) if include_protected or not unit.protected

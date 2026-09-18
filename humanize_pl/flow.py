@@ -96,6 +96,7 @@ def _build_settings(
     require_llm: bool = False,
     require_renderer: bool = False,
     llm_env_file: Path | None = None,
+    draft_missing: bool = True,
 ) -> FlowSettings:
     if settings is not None:
         return settings
@@ -136,6 +137,7 @@ def _build_settings(
         llm_env_file=llm_env_file,
         blueprint=blueprint,
         nli=nli,
+        draft_missing=draft_missing,
     )
 
 
@@ -166,6 +168,7 @@ def humanize(
     require_llm: bool = False,
     require_renderer: bool = False,
     llm_env_file: Path | None = None,
+    draft_missing: bool = True,
     resume: bool = False,
     on_item: Callable[[ItemOutcome], None] | None = None,
     on_layers: Callable[[dict[str, Any]], None] | None = None,
@@ -189,6 +192,9 @@ def humanize(
         sheet: Optional sheet name for .xlsx.
         header_row: Header row index for .xlsx.
         no_rewrite: If True, diagnose only without modifying content.
+        draft_missing: Write the required sections the document's category
+            owes and it lacks. Needs the hosted model; every clause written
+            this way is listed in full in the report and blocks `ready`.
         pdf: Whether to generate descriptive PDF report (raport.pdf).
         report: Custom path for the output JSON report.
         resume: For folder input, resume an interrupted run.
@@ -218,6 +224,7 @@ def humanize(
         require_llm=require_llm,
         require_renderer=require_renderer,
         llm_env_file=llm_env_file,
+        draft_missing=draft_missing,
     )
 
     # 1. Determine whether source is a path or raw text string

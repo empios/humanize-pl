@@ -207,6 +207,22 @@ def test_loader_rejects_an_unknown_numbering(tmp_path) -> None:
         _load(_write(tmp_path, payload))
 
 
+def test_loader_rejects_a_non_boolean_unit(tmp_path) -> None:
+    """`unit: "nie"` would be truthy and quietly give a signature block a "§"."""
+    payload = {"category": "x", "sections": [{"id": "a", "matches": ["q"], "unit": "nie"}]}
+    with pytest.raises(BlueprintError, match="unit"):
+        _load(_write(tmp_path, payload))
+
+
+def test_lettered_units_are_additions_not_repeats() -> None:
+    from humanize_pl.blueprint import _numbering_issues
+
+    assert _numbering_issues(["§ 1.", "§ 2.", "§ 2a.", "§ 2b.", "§ 3."], "paragraph") == []
+    assert _numbering_issues(["§ 1.", "§ 2.", "§ 2.", "§ 3."], "paragraph")
+    # A letter does not excuse a jump: "§ 4a" after "§ 2" skips "§ 3".
+    assert _numbering_issues(["§ 1.", "§ 2.", "§ 4a."], "paragraph")
+
+
 def test_loader_rejects_duplicate_sections(tmp_path) -> None:
     payload = {
         "category": "x",

@@ -12,6 +12,8 @@ sections:
   - id: komparycja
     label_pl: komparycja (data, miejsce, strony)
     severity: required
+    # Poza numeracją: komparycja poprzedza § 1, podpisy następują po ostatnim §.
+    unit: false
     matches: ["zawarta w dniu", "zawarto umowę", "pomiędzy"]
     expects:
       - "Umowa wskazuje datę i miejsce jej zawarcia."
@@ -81,6 +83,7 @@ sections:
   - id: podpisy
     label_pl: podpisy stron
     severity: required
+    unit: false
     matches: ["podpis", "zamawiający:", "wykonawca:"]
     expects:
       - "Dokument przewiduje miejsce na podpisy obu stron."

@@ -10,6 +10,12 @@ from pathlib import Path
 from typing import Any
 
 from humanize_pl.detect import detect_document
+from humanize_pl.drafting import (
+    UNIT_HEADING,
+    DraftedSection,
+    drafts_from_payload,
+    inserted_line_indices,
+)
 from humanize_pl.rhythm import RhythmScope
 from humanize_pl.document import DocumentType, FormatPolicy, ReadinessStatus
 from humanize_pl.docx_quality import (
@@ -24,6 +30,7 @@ from humanize_pl.io.docx_structure import (
     inventory_docx,
     iter_text_units,
     load_document,
+    new_paragraph_like,
     replace_unit_text,
     save_with_inventory_guard,
 )
@@ -181,6 +188,7 @@ def run_docx_flow(
                     outcome.text_out if outcome.text_out is not None else text,
                     settings=settings,
                     document_type=DocumentType(outcome.document_type),
+                    drafts=drafts_from_payload(outcome.drafted_sections),
                 )
             else:
                 formatting = audit_document(document, path, policy=settings.format_policy)
@@ -196,6 +204,8 @@ def run_docx_flow(
                 outcome.applied_changes = []
                 outcome.changes_applied = 0
                 outcome.examples = []
+                if outcome.drafted_sections:
+                    _drafts_not_inserted(outcome)
             # Formatting warnings raise the status to "with warnings"; they
             # must not lower one that is already worse. This line used to
             # overwrite `failed` unconditionally, so a document missing a
@@ -268,6 +278,72 @@ def run_docx_flow(
     return payload
 
 
+def _drafts_not_inserted(outcome: ItemOutcome) -> None:
+    """The saved file is the source copy, so the drafted clauses are not in it.
+
+    Kept in the report as proposals - the text is still worth a lawyer's
+    time - but nothing may claim they are in the document, and the structure
+    reported is the structure of the file that was actually written.
+    """
+    for row in outcome.drafted_sections:
+        row["inserted"] = False
+    outcome.warnings.append(
+        "Zapis DOCX wycofano, więc dopisane sekcje nie weszły do pliku; "
+        "ich treść jest w raporcie jako propozycja."
+    )
+    outcome.blueprint_after = outcome.blueprint_before
+    if outcome.blueprint_before.get("blocking"):
+        outcome.readiness_status = ReadinessStatus.failed.value
+
+
+def _insert_drafted_paragraphs(units: list[Any], drafts: list[DraftedSection]) -> int:
+    """Create the paragraphs for drafted sections; return how many.
+
+    Each clause takes the formatting of the paragraph it follows and its
+    "§ Na" heading that of the unit heading it follows, so the new text looks
+    like the document rather than like Word's defaults.
+    """
+    if not units:
+        return 0
+    created = 0
+    leading = sorted((row for row in drafts if row.after_line < 0), key=lambda row: row.rank)
+    rest = sorted(
+        (row for row in drafts if row.after_line >= 0),
+        key=lambda row: (-row.after_line, -row.rank),
+    )
+    for draft in leading + rest:
+        anchor = units[draft.after_line] if draft.after_line >= 0 else None
+        body_model = anchor or units[0]
+        heading_model = next(
+            (
+                units[index]
+                for index in range(draft.after_line, -1, -1)
+                if UNIT_HEADING.match(units[index].text)
+            ),
+            body_model,
+        )
+        elements = []
+        if draft.heading:
+            elements.append(new_paragraph_like(heading_model.paragraph, draft.heading))
+        # One paragraph per ustęp, in the same order `inserted_line_indices`
+        # counted them.
+        elements.extend(
+            new_paragraph_like(body_model.paragraph, line)
+            for line in draft.text.split("\n")
+        )
+        if anchor is None:
+            # In rank order before the first paragraph: each lands directly
+            # before it, so the order of calls is the order on the page.
+            for element in elements:
+                units[0].paragraph._p.addprevious(element)
+        else:
+            # Directly after the anchor, so the last element goes in first.
+            for element in reversed(elements):
+                anchor.paragraph._p.addnext(element)
+        created += len(elements)
+    return created
+
+
 def _write_docx(
     source: Path,
     target: Path,
@@ -275,11 +351,18 @@ def _write_docx(
     *,
     settings: FlowSettings,
     document_type: DocumentType,
+    drafts: list[DraftedSection] | None = None,
 ) -> FormattingReport:
     """Apply text at run level, normalize optionally, and verify the package."""
     document = load_document(source)
     units = list(iter_text_units(document))
     lines = text.split("\n")
+    drafts = drafts or []
+    # The drafted lines have no paragraph yet; what is left maps one to one
+    # onto the paragraphs that exist.
+    added = set(inserted_line_indices(drafts))
+    if added:
+        lines = [line for index, line in enumerate(lines) if index not in added]
     report = FormattingReport(policy=settings.format_policy)
     if len(lines) != len(units):
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -299,6 +382,7 @@ def _write_docx(
                 )
             continue
         replace_unit_text(unit, replacement)
+    paragraphs_added = _insert_drafted_paragraphs(units, drafts)
 
     if settings.format_policy == FormatPolicy.normalize:
         report.fixes.extend(normalize_document(document, document_type))
@@ -308,7 +392,9 @@ def _write_docx(
     report.protected_elements = audited.protected_elements
 
     before = inventory_docx(source)
-    differences = save_with_inventory_guard(document, source, target)
+    differences = save_with_inventory_guard(
+        document, source, target, expected_paragraph_delta=paragraphs_added
+    )
     if differences:
         report.inventory_preserved = False
         report.inventory_differences = differences
@@ -330,7 +416,9 @@ def _write_docx(
         else:
             apply_template_style_parts(target, template)
             report.fixes.append("Zastosowano style i motyw z szablonu kancelarii.")
-            compare_inventories(before, target, report)
+            compare_inventories(
+                before, target, report, expected_paragraph_delta=paragraphs_added
+            )
             if not report.inventory_preserved:
                 shutil.copy2(source, target)
                 report.issues.append(

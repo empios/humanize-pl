@@ -364,11 +364,16 @@ def describe_layers(layers: dict[str, Any]) -> list[str]:
 def describe_item(item: ItemOutcome) -> str:
     if item.status == "failed":
         return f"BŁĄD  {item.name}: {item.error}"
-    flag = "do przeglądu" if item.needs_review else "ok"
+    flag = {
+        "ready": "gotowy",
+        "ready_with_warnings": "do przeglądu",
+        "failed": "niegotowy",
+    }.get(item.readiness_status, item.readiness_status)
+    if item.readiness_status == "ready" and item.needs_review:
+        flag = "do przeglądu"
     return (
         f"[{flag}] {item.name}: sygnał {item.signal_before:.2f} → "
-        f"{item.signal_after:.2f}, zmian {item.changes_applied}, "
-        f"status {item.readiness_status}"
+        f"{item.signal_after:.2f}, zmian {item.changes_applied}"
     )
 
 

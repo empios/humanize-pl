@@ -277,3 +277,15 @@ def test_the_summary_reads_the_rows_the_flows_actually_write():
     text = summary_markdown(_ui_payload())
 
     assert f"({signal_word(0.1, True)})" in text
+
+
+def test_a_document_not_ready_is_not_labelled_ok():
+    """It printed "[ok] … status failed" for a document missing a required
+    section: the label read the review flag, the status read like a crash."""
+    from humanize_pl.flows.base import ItemOutcome
+    from humanize_pl.ui.app import describe_item
+
+    item = ItemOutcome(name="umowa.docx", readiness_status="failed")
+
+    assert describe_item(item).startswith("[niegotowy]")
+    assert "failed" not in describe_item(item)

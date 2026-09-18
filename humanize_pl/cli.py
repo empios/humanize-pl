@@ -232,12 +232,18 @@ def _print_item(item: ItemOutcome) -> None:
     if item.status == "failed":
         print(f"[red]BŁĄD[/red] {item.name}: {item.error}")
         return
-    flag = "[red]do przeglądu[/red]" if item.needs_review else "[green]ok[/green]"
+    # Keyed on readiness, not on the review flag alone: a document missing a
+    # required section printed as "ok ... status failed", and "failed" itself
+    # read as a crash rather than as "not ready to send".
+    flag = {
+        "ready": "[green]gotowy[/green]",
+        "ready_with_warnings": "[yellow]do przeglądu[/yellow]",
+        "failed": "[red]niegotowy[/red]",
+    }.get(item.readiness_status, item.readiness_status)
+    if item.readiness_status == "ready" and item.needs_review:
+        flag = "[yellow]do przeglądu[/yellow]"
     arrow = f"{item.signal_before:.2f} → {item.signal_after:.2f}"
-    print(
-        f"{flag} {item.name}: sygnał {arrow}, zmian {item.changes_applied}, "
-        f"status {item.readiness_status}"
-    )
+    print(f"{flag} {item.name}: sygnał {arrow}, zmian {item.changes_applied}")
 
 
 def _print_summary(summary: dict) -> None:

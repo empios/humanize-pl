@@ -246,6 +246,19 @@ def _print_item(item: ItemOutcome) -> None:
     print(f"{flag} {item.name}: sygnał {arrow}, zmian {item.changes_applied}")
 
 
+WARNINGS_SHOWN = 10
+
+
+def _print_warnings(warnings: list[str]) -> None:
+    if not warnings:
+        return
+    print("\n[bold]Uwagi[/bold]")
+    for warning in warnings[:WARNINGS_SHOWN]:
+        print(f"  [yellow]![/yellow] {warning}")
+    if len(warnings) > WARNINGS_SHOWN:
+        print(f"  … i {len(warnings) - WARNINGS_SHOWN} więcej w raporcie")
+
+
 def _print_summary(summary: dict) -> None:
     if not summary:
         return
@@ -590,6 +603,13 @@ def run_command(
     # Presentation of results
     if result.payload.get("summary"):
         _print_summary(result.payload["summary"])
+    # One document: its warnings are what the lawyer acts on - a chatbot's
+    # preamble left at the top, fields to fill, a clause the model wrote - and
+    # otherwise they sit in the JSON and the PDF. A batch has the per-item
+    # lines and the report instead; forty documents' warnings would bury both.
+    documents = result.payload.get("documents") or result.payload.get("rows") or []
+    if len(documents) == 1:
+        _print_warnings(documents[0].get("warnings") or [])
 
     if result.output_path:
         print(f"\n[green]Zapisano:[/green] {result.output_path}")

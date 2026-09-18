@@ -214,3 +214,52 @@ def test_unified_cli_flow_alias_import():
     assert "run" in result.stdout
     assert "docx" in result.stdout
     assert "xlsx" in result.stdout
+
+
+def test_a_text_file_reports_through_the_same_callbacks_as_a_batch(tmp_path) -> None:
+    """The text path called neither callback, handed back the bare item as
+    its payload and built a summary by hand without the readiness counts;
+    `humanize-pl plik.txt` printed only where it had saved."""
+    from humanize_pl.flow import humanize
+
+    source = tmp_path / "pismo.txt"
+    source.write_text(
+        "Poniżej gotowy wzór pisma. Uzupełnij dane w nawiasach kwadratowych.\n"
+        "Wzywam do zapłaty kwoty [kwota] w terminie 7 dni od otrzymania wezwania.",
+        encoding="utf-8",
+    )
+    seen_items, seen_layers = [], []
+
+    result = humanize(
+        source,
+        tmp_path / "out.txt",
+        pdf=False,
+        on_item=seen_items.append,
+        on_layers=seen_layers.append,
+    )
+
+    assert len(seen_items) == 1 and seen_layers
+    assert result.payload["summary"]["ready_with_warnings"] + result.payload["summary"][
+        "not_ready"
+    ] == 1
+    assert result.payload["documents"][0]["name"] == "pismo.txt"
+    assert any("czatbota" in warning for warning in result.payload["documents"][0]["warnings"])
+
+
+def test_the_cli_prints_a_single_documents_warnings(tmp_path) -> None:
+    """For one document the warnings are what the lawyer acts on; they used
+    to reach only the JSON and the PDF."""
+    source = tmp_path / "pismo.txt"
+    source.write_text(
+        "Poniżej gotowy wzór pisma. Uzupełnij dane w nawiasach kwadratowych.\n"
+        "Wzywam do zapłaty kwoty [kwota] w terminie 7 dni od otrzymania wezwania.",
+        encoding="utf-8",
+    )
+
+    result = CliRunner().invoke(
+        app, [str(source), "-o", str(tmp_path / "out.txt"), "--no-pdf"]
+    )
+
+    assert result.exit_code == 0, result.output
+    assert "Uwagi" in result.output
+    assert "czatbota" in result.output

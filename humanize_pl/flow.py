@@ -33,8 +33,10 @@ from humanize_pl.flows.base import (
     FlowSettings,
     ItemOutcome,
     attach_pdf_report,
+    layer_status,
+    prepare_llm,
     run_all_layers,
-    what_changed,
+    summarise,
 )
 from humanize_pl.flows.docx_flow import run_docx_flow
 from humanize_pl.flows.xlsx_flow import run_xlsx_flow
@@ -386,11 +388,36 @@ def humanize(
         text_input = str(source)
         item_name = "tekst"
 
-    outcome, verdict = run_all_layers(
-        text_input,
-        name=item_name,
-        settings=flow_settings,
+    # The same preparation the batch flows do, so a single text reports its
+    # layers and its item through the same callbacks: this path used to call
+    # neither, and `humanize-pl plik.txt` printed only where it had saved.
+    session = flow_settings.session() if flow_settings.rewrite else None
+    style_profile = flow_settings.load_style_profile()
+    rewriter, llm_warnings = prepare_llm(flow_settings)
+    layers = layer_status(
+        session,
+        office_profile=style_profile is not None,
+        rewriter=rewriter,
+        llm_warnings=llm_warnings,
     )
+    if on_layers is not None:
+        on_layers(layers)
+    try:
+        outcome, verdict = run_all_layers(
+            text_input,
+            name=item_name,
+            settings=flow_settings,
+            session=session,
+            rewriter=rewriter,
+            style_profile=style_profile,
+            llm_prepared=True,
+            llm_initialization_warnings=llm_warnings,
+        )
+    finally:
+        if rewriter is not None:
+            rewriter.close()
+    if on_item is not None:
+        on_item(outcome)
 
     final_text = outcome.text_out if outcome.text_out is not None else text_input
     if out_path is not None:
@@ -400,30 +427,25 @@ def humanize(
     rep_path = None
     pdf_path = None
 
+    # Built every time, from the same `summarise` the batch flows use: the
+    # hand-written summary this replaces lacked the readiness counts, and the
+    # payload handed back was the bare item, so the CLI had no summary and no
+    # PDF path to print.
+    report_payload = {
+        "flow": "text",
+        "name": item_name,
+        "settings": {
+            "mode": flow_settings.mode.value,
+            "engine": flow_settings.engine.value,
+            "rewrite": flow_settings.rewrite,
+            "document_type": flow_settings.document_type.value,
+            "rewrite_backend": flow_settings.rewrite_backend.value,
+        },
+        "layers": layers,
+        "summary": summarise([outcome]),
+        "documents": [outcome.to_json()],
+    }
     if report is not None or pdf:
-        report_payload = {
-            "flow": "text",
-            "name": item_name,
-            "settings": {
-                "mode": flow_settings.mode.value,
-                "engine": flow_settings.engine.value,
-                "rewrite": flow_settings.rewrite,
-                "document_type": flow_settings.document_type.value,
-                "rewrite_backend": flow_settings.rewrite_backend.value,
-            },
-            "summary": {
-                "items": 1,
-                "ok": 1 if outcome.status == "ok" else 0,
-                "failed": 1 if outcome.status == "failed" else 0,
-                "needs_review": 1 if outcome.needs_review else 0,
-                "changes_applied": outcome.changes_applied,
-                "mean_signal_before": outcome.signal_before,
-                "mean_signal_after": outcome.signal_after,
-                "mean_signal_delta": outcome.signal_delta,
-                "what_changed": what_changed([outcome.to_json()]),
-            },
-            "documents": [outcome.to_json()],
-        }
         if report is not None:
             report.parent.mkdir(parents=True, exist_ok=True)
             report.write_text(json.dumps(report_payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -457,5 +479,6 @@ def humanize(
         output_path=out_path,
         report_path=rep_path,
         pdf_report=pdf_path,
-        payload=outcome.to_json(),
+        payload=report_payload,
+        outcomes=[outcome],
     )

@@ -193,3 +193,18 @@ def test_words_that_only_begin_like_an_aside_are_not_one():
         "Świadkowie wskazali na zeznania wzajemnie się uzupełniające.",
     ):
         assert not find_artifacts(line).counts().get("chatbot_frame"), line
+
+
+def test_a_second_models_asides_are_found_too():
+    """Read off qwen-local, the pattern found Bielik's asides in 11 of 32
+    documents; these are the shapes that made it 25."""
+    for line in (
+        "Oto przykładowy wniosek o udostępnienie informacji publicznej:",
+        "Oto kompletna polityka prywatności dla aplikacji mobilnej.",
+        "Pamiętaj, że to jest tylko przykładowa umowa i może wymagać dostosowania.",
+        "Ta polityka prywatności może być dostosowana do konkretnych potrzeb platformy.",
+        "W razie wątpliwości warto skonsultować się z prawnikiem.",
+    ):
+        assert find_artifacts(line).counts().get("chatbot_frame"), line
+    # A party who consulted a lawyer, in a judgment, is not an aside.
+    assert not find_artifacts("Powód skonsultował się z prawnikiem.").counts()

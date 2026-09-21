@@ -617,13 +617,15 @@ korpusach po 32 dokumenty z tej samej siatki poleceń wobec 2396 orzeczeń:
 | nagłówek `#` | 30/32 | 0/32 | 0 | usuwa znaczniki |
 | linia `---` | 29/32 | 0/32 | 0 | zamienia na pustą linię |
 | tabela markdown | 6/32 | 0/32 | 0 | zgłasza |
-| zwrot do użytkownika, zastrzeżenie „nie stanowi porady prawnej” | 26/32 | 11/32 | 1 | zgłasza, blokuje „gotowy” |
+| zwrot do użytkownika, zastrzeżenie „nie stanowi porady prawnej” | 26/32 | 25/32 | 2 | zgłasza, blokuje „gotowy” |
 | pole `[data]`, `[kwota]` | 21/32 | 23/32 | 2 | zgłasza, blokuje „gotowy” |
 
 Markdown to nawyk jednego modelu (albo jego szablonu czatu), nie wyjścia modeli
 w ogóle: Bielik nie napisał ani jednego znacznika. Wspólne obu modelom są pola
-do uzupełnienia, a zwroty do użytkownika w różnym stopniu. Bielik pisze też
-o połowę krócej (mediana 414 słów wobec 885).
+do uzupełnienia i zwroty do użytkownika, tyle że innymi słowami: wzorzec
+zbudowany na qwenie łapał je u Bielika w 11 z 32 dokumentów, po dopisaniu
+jego form („Oto przykładowy…”, „może wymagać dostosowania”) w 25. Bielik
+pisze też o połowę krócej (mediana 414 słów wobec 885).
 
 Te ślady nie wchodzą do wskaźnika stylu (`humanize_pl/artifacts.py`):
 wskaźnik mierzyłby wtedy, z jakiego okna skopiowano tekst. Myślnik na początku

@@ -11,13 +11,14 @@ judgments:
     # heading           30 of 32          0
     --- rule line       29 of 32          0 (3 used "***", left alone here)
     markdown table       6 of 32          0
-    chatbot phrasing    26 of 32          1
+    chatbot phrasing    26 of 32          2
     [data]-style field  21 of 32          2
 
 Those figures are qwen-local's. A second corpus from the same prompt grid,
 written by Bielik 7B, has no markdown at all (0 of 32 on every marker),
-asides in 11 of 32 and fields in 23 of 32: markdown is one model's habit,
-fields are common to both.
+asides in 25 of 32 and fields in 23 of 32: markdown is one model's habit,
+asides and fields are common to both. The asides needed Bielik's own
+wording added - the list read off qwen-local found 11 of the 25.
 
 None of this is style, and none of it is scored: the calibrated signal
 measures how a text is written, and letting "**" into it would make the
@@ -68,8 +69,21 @@ _CHATBOT = re.compile(
     r"|nie\s+stanowi\s+(?:indywidualnej\s+)?porady"
     r"|ma\s+charakter\s+wzorcowy|jest\s+wzorem|(?:powyższy|poniższy)\s+wzór"
     r"|chcesz,?\s+(?:żebym|abym)"
-    r"|zalecam\b[^.\n]{0,60}\bprawnik)"
-    r"|(?m:^\W*uwaga\s+praktyczna\b)",
+    r"|zalecam\b[^.\n]{0,60}\bprawnik"
+    # Bielik's shapes, missed by the list above, which was read off
+    # qwen-local's output (judgment hits in brackets): "Oto przykładowy /
+    # kompletny …" opening a document (0), "dostosować do konkretnych
+    # potrzeb" (0), "może wymagać dostosowania" (0), "Pamiętaj" (1),
+    # "skonsultować się z prawnikiem" (0), "stanowi podstawowy wzór" (0).
+    r"|dostosow\w*(?:\s+\w+){0,2}\s+do\s+(?:konkretn|swoj|indywidualn|twoj|lokaln)"
+    r"|(?:może|mogą)\s+wymagać\s+dostosowania"
+    r"|pamiętaj\b"
+    r"|skonsultować\s+się\s+z\s+prawnik|skonsultuj\b"
+    r"|stanowi\s+(?:tylko\s+)?(?:podstawowy|ogólny|przykładowy)\s+(?:wzór|szkielet)"
+    r"|podstawowy\s+szkielet|tylko\s+przykładow)"
+    r"|(?m:^\W*uwaga\s+praktyczna\b)"
+    r"|(?m:^\W*oto\s+(?:\w+\s+){0,2}(?:wzór|wniosek|pozew|umow|regulamin|polityk|wezwani"
+    r"|analiz|opini|pism|projekt|propozycj|przykład))",
     re.IGNORECASE,
 )
 # A bracket that names a field rather than quoting or annotating. Judgments

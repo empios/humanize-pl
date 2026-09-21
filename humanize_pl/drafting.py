@@ -289,7 +289,7 @@ def draft_missing_sections(
             try:
                 answer = client.complete_text(messages, max_tokens=MAX_TOKENS)
             except LlmEndpointError as exc:
-                reason = f"nie powstała: {_safe_error(exc)}"
+                reason = f"nie powstała: {_safe_error(exc).rstrip('.')}"
                 break
             candidate = _clean_answer(protected.restore(answer), section.label_pl)
             reason = _rejection(

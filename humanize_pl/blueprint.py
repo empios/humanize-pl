@@ -103,16 +103,32 @@ class Section:
     # the parties, the signature block. Only matters when a missing section
     # is supplied: a signature block does not get a "§" of its own.
     unit: bool = True
+    # Regular expressions, for a section recognised by its shape rather than
+    # a word. A signature block is a party's role alone on a line over a
+    # dotted line; "zleceniodawca" as a word is in every clause of the
+    # contract, so no substring can tell the block from the body.
+    patterns: tuple[Any, ...] = ()
 
     @property
     def required(self) -> bool:
         return self.severity == "required"
 
     def found_in(self, lowered: str) -> str | None:
+        located = self.locate(lowered)
+        return located[0] if located else None
+
+    def locate(self, lowered: str) -> tuple[str, int] | None:
+        """The first matching phrase and where it starts, or None."""
+        best: tuple[str, int] | None = None
         for phrase in self.matches:
-            if phrase in lowered:
-                return phrase
-        return None
+            at = lowered.find(phrase)
+            if at >= 0 and (best is None or at < best[1]):
+                best = (phrase, at)
+        for pattern in self.patterns:
+            match = pattern.search(lowered)
+            if match and (best is None or match.start() < best[1]):
+                best = (match.group(0), match.start())
+        return best
 
 
 @dataclass(frozen=True)
@@ -206,6 +222,15 @@ def _load(path: Path) -> DocumentBlueprint:
         unit = row.get("unit", True)
         if not isinstance(unit, bool):
             raise BlueprintError(f"Sekcja {identifier}: `unit` musi być true albo false.")
+        patterns: list[Any] = []
+        for raw in row.get("patterns") or ():
+            try:
+                # Matched against the lowered text, lines joined by "\n".
+                patterns.append(re.compile(str(raw), re.MULTILINE))
+            except re.error as exc:
+                raise BlueprintError(
+                    f"Sekcja {identifier}: niepoprawny wzorzec `patterns`: {exc}"
+                ) from exc
         sections.append(
             Section(
                 id=identifier,
@@ -214,6 +239,7 @@ def _load(path: Path) -> DocumentBlueprint:
                 severity=severity,
                 expects=expects,
                 unit=unit,
+                patterns=tuple(patterns),
             )
         )
 
@@ -360,8 +386,8 @@ def check(text: str, blueprint: DocumentBlueprint) -> BlueprintReport:
 
     order: list[tuple[int, str]] = []
     for section in blueprint.sections:
-        phrase = section.found_in(lowered_all)
-        if phrase is None:
+        located = section.locate(lowered_all)
+        if located is None:
             if section.required:
                 report.missing_required.append(section.label_pl)
             else:
@@ -369,11 +395,10 @@ def check(text: str, blueprint: DocumentBlueprint) -> BlueprintReport:
             continue
 
         report.present_sections.append(section.id)
-        position = next(
-            (index for index, line in enumerate(lowered_lines) if phrase in line), None
-        )
-        if position is None:
-            continue
+        # The line the match starts on, counted from its offset: looking the
+        # phrase up line by line again found the first line containing it,
+        # which for a pattern's first word can be any clause of the body.
+        position = lowered_all.count("\n", 0, located[1])
         order.append((position, section.id))
         # Emptiness is only decidable when the match landed on a heading: in
         # running prose there is no boundary to measure the section against.

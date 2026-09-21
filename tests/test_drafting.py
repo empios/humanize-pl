@@ -501,3 +501,43 @@ def test_an_unrestored_placeholder_is_refused():
 
     assert result.drafts == []
     assert "znacznik techniczny" in result.warnings[0]
+
+
+def test_a_number_alone_on_its_line_joins_the_line_after_it():
+    """Bielik wrote "2.", "W imieniu Zleceniobiorcy:", "3.", ... and the bare
+    numbers went into the contract as paragraphs."""
+    result = draft_missing_sections(
+        DOCUMENT.replace("§ ", ""),
+        blueprint_for("umowa_uslug"),
+        ["podpisy stron"],
+        client=FakeClient(["1.\nW imieniu Zleceniodawcy: …\n2.\nW imieniu Zleceniobiorcy: …\n(podpis)"]),
+    )
+
+    assert result.drafts[0].lines == (
+        "1. W imieniu Zleceniodawcy: …",
+        "2. W imieniu Zleceniobiorcy: …",
+        "(podpis)",
+    )
+
+
+def test_a_clause_goes_before_a_signature_block_found_by_its_shape():
+    """The insertion boundary looked sections up line by line through their
+    phrases, so a block recognised only by a pattern did not bound it."""
+    text = (
+        "Umowa zawarta w dniu 3 marca 2026 r. pomiędzy Zleceniodawcą a Zleceniobiorcą.\n"
+        "Przedmiotem umowy jest prowadzenie ksiąg rachunkowych.\n"
+        "Wynagrodzenie płatne jest miesięcznie.\n"
+        "Strony ponoszą odpowiedzialność na zasadach ogólnych.\n"
+        "Każda ze Stron może dokonać wypowiedzenia umowy.\n"
+        "ZLECENIODAWCA\n"
+        ".........................\n"
+    )
+    result = draft_missing_sections(
+        text,
+        blueprint_for("umowa_uslug"),
+        ["postanowienia końcowe"],
+        client=FakeClient(["W sprawach nieuregulowanych stosuje się przepisy Kodeksu cywilnego."]),
+    )
+    lines = insert_drafts(text, result.drafts).split("\n")
+
+    assert lines.index("W sprawach nieuregulowanych stosuje się przepisy Kodeksu cywilnego.") < lines.index("ZLECENIODAWCA")

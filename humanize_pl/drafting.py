@@ -419,6 +419,18 @@ def _clean_answer(draft: str, label: str) -> str:
         UNIT_HEADING.match(rows[0]) or rows[0].casefold().rstrip(".:") == title
     ):
         rows.pop(0)
+    # A number alone on its line belongs to the line after it: Bielik wrote a
+    # signature block as "2.", "W imieniu Zleceniobiorcy:", "3.", ... and the
+    # bare numbers went into the contract as paragraphs of their own.
+    numbered: list[str] = []
+    pending = ""
+    for row in rows:
+        if re.fullmatch(r"(?:\d+|[a-z])[.)]", row):
+            pending = f"{pending}{row} "
+            continue
+        numbered.append(f"{pending}{row}")
+        pending = ""
+    rows = numbered
     # A line that stops mid-sentence and is continued in lower case is a
     # wrapped line, not an ustęp. Both conditions: the configured model
     # answered a signature block with "Zamawiający:\npodpis\n\nWykonawca:\n
@@ -509,12 +521,17 @@ def _insertion_line(
     # on documents that separate their clauses that way; a contract written
     # as consecutive lines would take the clause past two more sections.
     next_section_at = len(lines)
+    # Located on the whole text, so a section recognised by a pattern that
+    # spans lines - a signature block - bounds the insertion like any other;
+    # a line-by-line phrase test missed it, and a final clause would have
+    # gone in after the signatures.
+    joined = "\n".join(lowered)
     for section in blueprint.sections:
         if order[section.id] <= target_rank:
             continue
-        for index, line in enumerate(lowered):
-            if any(phrase in line for phrase in section.matches):
-                next_section_at = min(next_section_at, index)
+        located = section.locate(joined)
+        if located is not None:
+            next_section_at = min(next_section_at, joined.count("\n", 0, located[1]))
 
     anchor = -1
     for section in blueprint.sections:

@@ -582,3 +582,25 @@ def test_a_section_with_numbered_subsections_is_not_empty() -> None:
         "V. Analiza prawna\n",
     )
     assert "analiza prawna" in check_category(starved, "opinia_prawna").empty_sections
+
+
+def test_a_signature_block_is_recognised_by_its_shape() -> None:
+    """The contract Bielik drafted a second signature block for: its own was
+    "ZLECENIODAWCA" over a dotted line, and the skeleton only knew the words
+    "podpis", "zamawiający:" and "wykonawca:"."""
+    body = (
+        "Umowa zawarta w dniu 3 marca 2026 r. pomiędzy Zleceniodawcą a Zleceniobiorcą.\n"
+        "§ 1. Przedmiot umowy\n"
+        "Przedmiotem umowy jest prowadzenie ksiąg rachunkowych Zleceniodawcy.\n"
+    )
+    block = "**ZLECENIODAWCA**  \n\n.........................\n\n**ZLECENIOBIORCA**\n.........................\n"
+
+    assert "podpisy stron" not in check_category(body + block, "umowa_uslug").missing_required
+    # The role as a word, in a sentence, is not a signature block.
+    assert "podpisy stron" in check_category(body, "umowa_uslug").missing_required
+
+
+def test_loader_rejects_a_broken_pattern(tmp_path) -> None:
+    payload = {"category": "x", "sections": [{"id": "a", "matches": ["q"], "patterns": ["(unclosed"]}]}
+    with pytest.raises(BlueprintError, match="patterns"):
+        _load(_write(tmp_path, payload))

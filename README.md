@@ -522,6 +522,8 @@ było markdownem, a 9 pauzami. Po poprawce detektora, przy tych samych progach:
 | pisma | 0.15 | 50% (6/12) | 2,4% (592 odłożone uzasadnienia) |
 | umowy | 0.08 | **0% (0/12)** | – |
 
+(592 = część odłożona obecnego podziału na dysku korpusu 2396, 1804/592, na którym zbudowano profil SAOS; liczba 599 w starszym pomiarze progu 0.25 pochodzi z wcześniejszego podziału 1797/599.)
+
 Wyniki umów AI spadły do 0,016–0,061, poniżej ludzkich (korpus uzupełniony
 do 32 dokumentów, po dogenerowaniu pięciu, które wcześniej padły na limicie czasu). Wykrywanie umów
 opierało się więc na markdownie, nie na stylu. Progi czekają na ponowny

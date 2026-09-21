@@ -117,6 +117,9 @@ REVIEW_THRESHOLD = 0.25
 # completed to 32 documents). Markdown
 # is now reported by `humanize_pl.artifacts`, outside the score. The
 # thresholds stay until they are re-measured on purpose.
+# (592 is the held-out part of the on-disk split of the 2396 corpus, 1804/592,
+# the 1804 being what the shipped SAOS profile was built on; the 599 above is
+# from the earlier 1797/599 split the 0.25 measurement used.)
 #
 # STILL PROVISIONAL: one model, 18 filings and 9 contracts. Re-measure when
 # the corpus spans several generators.

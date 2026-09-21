@@ -65,5 +65,8 @@ stanza_resources/
 # Local secrets (defensive — should never be present anyway)
 .env
 .env.local
+# Any other endpoint configuration kept beside it (.env.qwen-local, ...).
+.env.*
+!.env.example
 *.pem
 *.key

@@ -80,9 +80,12 @@ def _wait_for_endpoint(settings: LlmSettings, limit: float) -> bool:
     the running client again would report "ready" without asking the server.
     """
     deadline = time.monotonic() + limit
+    # A short limit for the poll itself: with the generation timeout (20 min)
+    # one connection attempt to a dead host would outlast the whole interval.
+    polling = replace(settings, timeout_seconds=15.0) if settings is not None else None
     while time.monotonic() < deadline:
         time.sleep(ENDPOINT_POLL_SECONDS)
-        with OpenAICompatibleRewriter(settings) as fresh:
+        with OpenAICompatibleRewriter(polling) as fresh:
             if fresh.probe():
                 return True
     return False
@@ -265,6 +268,17 @@ def main(argv: list[str] | None = None) -> int:
     index = next_index(args.out)
     written = skipped = 0
     today = datetime.now(timezone.utc).date().isoformat()
+
+    # A server that is down at the start is waited for like one that goes
+    # down midway, so a run can be started before the server is back.
+    with OpenAICompatibleRewriter(settings) as first:
+        reachable = first.probe()
+        reasons = list(first.metadata.warnings)
+    if not reachable and any(_unreachable(reason) for reason in reasons):
+        print(f"[serwer niedostępny] czekam do {args.wait:.0f} s na jego powrót")
+        reachable = _wait_for_endpoint(settings, args.wait)
+    if not reachable:
+        parser.error("Endpoint niedostępny: " + "; ".join(reasons or ["brak szczegółów"]))
 
     with OpenAICompatibleRewriter(settings) as client:
         if not client.probe():

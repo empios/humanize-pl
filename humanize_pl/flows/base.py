@@ -674,7 +674,8 @@ def run_all_layers(
             outcome.examples = outcome.applied_changes[:EXAMPLES_PER_ITEM]
             if llm_rejections:
                 outcome.warnings.append(
-                    f"Model odrzucił lub nie zmienił {llm_rejections} fragmentów; "
+                    f"Model odrzucił lub nie zmienił {llm_rejections} "
+                    f"{_plural_pl(llm_rejections, 'fragmentu', 'fragmentów', 'fragmentów')}; "
                     "pozostawiono wynik regułowy."
                 )
             counters_after = (

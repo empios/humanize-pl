@@ -49,18 +49,22 @@ from humanize_pl.safety.validators import legal_sensitive_inventory
 # contract language and given four thousand tokens will write four thousand
 # tokens of it.
 #
-# But the configured endpoint is a reasoning model, and the corpus runner
-# (`tools/build_ai_corpus.py`) found it spending its budget in
-# `reasoning_content` before writing a word of the answer. The budget has to
-# cover the thinking as well; the cap on the clause itself is `MAX_WORDS`,
-# checked after the fact.
+# But a reasoning model (qwen-local, the first endpoint used) spends its
+# budget in `reasoning_content` before writing a word of the answer, so the
+# budget has to cover the thinking as well; the cap on the clause itself is
+# `MAX_WORDS`, checked after the fact. It also has to fit the context window:
+# Bielik on llama.cpp has 8192 tokens for prompt and answer together.
 MAX_TOKENS = 4000
 
 # A drafted clause longer than this is not a clause.
 MAX_WORDS = 160
 
-# Ustępy, or the lines of a signature block. More than this is a chapter.
+# Ustępy of a clause. More than this is a chapter.
 MAX_PARAGRAPHS = 6
+# Lines of a block outside the numbering - a signature block is a dozen
+# short lines by nature ("Zleceniobiorca:", a dotted line, "(podpis)", twice
+# over, then place and date), and six refused the one Bielik wrote.
+MAX_BLOCK_LINES = 14
 
 # The first answer and one corrected one. A model that fails twice with the
 # reason in front of it is not going to write this clause.
@@ -70,6 +74,17 @@ ATTEMPTS = 2
 # draft means it invented something.
 _AMOUNT = re.compile(r"\d+(?:[ .]\d{3})*(?:[,.]\d+)?\s*(?:zł|PLN|EUR|USD|%)", re.IGNORECASE)
 _DATE = re.compile(r"\b\d{1,2}[.\-/]\d{1,2}[.\-/]\d{2,4}\b|\b\d{1,2}\s+\p{L}+\s+\d{4}\b")
+# A period or a deadline: "7 dni", "12 miesięcy", "do 5. dnia każdego
+# miesiąca". The prompt forbids them and qwen-local complied; Bielik wrote
+# four in one clause, and nothing here checked - a fourteen-day term nobody
+# agreed to would have gone into the contract.
+_PERIOD = re.compile(
+    r"\b\d+\s*(?:dni|dnia|tygodni|tygodnia|tygodnie|miesięcy|miesiąca|miesiące|"
+    r"lat|lata|roku|godzin|godziny|godzinę)\b|\b\d+\.\s*dni(?:a|u)\b",
+    re.IGNORECASE,
+)
+# The engine's own placeholders, echoed back by a model and not restored.
+_PLACEHOLDER_ECHO = re.compile(r"__PROTECTED_\d+__")
 _LEGAL_REF = re.compile(
     r"\bart\.\s*\d|§\s*\d|\bust\.\s*\d|\bpkt\s*\d|\bDz\.\s*U\.", re.IGNORECASE
 )
@@ -142,7 +157,12 @@ def invented_particulars(draft: str, document: str) -> list[str]:
     clause it replaced.
     """
     found: list[str] = []
-    for label, pattern in (("kwota", _AMOUNT), ("data", _DATE), ("przepis", _LEGAL_REF)):
+    for label, pattern in (
+        ("kwota", _AMOUNT),
+        ("data", _DATE),
+        ("termin", _PERIOD),
+        ("przepis", _LEGAL_REF),
+    ):
         for match in pattern.finditer(draft):
             value = match.group(0).strip()
             if value and value not in document:
@@ -182,7 +202,8 @@ def _messages(
         "danych stron ani numerów artykułów i paragrafów aktów prawnych. "
         "Nie znasz ich i nie wolno ci ich wymyślać. W miejscu każdej takiej "
         "wartości zostaw wykropkowanie „…”, które prawnik uzupełni. Ustawę "
-        "możesz powołać z nazwy. "
+        "możesz powołać z nazwy. Nie odsyłaj do innych paragrafów ani punktów "
+        "dokumentu i nie używaj wypunktowań. "
         "Jeżeli sekcja ma kilka ustępów, każdy zaczynasz od nowej linii. "
         "Odpowiadasz samą treścią, bez nagłówka, bez numeracji ustępów, "
         "bez komentarza i bez bloku kodu."
@@ -340,8 +361,15 @@ def _rejection(draft: str, section: Section, document: str, heading: str) -> str
     if words > MAX_WORDS:
         return f"jest za długa ({words} słów, najwyżej {MAX_WORDS})"
     paragraphs = len(draft.split("\n"))
-    if paragraphs > MAX_PARAGRAPHS:
-        return f"ma za dużo ustępów ({paragraphs}, najwyżej {MAX_PARAGRAPHS})"
+    limit = MAX_PARAGRAPHS if section.unit else MAX_BLOCK_LINES
+    if paragraphs > limit:
+        noun = "ustępów" if section.unit else "linii"
+        return f"ma za dużo {noun} ({paragraphs}, najwyżej {limit})"
+    # A placeholder the restore did not recognise - the model altered it -
+    # would go into the document as "__PROTECTED_0031__".
+    echoed = _PLACEHOLDER_ECHO.search(draft)
+    if echoed:
+        return f"zawiera znacznik techniczny ({echoed.group(0)}) zamiast treści"
     invented = invented_particulars(draft, document)
     if invented:
         # Refused rather than stripped: a clause with its figure removed is a

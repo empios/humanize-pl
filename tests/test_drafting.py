@@ -455,3 +455,49 @@ def test_a_drafted_clause_loses_the_models_markdown():
     )
 
     assert result.drafts[0].text == "Strony ponoszą odpowiedzialność na zasadach ogólnych."
+
+
+def test_a_period_nobody_agreed_is_refused():
+    """What Bielik wrote for "termin i sposób wykonania": periods and
+    deadlines the document never set. The prompt forbids them; this checks."""
+    result = draft_missing_sections(
+        DOCUMENT,
+        blueprint_for("umowa_uslug"),
+        ["termin i sposób wykonania"],
+        client=FakeClient(
+            ["Sposób wykonania: raport w terminie 7 dni, do 5. dnia każdego miesiąca."]
+        ),
+    )
+
+    assert result.drafts == []
+    assert "termin: 7 dni" in result.warnings[0]
+
+
+def test_a_signature_block_may_have_more_lines_than_a_clause():
+    block = "\n".join(
+        [
+            "Zleceniobiorca:", "....................", "(podpis)",
+            "Zleceniodawca:", "....................", "(podpis)",
+            "Miejsce i data: ....................",
+        ]
+    )
+    result = draft_missing_sections(
+        DOCUMENT.replace("§ ", ""),
+        blueprint_for("umowa_uslug"),
+        ["podpisy stron"],
+        client=FakeClient([block]),
+    )
+
+    assert len(result.drafts) == 1 and len(result.drafts[0].lines) == 7
+
+
+def test_an_unrestored_placeholder_is_refused():
+    result = draft_missing_sections(
+        DOCUMENT,
+        blueprint_for("umowa_uslug"),
+        ["odpowiedzialność"],
+        client=FakeClient(["Strony ponoszą odpowiedzialność wobec __PROTECTED_9999__."]),
+    )
+
+    assert result.drafts == []
+    assert "znacznik techniczny" in result.warnings[0]

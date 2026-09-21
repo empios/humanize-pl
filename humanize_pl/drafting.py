@@ -371,13 +371,19 @@ def _clean_answer(draft: str, label: str) -> str:
 
     Lines are kept because a section of several ustępy is normal drafting and
     a signature block squeezed onto one line is not; each line becomes its
-    own paragraph in a DOCX. What goes is a code fence, blank lines, and a
-    heading line repeating the section's name despite the instruction - the
-    heading is the engine's to write.
+    own paragraph in a DOCX. What goes is a code fence, blank lines, markdown
+    markers, and a heading line repeating the section's name despite the
+    instruction - the heading is the engine's to write.
+
+    Markup has to go here as well as on the input: the input is stripped
+    before the rules run, and a clause the model writes afterwards would
+    carry its "**" straight into the document.
     """
+    from humanize_pl.artifacts import strip_markup
+
     rows = [
         " ".join(line.split())
-        for line in draft.strip().strip("`").split("\n")
+        for line in strip_markup(draft.strip().strip("`"))[0].split("\n")
     ]
     rows = [row for row in rows if row and not row.startswith("```")]
     title = re.sub(r"\s*\(.*?\)", "", label).strip().casefold()

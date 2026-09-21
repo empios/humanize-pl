@@ -442,3 +442,16 @@ def test_a_signature_block_is_not_mistaken_for_a_wrapped_sentence():
     )
 
     assert result.drafts[0].lines == ("Zamawiający:", "podpis", "Wykonawca:", "podpis")
+
+
+def test_a_drafted_clause_loses_the_models_markdown():
+    """The input is stripped of markup before the rules run; a clause the
+    model writes afterwards would otherwise carry "**" into the document."""
+    result = draft_missing_sections(
+        DOCUMENT,
+        blueprint_for("umowa_uslug"),
+        ["odpowiedzialność"],
+        client=FakeClient(["**Strony** ponoszą odpowiedzialność na zasadach ogólnych.\n---"]),
+    )
+
+    assert result.drafts[0].text == "Strony ponoszą odpowiedzialność na zasadach ogólnych."

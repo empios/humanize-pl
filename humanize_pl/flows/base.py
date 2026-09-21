@@ -44,6 +44,40 @@ from humanize_pl.tone import compare_tone
 # the batch, and a whole document's changes would bloat the payload.
 EXAMPLES_PER_ITEM = 4
 
+# Share of sentences with no unresolved finding a document needs to read as
+# ready. Chosen by the owner, 2026-09-21. Any single finding used to hold a
+# document back, and 291 of 300 held-out judgments carry at least one - the
+# distinction between "ready" and "ready with warnings" meant nothing.
+#
+# Measured when it was set, so the number is read for what it is: 26 of 300
+# judgments reach 96% (median 91.7%), and 14 of 32 model documents after the
+# rewrite (median 94.9%). Nominalisation and enumeration are commoner in
+# human legal writing than in model output, so this measures "few flagged
+# sentences", not "reads as human". At 90%, 217 of the 300 judgments pass.
+READY_COMPLIANCE = 0.96
+
+
+def held_back(outcome: Any) -> bool:
+    """Whether a document is kept below "ready".
+
+    The gate's verdict (score past the threshold, a clause a model wrote,
+    a chatbot's aside, a field to fill) and any warning still do it.
+    Findings count through compliance, not one by one: see READY_COMPLIANCE.
+    """
+    return bool(
+        outcome.needs_review
+        or outcome.compliance < READY_COMPLIANCE
+        or outcome.warnings
+    )
+
+
+def sentence_compliance(diagnosis: Any) -> float:
+    """Share of sentences no finding points at, 1.0 for an empty text."""
+    flagged = {(row.paragraph_index, row.sentence_index) for row in diagnosis.findings}
+    if not diagnosis.sentence_count:
+        return 1.0
+    return round(max(0.0, 1 - len(flagged) / diagnosis.sentence_count), 3)
+
 
 def describe_visible_change(before: Any, after: Any) -> str:
     """Describe the exact changed fragment when no rule-specific reason exists."""
@@ -359,6 +393,9 @@ class ItemOutcome:
     # How the run went, as opposed to what is wrong with the document:
     # recorded, but never a reason to hold a document back.
     notes: list[str] = field(default_factory=list)
+    # Share of sentences in the output with no unresolved finding; what
+    # readiness reads instead of the findings themselves.
+    compliance: float = 1.0
 
     # The unsuffixed names are what the PDF report, the replay path and the UI
     # already read, and they mean "the state the document left in".
@@ -442,6 +479,7 @@ class ItemOutcome:
             "artifacts_before": self.artifacts_before,
             "artifacts_after": self.artifacts_after,
             "notes": self.notes,
+            "compliance": self.compliance,
         }
 
     @classmethod
@@ -672,8 +710,10 @@ def run_all_layers(
             )
             outcome.changes_applied = len(outcome.applied_changes)
             outcome.examples = outcome.applied_changes[:EXAMPLES_PER_ITEM]
+            # A note, not a warning: the rules' version stands, which is a fact
+            # about the run and not a defect of the document.
             if llm_rejections:
-                outcome.warnings.append(
+                outcome.notes.append(
                     f"Model odrzucił lub nie zmienił {llm_rejections} "
                     f"{_plural_pl(llm_rejections, 'fragmentu', 'fragmentów', 'fragmentów')}; "
                     "pozostawiono wynik regułowy."
@@ -733,6 +773,7 @@ def run_all_layers(
         for finding in after.findings
     ]
     outcome.family_counts_after = {row.family: row.count for row in after.families}
+    outcome.compliance = sentence_compliance(after)
     outcome.metrics_after = dict(after.metrics)
 
     # The threshold travels with the profile. A calibrated score says "how far
@@ -874,7 +915,7 @@ def run_all_layers(
             except Exception as exc:  # noqa: BLE001 - reported as a warning; NLI must not fail the item
                 outcome.warnings.append(f"Błąd weryfikacji NLI: {type(exc).__name__}: {exc}")
 
-    if outcome.needs_review or outcome.unresolved_findings or outcome.warnings:
+    if held_back(outcome):
         outcome.readiness_status = ReadinessStatus.ready_with_warnings.value
     # A document missing a section its category owes is not ready to send,
     # however clean its prose. `BlueprintReport.blocking` has carried this

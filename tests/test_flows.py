@@ -775,3 +775,34 @@ def test_a_resumed_outcome_keeps_its_readiness() -> None:
 
     assert rebuilt.readiness_status == "failed"
     assert ItemOutcome(name="x", needs_review=True).readiness_status == "ready_with_warnings"
+
+
+def test_a_single_finding_no_longer_holds_a_document_back() -> None:
+    """Any unresolved finding used to cost "ready", and 291 of 300 held-out
+    judgments carry one. Readiness reads compliance instead: at least 96% of
+    sentences with no finding (the owner's number)."""
+    from humanize_pl.flows.base import READY_COMPLIANCE, ItemOutcome, held_back
+
+    assert READY_COMPLIANCE == 0.96
+    clean_enough = ItemOutcome(name="a", compliance=0.97, unresolved_findings=[{"family": "tricolon"}])
+    too_many = ItemOutcome(name="b", compliance=0.95)
+    warned = ItemOutcome(name="c", compliance=1.0, warnings=["Sekcja 1 nie ma formatu A4."])
+
+    assert not held_back(clean_enough)
+    assert held_back(too_many)
+    assert held_back(warned)
+
+
+def test_compliance_counts_flagged_sentences_not_findings() -> None:
+    """Three findings in one sentence flag one sentence."""
+    from types import SimpleNamespace
+
+    from humanize_pl.flows.base import sentence_compliance
+
+    finding = lambda p, s: SimpleNamespace(paragraph_index=p, sentence_index=s)
+    diagnosis = SimpleNamespace(
+        sentence_count=20, findings=[finding(0, 1), finding(0, 1), finding(0, 1), finding(2, 0)]
+    )
+
+    assert sentence_compliance(diagnosis) == 0.9
+    assert sentence_compliance(SimpleNamespace(sentence_count=0, findings=[])) == 1.0

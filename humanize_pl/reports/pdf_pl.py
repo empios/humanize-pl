@@ -42,7 +42,11 @@ from humanize_pl.detect.calibration import (
     load_profile,
     threshold_for_family,
 )
-from humanize_pl.flows.base import collapse_visible_changes, describe_visible_change
+from humanize_pl.flows.base import (
+    READY_COMPLIANCE,
+    collapse_visible_changes,
+    describe_visible_change,
+)
 from humanize_pl.gate import FAMILY_CONSTRAINTS
 
 # --- Fonts ------------------------------------------------------------------
@@ -1533,6 +1537,9 @@ class _Report:
                 # the reader has to supply before sending it.
                 "failed": "niegotowy — brak wymaganej sekcji",
             }.get(readiness, readiness)
+            compliance = item.get("compliance")
+            if isinstance(compliance, (int, float)):
+                readiness_label += f" (zgodność {compliance:.0%})"
             rows.append(
                 [
                     self.cell(escape(_item_label(position, self.one, item))),
@@ -1550,7 +1557,9 @@ class _Report:
             self.para(
                 "Ocena gotowości łączy wynik redakcji, zgodność z profilem, "
                 "zachowanie treści prawnie wrażliwej oraz audyt wyglądu i render DOCX. "
-                f"Nierozwiązane uwagi: {unresolved}.",
+                f"Pojedyncza uwaga nie odbiera gotowości: dokument jest gotowy, gdy co "
+                f"najmniej {READY_COMPLIANCE:.0%} zdań jest bez uwag i nic innego go nie "
+                f"blokuje. Nierozwiązane uwagi: {unresolved}.",
                 "body",
             ),
             self.table(

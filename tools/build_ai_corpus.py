@@ -159,6 +159,16 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--delay", type=float, default=0.5)
     parser.add_argument(
+        "--max-tokens",
+        type=int,
+        default=MAX_TOKENS,
+        help=(
+            "Budżet odpowiedzi. Domyślny jest pod model rozumujący; model bez "
+            "rozumowania nie potrzebuje go, a razem z promptem musi zmieścić się "
+            "w oknie kontekstu serwera"
+        ),
+    )
+    parser.add_argument(
         "--missing-only",
         action="store_true",
         help="Tylko pozycje siatki, których nie ma jeszcze w manifeście",
@@ -245,7 +255,7 @@ def main(argv: list[str] | None = None) -> int:
                 try:
                     text = client.complete_text(
                         messages_for(job),
-                        max_tokens=MAX_TOKENS,
+                        max_tokens=args.max_tokens,
                         temperature=job["temperature"],
                     )
                     break

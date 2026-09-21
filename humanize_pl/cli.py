@@ -243,7 +243,10 @@ def _print_item(item: ItemOutcome) -> None:
     if item.readiness_status == "ready" and item.needs_review:
         flag = "[yellow]do przeglądu[/yellow]"
     arrow = f"{item.signal_before:.2f} → {item.signal_after:.2f}"
-    print(f"{flag} {item.name}: sygnał {arrow}, zmian {item.changes_applied}")
+    print(
+        f"{flag} {item.name}: sygnał {arrow}, zmian {item.changes_applied}, "
+        f"zgodność {item.compliance:.0%}"
+    )
 
 
 WARNINGS_SHOWN = 10

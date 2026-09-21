@@ -373,7 +373,8 @@ def describe_item(item: ItemOutcome) -> str:
         flag = "do przeglądu"
     return (
         f"[{flag}] {item.name}: sygnał {item.signal_before:.2f} → "
-        f"{item.signal_after:.2f}, zmian {item.changes_applied}"
+        f"{item.signal_after:.2f}, zmian {item.changes_applied}, "
+        f"zgodność {item.compliance:.0%}"
     )
 
 

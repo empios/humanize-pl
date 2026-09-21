@@ -38,13 +38,18 @@ def ascii_skeleton(name: str) -> str:
     "wspolpracy (b2b)" (po odzyskaniu) lub "wsp  pracy (b2b)" (gdyby
     odzyskanie nie poszło) - w obu przypadkach reguła "wspolpracy (b2b)"
     nie trafi, więc reguły piszemy na pewnych, krótkich rdzeniach.
+
+    Zamiana polskich liter idzie PRZED odrzuceniem znaków spoza ASCII: „ł”
+    nie rozkłada się w NFKD, więc odrzucone najpierw znikało - „usług” dawało
+    „usug” i 21 ze 100 dokumentów (umowy usług, pełnomocnictwa, uchwały
+    spółki) wpadało do „inne”.
     """
-    decomposed = unicodedata.normalize("NFKD", name)
+    decomposed = unicodedata.normalize("NFKD", name.translate(_POLISH_MAP))
     kept = "".join(
         c for c in decomposed
         if (not unicodedata.combining(c)) and (0x20 <= ord(c) < 0x7f)
     )
-    return kept.translate(_POLISH_MAP).casefold()
+    return kept.casefold()
 
 
 def recover_title(name: str) -> str:
@@ -103,7 +108,7 @@ def _rules() -> list[tuple[str, str, callable]]:
         ("wypowiedzenie_umowy_o_prace", "wypowiedzenie umowy o pracę",
          has("wypowiedzenie umowy o prace")),
         ("rozwiązanie_umowy_o_prace", "rozwiązanie umowy o pracę",
-         has("rozwiązanie umowy o prace")),
+         has("rozwiazanie umowy o prace")),
         ("wypowiedzenie_umowy_zlecenia", "wypowiedzenie umowy zlecenia",
          has("wypowiedzenie umowy zlecenie")),
         # --- umowa o pracę (the contract itself, not a termination) ---
@@ -134,7 +139,7 @@ def _rules() -> list[tuple[str, str, callable]]:
          has("pozew")),
         # --- odwołania ---
         ("odwołanie_od_decyzji", "odwołanie od decyzji",
-         has("odwołanie od decyzji", "odwolanie od decyzji")),
+         has("odwolanie od decyzji")),
         ("odwołanie_pełnomocnictwa", "odwołanie pełnomocnictwa",
          has("odwolanie pelnomocnictwa")),
         # --- pełnomocnictwa ---
@@ -145,7 +150,7 @@ def _rules() -> list[tuple[str, str, callable]]:
          has("regulamin")),
         # --- umowa o dzieło ---
         ("umowa_o_dzieło", "umowa o dzieło",
-         has("o dzelo")),
+         has("o dzielo")),
         # --- umowa o świadczenie usług ---
         ("umowa_usług", "umowa o świadczenie usług",
          has("o swiadczenie uslug")),

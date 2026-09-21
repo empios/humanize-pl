@@ -541,3 +541,25 @@ def test_a_clause_goes_before_a_signature_block_found_by_its_shape():
     lines = insert_drafts(text, result.drafts).split("\n")
 
     assert lines.index("W sprawach nieuregulowanych stosuje się przepisy Kodeksu cywilnego.") < lines.index("ZLECENIODAWCA")
+
+
+def test_an_invented_attachment_and_a_hinted_blank():
+    """Bielik's "termin i sposób wykonania": a schedule "w załączniku nr 1"
+    of a contract with no attachments, and "… (np. 15. dzień każdego
+    miesiąca)" - a hint for the drafter carrying an invented term."""
+    from humanize_pl.drafting import _clean_answer
+
+    refused = draft_missing_sections(
+        DOCUMENT,
+        blueprint_for("umowa_uslug"),
+        ["termin i sposób wykonania"],
+        client=FakeClient(
+            ["Sposób wykonania usług określa harmonogram zawarty w załączniku nr 1 do umowy."]
+        ),
+    )
+    assert refused.drafts == [] and "załącznik" in refused.warnings[0]
+
+    assert _clean_answer(
+        "Terminy ustala się na … (np. 15. dzień każdego miesiąca).", "termin"
+    ) == "Terminy ustala się na … ."
+    assert invented_particulars("do 15. dzień miesiąca", DOCUMENT)

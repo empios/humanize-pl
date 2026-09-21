@@ -80,9 +80,17 @@ _DATE = re.compile(r"\b\d{1,2}[.\-/]\d{1,2}[.\-/]\d{2,4}\b|\b\d{1,2}\s+\p{L}+\s+
 # agreed to would have gone into the contract.
 _PERIOD = re.compile(
     r"\b\d+\s*(?:dni|dnia|tygodni|tygodnia|tygodnie|miesięcy|miesiąca|miesiące|"
-    r"lat|lata|roku|godzin|godziny|godzinę)\b|\b\d+\.\s*dni(?:a|u)\b",
+    r"lat|lata|roku|godzin|godziny|godzinę)\b|\b\d+\.\s*(?:dnia|dniu|dzień)\b",
     re.IGNORECASE,
 )
+# An attachment the document may not have: Bielik put a schedule "w
+# załączniku nr 1" and reports "w załączniku nr 2" into a contract with no
+# attachments at all - a reference to a document nobody wrote.
+_ATTACHMENT = re.compile(r"\bzałącznik\w*\s+(?:nr\s*)?\d+", re.IGNORECASE)
+# A hint for whoever fills a blank, "… (np. 15. dzień każdego miesiąca)": an
+# instruction to the drafter, not contract text, and a place for an invented
+# term to hide.
+_BLANK_HINT = re.compile(r"(…+|\.{3,})\s*\(np\.[^)]*\)", re.IGNORECASE)
 # The engine's own placeholders, echoed back by a model and not restored.
 _PLACEHOLDER_ECHO = re.compile(r"__PROTECTED_\d+__")
 _LEGAL_REF = re.compile(
@@ -162,6 +170,7 @@ def invented_particulars(draft: str, document: str) -> list[str]:
         ("data", _DATE),
         ("termin", _PERIOD),
         ("przepis", _LEGAL_REF),
+        ("załącznik", _ATTACHMENT),
     ):
         for match in pattern.finditer(draft):
             value = match.group(0).strip()
@@ -410,7 +419,9 @@ def _clean_answer(draft: str, label: str) -> str:
     from humanize_pl.artifacts import strip_markup
 
     rows = [
-        " ".join(line.split())
+        # The space keeps the blank countable as a field: "….", glued to the
+        # full stop, is no longer one.
+        " ".join(_BLANK_HINT.sub(r"\1 ", line).split())
         for line in strip_markup(draft.strip().strip("`"))[0].split("\n")
     ]
     rows = [row for row in rows if row and not row.startswith("```")]

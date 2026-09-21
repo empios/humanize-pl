@@ -289,3 +289,14 @@ def test_a_document_not_ready_is_not_labelled_ok():
 
     assert describe_item(item).startswith("[niegotowy]")
     assert "failed" not in describe_item(item)
+
+
+def test_the_score_is_worded_against_its_documents_threshold():
+    """Every score was worded against 0.25, so a contract at 0.10 read "jak u
+    ludzi" while the flow, at the contract threshold of 0.08, flagged it."""
+    from humanize_pl.ui.app import LEGEND, signal_word
+
+    assert signal_word(0.10, True, threshold=0.08) not in {"jak u ludzi", "poniżej progu"}
+    assert signal_word(0.20, True, threshold=0.25) == "poniżej progu"
+    # The interface no longer promises what the measurement stopped showing.
+    assert "100% wykrycia" not in LEGEND

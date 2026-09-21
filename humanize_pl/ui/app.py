@@ -30,6 +30,8 @@ from typing import Any
 import gradio as gr
 
 from humanize_pl.config import Engine, Mode
+from humanize_pl.detect.calibration import REVIEW_THRESHOLD as _DEFAULT_REVIEW_THRESHOLD
+from humanize_pl.detect.calibration import threshold_for_family
 from humanize_pl.document import (
     DocumentType,
     FormatPolicy,
@@ -50,15 +52,18 @@ RUNS_ROOT = Path(tempfile.gettempdir()) / "humanize-pl-ui"
 # (`calibrate_against_default=False`): that profile is court reasoning, and a
 # contract or a client letter is not. So the score shown here is the raw
 # weighted finding density, which saturates at 1.0 — it is meaningful as a
-# before/after comparison, not as an absolute verdict. The 0.25 review
-# threshold belongs to the *calibrated* score and must not be applied to this
-# one. "Do przeglądu" comes from the gate, never from this number.
+# before/after comparison, not as an absolute verdict. The review thresholds
+# belong to the *calibrated* score and must not be applied to this one. "Do
+# przeglądu" comes from the gate, never from this number.
 SATURATED = 1.0
 
-# The point at which a calibrated score warrants a human look. Measured, not
-# chosen: on 599 held-out judgments and the AI corpus it gives 100% recall at
-# 0% false positives, and the populations do not overlap around it.
-REVIEW_THRESHOLD = 0.25
+# The default point at which a calibrated score warrants a human look; the
+# threshold that applies is per kind of document (threshold_for_family:
+# 0.15 filings, 0.08 contracts). The figure this comment used to give - 100%
+# recall at 0% false positives on 599 held-out judgments - was measured on
+# 9 short documents and does not hold on full-length ones (README, "Punkt
+# pracy"), so the interface no longer repeats it.
+REVIEW_THRESHOLD = _DEFAULT_REVIEW_THRESHOLD
 
 # Half-width of the band where the verdict is not reliable. See
 # humanize_pl.detect.calibration — it is a measurement, not a preference.
@@ -143,11 +148,14 @@ W `wyniki.zip` (dla Word/Excel) znajdziesz poprawione pliki, `raport.pdf` dla kl
 LEGEND = """
 **Sygnał AI** ma dwie skale i kolumna „porównanie” mówi, którą widzisz.
 
-**Skalibrowany** — dokument porównany ze wzorcem ludzkiego pisania w tym
-rejestrze. Liczba to pozycja względem ludzi: poniżej **0,25** mieści się
-w tym, co piszą ludzie, powyżej wychodzi poza ich zakres. Ten próg jest
-zmierzony, nie wybrany: na 599 odłożonych orzeczeniach daje 100% wykrycia
-przy 0% fałszywych alarmów, a obie populacje się wokół niego nie stykają.
+**Skalibrowany** — dokument porównany ze wzorcem ludzkiego pisania w swoim
+rejestrze: pisma z orzeczeniami, umowy z umowami kancelarii. Liczba to
+pozycja względem ludzi, a próg przeglądu zależy od rodzaju dokumentu
+(**0,15** dla pism, **0,08** dla umów). Wynik powyżej progu to prośba
+o przejrzenie, nie dowód autorstwa. Na dokumentach pełnej długości wskaźnik
+wychwytuje część pism napisanych przez model, a umów praktycznie nie
+odróżnia od ludzkich. Tekst z czatbota zdradzają raczej ślady narzędzia
+(markdown, zwroty do użytkownika, pola do uzupełnienia), pokazywane osobno.
 
 Blisko progu pokazujemy **„na granicy"** zamiast werdyktu. To też jest pomiar:
 wynik dokumentu przesuwa się o ok. 0,03 w zależności od tego, jakie teksty
@@ -156,7 +164,7 @@ sprawdzone na 10, 25, 50, 100 i 200 dokumentach. W tym pasie odpowiedź jest
 rzutem monetą i nie udajemy, że jest inaczej.
 
 **Nieskalibrowany** — dla rejestrów, dla których nie mamy jeszcze korpusu
-ludzkich tekstów (umowy, pisma do klienta). Wtedy liczba to samo zagęszczenie
+ludzkich tekstów (pisma do klienta, opinie). Wtedy liczba to samo zagęszczenie
 znalezisk i **nasyca się przy 1,00**. Czytaj ją jako porównanie *przed* i *po*
 redakcji, nie jako ocenę: dwa dokumenty z wynikiem 1,00 mogą być różnie złe,
 bo skala się na nich kończy.
@@ -292,25 +300,29 @@ def package(directory: Path) -> list[str]:
 # --------------------------------------------------------------------------
 
 
-def signal_word(score: float, calibrated: bool = False) -> str:
+def signal_word(
+    score: float, calibrated: bool = False, threshold: float = REVIEW_THRESHOLD
+) -> str:
     """Say the score in words — on the scale it was actually measured on.
 
-    A calibrated score is a position against measured human writing, and 0.25
-    is the point where a human should look. A raw score is a saturating
-    density of findings, where the same number means something else entirely.
-    Reading one on the other's scale is how a report starts lying quietly.
+    A calibrated score is a position against measured human writing, and the
+    threshold of its kind of document is where a human should look. It used
+    to be 0.25 for every document, so a contract at 0.10 read "jak u ludzi"
+    while the flow, at the contract threshold of 0.08, flagged it. A raw
+    score is a saturating density of findings, where the same number means
+    something else entirely.
     """
     if calibrated:
         # The band around the threshold is measured: rebuilding the reference
         # corpus moves a score by about this much, so inside it the answer is
         # a coin-flip and must not be dressed as a verdict.
-        if abs(score - REVIEW_THRESHOLD) <= UNCERTAIN_BAND:
+        if abs(score - threshold) <= UNCERTAIN_BAND:
             return "na granicy — wynik niepewny"
-        if score < 0.15:
+        if score < threshold * 0.6:
             return "jak u ludzi"
-        if score < REVIEW_THRESHOLD:
+        if score < threshold:
             return "poniżej progu"
-        if score < 0.40:
+        if score < threshold + 0.15:
             return "powyżej ludzkiej normy"
         return "wyraźnie powyżej ludzkiej normy"
     if score <= 0.0:
@@ -395,7 +407,7 @@ def item_line(item: ItemOutcome) -> str:
         tail += f" — **dopisane sekcje: {drafted}**"
     return (
         f"- {icon} **{item.name}** — sygnał AI {arrow} "
-        f"({signal_word(item.signal_after, is_calibrated(item))}), "
+        f"({signal_word(item.signal_after, is_calibrated(item), threshold_for_family(item.document_type))}), "
         f"poprawek: {item.changes_applied}{tail}"
     )
 
@@ -530,7 +542,15 @@ def summary_markdown(payload: dict[str, Any]) -> str:
     states = {
         str(row.get("calibration_status", "")).startswith("calibrated:") for row in done
     }
-    word = f" ({signal_word(after, states.pop())})" if len(states) == 1 else ""
+    # One word for the batch only when every item was measured the same way
+    # and against the same threshold; a mean over a contract and a filing has
+    # neither.
+    kinds = {str(row.get("document_type") or "") for row in done}
+    word = (
+        f" ({signal_word(after, states.pop(), threshold_for_family(kinds.pop()))})"
+        if len(states) == 1 and len(kinds) == 1
+        else ""
+    )
     lines = [
         headline,
         "",

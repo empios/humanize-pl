@@ -14,6 +14,8 @@ sections:
     severity: required
     unit: false
     matches: ["sąd rejonowy", "sąd okręgowy", "do sądu"]
+    # A form leaves the court blank: "Sąd ……………" at the head of the page.
+    patterns: ['^[ \t*_#]*sąd\b']
     expects:
       - "Pozew oznacza sąd, do którego jest wnoszony."
 
@@ -37,7 +39,8 @@ sections:
   - id: zadanie
     label_pl: żądanie pozwu
     severity: required
-    matches: ["wnoszę o zasądzenie", "żądanie", "wnosi o zasądzenie"]
+    matches: ["wnoszę o zasądzenie", "żądanie", "wnosi o zasądzenie", "wnoszę o:", "wnosi o:",
+              "wnosimy o:", "domagam się", "domaga się", "żądam"]
     expects:
       - "Pozew formułuje wprost, czego powód domaga się od sądu."
 

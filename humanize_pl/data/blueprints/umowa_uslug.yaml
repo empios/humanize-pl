@@ -22,7 +22,12 @@ sections:
   - id: przedmiot
     label_pl: przedmiot umowy
     severity: required
-    matches: ["przedmiot umowy", "przedmiotem umowy", "przedmiotem niniejszej umowy"]
+    # The firm often states the subject without naming it: "Zleceniodawca
+    # zleca, a Zleceniobiorca zobowiązuje się…". Not "zobowiązuje się do
+    # świadczenia": it recurs in the obligations clause, and a cut subject
+    # section then went unnoticed.
+    matches: ["przedmiot umowy", "przedmiotem umowy", "przedmiotem niniejszej umowy",
+              "zleca, a ", "powierza, a "]
     expects:
       - "Umowa określa, jakie usługi wykonawca ma świadczyć."
       - "Zakres usług jest opisany na tyle konkretnie, by dało się stwierdzić ich wykonanie."
@@ -30,7 +35,15 @@ sections:
   - id: termin
     label_pl: termin i sposób wykonania
     severity: required
-    matches: ["termin wykonania", "terminy i sposób", "sposób wykonania", "harmonogram"]
+    # A continuing service states its period, not a deadline: "zawarta na
+    # czas określony od dnia…", "wykonanie nastąpi w okresie od … do …".
+    # Chosen with tools/audit_blueprints.py: no false draft left on the
+    # firm's contracts, 8 of 9 cut sections still noticed. "będzie wykonywał"
+    # silenced the same drafts but sits in every obligations clause, so a
+    # cut section went unnoticed.
+    matches: ["termin wykonania", "terminy i sposób", "sposób wykonania", "harmonogram",
+              "czas określony", "czas nieokreślony", "czas oznaczony", "czas nieoznaczony",
+              "w okresie od"]
     expects:
       - "Umowa określa termin lub okres wykonywania usług."
       - "Umowa wskazuje sposób wykonania usług albo tryb ich odbioru."
@@ -60,7 +73,13 @@ sections:
   - id: rozwiazanie
     label_pl: rozwiązanie i wypowiedzenie umowy
     severity: required
-    matches: ["rozwiązanie umowy", "wypowiedzenie", "odstąpienie od umowy"]
+    # The verb forms the firm uses: "może rozwiązać umowę", "umowa może być
+    # rozwiązana przez każdą ze stron". Not the stem "wypowiedzeni" nor
+    # "rozwiązania umowy": both sit in other clauses ("w przypadku
+    # rozwiązania umowy…"), and a cut section then went unnoticed - 4 of 7
+    # caught against 6 of 7 with this list.
+    matches: ["rozwiązanie umowy", "rozwiązać umowę", "rozwiązać niniejszą umowę",
+              "rozwiązana przez", "wypowiedzenie", "odstąpienie od umowy"]
     expects:
       - "Umowa określa, w jaki sposób i z jakim skutkiem można ją rozwiązać lub wypowiedzieć."
       - "Umowa wskazuje termin wypowiedzenia albo przesłanki odstąpienia."

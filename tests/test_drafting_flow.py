@@ -195,3 +195,23 @@ def test_a_withdrawn_docx_save_reports_the_drafts_as_proposals(tmp_path, monkeyp
         (tmp_path / "out" / "details" / "umowa.json").read_text(encoding="utf-8")
     )
     assert detail["drafted_sections"][0]["inserted"] is False
+
+
+def test_the_docx_command_can_leave_missing_sections_unwritten(monkeypatch, tmp_path):
+    """Only `run` had the switch: from `docx`, drafting could be turned off
+    only by turning the hosted model off altogether."""
+    from typer.testing import CliRunner
+
+    from humanize_pl import cli
+
+    seen = {}
+
+    def fake_flow(folder, output, *, settings, **_kwargs):
+        seen["draft_missing"] = settings.draft_missing
+        raise RuntimeError("stop here")
+
+    monkeypatch.setattr(cli, "run_docx_flow", fake_flow)
+    CliRunner().invoke(cli.app, ["docx", str(tmp_path), "--no-draft-missing", "--no-pdf"])
+    assert seen["draft_missing"] is False
+    CliRunner().invoke(cli.app, ["docx", str(tmp_path), "--no-pdf"])
+    assert seen["draft_missing"] is True

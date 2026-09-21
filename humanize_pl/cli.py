@@ -164,6 +164,7 @@ def _settings(
     require_renderer: bool = False,
     blueprint: Path | None = None,
     nli: bool = False,
+    draft_missing: bool = True,
 ) -> FlowSettings:
     return FlowSettings(
         mode=mode,
@@ -182,6 +183,7 @@ def _settings(
         require_renderer=require_renderer,
         blueprint=blueprint,
         nli=nli,
+        draft_missing=draft_missing,
     )
 
 
@@ -655,6 +657,11 @@ def docx_command(
     format_policy: FormatPolicy = typer.Option(FormatPolicy.preserve, "--format-policy", help="preserve, audit, normalize"),
     require_llm: bool = typer.Option(False, "--require-llm", help="Przerwij gdy brak modelu"),
     require_renderer: bool = typer.Option(False, "--require-renderer", help="Wymagaj renderingu LibreOffice"),
+    no_draft_missing: bool = typer.Option(
+        False,
+        "--no-draft-missing",
+        help="Nie dopisuj brakujących sekcji wymaganych przez szkielet (tylko je zgłoś)",
+    ),
     no_pdf: bool = typer.Option(False, "--no-pdf", help="Pomiń raport PDF"),
     resume: bool = typer.Option(False, "--resume", help="Dokończ przerwany przebieg"),
 ) -> None:
@@ -678,6 +685,7 @@ def docx_command(
                 format_policy,
                 require_llm,
                 require_renderer,
+                draft_missing=not no_draft_missing,
             ),
             pdf=not no_pdf,
             resume=resume,

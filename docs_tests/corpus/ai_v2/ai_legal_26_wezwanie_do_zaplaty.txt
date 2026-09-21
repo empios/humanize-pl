@@ -1,0 +1,93 @@
+Poniżej gotowy wzór **wezwanie do zapłaty kary umownej za opóźnienie w dostawie**. Możesz uzupełnić pola w nawiasach kwadratowych **[ ]**.
+
+---
+
+## Wezwanie do zapłaty kary umownej za opóźnienie w dostawie
+
+**[Nazwa/imię i nazwisko wierzyciela]**  
+**[adres]**  
+**[NIP/PESEL]**
+
+**[Miejscowość], [data]**
+
+**[Nazwa/imię i nazwisko dłużnika]**  
+**[adres]**  
+**[NIP/PESEL]**
+
+### Wzywam do zapłaty kary umownej za opóźnienie w dostawie
+
+W wykonaniu postanowień umowy nr **[numer umowy]** z dnia **[data zawarcia umowy]**, zawartej pomiędzy **[nazwa/imię i nazwisko wierzyciela]** a **[nazwa/imię i nazwisko dłużnika]**, zwanej dalej „Umową”, wzywam do zapłaty kary umownej z tytułu opóźnienia w wykonaniu dostawy.
+
+Zgodnie z Umową, przedmiotem zobowiązania **[nazwa strony zobowiązanej do dostawy]** było dokonanie dostawy **[nazwa przedmiotu dostawy / towaru / usługi / sprzętu]** w terminie do dnia **[data terminu dostawy]**.
+
+Mimo upływu wskazanego terminu, dostawa **nie została wykonana** / **została wykonana z opóźnieniem i nastąpiła w dniu [data faktycznej dostawy]**, w wyniku czego powstało opóźnienie wynoszące **[liczba] dni**.
+
+Zgodnie z **art. 483 § 1 Kodeksu cywilnego**, strony mogą zastrzec, że dłużnik ma zapłacić wierzycielowi ustaloną sumę pieniężną, jeżeli nie wykonał w wymagany sposób zobowiązania wynikającego z czynności prawnej.
+
+W Umowie strony wprowadziły karę umowną za opóźnienie w wykonaniu dostawy. Zgodnie z zapisem Umowy, w razie opóźnienia w dostawie, **[strona zobowiązana]** zapłaci karę umowną w wysokości **[np. 0,1% wartości zamówienia / wartości dostawy / wartości kontraktu]** za każdy dzień opóźnienia, w terminie **[np. 7 dni od dnia upływu terminu dostawy / od dnia doręczenia wezwania]**.
+
+Biorąc powyższe pod uwagę, obliczam należną karę umowną w następujący sposób:
+
+- wartość dostawy / wartość zamówienia: **[kwota] zł brutto**,  
+- opóźnienie: **[liczba] dni**,  
+- stawka kary umownej: **[np. 0,1%]** za każdy dzień opóźnienia,  
+- należna kara umowna: **[kwota] zł brutto**.
+
+Obliczenie:  
+**[wartość dostawy] zł × [stawka]% × [liczba dni] = [kwota] zł**.
+
+W związku z powyższym, **Wzywam** **[nazwa/imię i nazwisko dłużnika]** do zapłaty kwoty **[kwota] zł brutto**, z tytułu kary umownej za opóźnienie w dostawie, w terminie **[np. 7 / 14 dni]** od dnia doręczenia niniejszego wezwania, na rachunek bankowy:
+
+**[nazwa banku]**  
+**[numer konta]**
+
+W razie braku zapłaty w wyznaczonym terminie, zmuszony/a będę dochodzić należności na drodze postępowania sądowego/mediacyjnego, z jednoczesnym poniesieniem przez **[nazwa/imię i nazwisko dłużnika]** kosztów procesu, w tym kosztów zastępstwa procesowego oraz ewentualnych kosztów postępowania upominawczego.
+
+Jednocześnie informuję, że przedmiotowe wezwanie może stanowić podstawę do dochodzenia należności na drodze postępowania sądowego.
+
+Z poważaniem,
+
+**[imię i nazwisko / pieczęć i podpis osoby uprawnionej]**  
+**[stanowisko / funkcja]**
+
+---
+
+## Załączniki:
+
+1. Odpis umowy nr **[numer umowy]** z dnia **[data]**,  
+2. Zaświadczenie / oświadczenie o dacie wykonania dostawy / protokół zdawczo-odbiorczy / korespondencja potwierdzająca opóźnienie,  
+3. Obliczenie kary umownej,  
+4. Pełnomocnictwo / potwierdzenie pełnomocnictwa, jeśli wezwanie wystawia pełnomocnik,  
+5. Inne: **[np. potwierdzenie wysyłki, reklamacja, korespondencja mailowa, SMS, faktyczny przebieg dostaw]**.
+
+---
+
+## Krótkie uwagi praktyczne
+
+1. **Kara umowna musi wynikać z umowy.**  
+   Wezwanie ma sens tylko wtedy, gdy w Umowie istnieje wyraźny zapis o karze umownej za opóźnienie w dostawie.
+
+2. **Sprawdź sposób obliczania kary.**  
+   W umowie może być zapis np.:
+   - 0,1% wartości zamówienia za każdy dzień opóźnienia,
+   - 50 zł dziennie,
+   - 0,05% brutto/netto,
+   - kara liczona od wartości dostawy netto lub brutto.  
+   Należy stosować dokładnie taką podstawę obliczeniową, która wynika z Umowy.
+
+3. **Ustal faktyczną datę dostawy.**  
+   Najlepiej, by była potwierdzona protokołem zdawczo-odbiorczym, podpisem, awizem, korespondencją, potwierdzeniem odbioru, mailami lub SMS-ami.
+
+4. **Wezwanie najlepiej nadać listem poleconym za potwierdzeniem odbioru.**  
+   W treści lub na kopercie warto wpisać:  
+   **„Wezwanie do zapłaty kary umownej za opóźnienie w dostawie – proszę o nieotwieranie listu przez osobę trzecią”** – jeśli chcesz zachować formalność.
+
+5. **Jeśli opóźnienie było usprawiedliwione, kara może nie przysługiwać.**  
+   Np. w wyniku siły wyższej, oporu wierzyciela, okoliczności zależnych od wierzyciela, chyba że Umowa stanowi inaczej.
+
+6. **Możesz dodać ostrzeżenie o potrąceniu.**  
+   Jeśli masz prawo potrącić karę umowną z wynagrodzenia przysługującego dostawcy, możesz dodać zdanie:  
+   *„W przypadku braku zapłaty w wyznaczonym terminie, zastrzegam sobie prawo do potrącenia należności z wynagrodzenia przypadającego w ramach Umowy, o czym będę informować odrębnie.”*
+
+7. **Jeśli kwota jest duża, warto przed wysłaniem skonsultować treść z prawnikiem.**  
+   Szczególnie gdy Umowa zawiera dodatkowe zapisy o reklamacjach, odstąpieniu od umowy, maksymalnej wysokości kary umownej, wyłączeniu odpowiedzialności lub klauzulach ograniczających.

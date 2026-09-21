@@ -1,0 +1,459 @@
+Poniżej znajduje się **wzór polityki prywatności** dla serwisu rekrutacyjnego. Dokument jest przygotowany w oparciu o wymagania RODO oraz typowe funkcje serwisów rekrutacyjnych (rejestracja kandydatów, publikacja ofert, profilowanie, kontakt, cookies, marketing). Proszę uzupełnić pola w nawiasach kwadratowych oraz dostosować treść do faktycznych funkcji, podmiotów przetwarzających i technologii stosowanych w serwisie.
+
+---
+
+# Polityka prywatności serwisu [NAZWA SERWISU]
+
+**Ostatnia aktualizacja:** [DATA]  
+**Administrator danych osobowych:** [PEŁNA NAZWA PODMIOTU, NIP, adres siedziby]  
+**Dane kontaktowe:** [ADRES E-MAIL / TELEFON / ADRES KORESPONDENCJI]  
+**Inspektor Ochrony Danych:** [IMIĘ I NAZWISKO / DANE KONTAKTOWE, JEŚLI ZOSTAŁE WYZNACZONE]
+
+Niniejsza Polityka prywatności określa zasady przetwarzania danych osobowych użytkowników serwisu [NAZWA SERWISU], w tym kandydatów do pracy, pracodawców, użytkowników kont, odwiedzających stronę internetową oraz osób kontaktujących się z nami.
+
+---
+
+## 1. Zakres stosowania
+
+1. Niniejsza Polityka dotyczy:
+   - danych osobowych przetwarzanych w związku z korzystaniem z serwisu [NAZWA SERWISU],
+   - danych osobowych kandydatów do pracy, w tym danych zawartych w CV, listach motywacyjnych, profilach zawodowych, dokumentach aplikacyjnych,
+   - danych osobowych pracodawców i osób reprezentujących pracodawców,
+   - danych odwiedzających stronę internetową, w tym danych wynikających z plików cookies i podobnych technologii,
+   - danych przetwarzanych w celach marketingowych, analitycznych, statystycznych i bezpieczeństwa.
+
+2. Korzystając z serwisu, wyrażasz zgodę na przetwarzanie danych osobowych w zakresie i w celach określonych w niniejszej Polityce oraz w innych informacjach o przetwarzaniu danych osobowych, które mogą być przedstawiane w konkretnych formularzach, regulaminach lub komunikatach.
+
+---
+
+## 2. Administrator danych osobowych
+
+Administratorem danych osobowych jest:
+
+**[PEŁNA NAZWA PODMIOTU]**  
+**NIP:** [NIP]  
+**Adres siedziby:** [ADRES]  
+**E-mail:** [ADRES E-MAIL]  
+**Telefon:** [NUMER TELEFONU]
+
+W sprawach związanych z ochroną danych osobowych możesz kontaktować się z nami pod adresem e-mail: [ADRES E-MAIL DO SPRAW RODO].
+
+---
+
+## 3. Inspektor Ochrony Danych
+
+W przypadku wyznaczenia inspektora ochrony danych, jego dane kontaktowe:
+
+**IMIĘ I NAZWISKO:** [IMIĘ I NAZWISKO]  
+**E-mail:** [ADRES E-MAIL]  
+**Telefon:** [NUMER TELEFONU]
+
+Jeśli inspektor ochrony danych nie został wyznaczony, prosimy kontaktować się bezpośrednio z Administratorem.
+
+---
+
+## 4. Kategorie przetwarzanych danych osobowych
+
+W zależności od sposobu korzystania z serwisu, mogą być przetwarzane następujące kategorie danych:
+
+### 4.1. Dane kandydatów do pracy
+- imię i nazwisko,
+- data urodzenia,
+- dane kontaktowe: adres e-mail, numer telefonu, adres zamieszkania,
+- wykształcenie,
+- doświadczenie zawodowe,
+- kwalifikacje, uprawnienia, certyfikaty,
+- języki obce,
+- umiejętności,
+- dane zawarte w CV, liście motywacyjnej, portfolio, zdjęciu,
+- dane dotyczące dostępności do pracy, oczekiwań finansowych, lokalizacji,
+- dane o wcześniejszych aplikacjach i statusach rekrutacji,
+- dane wynikające z testów, rozmów, ankiet, ocen,
+- w uzasadnionych przypadkach dane szczególnej kategorii, np. stan zdrowia, niepełnosprawność, przynależność związkowa, jeśli są dobrowolnie podane.
+
+### 4.2. Dane pracodawców i użytkowników
+- imię i nazwisko,
+- stanowisko,
+- dane kontaktowe,
+- dane firmy,
+- dane logowania,
+- dane dotyczące publikowanych ofert pracy,
+- dane dotyczące korzystania z serwisu.
+
+### 4.3. Dane techniczne i logowe
+- adres IP,
+- typ urządzenia,
+- system operacyjny,
+- przeglądarka,
+- dane o sesjach,
+- dane o odwiedzanych stronach,
+- dane o czasie i miejscu korzystania z serwisu,
+- dane o błędach i incydentach bezpieczeństwa.
+
+### 4.4. Dane z plików cookies
+- identyfikatory sesji,
+- dane o preferencjach,
+- dane analityczne,
+- dane o interakcjach z reklamami,
+- dane o zgodach.
+
+---
+
+## 5. Cele i podstawy prawne przetwarzania danych osobowych
+
+### 5.1. Cel: świadczenie usług serwisu i prowadzenie rekrutacji
+
+Dane osobowe przetwarzamy w celu:
+
+- prowadzenia procesu rekrutacyjnego,
+- obsługi aplikacji kandydatów,
+- tworzenia i aktualizacji profili zawodowych,
+- kontaktowania się z kandydatami i pracodawcami,
+- zarządzania kontami użytkowników,
+- publikowania i zarządzania ofertami pracy,
+- obsługi zgłoszeń, reklamacji i pytań,
+- zapewnienia bezpieczeństwa serwisu,
+- realizacji obowiązków prawnych.
+
+**Podstawa prawna:**
+- art. 6 ust. 1 lit. b RODO – wykonanie umowy lub podjęcie działań na żądanie osoby, której dane dotyczą,
+- art. 6 ust. 1 lit. c RODO – wypełnienie obowiązku prawnego,
+- art. 6 ust. 1 lit. f RODO – prawnie uzasadniony interes Administratora, w tym ochrona praw, bezpieczeństwo i prawidłowe funkcjonowanie serwisu.
+
+### 5.2. Cel: marketing i promocja
+
+Dane osobowe mogą być przetwarzane w celu:
+
+- informowania o nowych ofertach pracy,
+- wysyłania newslettera,
+- rekomendowania ofert pracy,
+- prowadzenia kampanii marketingowych,
+- analizy skuteczności działań marketingowych.
+
+**Podstawa prawna:**
+- art. 6 ust. 1 lit. a RODO – zgoda osoby, której dane dotyczą,
+- art. 6 ust. 1 lit. f RODO – prawnie uzasadniony interes Administratora, w zakresie dozwolonego marketingu własnego, jeżeli nie wymagana jest zgoda.
+
+Zgodę na marketing można wycofać w dowolnym momencie, bez wpływu na zgodność z prawem przetwarzania dokonanego przed wycofaniem.
+
+### 5.3. Cel: analityka, statystyki i ulepszanie serwisu
+
+Dane osobowe mogą być przetwarzane w celu:
+
+- analizy sposobu korzystania z serwisu,
+- badania skuteczności funkcji,
+- ulepszania oferty,
+- tworzenia statystyk,
+- optymalizacji działania serwisu.
+
+**Podstawa prawna:**
+- art. 6 ust. 1 lit. a RODO – zgoda,
+- art. 6 ust. 1 lit. f RODO – prawnie uzasadniony interes Administratora, w szczególności zapewnienie jakości i bezpieczeństwa usług.
+
+### 5.4. Cel: profilowanie i rekomendacje
+
+W ramach serwisu mogą być stosowane mechanizmy profilowania, w tym:
+
+- dopasowywanie ofert pracy do profilu kandydata,
+- rekomendowanie kandydatów pracodawcom,
+- personalizacja treści,
+- analiza preferencji zawodowych.
+
+Profilowanie może opierać się na danych zawartych w profilu, historii aplikacji, aktywności w serwisie oraz odpowiedziach na ankiety.
+
+**Podstawa prawna:**
+- art. 6 ust. 1 lit. a RODO – zgoda,
+- art. 6 ust. 1 lit. f RODO – prawnie uzasadniony interes Administratora, w zakresie dozwolonego profilowania.
+
+Osoba, której dane dotyczą, ma prawo do uzyskania informacji o profilowaniu oraz do wyrażenia sprzeciwu wobec profilowania, w zakresie, w jakim nie jest ono niezbędne do wykonania umowy.
+
+### 5.5. Cel: bezpieczeństwo i ochrona prawna
+
+Dane osobowe przetwarzamy w celu:
+
+- zapobiegania nadużyciom,
+- wykrywania oszustw,
+- zapewnienia bezpieczeństwa informatycznego,
+- dochodzenia lub obrony przed roszczeniami,
+- realizacji obowiązków prawnych.
+
+**Podstawa prawna:**
+- art. 6 ust. 1 lit. c RODO,
+- art. 6 ust. 1 lit. f RODO.
+
+### 5.6. Cel: przetwarzanie danych szczególnych kategorii
+
+Jeśli kandydat dobrowolnie poda dane szczególnej kategorii, np. dotyczące stanu zdrowia, niepełnosprawności, przynależności związkowej, dane te będą przetwarzane wyłącznie w zakresie niezbędnym do oceny kandydata w konkretnym procesie rekrutacyjnym lub na podstawie zgody.
+
+**Podstawa prawna:**
+- art. 9 ust. 2 lit. a RODO – zgoda,
+- art. 9 ust. 2 lit. b RODO – realizacja obowiązków i praw z zakresu prawa pracy, o ile wymagane jest to w przepisach prawa.
+
+---
+
+## 6. Okres przechowywania danych osobowych
+
+### 6.1. Dane kandydatów
+
+Dane osobowe kandydatów do pracy będą przechowywane przez:
+
+- czas trwania procesu rekrutacyjnego,
+- [OKREŚLONY OKRES, np. 12 miesięcy] od zakończenia rekrutacji, w celu ewentualnego wykorzystania w przyszłych rekrutacjach,
+- dłuższy okres, jeżeli wymagają tego przepisy prawa, np. w związku z roszczeniami, postępowaniami administracyjnymi lub sądowymi.
+
+Po upływie okresu przechowywania dane zostaną usunięte lub w sposób trwały zanonimizowane.
+
+### 6.2. Dane użytkowników
+
+Dane użytkowników będą przechowywane przez czas aktywnego konta, a po jego zamknięciu przez okres niezbędny do realizacji obowiązków prawnych, rozliczeń, obrony przed roszczeniami lub przez [OKREŚLONY OKRES].
+
+### 6.3. Dane logowe i techniczne
+
+Dane logowe i techniczne będą przechowywane przez okres niezbędny do zapewnienia bezpieczeństwa i obsługi technicznej serwisu, nie dłużej niż [OKREŚLONY OKRES, np. 6 miesięcy], chyba że dłuższy okres jest wymagany przez przepisy prawa.
+
+### 6.4. Dane marketingowe
+
+Dane przetwarzane na podstawie zgody na marketing będą przechowywane do czasu wycofania zgody lub do czasu zakończenia kampanii marketingowej, w zależności od tego, co nastąpi wcześniej.
+
+---
+
+## 7. Odbiorcy danych osobowych
+
+Dane osobowe mogą być udostępniane następującym odbiorcom:
+
+- pracodawcom i firmom rekrutacyjnym, w zakresie niezbędnym do prowadzenia rekrutacji,
+- podmiotom przetwarzającym dane w imieniu Administratora, w szczególności:
+  - dostawcom usług hostingowych,
+  - dostawcom systemów IT,
+  - dostawcom systemów CRM i ATS,
+  - dostawcom usług pocztowych,
+  - dostawcom usług analitycznych,
+  - dostawcom usług marketingowych,
+  - dostawcom usług bezpieczeństwa,
+- podmiotom uprawnionym na mocy przepisów prawa,
+- organom publicznym, jeżeli Administrator jest do tego zobowiązany.
+
+Pełną listę podmiotów przetwarzających można uzyskać kontaktując się z Administratorem.
+
+---
+
+## 8. Przekazanie danych do państw trzecich
+
+Dane osobowe mogą być przekazywane do państw trzecich, w tym do państw spoza Europejskiego Obszaru Gospodarczego, jeżeli:
+
+- jest to niezbędne do świadczenia usług,
+- podmiot otrzymujący dane zapewnia odpowiedni poziom ochrony, w szczególności na podstawie:
+  - decyzji Komisji Europejskiej o adekwatności,
+  - standardowych klauzul ochronnych danych,
+  - wiążących reguł korporacyjnych,
+  - zgody osoby, której dane dotyczą.
+
+W przypadku przekazywania danych do państw trzecich Administrator zapewnia stosowanie odpowiednich zabezpieczeń prawnych.
+
+---
+
+## 9. Pliki cookies i podobne technologie
+
+### 9.1. Czym są pliki cookies
+
+Pliki cookies to małe pliki tekstowe, które są zapisywane w urządzeniu użytkownika i odczytywane przez serwer. Serwis [NAZWA SERWISU] może wykorzystywać pliki cookies oraz podobne technologie, w tym:
+
+- pliki cookies sesyjne,
+- pliki cookies trwałe,
+- pliki localStorage,
+- pliki session storage,
+- piksele śledzące,
+- identyfikatory urządzeń.
+
+### 9.2. Cele stosowania plików cookies
+
+Pliki cookies mogą być stosowane w celu:
+
+- zapewnienia działania serwisu,
+- zapamiętania preferencji użytkownika,
+- utrzymania sesji,
+- analizy ruchu,
+- ulepszania funkcji serwisu,
+- personalizacji treści,
+- prowadzenia działań marketingowych,
+- mierzenia skuteczności reklam.
+
+### 9.3. Zarządzanie plikami cookies
+
+Użytkownik może w dowolnym momencie zmienić ustawienia plików cookies w przeglądarce. Ograniczenie lub wyłączenie plików cookies może wpłynąć na działanie niektórych funkcji serwisu.
+
+Szczegółowe informacje o stosowanych plikach cookies znajdują się w **Polityce cookies** dostępnej pod adresem: [ADRES].
+
+---
+
+## 10. Prawa osób, których dane dotyczą
+
+W związku z przetwarzaniem danych osobowych przysługują Ci następujące prawa:
+
+1. **Prawo dostępu do danych osobowych**  
+   Możesz żądać informacji o tym, jakie dane osobowe są przetwarzane i w jakim celu.
+
+2. **Prawo do sprostowania danych osobowych**  
+   Możesz żądać poprawienia lub uzupełnienia danych, które są nieprawidłowe lub niekompletne.
+
+3. **Prawo do usunięcia danych osobowych**  
+   Możesz żądać usunięcia danych osobowych, w szczególności gdy:
+   - dane nie są już niezbędne do celów, w których zostały zebrane,
+   - wycofasz zgodę,
+   - złożysz sprzeciw wobec przetwarzania,
+   - dane były przetwarzane niezgodnie z prawem.
+
+4. **Prawo do ograniczenia przetwarzania**  
+   Możesz żądać ograniczenia przetwarzania danych osobowych, w szczególności gdy:
+   - kwestionujesz prawidłowość danych,
+   - przetwarzanie jest niezgodne z prawem, a nie chcesz usunięcia danych,
+   - dane nie są już niezbędne, ale potrzebne do dochodzenia roszczeń.
+
+5. **Prawo do przenoszenia danych**  
+   Możesz otrzymać dane osobowe w ustrukturyzowanym, powszechnie używanym formacie nadającym się do odczytu maszynowego lub żądać ich przesłania innemu administratorowi, o ile przetwarzanie opiera się na zgodzie lub umowie i odbywa się w sposób zautomatyzowany.
+
+6. **Prawo do wycofania zgody**  
+   Jeżeli przetwarzanie danych opiera się na zgodzie, możesz ją wycofać w dowolnym momencie.
+
+7. **Prawo do sprzeciwu**  
+   Możesz sprzeciwić się przetwarzaniu danych osobowych, które opiera się na prawnie uzasadnionym interesie Administratora. W przypadku przetwarzania w celach marketingowych masz prawo do sprzeciwu w każdym czasie.
+
+8. **Prawo do informacji o profilowaniu**  
+   Możesz uzyskać informacje o profilowaniu, w tym o logice stosowanej w profilowaniu.
+
+9. **Prawo do wniesienia skargi do organu nadzorczego**  
+   Masz prawo wnieść skargę do Prezesa Urzędu Ochrony Danych Osobowych, jeżeli uznajesz, że przetwarzanie danych osobowych narusza przepisy RODO.
+
+Aby skorzystać z powyższych praw, skontaktuj się z Administratorem pod adresem: [ADRES E-MAIL].
+
+---
+
+## 11. Obowiązek podania danych osobowych
+
+Podanie danych osobowych jest:
+
+- **wymagane** w zakresie niezbędnym do:
+  - rejestracji w serwisie,
+  - aplikowania na oferty pracy,
+  - prowadzenia procesu rekrutacyjnego,
+  - realizacji umowy,
+  - wypełnienia obowiązków prawnych,
+- **dobrowolne** w zakresie:
+  - danych dodatkowych, które mogą usprawnić proces rekrutacji,
+  - danych marketingowych,
+  - danych szczególnych kategorii,
+  - danych niekoniecznych do podstawowego działania serwisu.
+
+Niepodanie danych wymaganych może skutkować niemożnością skorzystania z określonych funkcji serwisu lub przeprowadzenia procesu rekrutacyjnego.
+
+---
+
+## 12. Zautomatyzowane podejmowanie decyzji i profilowanie
+
+W określonych przypadkach Administrator może podejmować decyzje w sposób zautomatyzowany, w tym profilowanie, w szczególności:
+
+- rekomendowanie ofert pracy,
+- dopasowywanie kandydatów do ofert,
+- filtrowanie aplikacji,
+- personalizacja treści.
+
+Jeżeli taka decyzja:
+
+- wywołuje skutki prawne w stosunku do osoby, której dane dotyczą,
+- w podobny sposób ją istotnie dotyczy,
+
+osoba ta ma prawo do udziału w podejmowaniu decyzji, w tym do wyrażania własnego stanowiska, uzyskania wyjaśnień i wniesienia sprzeciwu.
+
+W pozostałych przypadkach osoba, której dane dotyczą, ma prawo do wyrażenia sprzeciwu wobec zautomatyzowanego podejmowania decyzji, w tym profilowania.
+
+---
+
+## 13. Bezpieczeństwo danych osobowych
+
+Administrator stosuje odpowiednie środki techniczne i organizacyjne zapewniające ochronę danych osobowych, w szczególności:
+
+- szyfrowanie danych,
+- kontrolę dostępu,
+- logowanie i monitorowanie zdarzeń,
+- regularne aktualizacje systemów,
+- szkolenia pracowników,
+- procedury bezpieczeństwa,
+- umowy powierzenia przetwarzania danych z podmiotami przetwarzającymi.
+
+W przypadku naruszenia ochrony danych osobowych Administrator będzie informował osoby, których dane dotyczą, oraz właściwy organ nadzorczy, jeżeli naruszenie może stanowić wysokie ryzyko dla ich praw i wolności.
+
+---
+
+## 14. Kontakt
+
+W sprawach związanych z przetwarzaniem danych osobowych możesz kontaktować się z Administratorem:
+
+**E-mail:** [ADRES E-MAIL]  
+**Telefon:** [NUMER TELEFONU]  
+**Adres korespondencji:** [ADRES]
+
+W sprawach dotyczących ochrony danych osobowych możesz kontaktować się również z Inspektorem Ochrony Danych:
+
+**E-mail:** [ADRES E-MAIL IOD]  
+**Telefon:** [NUMER TELEFONU IOD]
+
+---
+
+## 15. Zmiany polityki prywatności
+
+Administrator może aktualizować niniejszą Politykę prywatności w związku z:
+
+- zmianą przepisów prawa,
+- zmianą zakresu świadczonych usług,
+- zmianą technologii stosowanych w serwisie,
+- zmianą celów przetwarzania danych,
+- koniecznością dostosowania polityki do orzecznictwa lub wytycznych organów nadzorczych.
+
+O istotnych zmianach Administrator poinformuje użytkowników w sposób odpowiedni, w szczególności poprzez publikację zaktualizowanej polityki w serwisie lub wysłanie wiadomości e-mail.
+
+---
+
+## 16. Postanowienia końcowe
+
+1. Niniejsza Polityka prywatności wchodzi w życie z dniem [DATA].
+2. W sprawach nieuregulowanych w niniejszej Polityce zastosowanie mają przepisy RODO oraz inne właściwe przepisy prawa polskiego i unijnego.
+3. W razie niezgodności niniejszej Polityki z obowiązującymi przepisami prawa, zastosowanie mają przepisy prawa.
+
+---
+
+# Załącznik: Informacja o podmiotach przetwarzających
+
+| Podmiot przetwarzający | Cel przetwarzania | Zakres danych | Kraj |
+|---|---|---|---|
+| [NAZWA DOSTAWCY HOSTINGU] | Hosting i utrzymanie serwisu | dane techniczne, dane użytkowników | [KRAJ] |
+| [NAZWA DOSTAWCY CRM/ATS] | Obsługa rekrutacji | dane kandydatów, dane pracodawców | [KRAJ] |
+| [NAZWA DOSTAWCY E-MAIL] | Wysyłka wiadomości e-mail | adres e-mail, dane kontaktowe | [KRAJ] |
+| [NAZWA DOSTAWCY ANALITYKI] | Analityka i statystyki | dane logowe, dane o sesjach | [KRAJ] |
+| [NAZWA DOSTAWCY MARKETINGU] | Działania marketingowe | dane kontaktowe, dane o aktywności | [KRAJ] |
+
+---
+
+# Wersja skrócona – informacja o przetwarzaniu danych
+
+Jeżeli chcesz, mogę przygotować również **krótką informację o przetwarzaniu danych osobowych** do wyświetlenia w formularzu rejestracyjnym, formularzu aplikacyjnym lub w banerze cookies.
+
+Przykład:
+
+> Administratorem Twoich danych osobowych jest [NAZWA PODMIOTU]. Twoje dane osobowe będą przetwarzane w celu prowadzenia procesu rekrutacyjnego, obsługi konta oraz kontaktu z Tobą. Podstawą prawną przetwarzania jest wykonanie umowy, obowiązek prawny lub prawnie uzasadniony interes Administratora. W niektórych przypadkach przetwarzanie może opierać się na Twojej zgodzie. Masz prawo dostępu do danych, sprostowania, usunięcia, ograniczenia przetwarzania, przenoszenia danych, wycofania zgody oraz wniesienia skargi do Prezesa UODO. Szczegółowe informacje znajdziesz w Polityce prywatności: [ADRES].
+
+---
+
+# Ważna uwaga
+
+Powyższy dokument ma charakter **wzorca** i powinien zostać dostosowany do:
+
+- faktycznych funkcji serwisu,
+- realnie stosowanych technologii,
+- podmiotów przetwarzających,
+- celów przetwarzania,
+- okresów przechowywania,
+- mechanizmów profilowania,
+- podstaw prawnych stosowanych w konkretnych procesach,
+- wymagań branżowych i krajowych.
+
+Zalecam, aby przed publikacją dokument został zweryfikowany przez prawnika specjalizującego się w ochronie danych osobowych, w szczególności w kontekście RODO, ePrivacy oraz specyfiki serwisów rekrutacyjnych.

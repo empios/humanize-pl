@@ -51,8 +51,13 @@ Thumbs.db
 # Project artifacts
 docs_tests/results/
 # Raw reference corpora stay local; only derived profiles under
-# humanize_pl/data/reference_profiles/ are committed.
-docs_tests/corpus/
+# humanize_pl/data/reference_profiles/ are committed. The two model corpora
+# are the exception: generated from the prompt grid in
+# tools/build_ai_corpus.py, no client text, and the README's two-model
+# figures are measured on them.
+docs_tests/corpus/*
+!docs_tests/corpus/ai_v2/
+!docs_tests/corpus/ai_bielik/
 docs_tests/*_humanized*.docx
 docs_tests/*_review_*.docx
 docs_tests/*_report*.json

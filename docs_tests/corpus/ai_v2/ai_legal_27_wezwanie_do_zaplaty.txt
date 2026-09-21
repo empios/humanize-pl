@@ -1,0 +1,99 @@
+Poniżej gotowy do uzupełnienia wzór **wezwania do zapłaty wynagrodzenia za wykonane usługi doradcze**.
+
+---
+
+**[Nazwa / imię i nazwisko wierzyciela]**  
+**[adres siedziby / zamieszkania]**  
+**[NIP / PESEL]**  
+**[telefon / e-mail]**
+
+**[Nazwa / imię i nazwisko dłużnika]**  
+**[adres siedziby / zamieszkania]**  
+**[NIP / PESEL]**
+
+**[Miejscowość], [data]**
+
+### WEZWANIE DO ZAPŁATY  
+**wynagrodzenia za wykonane usługi doradcze**
+
+Zwracam się z uprzejmym, lecz stanowczym wezwaniem do zapłaty kwoty:
+
+**[kwota słownie] złotych [00/100]**  
+**[kwota cyfrowo] zł**
+
+stanowiącej wynagrodzenie za wykonane na rzecz [Nazwa dłużnika] usługi doradcze, w szczególności [krótki opis usług, np. usługi doradcze w zakresie organizacji, finansowania, restrukturyzacji, compliance, podatkowego, itp.], wykonane na podstawie:
+
+- umowy o świadczenie usług doradczych nr [numer umowy] z dnia [data zawarcia umowy],  
+- [ewentualnie: zamówienia / zlecenia / protokołu / potwierdzenia wykonania usług nr … z dnia …],  
+- [ewentualnie: faktury nr … z dnia …].
+
+Usługi doradcze zostały wykonane prawidłowo i terminowo w dniu [data wykonania] / w okresie od [data] do [data]. Wynagrodzenie za przedmiotowe usługi jest wymagalne od dnia [data wymagalności].
+
+Do dnia sporządzenia niniejszego wezwania nie dokonano zapłaty kwoty wskazanej powyżej, co stanowi opóźnienie w wykonaniu zobowiązania pieniężnego.
+
+W związku z powyższym wzywam do zapłaty kwoty:
+
+**[kwota cyfrowa] zł**
+
+na rachunek bankowy:
+
+**[nazwa banku]**  
+**[numer rachunku bankowego]**
+
+w terminie **[7 / 14] dni** od dnia doręczenia niniejszego wezwania.
+
+Jednocześnie informuję, że w przypadku braku zapłaty w wyznaczonym terminie będę zmuszony/a dochodzić należności na drodze postępowania sądowego, a w razie uzyskania tytułu wykonawczego – postępowania egzekucyjnego.
+
+W razie opóźnienia w zapłacie przysługują mi odsetki ustawowe za opóźnienie w rozumieniu art. 481 Kodeksu cywilnego, naliczane od dnia wymagalności należności, tj. od dnia [data], do dnia zapłaty.
+
+W razie dalszego braku zapłaty będę również uprawniony/a do dochodzenia kosztów odzyskiwania należności, w tym kosztów postępowania sądowego, egzekucyjnego oraz ewentualnych kosztów zastępstwa procesowego, zgodnie z obowiązującymi przepisami.
+
+Niniejsze wezwanie do zapłaty nie stanowi rezygnacji z jakichkolwiek przysługujących mi roszczeń i nie wyłącza możliwości dochodzenia dalszych roszczeń, w tym odszkodowania za szkodę wynikłą z opóźnienia, o ile przepisy prawa lub umowa przewidują taką możliwość.
+
+Z poważaniem,
+
+....................................................  
+**[imię i nazwisko / nazwa firmy]**  
+**[stanowisko / funkcja]**
+
+---
+
+### Załączniki:
+1. Kopia umowy o świadczenie usług doradczych nr [numer] z dnia [data].  
+2. Kopia faktury nr [numer] z dnia [data].  
+3. [Ewentualnie: potwierdzenie wykonania usług / protokół odbioru / korespondencja potwierdzająca wykonanie usług].  
+4. [Ewentualnie: kopia wcześniejszych wezwań / przypomnień].
+
+---
+
+## Wersja z podziałem na kwotę netto, VAT i brutto
+
+Jeśli należność wynika z faktury, można w treści użyć następującego sformułowania:
+
+> Wzywam do zapłaty kwoty:
+>
+> - **netto:** [kwota] zł,  
+> - **VAT:** [kwota] zł,  
+> - **brutto:** [kwota] zł,
+>
+> wynikającej z faktury nr [numer] z dnia [data], stanowiącej wynagrodzenie za wykonane usługi doradcze.
+
+---
+
+## Wersja z odsetkami umownymi
+
+Jeśli umowa przewiduje odsetki umowne, można dodać:
+
+> W przypadku braku zapłaty w wyznaczonym terminie przysługują mi odsetki umowne w wysokości [x]% w skali roku, naliczane od dnia wymagalności należności, tj. od dnia [data], do dnia zapłaty, zgodnie z § [numer] umowy nr [numer] z dnia [data].
+
+---
+
+## Wersja bardziej stanowcza
+
+Jeśli chcesz, mogę przygotować również **bardziej stanowczą wersję**, np. z ostrzeżeniem o:
+
+- skierowaniu sprawy do sądu,  
+- wniesieniu o nadanie klauzuli wykonalności,  
+- zajęciu wierzytelności,  
+- zgłoszeniu roszczenia do ewentualnego postępowania upadłościowego / restrukturyzacyjnego,  
+- naliczaniu odsetek i kosztów.

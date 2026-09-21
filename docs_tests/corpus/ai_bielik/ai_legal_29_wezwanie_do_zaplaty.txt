@@ -1,0 +1,32 @@
+Oto przykładowe przedsądowe wezwanie do zapłaty:
+
+[Miejscowość], [data]
+
+[Nazwa wierzyciela]
+[Adres wierzyciela]
+
+[Nazwa dłużnika]
+[Adres dłużnika]
+
+WEZWANIE DO ZAPŁATY
+
+Działając w imieniu [nazwa wierzyciela] niniejszym wzywam [nazwa dłużnika] do zapłaty kwoty 27 300 zł (słownie: dwadzieścia siedem tysięcy trzysta złotych) w terminie 7 dni od daty otrzymania niniejszego wezwania.
+
+Podstawą do wystawienia wezwania jest faktura VAT nr [numer faktury] z dnia [data wystawienia faktury] na kwotę 27 300 zł, wystawiona z tytułu dostawy towarów.
+
+Termin płatności faktury upłynął [data], jednak do dnia dzisiejszego nie odnotowaliśmy wpłaty należnej kwoty.
+
+W związku z powyższym wzywam do niezwłocznego uregulowania zaległej należności na rachunek bankowy:
+
+[nazwa banku]
+nr rachunku: [numer rachunku]
+
+W przypadku braku wpłaty w wyznaczonym terminie, będziemy zmuszeni podjąć dalsze kroki prawne, co może wiązać się z dodatkowymi kosztami.
+
+Jednocześnie informuję, że w przypadku jakichkolwiek uwag lub wątpliwości co do zasadności niniejszego wezwania, proszę o kontakt pod numerem telefonu [numer telefonu] lub adresem e-mail [adres e-mail].
+
+Z poważaniem,
+
+[Imię i nazwisko]
+[Stanowisko]
+[Nazwa wierzyciela]

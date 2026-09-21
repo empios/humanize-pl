@@ -1,0 +1,183 @@
+# OPINIA PRAWNA  
+## dot. odpowiedzialności członka zarządu za zobowiązania spółki
+
+**Data:** ……………………  
+**Sporządził:** ……………………  
+**Adresat:** ……………………  
+**Przedmiot:** odpowiedzialność członka zarządu za zobowiązania spółki
+
+---
+
+## 1. Przedmiot opinii
+
+Niniejsza opinia dotyczy ogólnych zasad odpowiedzialności członka zarządu za zobowiązania spółki, w szczególności spółki z ograniczoną odpowiedzialnością, spółki akcyjnej oraz prostej spółki akcyjnej. Opinia ma charakter ogólny i nie odnosi się do konkretnego stanu faktycznego, ponieważ nie zostały przedstawione szczegółowe okoliczności sprawy, w tym:
+
+- forma prawna spółki,
+- rodzaj zobowiązania,
+- okres pełnienia funkcji przez członka zarządu,
+- okoliczności powstania zaległości,
+- działania lub zaniechania zarządu,
+- ewentualne postępowanie upadłościowe, restrukturyzacyjne lub likwidacyjne,
+- treść umowy spółki, aktu założycielskiego lub regulaminów wewnętrznych.
+
+W razie potrzeby opinia może zostać uzupełniona po przedstawieniu konkretnego stanu faktycznego.
+
+---
+
+## 2. Stan prawny
+
+### 2.1. Ogólna zasada: spółka odpowiada za swoje zobowiązania
+
+Spółka z ograniczoną odpowiedzialnością, spółka akcyjna oraz prosta spółka akcyjna są osobami prawnymi. Zasada wyrażona w art. 16 § 1 Kodeksu spółek handlowych stanowi, że spółka odpowiada za swoje zobowiązania całym swoim majątkiem.
+
+Oznacza to, że w zasadzie wierzyciel spółki dochodzi swoich roszczeń przeciwko spółce, a nie przeciwko członkom zarządu. Członek zarządu nie odpowiada z reguły za zobowiązania spółki swoim majątkiem osobistym, chyba że przepisy prawa przewidują taką odpowiedzialność wyjątkowo.
+
+---
+
+### 2.2. Odpowiedzialność subsydiarna za zaległości podatkowe
+
+Zgodnie z art. 299 Kodeksu spółek handlowych, członkowie zarządu spółki odpowiadają za zaległości podatkowe spółki, jeżeli nie złożyli wniosku o ogłoszenie upadłości spółki w ustawowym terminie, a w wyniku ogłoszenia upadłości wierzyciel podatkowy może zostać zaspokojony w całości lub w części.
+
+Odpowiedzialność ta ma charakter subsydiarny, co oznacza, że organ podatkowy może skierować egzekucję do majątku osobistego członka zarządu dopiero po bezskutecznej egzekucji z majątku spółki.
+
+Członek zarządu może uwolnić się od odpowiedzialności, jeżeli wykaże, że:
+
+- zaległość podatkowa powstała bez jego winy,
+- złożył wniosek o ogłoszenie upadłości w ustawowym terminie,
+- nie zaniechał złożenia wniosku o ogłoszenie upadłości,
+- zaległość powstała po ustaniu jego pełnienia funkcji,
+- nastąpiło połączenie spółki, w wyniku którego powstała nowa spółka, a zaległość podatkowa powstała przed połączeniem.
+
+---
+
+### 2.3. Odpowiedzialność za zaległości w podatku VAT i akcyzie
+
+Zgodnie z art. 300 Kodeksu spółek handlowych, członkowie zarządu spółki odpowiadają za zaległości spółki w podatku od towarów i usług oraz w akcyzie, jeżeli nie złożyli wniosku o ogłoszenie upadłości spółki w ustawowym terminie, a w wyniku ogłoszenia upadłości wierzyciel podatkowy może zostać zaspokojony w całości lub w części.
+
+Zasady odpowiedzialności są analogiczne do odpowiedzialności za zaległości podatkowe. Odpowiedzialność ma charakter subsydiarny i obejmuje zaległości w podatku VAT oraz akcyzie.
+
+---
+
+### 2.4. Odpowiedzialność za zaległości celne
+
+Zgodnie z art. 301 Kodeksu spółek handlowych, członkowie zarządu spółki odpowiadają za zaległości celne spółki, jeżeli nie złożyli wniosku o ogłoszenie upadłości spółki w ustawowym terminie, a w wyniku ogłoszenia upadłości wierzyciel celny może zostać zaspokojony w całości lub w części.
+
+Odpowiedzialność ta również ma charakter subsydiarny.
+
+---
+
+### 2.5. Odpowiedzialność za zaległości w składkach na ubezpieczenia społeczne, zdrowotne, Fundusz Pracy i Fundusz Gwarantowanych Świadczeń Pracowniczych
+
+Zgodnie z art. 302 Kodeksu spółek handlowych, członkowie zarządu spółki odpowiadają za zaległości spółki w składkach na ubezpieczenia społeczne, ubezpieczenie zdrowotne, Fundusz Pracy i Fundusz Gwarantowanych Świadczeń Pracowniczych, jeżeli nie złożyli wniosku o ogłoszenie upadłości spółki w ustawowym terminie, a w wyniku ogłoszenia upadłości wierzyciel może zostać zaspokojony w całości lub w części.
+
+Odpowiedzialność ta ma charakter subsydiarny i obejmuje zaległości w składkach ZUS oraz innych funduszach.
+
+---
+
+### 2.6. Odpowiedzialność cywilna członka zarządu wobec spółki
+
+Członek zarządu może ponosić odpowiedzialność cywilną wobec spółki za szkodę wyrządzoną spółce przez nienależyte wykonywanie obowiązków.
+
+W spółce z ograniczoną odpowiedzialnością odpowiedzialność ta wynika z art. 49 Kodeksu spółek handlowych. W spółce akcyjnej odpowiada art. 481 Kodeksu spółek handlowych.
+
+Odpowiedzialność ta nie jest odpowiedzialnością za zobowiązania spółki wobec wierzycieli, lecz odpowiedzialnością za szkodę wyrządzoną samej spółce. Spółka może dochodzić od członka zarządu odszkodowania za szkodę wyrządzoną przez nienależyte wykonywanie obowiązków.
+
+---
+
+### 2.7. Odpowiedzialność wobec wierzycieli spółki
+
+W polskim prawie spółki z ograniczoną odpowiedzialnością, spółki akcyjnej oraz prostej spółki akcyjnej nie istnieje ogólna zasada odpowiedzialności członków zarządu za zobowiązania spółki wobec wierzycieli.
+
+Członek zarządu nie odpowiada za zobowiązania spółki wobec wierzycieli, chyba że:
+
+- przepisy prawa przewidują taką odpowiedzialność, np. odpowiedzialność subsydiarna za zaległości podatkowe, celne lub w składkach,
+- członek zarządu zaciągnął zobowiązanie w imieniu spółki, ale bez umocowania, co może rodzić odpowiedzialność z tytułu bezpodstawnego wzbogacenia lub winy,
+- doszło do nadużycia osobowości prawnej spółki, co może skutkować odpowiedzialnością z tytułu czynu niedozwolonego,
+- członek zarządu udzielił rękojmi, poręczenia lub gwarancji za zobowiązania spółki,
+- doszło do oszustwa, wyłudzenia lub innego czynu zabronionego, co może rodzić odpowiedzialność karną i cywilną.
+
+---
+
+### 2.8. Odpowiedzialność w spółkach osobowych
+
+W spółce jawnej, spółce komandytowej oraz spółce komandytowo-akcyjnej zasady odpowiedzialności są inne.
+
+W spółce jawnej wspólnicy odpowiadają za zobowiązania spółki całym swoim majątkiem osobistym. W spółce komandytowej komplementariusz odpowiada za zobowiązania spółki całym swoim majątkiem, natomiast komandytariusz odpowiada w granicach sumy komandytowej. W spółce komandytowo-akcyjnej komplementariusz odpowiada za zobowiązania spółki całym swoim majątkiem, natomiast akcjonariusze nie odpowiadają za zobowiązania spółki.
+
+Członek zarządu spółki osobowej może ponosić odpowiedzialność za zobowiązania spółki, jeżeli jest jednocześnie wspólnikiem. W spółce komandytowo-akcyjnej członek zarządu, który nie jest komplementariuszem, nie odpowiada za zobowiązania spółki całym swoim majątkiem, chyba że przepisy prawa przewidują taką odpowiedzialność.
+
+---
+
+## 3. Analiza prawna
+
+### 3.1. Zasada ograniczonej odpowiedzialności
+
+W spółkach z ograniczoną odpowiedzialnością, akcyjnych oraz prostych spółkach akcyjnych członkowie zarządu nie odpowiadają z reguły za zobowiązania spółki swoim majątkiem osobistym. Spółka jest odrębną osobą prawną i odpowiada za swoje zobowiązania całym swoim majątkiem.
+
+Odpowiedzialność członka zarządu za zobowiązania spółki jest wyjątkiem i może wynikać wyłącznie z przepisów prawa.
+
+---
+
+### 3.2. Odpowiedzialność subsydiarna
+
+Odpowiedzialność członków zarządu za zaległości podatkowe, w podatku VAT i akcyzie, celne oraz w składkach ma charakter subsydiarny. Oznacza to, że organ podatkowy, celny lub ZUS może skierować egzekucję do majątku osobistego członka zarządu dopiero po bezskutecznej egzekucji z majątku spółki.
+
+Odpowiedzialność ta jest uzależniona od braku złożenia wniosku o ogłoszenie upadłości spółki w ustawowym terminie. Jeżeli członek zarządu złożył wniosek o ogłoszenie upadłości w ustawowym terminie, może uwolnić się od odpowiedzialności.
+
+---
+
+### 3.3. Odpowiedzialność za nienależyte wykonywanie obowiązków
+
+Członek zarządu może ponosić odpowiedzialność cywilną wobec spółki za szkodę wyrządzoną przez nienależyte wykonywanie obowiązków. Odpowiedzialność ta nie jest odpowiedzialnością za zobowiązania spółki wobec wierzycieli, lecz odpowiedzialnością za szkodę wyrządzoną samej spółce.
+
+Spółka może dochodzić od członka zarządu odszkodowania za szkodę wyrządzoną przez nienależyte wykonywanie obowiązków. Odpowiedzialność ta może być wyłączona lub ograniczona w umowie spółki, akcie założycielskim lub regulaminach wewnętrznych, o ile nie narusza to przepisów prawa.
+
+---
+
+### 3.4. Odpowiedzialność wobec wierzycieli
+
+W polskim prawie nie istnieje ogólna zasada odpowiedzialności członków zarządu za zobowiązania spółki wobec wierzycieli. Członek zarządu nie odpowiada za zobowiązania spółki wobec wierzycieli, chyba że przepisy prawa przewidują taką odpowiedzialność.
+
+Wyjątki mogą dotyczyć:
+
+- odpowiedzialności subsydiarnej za zaległości podatkowe, celne lub w składkach,
+- zaciągnięcia zobowiązania w imieniu spółki bez umocowania,
+- nadużycia osobowości prawnej spółki,
+- udzielenia rękojmi, poręczenia lub gwarancji za zobowiązania spółki,
+- oszustwa, wyłudzenia lub innego czynu zabronionego.
+
+---
+
+## 4. Wnioski
+
+1. **Zasada:** Członek zarządu spółki z ograniczoną odpowiedzialnością, spółki akcyjnej lub prostej spółki akcyjnej nie odpowiada z reguły za zobowiązania spółki swoim majątkiem osobistym. Spółka odpowiada za swoje zobowiązania całym swoim majątkiem.
+
+2. **Wyjątek:** Członek zarządu może ponosić odpowiedzialność subsydiarną za zaległości podatkowe, w podatku VAT i akcyzie, celne oraz w składkach na ubezpieczenia społeczne, zdrowotne, Fundusz Pracy i Fundusz Gwarantowanych Świadczeń Pracowniczych, jeżeli nie złożył wniosku o ogłoszenie upadłości spółki w ustawowym terminie.
+
+3. **Odpowiedzialność wobec spółki:** Członek zarządu może ponosić odpowiedzialność cywilną wobec spółki za szkodę wyrządzoną przez nienależyte wykonywanie obowiązków. Odpowiedzialność ta nie jest odpowiedzialnością za zobowiązania spółki wobec wierzycieli.
+
+4. **Odpowiedzialność wobec wierzycieli:** W polskim prawie nie istnieje ogólna zasada odpowiedzialności członków zarządu za zobowiązania spółki wobec wierzycieli. Odpowiedzialność taka może wynikać wyłącznie z przepisów prawa lub z okoliczności konkretnego stanu faktycznego.
+
+5. **Spółki osobowe:** W spółkach osobowych zasady odpowiedzialności są inne. Wspólnicy mogą odpowiadać za zobowiązania spółki całym swoim majątkiem osobistym, w zależności od formy prawnej spółki.
+
+---
+
+## 5. Zastrzeżenia
+
+1. Niniejsza opinia ma charakter ogólny i nie odnosi się do konkretnego stanu faktycznego.
+2. Opinia nie zastępuje indywidualnej analizy prawnej konkretnej sprawy.
+3. W celu sporządzenia szczegółowej opinii prawnej konieczne jest przedstawienie:
+   - formy prawnej spółki,
+   - rodzaju zobowiązania,
+   - okresu pełnienia funkcji przez członka zarządu,
+   - okoliczności powstania zaległości,
+   - działań lub zaniechań zarządu,
+   - ewentualnego postępowania upadłościowego, restrukturyzacyjnego lub likwidacyjnego,
+   - treści umowy spółki, aktu założycielskiego lub regulaminów wewnętrznych.
+4. Opinia została sporządzona na podstawie stanu prawnego obowiązującego w dniu jej sporządzenia.
+
+---
+
+**Sporządził:**  
+………………………………………  
+*(podpis)*

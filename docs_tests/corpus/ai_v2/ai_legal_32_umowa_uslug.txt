@@ -1,0 +1,134 @@
+**UMOWA O ŚWIADCZENIE USŁUG INFORMATYCZNYCH
+NR [....]**
+
+**- UTRZYMANIE SYSTEMU I WSPARCIE TECHNICZNE -**
+
+zawarta w dniu [DATA] w [MIEJSCE] pomiędzy:
+
+**1. [NAZWA ZAMAWIAJĄCEGO]**, z siedzibą w [MIASTO], ul. [ADRES], [KOD], wpisana do [KRS/CEIDG] pod nr [NR], NIP [NIP], REGON [REGON], reprezentowana przez:
+[IMIĘ I NAZWISKO, STANOWISKO]
+zwana dalej **„Zamawiającym”**,
+
+a
+
+**2. [NAZWA WYKONAWCY]**, z siedzibą w [MIASTO], ul. [ADRES], [KOD], wpisana do [KRS/CEIDG] pod nr [NR], NIP [NIP], REGON [REGON], reprezentowana przez:
+[IMIĘ I NAZWISKO, STANOWISKO]
+zwana dalej **„Wykonawcą”**,
+
+zwane dalej łącznie **„Stronami”**, a każde z osobna **„Stroną”**.
+
+Strony zawierają umowę następującej treści:
+
+### § 1. Postanowienia ogólne i definicje
+
+1. Umowa zostaje zawarta na podstawie art. 750 i nast. Kodeksu cywilnego.
+2. Użyte w Umowie pojęcia oznaczają:
+   1. **System** - system informatyczny Zamawiającego wskazany w Załączniku nr 1 do Umowy, wraz z oprogramowaniem, bazami danych, serwerami, infrastrukturą sieciową i dokumentacją.
+   2. **Usługi Utrzymania** - usługi opisane w §3 ust. 1.
+   3. **Wsparcie Techniczne** - usługi opisane w §3 ust. 2.
+   4. **Zgłoszenie** - zgłoszenie awarii lub zapytania technicznego dokonane przez Zamawiającego zgodnie z §3 ust. 5.
+   5. **Czas Reakcji** - czas od przyjęcia Zgłoszenia do rozpoczęcia prac przez Wykonawcę.
+   6. **Czas Rozwiązania** - czas od przyjęcia Zgłoszenia do usunięcia usterki.
+
+### § 2. Przedmiot umowy
+
+1. Przedmiotem Umowy jest świadczenie przez Wykonawcę na rzecz Zamawiającego usług informatycznych w zakresie utrzymania Systemu oraz wsparcia technicznego, zgodnie z opisem zawartym w §3.
+2. Usługi będą świadczone w sposób ciągły przez cały okres obowiązywania Umowy.
+
+### § 3. Zakres usług
+
+1. **Usługi Utrzymania Systemu obejmują:**
+   a) monitoring ciągły dostępności i wydajności Systemu 24/7/365;
+   b) wykonywanie kopii zapasowych Systemu zgodnie z polityką backupu określoną w Załączniku nr 2;
+   c) instalację aktualizacji bezpieczeństwa, poprawek i łatek systemowych po uprzedniej akceptacji Zamawiającego;
+   d) konserwację prewencyjną, czyszczenie logów, optymalizację baz danych;
+   e) nadzór nad licencjami oprogramowania wchodzącymi w skład Systemu;
+   f) raportowanie miesięczne o stanie Systemu.
+
+2. **Wsparcie Techniczne obejmuje:**
+   a) przyjmowanie Zgłoszeń za pośrednictwem [e-mail / system ticketingowy];
+   b) diagnostykę i usuwanie awarii oraz błędów Systemu;
+   c) doradztwo techniczne dla użytkowników uprawnionych wskazanych przez Zamawiającego;
+   d) pomoc w konfiguracji i integracji nowych elementów z Systemem w ramach istniejącej architektury.
+
+3. Usługi świadczone są w godzinach pracy Wykonawcy: od pn-pt w godz. 8:00-16:00, z wyłączeniem dni ustawowo wolnych od pracy.
+   Wsparcie poza godzinami pracy, w trybie pilnym, możliwe jest na podstawie odrębnego zlecenia i dodatkowego wynagrodzenia.
+
+4. Poziomy SLA:
+   | Priorytet | Opis | Czas Reakcji | Czas Rozwiązania |
+   |---|---|---|---|
+   | Krytyczny | Awaria uniemożliwiająca pracę | 1 godz. | 4 godz. |
+   | Wysoki | Znaczne ograniczenie funkcjonalności | 4 godz. | 1 dzień roboczy |
+   | Średni | Ograniczone utrudnienia | 8 godz. | 3 dni robocze |
+   | Niski | Zapytanie / poprawa | 1 dzień roboczy | 7 dni roboczych |
+
+5. Zgłoszenie przyjmowane jest po potwierdzeniu przez Wykonawcę jego otrzymania.
+
+### § 4. Obowiązki Stron
+
+1. **Wykonawca zobowiązuje się do:**
+   a) świadczenia Usług z należytą starannością, zgodnie z aktualną wiedzą techniczną i najlepszą praktyką branżową;
+   b) zachowania poufności informacji uzyskanych w związku z Umową;
+   c) informowania Zamawiającego o zagrożeniach bezpieczeństwa Systemu.
+
+2. **Zamawiający zobowiązuje się do:**
+   a) zapewnienia Wykonawcy dostępu zdalnego do Systemu oraz danych niezbędnych do świadczenia Usług;
+   b) wyznaczenia osoby kontaktowej i użytkowników uprawnionych do zgłaszania Zgłoszeń;
+   c) niezwłocznego informowania o zmianach w Systemie mogących wpływać na świadczenie Usług;
+   d) zapłaty wynagrodzenia w terminach określonych w Umowie.
+
+### § 5. Czas trwania umowy
+
+1. Umowa zostaje zawarta na czas określony od dnia [DATA ROZPOCZĘCIA] do dnia [DATA ZAKOŃCZENIA], z możliwością przedłużenia na kolejne okresy 12-miesięczne na podstawie pisemnego aneksu.
+2. W przypadku braku wypowiedzenia Umowy na 3 miesiące przed zakończeniem okresu obowiązywania, Umowa ulega automatycznemu przedłużeniu na kolejne 12 miesięcy.
+
+### § 6. Wynagrodzenie
+
+1. Za świadczenie Usług Zamawiający zapłaci Wykonawcy miesięczne wynagrodzenie w wysokości [KWOTA NETTO] zł netto + podatek VAT, tj. [KWOTA BRUTTO] zł brutto.
+2. Wynagrodzenie obejmuje zakres Usług opisany w §3 ust. 1 i 2 oraz wsparcie w godzinach pracy.
+3. Usługi dodatkowe poza zakresem Umowy, w tym wsparcie poza godzinami pracy, będą rozliczane wg stawki godzinowej [KWOTA] zł netto / godz.
+4. Wynagrodzenie płatne jest miesięcznie z dołu, w terminie 14 dni od daty otrzymania prawidłowo wystawionej faktury VAT.
+
+### § 7. Poufność i własność intelektualna
+
+1. Strony zobowiązują się do zachowania w tajemnicy wszelkich informacji technicznych, organizacyjnych i handlowych uzyskanych w związku z Umową.
+2. Obowiązek poufności pozostaje w mocy 3 lata po zakończeniu Umowy.
+3. Prawa własności intelektualnej do Systemu pozostają własnością Zamawiającego. Wykonawca nabywa prawo do korzystania z Systemu wyłącznie w celu świadczenia Usług.
+
+### § 8. Ochrona danych osobowych
+
+1. Strony oświadczają, że znają i będą przestrzegać obowiązków wynikających z RODO.
+2. Wykonawca, w zakresie niezbędnym do świadczenia Usług, może przetwarzać dane osobowe na podstawie art. 28 RODO jako podmiot przetwarzający na rzecz Zamawiającego będącego administratorem danych.
+3. Wykonawca zobowiązuje się do wdrożenia odpowiednich środków technicznych i organizacyjnych ochrony danych.
+
+### § 9. Odpowiedzialność
+
+1. Wykonawca odpowiada za szkody wyrządzone Zamawiającemu z winy umyślnej lub rażącego niedbalstwa.
+2. Łączna odpowiedzialność Wykonawcy z tytułu Umowy ograniczona jest do wysokości wynagrodzenia otrzymanego przez Wykonawcę w okresie 6 miesięcy poprzedzających wystąpienie szkody.
+3. Wykonawca nie ponosi odpowiedzialności za szkody powstałe wskutek niewykonania lub nienależytego wykonania obowiązków przez Zamawiającego, działania siły wyższej, błędów oprogramowania dostarczonego przez podmioty trzecie.
+
+### § 10. Siła wyższa
+
+Strony są zwolnione z odpowiedzialności za niewykonanie lub nienależyte wykonanie zobowiązań wynikających z Umowy spowodowane okolicznościami siły wyższej.
+
+### § 11. Zmiany i rozwiązanie umowy
+
+1. Zmiany Umowy wymagają formy pisemnej pod rygorem nieważności.
+2. Każda ze Stron może rozwiązać Umowę ze skutkiem natychmiastowym w przypadku rażącego naruszenia istotnych postanowień Umowy przez drugą Stronę, po uprzednim bezskutecznym wezwaniu do zaprzestania naruszeń w terminie 14 dni.
+3. Zamawiający może wypowiedzieć Umowę ze skutkiem na koniec miesiąca kalendarzowego z zachowaniem 1-miesięcznego okresu wypowiedzenia.
+
+### § 12. Postanowienia końcowe
+
+1. Wszelkie spory wynikające z Umowy Strony będą starały się rozwiązać polubownie. W przypadku braku porozumienia spór zostanie poddany sądowi właściwemu dla siedziby Zamawiającego.
+2. W sprawach nieuregulowanych Umową zastosowanie mają przepisy Kodeksu cywilnego.
+3. Integralną część Umowy stanowią: Załącznik nr 1 - Opis Systemu, Załącznik nr 2 - Polityka backupu i SLA.
+4. Umowę sporządzono w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze Stron.
+
+**ZAMAWIAJĄCY**                           **WYKONAWCA**
+
+...............................................    ...............................................
+podpis i pieczęć                        podpis i pieczęć
+
+---
+
+*Dokument ma charakter wzorcowy. Przed podpisaniem należy dostosować treść do konkretnego zakresu usług, infrastruktury i wymogów Zamawiającego.*

@@ -1,0 +1,68 @@
+Oto przykładowa polityka prywatności dla platformy z kontami użytkowników i newsletterem:
+
+Polityka Prywatności
+
+1. Wprowadzenie
+Niniejsza Polityka Prywatności określa zasady przetwarzania danych osobowych użytkowników korzystających z platformy [nazwa platformy] oraz subskrybentów newslettera. Administratorem danych jest [nazwa firmy/osoby], z siedzibą w [adres], zwany dalej "Administratorem".
+
+2. Dane osobowe zbierane przez Administratora
+
+a) Rejestracja konta:
+- Imię i nazwisko
+- Adres e-mail
+- Hasło (przechowywane w formie zahashowanej)
+- Adres IP (w momencie rejestracji)
+
+b) Formularz newslettera:
+- Imię i nazwisko
+- Adres e-mail
+
+c) Inne dane wprowadzane przez użytkownika w trakcie korzystania z platformy (np. dane profilowe, komentarze)
+
+3. Cele przetwarzania danych:
+- Zapewnienie funkcjonalności konta użytkownika
+- Wysyłka newslettera
+- Poprawa jakości usług
+- Zapobieganie nadużyciom i oszustwom
+- Realizacja obowiązków prawnych Administratora
+
+4. Podstawa prawna przetwarzania:
+- Art. 6 ust. 1 lit. a) RODO (zgoda)
+- Art. 6 ust. 1 lit. b) RODO (wykonanie umowy)
+- Art. 6 ust. 1 lit. c) RODO (obowiązek prawny)
+- Art. 6 ust. 1 lit. f) RODO (prawnie uzasadniony interes)
+
+5. Okres przechowywania danych:
+- Dane konta użytkownika: do czasu usunięcia konta
+- Dane newslettera: do czasu wycofania zgody lub wypisania się z newslettera
+- Inne dane: zgodnie z okresem przedawnienia roszczeń lub obowiązkiem przechowywania danych wynikającym z przepisów
+
+6. Odbiorcy danych:
+Dane mogą być przekazywane podmiotom świadczącym usługi na rzecz Administratora (np. dostawcy hostingu, firmy kurierskie, dostawcy oprogramowania), a także organom państwowym w przypadku istnienia obowiązku prawnego.
+
+7. Prawa użytkowników:
+Każdy użytkownik ma prawo do:
+- Dostępu do swoich danych
+- Sprostowania danych
+- Usunięcia danych (prawo do bycia zapomnianym)
+- Ograniczenia przetwarzania
+- Przenoszenia danych
+- Wniesienia sprzeciwu
+- Cofnięcia zgody w dowolnym momencie (bez wpływu na zgodność z prawem przetwarzania, które miało miejsce na podstawie zgody przed jej cofnięciem)
+
+8. Zgoda na przetwarzanie danych:
+- Zgoda na przesyłanie newslettera może zostać wycofana w dowolnym momencie poprzez kliknięcie odpowiedniego linku w wiadomości e-mail.
+- Zgoda na przetwarzanie danych w celach marketingowych może zostać wycofana w dowolnym momencie.
+
+9. Bezpieczeństwo danych:
+Administrator stosuje odpowiednie środki techniczne i organizacyjne w celu zapewnienia bezpieczeństwa danych osobowych.
+
+10. Kontakt w sprawie danych osobowych:
+Wszelkie pytania i wnioski dotyczące przetwarzania danych osobowych można kierować na adres e-mail: [adres e-mail] lub listownie na adres siedziby Administratora.
+
+11. Zmiany w Polityce Prywatności
+Administrator zastrzega sobie prawo do aktualizacji Polityki Prywatności. Wszelkie zmiany będą publikowane na stronie internetowej.
+
+Data ostatniej aktualizacji: [data]
+
+Ta polityka prywatności może być dostosowana do konkretnych potrzeb platformy i rodzaju zbieranych danych. Zaleca się konsultację z prawnikiem specjalizującym się w prawie ochrony danych osobowych przed jej ostatecznym przyjęciem.

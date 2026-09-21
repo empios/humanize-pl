@@ -1,0 +1,346 @@
+Poniżej znajdziesz gotowy do adaptacji **wzór polityki prywatności dla sklepu internetowego** przetwarzającego dane klientów. Dokument został przygotowany z uwzględnieniem wymogów **RODO** oraz typowych procesów w e-commerce: rejestracja, realizacja zamówień, płatności, wysyłka, obsługa reklamacji, marketing, pliki cookies i analityka.
+
+Miejsca w nawiasach kwadratowych, np. **[NAZWA SKLEPU]**, należy uzupełnić danymi właściwymi dla Twojego sklepu.
+
+---
+
+# POLITYKA PRYWATNOŚCI  
+**[NAZWA SKLEPU INTERNETOWEGO]**
+
+Niniejsza Polityka Prywatności określa zasady przetwarzania i ochrony danych osobowych użytkowników serwisu **[ADRES INTERNETOWY SKLEPU]**, prowadzonego przez:
+
+**[PEŁNA NAZWA PODMIOTU / IMIĘ I NAZWISKO]**  
+**[ADRES SIEDZIBY / MIEJSCE WYKONYWANIA DZIAŁALNOŚCI]**  
+**[NIP / REGON / KRS – jeśli dotyczy]**  
+e-mail: **[ADRES E-MAIL]**  
+telefon: **[NUMER TELEFONU]**
+
+Dalsze postanowienia niniejszej Polityki Prywatności mają zastosowanie do danych osobowych przetwarzanych w związku z korzystaniem ze sklepu internetowego, w tym w szczególności z rejestracji konta, składania zamówień, dokonywania płatności, odbioru towarów, obsługi reklamacji oraz kontaktu z administratorem.
+
+---
+
+## 1. Administrator danych osobowych
+
+Administratorem danych osobowych jest:
+
+**[PEŁNA NAZWA PODMIOTU / IMIĘ I NAZWISKO]**  
+**[ADRES SIEDZIBY / MIEJSCE WYKONYWANIA DZIAŁALNOŚCI]**  
+e-mail: **[ADRES E-MAIL]**  
+telefon: **[NUMER TELEFONU]**
+
+W sprawach związanych z ochroną danych osobowych możesz skontaktować się z administratorem pod powyższym adresem e-mail lub telefonicznie.
+
+---
+
+## 2. Inspektor ochrony danych
+
+Administrator wyznaczył inspektora ochrony danych / nie wyznaczył inspektora ochrony danych.
+
+W przypadku wyznaczenia inspektora:
+
+**[IMIĘ I NAZWISKO / FUNKCJA]**  
+e-mail: **[ADRES E-MAIL IOD]**  
+telefon: **[NUMER TELEFONU IOD]**
+
+W przypadku braku wyznaczenia inspektora, wszelkie sprawy dotyczące ochrony danych osobowych należy kierować bezpośrednio do administratora.
+
+---
+
+## 3. Cele i podstawy prawne przetwarzania danych osobowych
+
+Dane osobowe przetwarzane są w następujących celach i na podstawie:
+
+### 3.1. Realizacja zamówień i umów sprzedaży
+
+Dane przetwarzane są w celu:
+- rejestracji i prowadzenia konta klienta,
+- realizacji zamówień,
+- wystawiania faktur i dokumentów księgowych,
+- obsługi zwrotów, reklamacji i gwarancji,
+- dochodzenia lub obrony przed roszczeniami,
+- wypełniania obowiązków prawnych ciążących na administratorze.
+
+Podstawą prawną przetwarzania danych jest:
+- **art. 6 ust. 1 lit. b RODO** – wykonanie umowy,
+- **art. 6 ust. 1 lit. c RODO** – wypełnienie obowiązku prawnego,
+- **art. 6 ust. 1 lit. f RODO** – prawnie uzasadniony interes administratora, w tym dochodzenie roszczeń i obrona przed nimi.
+
+### 3.2. Płatności
+
+Dane niezbędne do realizacji płatności przetwarzane są w celu:
+- obsługi transakcji płatniczych,
+- weryfikacji płatności,
+- rozliczeń z operatorami płatności.
+
+Podstawą prawną jest:
+- **art. 6 ust. 1 lit. b RODO** – wykonanie umowy,
+- **art. 6 ust. 1 lit. c RODO** – obowiązek prawny.
+
+W zakresie płatności dane mogą być przekazywane podmiotom obsługującym płatności, w szczególności:
+- **[NAZWA OPERATORA PŁATNOŚCI, np. Przelewy24, PayU, Stripe, PayPal]**,
+- bankom lub instytucjom płatniczym.
+
+### 3.3. Wysyłka i dostawa
+
+Dane przetwarzane są w celu:
+- dostarczenia zamówionego towaru,
+- kontaktu z przewoźnikiem,
+- obsługi przesyłek i reklamacji transportowych.
+
+Podstawą prawną jest:
+- **art. 6 ust. 1 lit. b RODO** – wykonanie umowy.
+
+Dane mogą być przekazywane firmom kurierskim i pocztowym, w szczególności:
+- **[NAZWA KURIERA / POCZTY]**.
+
+### 3.4. Marketing bezpośredni
+
+Dane mogą być przetwarzane w celu:
+- wysyłki informacji handlowych,
+- newslettera,
+- rekomendacji produktów,
+- promocji i ofert specjalnych.
+
+Podstawą prawną jest:
+- **art. 6 ust. 1 lit. a RODO** – zgoda osoby, której dane dotyczą,
+- w zakresie marketingu bezpośredniego także **art. 10 ustawy z dnia 18 lipca 2002 r. o świadczeniu usług drogą elektroniczną**.
+
+Zgoda na marketing może być wycofana w dowolnym momencie, bez wpływu na ważność przetwarzania dokonanego przed wycofaniem zgody.
+
+### 3.5. Pliki cookies i technologie śledzące
+
+Sklep może wykorzystywać pliki cookies oraz podobne technologie w celu:
+- zapewnienia prawidłowego działania sklepu,
+- zapamiętywania preferencji użytkownika,
+- prowadzenia statystyk,
+- personalizacji treści,
+- analizy ruchu,
+- celów marketingowych.
+
+Podstawą prawną jest:
+- **art. 6 ust. 1 lit. a RODO** – zgoda,
+- **art. 6 ust. 1 lit. f RODO** – prawnie uzasadniony interes administratora, w zakresie cookies niezbędnych do działania sklepu.
+
+Szczegółowe informacje o cookies znajdują się w **Polityce Cookies** dostępnej pod adresem: **[ADRES DO POLITYKI COOKIES]**.
+
+### 3.6. Analityka i bezpieczeństwo
+
+Dane mogą być przetwarzane w celu:
+- analizy działania sklepu,
+- zapobiegania oszustwom,
+- ochrony przed nadużyciami,
+- zapewnienia bezpieczeństwa systemu.
+
+Podstawą prawną jest:
+- **art. 6 ust. 1 lit. f RODO** – prawnie uzasadniony interes administratora.
+
+### 3.7. Obowiązki prawne
+
+Dane przetwarzane są również w celu:
+- realizacji obowiązków podatkowych i rachunkowych,
+- archiwizacji dokumentów,
+- przestrzegania przepisów prawa.
+
+Podstawą prawną jest:
+- **art. 6 ust. 1 lit. c RODO** – wypełnienie obowiązku prawnego.
+
+---
+
+## 4. Kategorie przetwarzanych danych osobowych
+
+W zależności od celu przetwarzania, administrator może przetwarzać następujące kategorie danych:
+
+- imię i nazwisko,
+- adres e-mail,
+- numer telefonu,
+- adres zamieszkania / adres dostawy,
+- NIP / REGON – jeśli dotyczy,
+- dane dotyczące zamówień,
+- dane płatnicze – w zakresie niezbędnym do realizacji płatności,
+- dane techniczne, w tym adres IP, typ przeglądarki, system operacyjny,
+- dane dotyczące aktywności w sklepie,
+- dane zawarte w korespondencji,
+- dane dotyczące reklamacji i zwrotów.
+
+---
+
+## 5. Odbiorcy danych osobowych
+
+Dane osobowe mogą być udostępniane podmiotom uprawnionym do ich otrzymania na mocy obowiązujących przepisów prawa, w szczególności:
+- organom podatkowym,
+- organom ścigania,
+- sądom,
+- firmom kurierskim i pocztowym,
+- operatorom płatności,
+- podmiotom świadczącym usługi IT, hostingowe i analityczne,
+- podmiotom świadczącym usługi księgowe i prawne.
+
+Dane mogą być przekazywane wyłącznie w zakresie niezbędnym do realizacji określonych celów.
+
+---
+
+## 6. Przekazywanie danych do państw trzecich
+
+Dane osobowe mogą być przekazywane do państw trzecich, w tym do państw spoza Europejskiego Obszaru Gospodarczego, wyłącznie:
+- w oparciu o decyzję Komisji Europejskiej o adekwatności ochrony danych,
+- na podstawie odpowiednich klauzul umownych zatwierdzonych przez Komisję Europejską,
+- w innych przypadkach przewidzianych przez RODO.
+
+W szczególności dotyczy to sytuacji, gdy:
+- usługi hostingowe, płatności lub analityka są świadczone przez podmioty z siedzibą poza EOG,
+- administrator korzysta z narzędzi chmurowych lub analitycznych dostępnych globalnie.
+
+---
+
+## 7. Okres przechowywania danych osobowych
+
+Dane osobowe przechowywane są przez czas niezbędny do realizacji celów, dla których zostały zebrane, w szczególności:
+
+- przez czas trwania umowy i realizacji zamówienia,
+- przez czas niezbędny do obsługi reklamacji, zwrotów i gwarancji,
+- przez czas wymagany przepisami prawa, w tym przepisami podatkowymi i rachunkowymi,
+- przez czas niezbędny do dochodzenia lub obrony przed roszczeniami,
+- przez czas trwania zgody – w przypadku przetwarzania na podstawie zgody.
+
+Po upływie okresu przechowywania dane są usuwane lub anonimizowane, chyba że administrator jest zobowiązany do ich dalszego przechowywania na podstawie przepisów prawa.
+
+---
+
+## 8. Prawa osób, których dane dotyczą
+
+Każdej osobie, której dane osobowe są przetwarzane, przysługują następujące prawa:
+
+- prawo do dostępu do treści danych,
+- prawo do sprostowania danych,
+- prawo do usunięcia danych,
+- prawo do ograniczenia przetwarzania danych,
+- prawo do przenoszenia danych,
+- prawo do wniesienia sprzeciwu wobec przetwarzania danych,
+- prawo do wycofania zgody w dowolnym momencie,
+- prawo do wniesienia skargi do organu nadzorczego.
+
+W celu realizacji praw wystarczy skontaktować się z administratorem pod adresem:
+**[ADRES E-MAIL]**  
+lub listownie na adres:
+**[ADRES SIEDZIBY / MIEJSCE WYKONYWANIA DZIAŁALNOŚCI]**
+
+Administrator udzieli odpowiedzi w terminie **30 dni** od dnia otrzymania żądania. W razie potrzeby termin ten może zostać przedłużony o kolejne dwa miesiące, jeżeli żądanie jest szczególnie skomplikowane lub liczba żądań jest duża.
+
+---
+
+## 9. Obowiązek podania danych osobowych
+
+Podanie danych osobowych jest:
+- **niezbędne** do realizacji zamówienia i zawarcia umowy sprzedaży,
+- **dobrowolne** w zakresie danych niekoniecznych do realizacji umowy, w szczególności w zakresie marketingu.
+
+Niepodanie danych niezbędnych do realizacji zamówienia może skutkować brakiem możliwości zawarcia i realizacji umowy.
+
+---
+
+## 10. Profilowanie i zautomatyzowane podejmowanie decyzji
+
+Dane osobowe mogą być przetwarzane w sposób zautomatyzowany, w tym w formie profilowania, w szczególności w celu:
+- personalizacji oferty,
+- rekomendacji produktów,
+- analizy zachowań użytkowników,
+- zapobiegania oszustwom.
+
+Profilowanie nie prowadzi do decyzji, które wywołują skutki prawne w stosunku do osoby, której dane dotyczą, ani w podobny sposób istotnie jej dotyczą.
+
+---
+
+## 11. Bezpieczeństwo danych osobowych
+
+Administrator stosuje odpowiednie środki techniczne i organizacyjne zapewniające ochronę przetwarzanych danych osobowych, w szczególności:
+- szyfrowanie połączeń SSL/TLS,
+- kontrolę dostępu do danych,
+- regularne aktualizacje systemów,
+- zabezpieczenia przed nieautoryzowanym dostępem,
+- szkolenia pracowników w zakresie ochrony danych.
+
+Mimo stosowania odpowiednich zabezpieczeń, administrator nie może wykluczyć ryzyka naruszenia ochrony danych w związku z ogólnym ryzykiem wynikającym z funkcjonowania sieci Internet.
+
+---
+
+## 12. Pliki cookies
+
+Sklep internetowy wykorzystuje pliki cookies. Szczegółowe informacje dotyczące cookies, w tym ich rodzajów, celów i sposobu zarządzania, znajdują się w **Polityce Cookies** dostępnej pod adresem:
+
+**[ADRES DO POLITYKI COOKIES]**
+
+---
+
+## 13. Skarga do organu nadzorczego
+
+W przypadku uznania, że przetwarzanie danych osobowych narusza przepisy RODO, przysługuje prawo wniesienia skargi do organu nadzorczego, którym jest:
+
+**Prezes Urzędu Ochrony Danych Osobowych**  
+ul. Stawki 2  
+00-193 Warszawa
+
+---
+
+## 14. Zmiany polityki prywatności
+
+Administrator zastrzega sobie prawo do zmiany niniejszej Polityki Prywatności. O wszelkich istotnych zmianach użytkownicy zostaną poinformowani poprzez opublikowanie zaktualizowanej wersji na stronie internetowej sklepu.
+
+Najnowsza wersja Polityki Prywatności jest dostępna pod adresem:
+**[ADRES STRONY Z POLITYKĄ PRYWATNOŚCI]**
+
+Data ostatniej aktualizacji: **[DATA]**
+
+---
+
+## 15. Kontakt
+
+W sprawach związanych z ochroną danych osobowych można kontaktować się z administratorem:
+
+**[PEŁNA NAZWA PODMIOTU / IMIĘ I NAZWISKO]**  
+**[ADRES SIEDZIBY / MIEJSCE WYKONYWANIA DZIAŁALNOŚCI]**  
+e-mail: **[ADRES E-MAIL]**  
+telefon: **[NUMER TELEFONU]**
+
+---
+
+# Wersja skrócona do opublikowania w stopce sklepu
+
+Jeśli potrzebujesz krótszej wersji do stopki lub strony „Informacje o prywatności”, możesz użyć poniższego tekstu:
+
+---
+
+## Informacje o prywatności
+
+Administratorem Twoich danych osobowych jest **[NAZWA PODMIOTU]** z siedzibą w **[ADRES]**. Twoje dane przetwarzamy w celu realizacji zamówień, obsługi płatności, dostawy, reklamacji, a także – za Twoją zgodą – w celach marketingowych.
+
+Podstawą prawną przetwarzania danych jest w szczególności wykonanie umowy, obowiązek prawny, prawnie uzasadniony interes administratora oraz Twoja zgoda.
+
+Dane mogą być przekazywane podmiotom współpracującym z nami, takim jak firmy kurierskie, operatorzy płatności, podmioty świadczące usługi IT i analityczne.
+
+Przysługuje Ci prawo dostępu do danych, ich sprostowania, usunięcia, ograniczenia przetwarzania, przenoszenia, wniesienia sprzeciwu oraz wycofania zgody.
+
+Szczegółowe informacje znajdziesz w pełnej **Polityce Prywatności** dostępnej tutaj: **[LINK]**.
+
+---
+
+# Ważne uwagi praktyczne
+
+1. **Uzupełnij wszystkie pola w nawiasach** – bez tego dokument nie będzie gotowy do publikacji.
+2. **Dopasuj dokument do faktycznych procesów** – jeśli nie wysyłasz newslettera, nie używasz cookies analitycznych albo nie posiadasz IOD, należy to odpowiednio skorygować.
+3. **Sprawdź operatorów płatności i kurierów** – warto wymienić ich wprost, jeśli są znani.
+4. **Zgodność z Polityką Cookies** – polityka prywatności powinna się spinać z polityką cookies i banerem RODO.
+5. **Jeśli sklep prowadzi profilowanie lub remarketing** – warto rozważyć bardziej szczegółowe opisanie tych mechanizmów.
+6. **Jeśli przetwarzasz dane dzieci** – należy dodać dodatkowe postanowienia dotyczące weryfikacji wieku i zgody rodzica/opiekuna.
+7. **Jeśli wysyłasz dane poza EOG** – warto wskazać konkretne mechanizmy prawne, np. SCC.
+
+---
+
+Jeśli chcesz, mogę przygotować dla Ciebie **dopasowaną wersję tej polityki prywatności** pod konkretny sklep, np. z:
+- newsletterem,
+- programem lojalnościowym,
+- płatnościami online,
+- kurierami,
+- cookies analitycznymi,
+- sprzedażą B2B,
+- sprzedażą B2C,
+- lub z konkretną nazwą firmy i danymi kontaktowymi.

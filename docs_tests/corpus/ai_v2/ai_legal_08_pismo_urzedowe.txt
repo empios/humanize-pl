@@ -1,0 +1,83 @@
+Poniżej przedstawiam wzór wniosku o wydanie zaświadczenia o niezaleganiu w podatkach. Dokument można dostosować do podmiotu składającego wniosek, uzupełniając dane oznaczone nawiasami.
+
+---
+
+**[Miejscowość], [data]**
+
+**Dane wnioskodawcy:**  
+**Nazwa / imię i nazwisko:** [pełna nazwa podmiotu lub imię i nazwisko]  
+**Forma prawna:** [spółka z ograniczoną odpowiedzialnością / spółka akcyjna / jednoosobowa działalność gospodarcza / osoba fizyczna / inna]  
+**NIP:** [numer NIP]  
+**REGON:** [numer REGON]  
+**KRS:** [numer KRS, jeśli dotyczy]  
+**Adres siedziby / zamieszkania / prowadzenia działalności:** [ulica, numer, kod pocztowy, miejscowość]  
+**Reprezentowany przez:** [imię i nazwisko osoby uprawnionej do reprezentacji, funkcja, jeśli dotyczy]
+
+**Naczelnik Urzędu Skarbowego w [Miejscowość]**  
+[ulica, kod pocztowy, miejscowość]
+
+# Wniosek  
+## o wydanie zaświadczenia o niezaleganiu w podatkach  
+### na podstawie art. 306a ustawy z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa
+
+1. Na podstawie art. 306a ustawy z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa (Dz.U. z 2023 r. poz. 2333, z późn. zm.), wnoszę o wydanie zaświadczenia o niezaleganiu w podatkach, obejmującego podmiotu:
+
+   **[pełna nazwa wnioskodawcy lub imię i nazwisko]**,  
+   NIP: [numer NIP],  
+   REGON: [numer REGON],  
+   KRS: [numer KRS, jeśli dotyczy],  
+   z siedzibą / zamieszkującego: [adres].
+
+2. Wnioskuję o wydanie zaświadczenia za okres od **[data początkowa]** do **[data końcowa]**, a w szczególności na dzień **[data wskazana we wniosku]**, nie wcześniej jednak niż 7 dni przed dniem wydania zaświadczenia.
+
+3. Wnioskuję o uwzględnienie w zaświadczeniu następujących tytułów prawnych:
+
+   3.1. **Podatki:**  
+   - podatek od towarów i usług,  
+   - podatek dochodowy od osób prawnych / podatek dochodowy od osób fizycznych,  
+   - podatek akcyzowy,  
+   - podatek od nieruchomości,  
+   - podatek od środków transportowych,  
+   - podatek od czynności cywilnoprawnych,  
+   - podatek od spadków i darowizn,  
+   - podatek od gruntu,  
+   - podatek od pojazdów mechanicznych,  
+   - podatek od wydobycia kopalin,  
+   - inne: [nazwa podatku, jeśli dotyczy].
+
+   3.2. **Opłaty publicznoprawne:**  
+   - opłaty za gospodarowanie odpadami komunalnymi,  
+   - opłaty za zbieranie odpadów,  
+   - opłaty wodne,  
+   - opłaty za ścieki,  
+   - opłaty za korzystanie ze środowiska,  
+   - opłaty za ochronę gruntów rolnych i leśnych,  
+   - opłaty za ochronę konserwatorską,  
+   - opłaty za ochronę zabytków,  
+   - opłaty za ochronę środowiska,  
+   - inne: [nazwa opłaty, jeśli dotyczy].
+
+4. Wniosek jest składany w związku z [np. postępowaniem o udzielenie zamówienia publicznego / zawarciem umowy / obowiązkami wynikającymi z kontraktu / innymi okolicznościami wymagającymi przedłożenia zaświadczenia o niezaleganiu w podatkach].
+
+5. Oświadczam, że dane zawarte we wniosku są prawdziwe i kompletne.
+
+6. W przypadku braku zaległości w podatkach i opłatach publicznoprawnych wchodzących w zakres przedmiotowy wniosku, wnioskuję o wydanie zaświadczenia potwierdzającego fakt niezalegania w podatkach i opłatach publicznoprawnych.
+
+7. Załączniki:  
+   7.1. [wystawione w [miejscowość] w dniu [data] pełnomocnictwo, jeśli wniosek składa pełnomocnik],  
+   7.2. [inna dokumentacja, jeśli dotyczy].
+
+---
+
+**[Miejscowość], [data]**
+
+....................................................  
+[imię i nazwisko]  
+[stanowisko / funkcja, jeśli dotyczy]  
+[symbol pieczęci firmowej / podpis własnoręczny]
+
+---
+
+### Uwaga praktyczna
+
+Jeśli wniosek dotyczy wyłącznie podatków, bez opłat publicznoprawnych, można w punkcie 1 i 3 pozostawić jedynie część dotyczącą podatków. Jeżeli zaświadczenie ma mieć zastosowanie w postępowaniu przetargowym lub konkursowym, warto w punkcie 4 wskazać konkretny numer postępowania lub nazwę inwestycji.

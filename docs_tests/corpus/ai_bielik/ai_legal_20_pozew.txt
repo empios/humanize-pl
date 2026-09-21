@@ -1,0 +1,46 @@
+Oto przykładowy pozew o zapłatę czynszu najmu za trzy miesiące:
+
+[Miejscowość], [data]
+
+Sąd Rejonowy w [nazwa miejscowości]
+Wydział Cywilny
+[adres sądu]
+
+Powód: [imię i nazwisko lub nazwa firmy]
+[adres powoda]
+PESEL/NIP: [numer]
+
+Pozwany: [imię i nazwisko lub nazwa firmy]
+[adres pozwanego]
+
+Wartość przedmiotu sporu: [kwota] zł
+
+POZEW O ZAPŁATĘ
+
+Wnoszę o:
+
+1. Zasądzenie od pozwanego [imię i nazwisko] na rzecz powoda [imię i nazwisko] kwoty [kwota] złotych tytułem zaległego czynszu najmu za okres trzech miesięcy.
+
+2. Zasądzenie od pozwanego na rzecz powoda kosztów postępowania, w tym kosztów zastępstwa procesowego według norm przepisanych.
+
+3. Nadanie wyrokowi rygoru natychmiastowej wykonalności.
+
+UZASADNIENIE
+
+Powód [imię i nazwisko] jest właścicielem nieruchomości położonej w [miejscowość], przy ul. [adres], którą wynajął pozwanemu [imię i nazwisko] na podstawie umowy najmu z dnia [data] nr [numer umowy].
+
+Zgodnie z postanowieniami umowy najmu, pozwany zobowiązany jest do uiszczania czynszu w wysokości [kwota] zł miesięcznie, płatnego z góry do [dnia] każdego miesiąca.
+
+Pomimo upływu terminu płatności, pozwany nie uiścił czynszu za ostatnie trzy miesiące, tj. za [miesiące], na łączną kwotę [kwota] zł.
+
+Powód wezwał pozwanego do zapłaty zaległego czynszu pismem z dnia [data], jednak wezwanie to pozostało bez odpowiedzi.
+
+W związku z powyższym, powództwo o zapłatę kwoty [kwota] zł tytułem zaległego czynszu najmu za okres trzech miesięcy jest w pełni uzasadnione.
+
+[podpis powoda]
+
+Załączniki:
+1. Umowa najmu z dnia [data] nr [numer]
+2. Wezwanie do zapłaty z dnia [data]
+3. Dowód nadania wezwania do zapłaty (potwierdzenie odbioru lub śledzenie przesyłki)
+4. Odpis pozwu i załączników

@@ -1,0 +1,68 @@
+Polityka Prywatności
+
+1. Wprowadzenie
+Niniejsza Polityka Prywatności określa zasady przetwarzania danych osobowych klientów sklepu internetowego [nazwa sklepu], dostępnego pod adresem [adres URL sklepu]. Administratorem danych jest [nazwa firmy], z siedzibą w [adres siedziby], NIP: [numer NIP], e-mail: [adres e-mail].
+
+2. Zakres przetwarzanych danych
+Przetwarzamy następujące kategorie danych osobowych:
+- Dane identyfikacyjne: imię, nazwisko, adres e-mail, numer telefonu
+- Dane adresowe: adres dostawy, adres rozliczeniowy
+- Dane dotyczące zamówień: numer zamówienia, data zamówienia, przedmiot zamówienia, wartość zamówienia
+- Dane dotyczące płatności: numer rachunku bankowego (w przypadku zwrotów), numer karty płatniczej (przetwarzany przez operatora płatności)
+- Dane dotyczące preferencji: historia zakupów, preferencje językowe, ustawienia konta
+
+3. Cele przetwarzania danych
+Dane osobowe są przetwarzane w następujących celach:
+- Realizacja zamówień i dostawa produktów
+- Obsługa reklamacji i zwrotów
+- Prowadzenie konta klienta
+- Wysyłka newslettera (za zgodą)
+- Analiza i ulepszanie oferty sklepu
+- Zapewnienie bezpieczeństwa transakcji
+- Spełnienie obowiązków prawnych (np. wystawianie faktur)
+
+4. Podstawa prawna przetwarzania
+Dane są przetwarzane na podstawie:
+- Art. 6 ust. 1 lit. b RODO (realizacja umowy)
+- Art. 6 ust. 1 lit. c RODO (obowiązek prawny)
+- Art. 6 ust. 1 lit. f RODO (prawnie uzasadniony interes)
+- Art. 6 ust. 1 lit. a RODO (zgoda) - w przypadku marketingu
+
+5. Okres przechowywania danych
+Dane są przechowywane przez okres:
+- Niezbędny do realizacji celu, dla którego zostały zebrane
+- Wymagany przepisami prawa (np. 5 lat dla dokumentacji księgowej)
+- Do momentu wycofania zgody (w przypadku przetwarzania na podstawie zgody)
+
+6. Odbiorcy danych
+Dane mogą być przekazywane następującym podmiotom:
+- Firmy kurierskie realizujące dostawy
+- Operatorzy płatności
+- Kancelarie prawne i firmy windykacyjne
+- Podmioty świadczące usługi IT i hostingowe
+- Audytorzy i biegli rewidenci
+
+7. Prawa osób, których dane dotyczą
+Klienci mają prawo do:
+- Dostępu do swoich danych
+- Sprostowania nieprawidłowych danych
+- Usunięcia danych (prawo do bycia zapomnianym)
+- Ograniczenia przetwarzania
+- Przenoszenia danych
+- Wniesienia sprzeciwu wobec przetwarzania
+- Cofnięcia zgody w dowolnym momencie (bez wpływu na legalność przetwarzania przed cofnięciem)
+
+8. Bezpieczeństwo danych
+Stosujemy odpowiednie środki techniczne i organizacyjne, aby zapewnić bezpieczeństwo danych, w tym:
+- Szyfrowanie danych
+- Regularne aktualizacje systemów
+- Ograniczony dostęp do danych
+- Procedury reagowania na incydenty
+
+9. Kontakt w sprawie danych
+Wszelkie pytania i wnioski dotyczące przetwarzania danych można kierować na adres e-mail: [adres e-mail] lub listownie na adres siedziby firmy.
+
+10. Zmiany w Polityce Prywatności
+Zastrzegamy sobie prawo do aktualizacji Polityki Prywatności. Wszelkie zmiany będą publikowane na stronie sklepu. Data ostatniej aktualizacji: [data].
+
+Data wejścia w życie: [data]

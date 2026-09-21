@@ -1,0 +1,40 @@
+Opinia prawna dotycząca odpowiedzialności członka zarządu za zobowiązania spółki
+
+Wstęp
+
+Odpowiedzialność członka zarządu za zobowiązania spółki jest jednym z kluczowych zagadnień w prawie handlowym. Zgodnie z polskim prawem, członkowie zarządu spółki kapitałowej (spółki z ograniczoną odpowiedzialnością oraz spółki akcyjnej) ponoszą odpowiedzialność za zobowiązania spółki w określonych sytuacjach. Poniżej przedstawiam analizę prawną tego zagadnienia.
+
+1. Podstawy prawne odpowiedzialności członka zarządu
+
+Podstawą prawną odpowiedzialności członka zarządu za zobowiązania spółki są przepisy Kodeksu spółek handlowych (KSH). Zgodnie z art. 299 § 1 KSH, członkowie zarządu odpowiadają solidarnie za zobowiązania spółki z ograniczoną odpowiedzialnością, jeżeli egzekucja z majątku spółki okaże się bezskuteczna. Analogiczne przepisy dotyczą spółki akcyjnej na podstawie art. 396 § 1 KSH.
+
+2. Zakres odpowiedzialności
+
+Odpowiedzialność członka zarządu obejmuje wszystkie zobowiązania spółki, zarówno te wynikające z umowy spółki, jak i te powstałe w trakcie jej działalności. Odpowiedzialność ta jest solidarna, co oznacza, że wierzyciel może żądać całości lub części świadczenia od wszystkich członków zarządu łącznie, od kilku z nich lub od jednego z nich.
+
+3. Wyłączenie odpowiedzialności
+
+Członek zarządu może uwolnić się od odpowiedzialności, jeżeli wykaże, że:
+
+- we właściwym czasie zgłoszono wniosek o ogłoszenie upadłości lub w tym czasie zostało otwarte postępowanie restrukturyzacyjne albo
+- niezgłoszenie wniosku o ogłoszenie upadłości nastąpiło bez jego winy.
+
+4. Odpowiedzialność za zobowiązania powstałe przed objęciem funkcji
+
+Członek zarządu może być również odpowiedzialny za zobowiązania spółki, które powstały przed objęciem przez niego funkcji, jeżeli w chwili objęcia funkcji wiedział o tych zobowiązaniach, a spółka nie miała zdolności do ich wykonania.
+
+5. Przedawnienie roszczeń
+
+Roszczenia wobec członków zarządu przedawniają się z upływem trzech lat od dnia, w którym zobowiązanie stało się wymagalne. Bieg przedawnienia rozpoczyna się oddzielnie wobec każdego z członków zarządu.
+
+6. Odpowiedzialność w przypadku spółki akcyjnej
+
+W przypadku spółki akcyjnej, członkowie zarządu odpowiadają za zobowiązania spółki na podstawie art. 396 § 1 KSH, jeżeli egzekucja z majątku spółki okaże się bezskuteczna. Odpowiedzialność ta jest również solidarna.
+
+7. Odpowiedzialność w przypadku spółki z ograniczoną odpowiedzialnością
+
+W spółce z ograniczoną odpowiedzialnością, członkowie zarządu odpowiadają za zobowiązania spółki na podstawie art. 299 § 1 KSH, jeżeli egzekucja z majątku spółki okaże się bezskuteczna. Odpowiedzialność ta jest również solidarna.
+
+Podsumowanie
+
+Członkowie zarządu spółki kapitałowej ponoszą odpowiedzialność za zobowiązania spółki w określonych sytuacjach, głównie gdy egzekucja z majątku spółki okaże się bezskuteczna. Odpowiedzialność ta jest solidarna i może obejmować zobowiązania powstałe przed objęciem funkcji, jeżeli członek zarządu wiedział o tych zobowiązaniach. Istnieją jednak możliwości wyłączenia odpowiedzialności, np. poprzez zgłoszenie wniosku o ogłoszenie upadłości we właściwym czasie. Roszczenia wobec członków zarządu przedawniają się po trzech latach.

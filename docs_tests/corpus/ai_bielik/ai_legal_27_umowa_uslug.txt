@@ -1,0 +1,70 @@
+Oto przykładowa umowa o świadczenie usług marketingowych dla sklepu internetowego:
+
+UMOWA O ŚWIADCZENIE USŁUG MARKETINGOWYCH
+
+zawarta w dniu [DATA] w [MIEJSCE] pomiędzy:
+
+[NAZWA FIRMY], z siedzibą w [ADRES], NIP: [NUMER], reprezentowaną przez [IMIĘ I NAZWISKO], zwaną dalej "Zleceniodawcą",
+
+a
+
+[NAZWA FIRMY], z siedzibą w [ADRES], NIP: [NUMER], reprezentowaną przez [IMIĘ I NAZWISKO], zwaną dalej "Zleceniobiorcą",
+
+zwanymi łącznie "Stronami".
+
+§ 1
+Przedmiot umowy
+
+1. Zleceniodawca zleca, a Zleceniobiorca zobowiązuje się do świadczenia usług marketingowych dla sklepu internetowego [NAZWA SKLEPU] prowadzonego przez Zleceniodawcę.
+
+2. Usługi marketingowe obejmują w szczególności:
+   a) Opracowanie i wdrożenie strategii marketingowej;
+   b) Prowadzenie kampanii reklamowych w mediach społecznościowych (Facebook, Instagram, LinkedIn);
+   c) Optymalizację SEO i SEM sklepu internetowego;
+   d) Tworzenie i publikację treści marketingowych (artykuły, posty, e-booki);
+   e) Prowadzenie kampanii e-mail marketingowych;
+   f) Analizę rynku i konkurencji;
+   g) Raportowanie wyników działań marketingowych.
+
+§ 2
+Okres obowiązywania umowy
+
+Umowa zostaje zawarta na czas [OKREŚLONY/NIEOKREŚLONY].
+
+§ 3
+Wynagrodzenie
+
+1. Za wykonanie przedmiotu umowy Zleceniodawca zapłaci Zleceniobiorcy miesięczne wynagrodzenie w wysokości [KWOTA] zł netto.
+
+2. Wynagrodzenie płatne będzie z góry, na podstawie faktury wystawionej przez Zleceniobiorcę, w terminie 14 dni od daty jej otrzymania.
+
+3. W przypadku dodatkowych zleceń wykraczających poza zakres umowy, Zleceniobiorca przedstawi Zleceniodawcy wycenę, która będzie podstawą do wystawienia odrębnej faktury.
+
+§ 4
+Zachowanie poufności
+
+1. Obie Strony zobowiązują się do zachowania w tajemnicy wszelkich informacji uzyskanych w związku z realizacją niniejszej umowy.
+
+2. Zakaz konkurencji obowiązuje przez cały okres trwania umowy oraz przez okres 12 miesięcy po jej zakończeniu.
+
+§ 5
+Odstąpienie od umowy
+
+1. Każda ze Stron ma prawo odstąpić od umowy z zachowaniem 1-miesięcznego okresu wypowiedzenia.
+
+2. W przypadku rażącego naruszenia warunków umowy przez którąkolwiek ze Stron, druga Strona ma prawo rozwiązać umowę ze skutkiem natychmiastowym.
+
+§ 6
+Postanowienia końcowe
+
+1. Wszelkie zmiany niniejszej umowy wymagają formy pisemnej pod rygorem nieważności.
+
+2. W sprawach nieuregulowanych niniejszą umową mają zastosowanie przepisy Kodeksu cywilnego.
+
+3. Umowę sporządzono w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze Stron.
+
+[PODPIS ZLECENIODAWCY]                      [PODPIS ZLECENIOBIORCY]
+
+ZLECENIODAWCA                                ZLECENIOBIORCA
+
+Powyższa umowa stanowi podstawowy szkielet, który można dostosować do konkretnych potrzeb i specyfiki obu stron. Warto rozważyć dodanie dodatkowych klauzul, takich jak kwestie związane z prawami autorskimi, odpowiedzialnością czy szczegółowym zakresem obowiązków.

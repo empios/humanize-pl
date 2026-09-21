@@ -1,0 +1,118 @@
+Poniżej projekt pozwu cywilnego o zapłatę wynagrodzenia z umowy o dzieło. Dane w nawiasach kwadratowych należy uzupełnić zgodnie ze stanem faktycznym.
+
+---
+
+**[Miejscowość], dnia [data]**
+
+**Sąd Rejonowy w [miejscowość]**  
+**Wydział Cywilny**
+
+**Powód:**  
+[imię i nazwisko / nazwa firmy], zam. / z siedzibą w [adres], NIP: [NIP],  
+reprezentowany przez: [nazwa i nazwisko adwokata/radcy prawnego, nazwa kancelarii, adres do korespondencji – w razie zastępstwa procesowego; w razie braku pełnomocnika proszę o pominięcie niniejszego wiersza]
+
+**Pozwany:**  
+[nazwa / imię i nazwisko], z siedzibą / zam. w [adres], NIP: [NIP], KRS: [numer, jeśli dotyczy],  
+reprezentowany przez: [osoby uprawnione do reprezentacji, jeśli dotyczy]
+
+**Sygn. akt:** [brak]
+
+## POZEW  
+## o zapłatę wynagrodzenia z umowy o dzieło
+
+Powód [nazwa / imię i nazwisko], [w razie zastępstwa: reprezentowany przez …], wniósł pozew przeciwko Pozwanemu [nazwa / imię i nazwisko] i wnoszę o:
+
+1. zasądzenie od Pozwanego na rzecz Powoda kwoty **[kwota] zł** (słownie: [słownie kwota]) tytułem wynagrodzenia z umowy o dzieło nr [numer] z dnia [data],
+
+2. zasądzenie od Pozwanego na rzecz Powoda odsetek ustawowych za opóźnienie od kwoty **[kwota] zł** od dnia **[data]** do dnia zapłaty,
+
+3. zasądzenie od Pozwanego na rzecz Powoda kosztów procesu, w tym kosztów zastępstwa procesowego, według norm przepisanych,
+
+4. nadanie wyrokowi rygoru natychmiastowej wykonalności.
+
+**Wartość przedmiotu sporu:** [kwota] zł.  
+**Opłatę sądową od pozwu** w kwocie [kwota] zł uiściłem w dniu [data].
+
+---
+
+## UZASADNIENIE
+
+W dniu [data] Powód, jako wykonawca, oraz Pozwany, jako zamawiający, zawarli umowę o dzieło nr [numer], dalej: „Umowa”. Przedmiotem Umowy było wykonanie [opis dzieła, np. projektu graficznego, naprawy, remontu, opracowania, instalacji, projektu technicznego].
+
+Zgodnie z § [numer] Umowy wynagrodzenie wykonawcy ustalone zostało na kwotę **[kwota] zł brutto**. Zgodnie z § [numer] Umowy dzieło miało zostać wykonane do dnia [data], a wynagrodzenie podlegało zapłacie w terminie [14 dni od dnia odbioru dzieła / do dnia [data] / innym terminem wynikającym z Umowy].
+
+W dniu [data] Powód zakończył wykonanie przedmiotu Umowy i przekazał dzieło Pozwanemu. Dzieło zostało odebrane przez Pozwanego [bez zastrzeżeń / co potwierdza protokół odbioru / co potwierdza korespondencja]. W dniu [data] Powód wystawił fakturę/rachunek nr [numer] na kwotę **[kwota] zł brutto**. Termin płatności upłynął w dniu [data].
+
+Pozwany nie uiścił należności pieniężnej. W dniu [data] Powód wezwał Pozwanego do zapłaty [wysokość należności], jednakże do dnia wniesienia pozwu roszczenie pozostaje nieuregulowane.
+
+W ocenie Powoda roszczenie jest w pełni uzasadnione. Zgodnie z art. 627 § 1 Kodeksu cywilnego, przez umowę o dzieło wykonawca zobowiązuje się do wykonania oznaczonego dzieła, a zamawiający do zapłaty wynagrodzenia. W niniejszej sprawie przedmiotem Umowy było osiągnięcie konkretnego rezultatu, tj. [opis dzieła], a nie jedynie wykonywanie określonych czynności.
+
+Zgodnie z art. 631 Kodeksu cywilnego wynagrodzenie powinno być ustalone przez strony. Zgodnie z art. 639 Kodeksu cywilnego wynagrodzenie należy się wykonawcy wraz z oddaniem dzieła, jeżeli umowy nie stanowią inaczej. W przedmiotowej sprawie dzieło zostało wykonane i oddane Pozwanemu, a termin płatności wynagrodzenia upłynął. Wobec powyższego Pozwany jest zobowiązany do zapłaty należności pieniężnej.
+
+Ponieważ Pozwany dopuścił się opóźnienia w spełnieniu świadczenia pieniężnego, na podstawie art. 481, art. 483, art. 486–486⁴ Kodeksu cywilnego, przysługuje mu żądanie odsetek ustawowych za opóźnienie od dnia [data] do dnia zapłaty.
+
+Zgodnie z art. 98 Kodeksu postępowania cywilnego strona przegrywająca sprawę powinna zwolnić przeciwnika z poniesionych kosztów. W związku z powyższym wnoszę o zasądzenie od Pozwanego na rzecz Powoda kosztów procesu, w tym kosztów zastępstwa procesowego, według norm przepisanych.
+
+Wnoszę również o nadanie wyrokowi rygoru natychmiastowej wykonalności na podstawie art. 355 Kodeksu postępowania cywilnego, ponieważ roszczenie jest oparte na piśmie.
+
+---
+
+## DOWODY
+
+1. **Umowa o dzieło nr [numer] z dnia [data]** – na okoliczność zawarcia Umowy, ustalenia przedmiotu dzieła, wynagrodzenia oraz terminów wykonania i zapłaty;
+
+2. **Protokół odbioru / korespondencja potwierdzająca odbiór dzieła** – na okoliczność wykonania dzieła i jego przekazania Pozwanemu;
+
+3. **Faktura/rachunek nr [numer] z dnia [data]** – na okoliczność wysokości roszczenia oraz terminu płatności;
+
+4. **Wezwanie do zapłaty z dnia [data]** – na okoliczność wezwania Pozwanego do zapłaty oraz opóźnienia w spełnieniu świadczenia;
+
+5. **Korespondencja między stronami** – na okoliczność przebiegu realizacji Umowy, przekazania dzieła oraz braku zapłaty;
+
+6. **Zeznania świadka [imię i nazwisko]** – na okoliczność okoliczności wykonania dzieła i jego odbioru, jeżeli taka potrzeba zachodzi;
+
+7. **Zeznanie powoda** – na okoliczność okoliczności realizacji Umowy, wykonania dzieła, wystawienia faktury/rachunku oraz braku zapłaty.
+
+---
+
+## ZAŁĄCZNIKI
+
+1. Odpis pozwu i załączników dla strony pozwanej;
+
+2. Odpis umowy o dzieło nr [numer] z dnia [data];
+
+3. Odpis protokołu odbioru / korespondencji potwierdzającej odbiór dzieła;
+
+4. Odpis faktury/rachunku nr [numer] z dnia [data];
+
+5. Odpis wezwania do zapłaty z dnia [data];
+
+6. Odpis korespondencji między stronami;
+
+7. Odpis pełnomocnictwa – jeżeli dotyczy;
+
+8. Dowód uiszczenia opłaty sądowej od pozwu.
+
+---
+
+**Powód / pełnomocnik**
+
+[podpis]
+
+---
+
+### Krótkie uwagi praktyczne:
+
+1. **Sąd właściwy:**  
+   - do wartości przedmiotu sporu **75 000 zł** właściwy jest **Sąd Rejonowy**,  
+   - powyżej **75 000 zł** właściwy jest **Sąd Okręgowy**.  
+   W sprawach z umowy właściwość miejscową zazwyczaj wyznacza sąd miejsca siedziby pozwanego lub miejsca wykonania umowy, zgodnie z przepisami Kodeksu postępowania cywilnego.
+
+2. **Opłata sądowa:**  
+   W sprawach o roszczenia pieniężne opłata od pozwu wynosi **5% wartości przedmiotu sporu**, z zastrzeżeniem przepisów o opłatach stałych i zwolnieniach.
+
+3. **Odsetki:**  
+   Jeśli obie strony są przedsiębiorcami i transakcja ma charakter handlowy, można rozważyć żądanie **odsetek ustawowych za opóźnienie w transakcjach handlowych** na podstawie odrębnej ustawy. W powyższym wzorze zamieszczono ogólne odsetki ustawowe za opóźnienie.
+
+4. **Pełnomocnictwo:**  
+   Jeśli pozew wnosisz samodzielnie, usuń wiersz o reprezentacji przez pełnomocnika oraz załącznik dotyczący pełnomocnictwa.

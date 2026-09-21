@@ -1,0 +1,50 @@
+Oto przykładowy pozew o zapłatę wynagrodzenia z umowy o dzieło:
+
+[Miejscowość], [data]
+
+Sąd Rejonowy w [nazwa miejscowości]
+Wydział Cywilny
+[adres sądu]
+
+Powód:
+[imię i nazwisko/nazwa firmy powoda]
+[adres powoda]
+PESEL/NIP: [numer]
+
+Pozwany:
+[imię i nazwisko/nazwa firmy pozwanego]
+[adres pozwanego]
+PESEL/NIP: [numer]
+
+Wartość przedmiotu sporu: [kwota] zł
+
+POZEW O ZAPŁATĘ
+
+Wnoszę o:
+1. Zasądzenie od pozwanego na rzecz powoda kwoty [kwota] złotych tytułem wynagrodzenia za wykonanie umowy o dzieło.
+2. Zasądzenie od pozwanego na rzecz powoda odsetek ustawowych za opóźnienie liczonych od dnia [data] do dnia zapłaty.
+3. Zasądzenie od pozwanego na rzecz powoda kosztów procesu według norm przepisanych.
+
+UZASADNIENIE
+
+W dniu [data] strony zawarły umowę o dzieło, na mocy której powód zobowiązał się do wykonania [opis dzieła] za wynagrodzeniem w wysokości [kwota] zł.
+
+Powód wykonał dzieło zgodnie z umową i przekazał je pozwanemu w dniu [data]. Pomimo upływu terminu płatności określonego w umowie, pozwany nie dokonał zapłaty należnego wynagrodzenia.
+
+Pomimo wezwania do zapłaty pismem z dnia [data], pozwany nie uregulował należności.
+
+W związku z powyższym powództwo o zapłatę wynagrodzenia jest w pełni uzasadnione.
+
+[podpis powoda]
+
+Załączniki:
+1. Umowa o dzieło z dnia [data]
+2. Dowód wykonania dzieła
+3. Wezwanie do zapłaty z dnia [data]
+4. Kopia dowodu nadania wezwania do zapłaty (jeśli dotyczy)
+
+Uwagi:
+1. Należy dostosować treść pozwu do konkretnych okoliczności sprawy.
+2. Wartość przedmiotu sporu powinna być zgodna z kwotą dochodzonego roszczenia.
+3. Załączniki powinny być zgodne z rzeczywistymi dokumentami posiadanymi przez powoda.
+4. W przypadku umowy o dzieło między osobami fizycznymi, warto rozważyć skorzystanie z postępowania uproszczonego.

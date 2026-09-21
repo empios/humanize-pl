@@ -1,0 +1,71 @@
+Oto przykładowy regulamin aplikacji mobilnej do rezerwacji usług:
+
+Regulamin aplikacji mobilnej [Nazwa Aplikacji]
+
+1. Definicje
+
+- Aplikacja - aplikacja mobilna [Nazwa Aplikacji] dostępna do pobrania na urządzenia mobilne.
+- Użytkownik - osoba fizyczna, osoba prawna lub jednostka organizacyjna nieposiadająca osobowości prawnej, która korzysta z Aplikacji.
+- Usługodawca - podmiot świadczący usługi, których rezerwacja jest możliwa za pośrednictwem Aplikacji.
+- Usługa - usługa oferowana przez Usługodawcę, której rezerwacja jest możliwa za pośrednictwem Aplikacji.
+- Rezerwacja - zarejestrowana w systemie Aplikacji rezerwacja wybranej Usługi.
+
+2. Postanowienia ogólne
+
+1. Niniejszy regulamin określa zasady korzystania z Aplikacji mobilnej [Nazwa Aplikacji].
+2. Aplikacja jest dostępna do pobrania na urządzenia mobilne z systemem Android lub iOS.
+3. Korzystanie z Aplikacji jest równoznaczne z akceptacją niniejszego regulaminu.
+
+3. Warunki techniczne
+
+1. Do korzystania z Aplikacji wymagane jest urządzenie mobilne z systemem Android lub iOS w wersji minimum 6.0 oraz aktywne połączenie z internetem.
+2. Aplikacja może wymagać dostępu do niektórych funkcji urządzenia, takich jak kamera, mikrofon czy lokalizacja GPS.
+
+4. Rejestracja i logowanie
+
+1. Korzystanie z pełnej funkcjonalności Aplikacji wymaga rejestracji konta użytkownika.
+2. Rejestracja konta wymaga podania danych osobowych, takich jak imię, nazwisko, adres e-mail oraz numer telefonu.
+3. Użytkownik zobowiązuje się do podania prawdziwych i aktualnych danych.
+4. Po rejestracji użytkownik otrzymuje dostęp do zabezpieczonego konta, do którego loguje się za pomocą unikalnej nazwy użytkownika lub adresu e-mail i hasła.
+
+5. Rezerwacja usług
+
+1. Rezerwacja usług odbywa się poprzez wybór dostępnej usługi w Aplikacji i potwierdzenie rezerwacji.
+2. Przed dokonaniem rezerwacji użytkownik ma obowiązek zapoznać się z opisem usługi oraz jej ceną.
+3. Rezerwacja jest potwierdzana automatycznie i wysyłana na adres e-mail użytkownika.
+4. Użytkownik może dokonać zmian w rezerwacji lub ją anulować zgodnie z warunkami określonymi przez Usługodawcę.
+
+6. Płatności
+
+1. Płatności za usługi mogą być dokonywane za pośrednictwem Aplikacji, zgodnie z dostępnymi metodami płatności.
+2. Użytkownik zobowiązuje się do dokonania płatności w terminie i na warunkach określonych przez Usługodawcę.
+3. W przypadku płatności elektronicznych, Aplikacja może pobierać prowizję zgodnie z aktualnym cennikiem.
+
+7. Ochrona danych osobowych
+
+1. Administratorem danych osobowych użytkowników jest [Nazwa Firmy] z siedzibą w [Adres].
+2. Dane osobowe są przetwarzane zgodnie z RODO i ustawą o ochronie danych osobowych.
+3. Użytkownik ma prawo dostępu do swoich danych, ich sprostowania, usunięcia oraz ograniczenia przetwarzania.
+4. Szczegółowe informacje o przetwarzaniu danych osobowych zawiera Polityka Prywatności dostępna w Aplikacji.
+
+8. Odpowiedzialność
+
+1. Aplikacja dokłada wszelkich starań, aby zapewnić prawidłowe działanie i dostępność usług.
+2. Aplikacja nie ponosi odpowiedzialności za problemy techniczne leżące po stronie użytkownika lub Usługodawcy.
+3. Użytkownik ponosi odpowiedzialność za treść i prawdziwość podanych przez siebie danych.
+
+9. Zmiany regulaminu
+
+1. Aplikacja zastrzega sobie prawo do wprowadzania zmian w regulaminie.
+2. Zmiany regulaminu wchodzą w życie z dniem ich opublikowania w Aplikacji.
+3. Użytkownik jest zobowiązany do zapoznania się ze zmianami przed korzystaniem z Aplikacji.
+
+10. Postanowienia końcowe
+
+1. W sprawach nieuregulowanych niniejszym regulaminem mają zastosowanie przepisy Kodeksu Cywilnego.
+2. Wszelkie spory wynikłe z korzystania z Aplikacji będą rozstrzygane przez sąd właściwy dla siedziby Aplikacji.
+3. Regulamin wchodzi w życie z dniem [Data].
+
+[Podpis lub pieczęć Aplikacji]
+
+Koniec regulaminu

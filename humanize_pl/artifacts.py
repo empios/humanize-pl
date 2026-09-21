@@ -14,6 +14,11 @@ judgments:
     chatbot phrasing    26 of 32          1
     [data]-style field  21 of 32          2
 
+Those figures are qwen-local's. A second corpus from the same prompt grid,
+written by Bielik 7B, has no markdown at all (0 of 32 on every marker),
+asides in 11 of 32 and fields in 23 of 32: markdown is one model's habit,
+fields are common to both.
+
 None of this is style, and none of it is scored: the calibrated signal
 measures how a text is written, and letting "**" into it would make the
 score measure which window the text was copied from. It is a layer of its

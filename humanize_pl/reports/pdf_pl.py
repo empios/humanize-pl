@@ -1950,9 +1950,14 @@ class _Report:
             labels = ", ".join(self._family_entry(name)["label"] for name in silent)
             generators = ", ".join(activity.generators) or "jeden model"
             documents = activity.documents
+            who = (
+                "żaden z modeli, na których to mierzyliśmy, nie użył"
+                if len(activity.generators) > 1
+                else "model, na którym to mierzyliśmy, nie użył"
+            )
             story.append(
                 self.note(
-                    f"W {where} model, na którym to mierzyliśmy, nie użył ani razu "
+                    f"W {where} {who} ani razu "
                     f"{len(silent)} z {len(activity.hits)} rodzajów zwrotów z tej listy: "
                     f"{escape(labels)}. Ich brak niczego więc nie dowodzi, bo tak samo "
                     "wygląda tekst napisany przez model. Pomiar: "

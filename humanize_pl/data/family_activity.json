@@ -1,33 +1,37 @@
 {
-  "source": "docs_tests/corpus/ai_v2",
+  "source": [
+    "docs_tests/corpus/ai_v2",
+    "docs_tests/corpus/ai_bielik"
+  ],
   "generators": [
+    "bielik-minitron-7b-dflash",
     "qwen-local"
   ],
-  "measured_on": "2026-09-18",
+  "measured_on": "2026-09-21",
   "families": {
     "client_communication": {
-      "documents": 8,
-      "words": 9737,
+      "documents": 16,
+      "words": 13122,
       "hits": {
-        "abstract_frame": 1,
+        "abstract_frame": 4,
         "antithesis": 2,
         "balanced_pair": 0,
         "concessive_reversal": 0,
-        "discourse_frame": 1,
+        "discourse_frame": 2,
         "empty_emphasis": 1,
-        "nominalization": 68,
+        "nominalization": 98,
         "practical_implication": 1,
         "repeated_opening": 8,
-        "summary_frame": 1,
+        "summary_frame": 2,
         "transition_marker": 0,
-        "tricolon": 38,
+        "tricolon": 47,
         "typography_artifact": 3,
         "vague_reference": 2
       }
     },
     "contract": {
-      "documents": 12,
-      "words": 17135,
+      "documents": 24,
+      "words": 22707,
       "hits": {
         "abstract_frame": 0,
         "antithesis": 0,
@@ -35,19 +39,19 @@
         "concessive_reversal": 0,
         "discourse_frame": 0,
         "empty_emphasis": 0,
-        "nominalization": 63,
+        "nominalization": 104,
         "practical_implication": 0,
         "repeated_opening": 0,
         "summary_frame": 0,
         "transition_marker": 3,
-        "tricolon": 26,
+        "tricolon": 32,
         "typography_artifact": 0,
         "vague_reference": 0
       }
     },
     "filing_official": {
-      "documents": 12,
-      "words": 5675,
+      "documents": 24,
+      "words": 8279,
       "hits": {
         "abstract_frame": 0,
         "antithesis": 0,
@@ -55,12 +59,12 @@
         "concessive_reversal": 0,
         "discourse_frame": 0,
         "empty_emphasis": 0,
-        "nominalization": 37,
+        "nominalization": 51,
         "practical_implication": 0,
         "repeated_opening": 0,
         "summary_frame": 0,
         "transition_marker": 2,
-        "tricolon": 11,
+        "tricolon": 12,
         "typography_artifact": 6,
         "vague_reference": 0
       }

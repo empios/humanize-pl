@@ -524,6 +524,12 @@ było markdownem, a 9 pauzami. Po poprawce detektora, przy tych samych progach:
 
 (592 = część odłożona obecnego podziału na dysku korpusu 2396, 1804/592, na którym zbudowano profil SAOS; liczba 599 w starszym pomiarze progu 0.25 pochodzi z wcześniejszego podziału 1797/599.)
 
+Drugi model, na tekście bez markdownu (`tools/compare_generators.py`): qwen-local pisma 7/12, umowy 0/12;
+Bielik 7B pisma 6/12, umowy 3/12 (wyniki umów 0,037–0,134). Bielik pisze o połowę krócej (mediana 414
+słów), a poniżej ok. 600 słów wynik jest mniej stabilny. Kontrola długości nie rozstrzyga: dokumenty qwena
+przycięte do długości Bielika wypadają niżej (pisma 0/12, umowy 1/12), ale przycięcie zostawia sam
+początek dokumentu, w którym jest mało prozy.
+
 Wyniki umów AI spadły do 0,016–0,061, poniżej ludzkich (korpus uzupełniony
 do 32 dokumentów, po dogenerowaniu pięciu, które wcześniej padły na limicie czasu). Wykrywanie umów
 opierało się więc na markdownie, nie na stylu. Progi czekają na ponowny
@@ -566,6 +572,10 @@ Trzy zastrzeżenia, które trzeba czytać razem z tymi liczbami:
 
 ### Jedenaście z czternastu rodzin nie działa na dokumentach
 
+Potwierdzone na drugim modelu: w korpusie Bielika (24 umowy i pisma) milczą
+te same rodziny co u qwena, łącznie na 48 dokumentach dwóch modeli. To cecha
+gatunku, nie jednego generatora.
+
 Zmierzone na 32 dokumentach korpusu, z rotacją po rejestrach i temperaturach.
 Kolumny mówią, w ilu dokumentach dana rodzina w ogóle się pojawiła:
 
@@ -598,16 +608,22 @@ których zwrotów brak niczego nie dowodzi (`humanize_pl/data/family_activity.js
 ### Ślady narzędzia
 
 Tym, co naprawdę odróżnia surowy tekst z modelu od dokumentu kancelarii, jest
-kanał, nie styl. Zmierzone na 32 dokumentach modelu wobec 2396 orzeczeń:
+częściej kanał niż styl, ale który ślad, zależy od modelu. Zmierzone na dwóch
+korpusach po 32 dokumenty z tej samej siatki poleceń wobec 2396 orzeczeń:
 
-| ślad | dokumenty modelu | orzeczenia | co robi silnik |
-|------|------------------|------------|----------------|
-| pogrubienie `**…**` | 30/32 | 1 | usuwa znaczniki |
-| nagłówek `#` | 30/32 | 0 | usuwa znaczniki |
-| linia `---` | 29/32 | 0 | zamienia na pustą linię |
-| tabela markdown | 6/32 | 0 | zgłasza |
-| zwrot do użytkownika, zastrzeżenie „nie stanowi porady prawnej” | 26/32 | 1 | zgłasza, blokuje „gotowy” |
-| pole `[data]`, `[kwota]` | 21/32 | 2 | zgłasza, blokuje „gotowy” |
+| ślad | qwen-local | Bielik 7B | orzeczenia | co robi silnik |
+|------|-----------|-----------|------------|----------------|
+| pogrubienie `**…**` | 30/32 | 0/32 | 1 | usuwa znaczniki |
+| nagłówek `#` | 30/32 | 0/32 | 0 | usuwa znaczniki |
+| linia `---` | 29/32 | 0/32 | 0 | zamienia na pustą linię |
+| tabela markdown | 6/32 | 0/32 | 0 | zgłasza |
+| zwrot do użytkownika, zastrzeżenie „nie stanowi porady prawnej” | 26/32 | 11/32 | 1 | zgłasza, blokuje „gotowy” |
+| pole `[data]`, `[kwota]` | 21/32 | 23/32 | 2 | zgłasza, blokuje „gotowy” |
+
+Markdown to nawyk jednego modelu (albo jego szablonu czatu), nie wyjścia modeli
+w ogóle: Bielik nie napisał ani jednego znacznika. Wspólne obu modelom są pola
+do uzupełnienia, a zwroty do użytkownika w różnym stopniu. Bielik pisze też
+o połowę krócej (mediana 414 słów wobec 885).
 
 Te ślady nie wchodzą do wskaźnika stylu (`humanize_pl/artifacts.py`):
 wskaźnik mierzyłby wtedy, z jakiego okna skopiowano tekst. Myślnik na początku

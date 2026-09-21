@@ -13,7 +13,7 @@ by whether the model produces it.
 
 Usage:
     python tools/family_activity.py \
-        --ai docs_tests/corpus/ai_v2 \
+        --ai docs_tests/corpus/ai_v2 docs_tests/corpus/ai_bielik \
         --out humanize_pl/data/family_activity.json
 """
 
@@ -29,15 +29,24 @@ from humanize_pl.categories import catalogue
 from humanize_pl.detect import AI_FAMILIES, detect_document
 
 
-def measure(corpus: Path) -> dict:
-    manifest = json.loads((corpus / "manifest.json").read_text(encoding="utf-8"))
+def measure(corpora: list[Path]) -> dict:
+    """Pool several corpora - one per generator - into one measurement.
+
+    A family silent for one model says something about that model; silent
+    for every model measured, it says something about the genre.
+    """
+    rows = [
+        (corpus, row)
+        for corpus in corpora
+        for row in json.loads((corpus / "manifest.json").read_text(encoding="utf-8"))
+    ]
     categories = catalogue()
     documents: Counter[str] = Counter()
     words: Counter[str] = Counter()
     hits: dict[str, Counter[str]] = defaultdict(Counter)
     generators: set[str] = set()
 
-    for row in manifest:
+    for corpus, row in rows:
         path = corpus / row["file"]
         if not path.is_file():
             continue
@@ -55,7 +64,7 @@ def measure(corpus: Path) -> dict:
         generators.add(str(row.get("generated_by", "unknown")))
 
     return {
-        "source": corpus.as_posix(),
+        "source": [corpus.as_posix() for corpus in corpora],
         "generators": sorted(generators),
         "measured_on": datetime.now(timezone.utc).date().isoformat(),
         "families": {
@@ -74,7 +83,9 @@ def measure(corpus: Path) -> dict:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--ai", type=Path, required=True, help="AI corpus with manifest.json")
+    parser.add_argument(
+        "--ai", type=Path, nargs="+", required=True, help="AI corpora, each with manifest.json"
+    )
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args(argv)
 

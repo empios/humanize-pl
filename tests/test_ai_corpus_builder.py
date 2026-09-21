@@ -106,3 +106,39 @@ def test_numbering_continues_past_the_existing_fixtures(tmp_path) -> None:
     (tmp_path / "ai_legal_15_pozew.txt").write_text("x", encoding="utf-8")
 
     assert build_ai_corpus.next_index(tmp_path) == 16
+
+
+def test_a_vanished_server_is_told_from_a_bad_answer() -> None:
+    """The runner waits for the first and gives up on the second."""
+    assert build_ai_corpus._unreachable("Błąd połączenia z modelem: ConnectTimeout.")
+    assert build_ai_corpus._unreachable("Endpoint modelu zwrócił HTTP 503.")
+    assert not build_ai_corpus._unreachable("Model zwrócił pustą odpowiedź.")
+
+
+def test_the_runner_waits_for_the_server_to_come_back(monkeypatch) -> None:
+    """The Bielik endpoint dropped twice in one afternoon and the runner raced
+    through the remaining jobs, failing 23 of 28. It waits now, asking a fresh
+    client each time: `probe()` remembers its first answer."""
+    answers = iter([False, False, True])
+
+    class Fresh:
+        def __init__(self, settings):
+            pass
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return None
+
+        def probe(self):
+            return next(answers)
+
+    monkeypatch.setattr(build_ai_corpus, "OpenAICompatibleRewriter", Fresh)
+    monkeypatch.setattr(build_ai_corpus, "ENDPOINT_POLL_SECONDS", 0.0)
+
+    assert build_ai_corpus._wait_for_endpoint(settings=None, limit=5.0) is True
+    monkeypatch.setattr(build_ai_corpus, "OpenAICompatibleRewriter", type(
+        "Never", (Fresh,), {"probe": lambda self: False}
+    ))
+    assert build_ai_corpus._wait_for_endpoint(settings=None, limit=0.01) is False

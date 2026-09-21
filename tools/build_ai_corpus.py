@@ -59,6 +59,34 @@ MAX_TOKENS = 16000
 # humanize_pl/corpus/normalize.py, so both sides are filtered alike.
 MIN_WORDS = 150
 
+# How many times one job may wait for a vanished server before the run stops.
+MAX_ENDPOINT_WAITS = 3
+ENDPOINT_POLL_SECONDS = 30.0
+
+
+def _unreachable(message: str) -> bool:
+    """Whether an endpoint error means the server is gone, not that it answered badly."""
+    lowered = message.lower()
+    return any(
+        marker in lowered
+        for marker in ("connecttimeout", "connecterror", "readtimeout", "http 503", "http 502")
+    )
+
+
+def _wait_for_endpoint(settings: LlmSettings, limit: float) -> bool:
+    """Poll the server until it answers again, or give up after `limit` seconds.
+
+    A fresh client per poll: `probe()` remembers its first answer, so asking
+    the running client again would report "ready" without asking the server.
+    """
+    deadline = time.monotonic() + limit
+    while time.monotonic() < deadline:
+        time.sleep(ENDPOINT_POLL_SECONDS)
+        with OpenAICompatibleRewriter(settings) as fresh:
+            if fresh.probe():
+                return True
+    return False
+
 
 def load_grid(path: Path) -> tuple[list[dict[str, str]], list[float], dict[str, list[str]]]:
     payload = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
@@ -179,6 +207,12 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="Limit czasu na jedno wywołanie w sekundach (nadpisuje .env)",
     )
+    parser.add_argument(
+        "--wait",
+        type=float,
+        default=1800.0,
+        help="Ile sekund czekać na powrót niedostępnego serwera, zanim przebieg się zatrzyma",
+    )
     args = parser.parse_args(argv)
 
     styles, temperatures, categories = load_grid(args.prompts)
@@ -239,6 +273,7 @@ def main(argv: list[str] | None = None) -> int:
             )
         model_name = client.metadata.model
 
+        stop = False
         for job in jobs:
             label = f"{job['category']}/{job['ordinal']}"
             # An empty body is retried once; a short one is not.
@@ -251,7 +286,9 @@ def main(argv: list[str] | None = None) -> int:
             # and the last three succeeded, in plain alphabetical order. That
             # is a cold model finishing its load, and one retry covers it.
             text = None
-            for attempt in (1, 2):
+            attempt = 0
+            while True:
+                attempt += 1
                 try:
                     text = client.complete_text(
                         messages_for(job),
@@ -266,8 +303,22 @@ def main(argv: list[str] | None = None) -> int:
                         print(f"  [{message[:48]}] {label}: ponawiam")
                         time.sleep(2.0)
                         continue
+                    # A server that went away is waited for, not skipped past:
+                    # the Bielik endpoint dropped twice in one afternoon, and
+                    # each time the runner raced through every remaining job
+                    # in minutes, marking 23 of 28 as failed.
+                    if _unreachable(message) and attempt <= MAX_ENDPOINT_WAITS:
+                        print(f"  [serwer niedostępny] {label}: czekam na powrót endpointu")
+                        if _wait_for_endpoint(settings, args.wait):
+                            print(f"  [serwer wrócił] {label}: ponawiam")
+                            continue
+                        print(f"  [serwer nie wrócił w {args.wait:.0f} s] przerywam przebieg")
+                        stop = True
+                        break
                     print(f"  [błąd] {label}: {message}")
                     break
+            if stop:
+                break
             if text is None:
                 skipped += 1
                 continue

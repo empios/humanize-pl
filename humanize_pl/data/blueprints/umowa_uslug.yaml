@@ -85,9 +85,8 @@ sections:
     severity: required
     unit: false
     matches: ["podpis", "zamawiający:", "wykonawca:"]
-    # A party's role alone on a line over a dotted line: the block itself,
-    # whatever the parties are called. The role as a word is in every clause.
-    patterns:
-      - '^[ \t*_#]*(?:zamawiający|wykonawca|zleceniodawca|zleceniobiorca|usługodawca|usługobiorca)[ \t*_:]*\n[ \t]*(?:\.{5,}|…{2,}|_{5,}|\(podpis)'
+    # The block by its shape - dots beside the parties' names - because the
+    # role as a word is in every clause (`blueprint.SIGNATURE_BLOCK`).
+    signature_block: true
     expects:
       - "Dokument przewiduje miejsce na podpisy obu stron."

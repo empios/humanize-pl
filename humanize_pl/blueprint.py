@@ -71,6 +71,39 @@ _UNIT_PREFIX = re.compile(r"^(?:§\s*\d+\p{Ll}?|[IVXLC]+|\d+)[.)]?\s*")
 _MAX_TITLE_WORDS = 8
 _MAX_TERMINATED_TITLE_WORDS = 3
 
+# A signature block recognised by its shape, whatever the parties are called:
+# a line of dots next to a short line naming a party, in either order; two
+# dotted places closing the document; or the parties' names alone on its
+# last line. Matched against the lowered text with blank lines dropped.
+#
+# Measured 2026-09-21 on the 50 contract-family documents of the firm: found
+# in 45 (the other five - a regulamin, a privacy notice, a notarial
+# statement - have no party signatures). The role-specific pattern it
+# replaced found 0: the firm puts the dots over the names, and pads the
+# name line with runs of spaces. None of the 592 held-out judgments match.
+_SIGNATURE_ROLE = (
+    r"(?:stron[aęy]?\b|zamawiając|wykonawc|zleceniodawc|zleceniobiorc|usługodawc|usługobiorc"
+    r"|przyjmując|udzielając|kancelari|klient|wynajmując|najemc|podnajemc|wydzierżawiając"
+    r"|dzierżawc|sprzedając|sprzedawc|kupując|nabywc|zbywc|pracodawc|pracownik|autor"
+    r"|licencjodawc|licencjobiorc|korzystając|udostępniając|ujawniając|otrzymując"
+    r"|pożyczkodawc|pożyczkobiorc|darczyńc|obdarowan|użyczając|biorąc|zamieniając"
+    r"|administrator|podmiot\s+przetwarzając|pośrednik|poręczyciel|wierzyciel|dłużnik"
+    r"|podpis|\(podpis)"
+)
+# Whitespace short of a newline: DOCX lines arrive padded with long runs of
+# spaces and non-breaking spaces.
+_SP = r"[^\S\n]"
+_ROLE_LINE = _SP + r"*[*_#]*" + _SIGNATURE_ROLE + r"(?:[\p{L}\d*_:()/-]|" + _SP + r")*"
+_DOTS_LINE = _SP + r"*(?:[.…_]{3,}" + _SP + r"*)+"
+SIGNATURE_BLOCK = (
+    re.compile(r"^" + _DOTS_LINE + r"\n" + _ROLE_LINE + r"$", re.MULTILINE),
+    re.compile(r"^" + _ROLE_LINE + r"\n" + _DOTS_LINE + r"$", re.MULTILINE),
+    re.compile(
+        r"^" + _SP + r"*(?:[.…_]{3,}" + _SP + r"+)+[.…_]{3,}" + _SP + r"*\Z", re.MULTILINE
+    ),
+    re.compile(r"^" + _ROLE_LINE + r"\Z", re.MULTILINE),
+)
+
 
 class BlueprintError(RuntimeError):
     pass
@@ -231,6 +264,13 @@ def _load(path: Path) -> DocumentBlueprint:
                 raise BlueprintError(
                     f"Sekcja {identifier}: niepoprawny wzorzec `patterns`: {exc}"
                 ) from exc
+        signature_block = row.get("signature_block", False)
+        if not isinstance(signature_block, bool):
+            raise BlueprintError(
+                f"Sekcja {identifier}: `signature_block` musi być true albo false."
+            )
+        if signature_block:
+            patterns.extend(SIGNATURE_BLOCK)
         sections.append(
             Section(
                 id=identifier,

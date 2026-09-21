@@ -600,6 +600,52 @@ def test_a_signature_block_is_recognised_by_its_shape() -> None:
     assert "podpisy stron" in check_category(body, "umowa_uslug").missing_required
 
 
+@pytest.mark.parametrize(
+    "block",
+    [
+        # The firm's layout: the dots over the names, the lines padded out.
+        "……………………………………" + " " * 30 + "……………………………………\n"
+        "        Usługodawca" + " " * 90 + "Usługobiorca\n",
+        # Two names run together where a tab stop was.
+        "………………………...……….……………………\nZleceniodawcaZleceniobiorca\n",
+        "…………………….....                              ……………….\n      Strona 1          Strona 2\n",
+        "Przyjmujący zamówienie        Udzielający zamówienia\n……………………………\n",
+        # Two dotted places and nothing under them, closing the document.
+        "……………………………………………….          ……..……………………………………….\n",
+        # The names alone on the last line.
+        "WYDZIERŻAWIAJĄCYDZIERŻAWCA \n",
+    ],
+)
+def test_a_signature_block_in_any_of_the_firms_layouts(block: str) -> None:
+    """The role-specific pattern found the signature block in none of the
+    firm's 50 contracts: it wanted the name over the dots."""
+    body = (
+        "Umowa zawarta w dniu 3 marca 2026 r. pomiędzy Usługodawcą a Usługobiorcą.\n"
+        "§ 1. Przedmiot umowy\n"
+        "Przedmiotem umowy jest sprzątanie biura Usługobiorcy.\n"
+        "Umowę sporządzono w dwóch jednobrzmiących egzemplarzach.\n"
+    )
+    assert "podpisy stron" not in check_category(body + block, "umowa_uslug").missing_required
+
+
+def test_a_blank_to_fill_is_not_a_signature_block() -> None:
+    """Dots next to a sentence naming a party: a field in the body."""
+    text = (
+        "Umowa zawarta w dniu 3 marca 2026 r. pomiędzy Usługodawcą a Usługobiorcą.\n"
+        "§ 1. Przedmiot umowy\n"
+        "Zakres usług obejmuje:\n"
+        "…………………………………………\n"
+        "Usługodawca zobowiązuje się do wykonywania czynności określonych w ust. 1.\n"
+    )
+    assert "podpisy stron" in check_category(text, "umowa_uslug").missing_required
+
+
+def test_loader_rejects_a_non_boolean_signature_block(tmp_path) -> None:
+    payload = {"category": "x", "sections": [{"id": "a", "matches": ["q"], "signature_block": "tak"}]}
+    with pytest.raises(BlueprintError, match="signature_block"):
+        _load(_write(tmp_path, payload))
+
+
 def test_loader_rejects_a_broken_pattern(tmp_path) -> None:
     payload = {"category": "x", "sections": [{"id": "a", "matches": ["q"], "patterns": ["(unclosed"]}]}
     with pytest.raises(BlueprintError, match="patterns"):

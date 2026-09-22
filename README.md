@@ -25,6 +25,12 @@ Działa warstwowo:
 
 ## Co nowego (niewydane)
 
+- kategoria dokumentu najpierw według tytułu („UMOWA DZIERŻAWY”,
+  „Oświadczenie o rozwiązaniu…”), potem według słownictwa; dziewięć nowych
+  kategorii (dzierżawa, darowizna, pośrednictwo, powierzenie danych, licencja
+  i prawa autorskie, porozumienie, oświadczenie, klauzula informacyjna,
+  „umowa inna”). Dokumenty kancelarii, którym przypisywano cudzy szkielet:
+  9 → 1; fałszywe dopisania sekcji: 22 z 28 → 14 z 20,
 - tryb „tekst ogólny” (`--document-type general`) dla tekstów spoza prawa:
   artykułów, opisów, maili, prozy; osobny wzorzec i próg, bez szkieletów
   i bez reguł, które psują tekst ludzki (patrz „Tekst ogólny” niżej),

@@ -217,3 +217,48 @@ def test_a_phrase_listed_as_both_gate_and_signal_scores_once() -> None:
     text = " ".join(row.requires_any)
     _total, evidence = row.score(text.casefold())
     assert len(evidence) == len(set(evidence)), "fraza policzona dwa razy"
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        # The firm's documents the vocabulary misfiled, by what they call themselves.
+        ("UMOWA DZIERŻAWY\nZawarta w dniu … pomiędzy Wydzierżawiającym a Dzierżawcą.\nCzynsz dzierżawny wynosi …", "umowa_dzierzawy"),
+        ("Umowa darowizny\nzawarta w dniu … pomiędzy darczyńcą a obdarowanym. Najemca lokalu …", "umowa_darowizny"),
+        ("INFORMACJA O\xa0PRAWACH PACJENTA\nAdministratorem danych osobowych jest …", "klauzula_informacyjna"),
+        ("Umowa na rozpowszechnianie wizerunku\nzawarta w dniu …", "umowa_licencyjna"),
+        # The kind named first: a contract for a work that also transfers rights.
+        ("Umowa o dzieło i przeniesienie praw autorskich\nzawarta w dniu …", "umowa_o_dzielo"),
+        # A contract title naming no catalogued kind: no skeleton to apply.
+        ("UMOWA POŻYCZKI\nzawarta w dniu … Czynsz najmu …", "umowa_inna"),
+        # A title broken over two lines; a preliminary agreement is not yet a sale.
+        ("PRZEDWSTĘPNA UMOWA\nSPRZEDAŻY NIERUCHOMOŚCI\nZawarta dnia …", "umowa_inna"),
+    ],
+)
+def test_the_title_names_the_category(text: str, expected: str) -> None:
+    assert classify_category(text).category.id == expected
+
+
+def test_a_letter_title_under_the_address_blocks_is_found() -> None:
+    """The firm's notices of termination carry their title on the ninth line."""
+    header = "\n".join(["…………, dnia ………", "(dane Pracodawcy)", "…………", "…………", "…………", "…………", "…………", "(dane Pracownika)"])
+    text = header + "\nOświadczenie o rozwiązaniu umowy o pracę bez zachowania okresu wypowiedzenia\nNiniejszym oświadczam, że rozwiązuję umowę."
+    assert classify_category(text).category.id == "oswiadczenie"
+
+
+def test_a_sentence_about_the_contract_is_not_its_title() -> None:
+    """"Umowa wchodzi w życie…" opens with the title word but is a clause."""
+    from humanize_pl.categories import document_title
+
+    assert document_title("Umowa wchodzi w życie z dniem podpisania.") is None
+    assert document_title("Umowa zawarta w dniu 3 marca 2026 r. pomiędzy X a Y") is None
+    # "UMOWA" alone names no kind, so the vocabulary decides, not umowa_inna.
+    text = "UMOWA\nzawarta w dniu … pomiędzy Usługodawcą a Usługobiorcą o świadczenie usług."
+    assert classify_category(text).category.id == "umowa_uslug"
+
+
+def test_markers_every_contract_carries_do_not_pick_one() -> None:
+    """Scored, "zawarta w dniu" gave every contract three points and the
+    alphabet chose: a deed of gift became a lease that way."""
+    guess = classify_category("Umowa zawarta w dniu 3 marca 2026 r. pomiędzy X a Y.")
+    assert guess.category.id == UNSPECIFIED

@@ -27,6 +27,7 @@ categories:
     signals_strong: ["świadczenie usług", "usługodawca"]
     signals: ["usługobiorca", "zakres usług", "raport z wykonania", "etapy"]
     requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa o świadczenie usług"]
+    titles: ["umowa o świadczenie usług", "umowa świadczenia usług", "umowa o współpracy", "umowa o współpracę"]
 
   - id: umowa_zlecenia
     label_pl: umowa zlecenia
@@ -34,6 +35,7 @@ categories:
     signals_strong: ["umowa zlecenia", "zleceniobiorca"]
     signals: ["zleceniodawca", "starannego działania", "art. 734"]
     requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa zlecenia"]
+    titles: ["umowa zlecenia", "umowa zlecenie"]
 
   - id: umowa_o_dzielo
     label_pl: umowa o dzieło
@@ -41,6 +43,7 @@ categories:
     signals_strong: ["umowa o dzieło", "wykonanie dzieła"]
     signals: ["zamawiający dzieło", "odbiór dzieła", "art. 627"]
     requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa o dzieło"]
+    titles: ["umowa o dzieło", "umowa o wykonanie dzieła"]
 
   - id: umowa_o_prace
     label_pl: umowa o pracę
@@ -48,6 +51,7 @@ categories:
     signals_strong: ["umowa o pracę", "stosunek pracy"]
     signals: ["pracodawca", "pracownik", "wymiar czasu pracy", "kodeks pracy"]
     requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa o pracę"]
+    titles: ["umowa o pracę"]
 
   - id: umowa_sprzedazy
     label_pl: umowa sprzedaży
@@ -55,6 +59,7 @@ categories:
     signals_strong: ["umowa sprzedaży", "przenosi własność"]
     signals: ["sprzedający", "kupujący", "wydanie rzeczy", "cena sprzedaży"]
     requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa sprzedaży"]
+    titles: ["umowa sprzedaży", "umowa kupna-sprzedaży", "umowa kupna sprzedaży"]
 
   - id: umowa_najmu
     label_pl: umowa najmu
@@ -62,6 +67,7 @@ categories:
     signals_strong: ["umowa najmu", "czynsz"]
     signals: ["wynajmujący", "najemca", "przedmiot najmu", "kaucja"]
     requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa najmu"]
+    titles: ["umowa najmu", "umowa podnajmu"]
 
   - id: umowa_nda
     label_pl: umowa o zachowaniu poufności
@@ -69,6 +75,7 @@ categories:
     signals_strong: ["zachowaniu poufności", "informacje poufne"]
     signals: ["ujawniająca", "otrzymująca", "okres poufności", "nda"]
     requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa o zachowaniu poufności"]
+    titles: ["umowa o zachowaniu poufności", "umowa o zachowanie poufności", "umowa o poufności", "umowa nda"]
 
   - id: umowa_spolki
     label_pl: umowa spółki
@@ -76,6 +83,72 @@ categories:
     signals_strong: ["umowa spółki", "kapitał zakładowy"]
     signals: ["wspólnicy", "udziały", "zgromadzenie wspólników", "firma spółki"]
     requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa spółki"]
+    titles: ["umowa spółki"]
+
+  # Kinds that the firm's documents showed the older list lacked: each of
+  # them landed in the nearest-sounding category (a gift deed and leases of
+  # land among leases, image and copyright licences among NDAs) and would
+  # have been checked - and supplemented - against a skeleton not theirs.
+  # None has a skeleton yet, so none is checked or drafted.
+
+  - id: umowa_dzierzawy
+    label_pl: umowa dzierżawy
+    family: contract
+    signals_strong: ["wydzierżawiający", "dzierżawca"]
+    signals: ["czynsz dzierżawny", "przedmiot dzierżawy", "pobierania pożytków"]
+    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa dzierżawy"]
+    titles: ["umowa dzierżawy", "umowa poddzierżawy"]
+
+  - id: umowa_darowizny
+    label_pl: umowa darowizny
+    family: contract
+    signals_strong: ["darczyńca", "obdarowany"]
+    signals: ["darowiznę", "przyjmuje darowiznę"]
+    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa darowizny"]
+    titles: ["umowa darowizny"]
+
+  - id: umowa_posrednictwa
+    label_pl: umowa pośrednictwa
+    family: contract
+    signals_strong: ["wynagrodzenie pośrednika", "usługi pośrednictwa"]
+    signals: ["pośrednik", "prowizj"]
+    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa pośrednictwa"]
+    titles: ["umowa pośrednictwa", "umowa o pośrednictwo"]
+
+  - id: umowa_powierzenia_danych
+    label_pl: umowa powierzenia przetwarzania danych
+    family: contract
+    signals_strong: ["powierzenia przetwarzania", "podmiot przetwarzający"]
+    signals: ["administrator danych", "art. 28", "dalsze powierzenie"]
+    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa powierzenia"]
+    titles: ["umowa powierzenia przetwarzania", "umowa powierzenia danych"]
+
+  - id: umowa_licencyjna
+    label_pl: umowa licencyjna lub o przeniesienie praw
+    family: contract
+    signals_strong: ["licencjodawca", "licencjobiorca", "pola eksploatacji"]
+    signals: ["autorskie prawa majątkowe", "utwór", "wizerunek"]
+    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa licencyjna"]
+    titles: ["umowa licencyjna", "umowa licencji", "praw autorskich", "wizerunku"]
+
+  - id: porozumienie
+    label_pl: porozumienie
+    family: contract
+    signals_strong: ["niniejsze porozumienie", "strony porozumienia"]
+    signals: ["strony zgodnie postanawiają"]
+    requires_any: ["porozumienie", "strony postanawiają"]
+    titles: ["porozumienie"]
+
+  - id: umowa_inna
+    label_pl: umowa innego rodzaju
+    family: contract
+    # Chosen only by a contract title that names no kind above ("umowa
+    # pożyczki", "umowa zamiany"): no vocabulary, no skeleton. A preliminary
+    # agreement is named here too, ahead of the kind it promises: it is not
+    # yet a sale, and needs none of a sale's clauses.
+    signals_strong: []
+    signals: []
+    titles: ["umowa przedwstępna", "przedwstępna umowa"]
 
   - id: aneks
     label_pl: aneks do umowy
@@ -83,6 +156,7 @@ categories:
     signals_strong: ["aneks nr", "zmienia się umowę"]
     signals: ["otrzymuje brzmienie", "pozostałe postanowienia", "dotychczasowe brzmienie"]
     requires_any: ["aneks nr", "aneks do umowy", "zmienia się umowę"]
+    titles: ["aneks"]
 
   - id: ugoda
     label_pl: ugoda
@@ -90,6 +164,7 @@ categories:
     signals_strong: ["zawierają ugodę", "czynią sobie wzajemne ustępstwa"]
     signals: ["zrzeka się roszczeń", "wyczerpuje wszelkie roszczenia"]
     requires_any: ["zawierają ugodę", "niniejsza ugoda", "strony zawierają"]
+    titles: ["ugoda", "umowa ugody"]
 
   - id: regulamin
     label_pl: regulamin
@@ -97,6 +172,7 @@ categories:
     signals_strong: ["niniejszy regulamin", "regulamin określa"]
     signals: ["usługobiorca", "konto", "reklamacje", "postanowienia końcowe"]
     requires_any: ["niniejszy regulamin", "regulamin określa", "regulamin serwisu"]
+    titles: ["regulamin"]
 
   - id: polityka_prywatnosci
     label_pl: polityka prywatności
@@ -104,6 +180,7 @@ categories:
     signals_strong: ["polityka prywatności", "administratorem danych"]
     signals: ["rodo", "dane osobowe", "podstawa przetwarzania", "okres przechowywania"]
     requires_any: ["polityka prywatności", "administratorem danych"]
+    titles: ["polityka prywatności"]
 
   # ------------------------------------------------- pisma procesowe i urząd ---
 
@@ -113,6 +190,7 @@ categories:
     signals_strong: ["wnoszę o zasądzenie", "pozew o"]
     signals: ["powód", "pozwany", "wartość przedmiotu sporu", "wnoszę o zasądzenie kosztów"]
     requires_any: ["wnoszę o zasądzenie", "wnoszę pozew", "pozew o zapłatę", "wnosi o zasądzenie"]
+    titles: ["pozew"]
 
   - id: odpowiedz_na_pozew
     label_pl: odpowiedź na pozew
@@ -170,6 +248,16 @@ categories:
     signals: ["organ", "wnoszę o udostępnienie", "informacja publiczna", "w załączeniu"]
     requires_any: ["działając w imieniu", "wnoszę o udostępnienie", "zwracam się z wnioskiem"]
 
+  # A one-sided statement to the other party - notice of termination,
+  # submission to enforcement - rather than a request to an authority.
+  - id: oswiadczenie
+    label_pl: oświadczenie lub wypowiedzenie
+    family: filing_official
+    signals_strong: ["niniejszym wypowiadam", "rozwiązuję umowę", "oświadczam, że poddaję się"]
+    signals: ["okres wypowiedzenia", "z zachowaniem okresu", "bez zachowania okresu"]
+    requires_any: ["oświadczam", "wypowiadam", "rozwiązuję"]
+    titles: ["oświadczenie", "wypowiedzenie", "rozwiązanie umowy"]
+
   - id: wezwanie_do_zaplaty
     label_pl: wezwanie do zapłaty
     family: filing_official
@@ -178,6 +266,15 @@ categories:
     requires_any: ["wezwanie do zapłaty", "wzywam do zapłaty", "wzywamy do zapłaty"]
 
   # ------------------------------------------------------ doradztwo i klient ---
+
+  # An information notice (RODO, patients' rights): the same duty to inform
+  # as a privacy policy, but addressed to one person and far shorter.
+  - id: klauzula_informacyjna
+    label_pl: klauzula informacyjna
+    family: client_communication
+    signals_strong: ["klauzula informacyjna", "obowiązek informacyjny"]
+    signals: ["administratorem pani/pana danych", "przysługuje pani/panu prawo"]
+    titles: ["klauzula informacyjna", "klauzula rodo", "informacja o przetwarzaniu", "informacja o prawach", "obowiązek informacyjny"]
 
   - id: opinia_prawna
     label_pl: opinia prawna

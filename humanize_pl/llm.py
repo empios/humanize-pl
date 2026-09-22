@@ -411,6 +411,22 @@ class OpenAICompatibleRewriter:
                     rationale=proposal.rationale,
                     validation_checks=checks,
                 )
+            added = added_ai_signals(protected.text, proposal.proposal)
+            if added:
+                # Asked to remove a tic, a model can write a new one - Bielik
+                # turned "W kościołach znajdowały się ołtarze" into "ołtarze
+                # pełniły kluczową rolę". Only what the detector counts is
+                # caught here ("Podsumowując,", "Warto podkreślić, że",
+                # enumerations…); that phrase is not among it. The rules'
+                # version stands instead.
+                self.metadata.note_rejected("rejected:adds_ai_signal")
+                return LlmRewriteResult(
+                    source,
+                    False,
+                    f"adds_ai_signal: {', '.join(added)}",
+                    rationale=proposal.rationale,
+                    validation_checks=checks,
+                )
             restored = protected.restore(proposal.proposal)
             if restored == source:
                 self.metadata.note_rejected("rejected:no_visible_change")
@@ -615,6 +631,18 @@ class OpenAICompatibleRewriter:
         if any(not isinstance(payload.get(key), str) for key in required):
             raise LlmEndpointError("W odpowiedzi modelu brakuje wymaganych pól tekstowych.")
         return LlmProposal(**{key: payload[key] for key in required})
+
+
+def added_ai_signals(source: str, proposal: str) -> list[str]:
+    """Signal families the proposal has more of than the source did."""
+    from humanize_pl.detect import detect_document
+
+    def counts(text: str) -> dict[str, int]:
+        diagnosis = detect_document(text, calibrate_against_default=False)
+        return {row.family: row.count for row in diagnosis.families}
+
+    before, after = counts(source), counts(proposal)
+    return sorted(family for family, count in after.items() if count > before.get(family, 0))
 
 
 def _extract_json_object(content: str) -> dict[str, Any] | None:

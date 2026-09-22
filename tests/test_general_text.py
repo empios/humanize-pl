@@ -117,3 +117,15 @@ def test_dropping_wlasnie_keeps_the_case_of_to():
 
     assert mid[0].text == "Myślę, że to nazywane jest miłością."
     assert start[0].text == "To ono odróżnia zatrudnienie od zlecenia."
+
+
+def test_a_proposal_that_adds_an_ai_tic_is_turned_down():
+    """Asked to fix a sentence, a model can write a new tic into it."""
+    from humanize_pl.llm import added_ai_signals
+
+    source = "W kościołach znajdowały się ołtarze, gdzie odprawiano msze."
+    worse = "Podsumowując, ołtarze stały w kościołach i przy nich odprawiano msze."
+    better = "Ołtarze stały w kościołach i przy nich odprawiano msze."
+
+    assert added_ai_signals(source, worse) == ["summary_frame"]
+    assert added_ai_signals(source, better) == []

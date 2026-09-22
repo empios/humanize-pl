@@ -46,6 +46,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--source", default="SAOS (saos.org.pl) dump API")
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
+    parser.add_argument(
+        "--ignore-family",
+        action="append",
+        default=[],
+        help="Rodzina sygnałów, która w tym rejestrze nie świadczy o AI (np. typography_artifact)",
+    )
     args = parser.parse_args(argv)
 
     texts = load_corpus(args.corpus, limit=args.limit)
@@ -62,6 +68,7 @@ def main(argv: list[str] | None = None) -> int:
         genre=args.genre,
         source=args.source,
         families=AI_FAMILIES,
+        ignored_families=args.ignore_family,
     )
     output = args.output_dir / f"{args.name}.json"
     profile.save(output)

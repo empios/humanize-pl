@@ -24,6 +24,11 @@ class DocumentType(str, Enum):
     client_communication = "client_communication"
     contract = "contract"
     filing_official = "filing_official"
+    # Any text that is not legal - an article, a description, a mail, prose.
+    # Chosen only by the user: `auto` never lands here, so the legal path
+    # stays exactly as it was. The measurements behind it are in the README
+    # ("Tekst ogólny") and next to each setting.
+    general = "general"
 
 
 class RewriteBackend(str, Enum):
@@ -51,6 +56,13 @@ class GenreProfile:
     terminology: tuple[str, ...]
     structure: tuple[str, ...]
     forbidden_phrases: tuple[str, ...]
+    # Who the hosted model is told it is.
+    editor_role: str = (
+        "Jesteś polskim redaktorem dokumentów prawnych. Redagujesz tylko wskazany "
+        "fragment i nie udzielasz porady prawnej."
+    )
+    # Rules the genre does not want, by rule id or id prefix.
+    disabled_rules: tuple[str, ...] = ()
 
     def prompt_text(self) -> str:
         return (
@@ -127,6 +139,46 @@ GENRE_PROFILES: dict[DocumentType, GenreProfile] = {
             "warto podkreślić",
             "należy zauważyć",
             "w dzisiejszych czasach",
+        ),
+    ),
+    DocumentType.general: GenreProfile(
+        document_type=DocumentType.general,
+        label_pl="tekst ogólny (artykuł, opis, mail, proza)",
+        tone=(
+            "naturalny, taki jak w oryginale",
+            "bez nadęcia i bez ozdobników",
+            "zachowaj rejestr: potoczny zostaje potoczny, formalny formalny",
+        ),
+        terminology=(
+            "zachowaj nazwy własne, liczby i cytaty",
+            "nie zamieniaj słów specjalistycznych na ogólniki",
+        ),
+        structure=(
+            "bez podsumowań, których autor nie napisał",
+            "bez wyliczeń po trzy tylko dla rytmu",
+        ),
+        forbidden_phrases=(
+            "warto podkreślić",
+            "podsumowując",
+            "odgrywa kluczową rolę",
+        ),
+        editor_role="Jesteś polskim redaktorem tekstów. Redagujesz tylko wskazany fragment.",
+        # Measured on WildChat answers, ŚMIGIEL human texts of 150+ words and
+        # Wolne Lektury prose, edits per 1000 words. Each of these changes
+        # human text as often as model text or more: the em dash opens every
+        # line of dialogue in prose (6.3 edits per 1000 words there, 0.1 in
+        # model text); people write the passive more than assistants do
+        # (1.4 against 0.3); splitting long sentences and the two stock
+        # phrases touch only human text.
+        disabled_rules=(
+            "ai_artifact:em_dash",
+            "cleanup_spacing_and_em_dash",
+            "passive_to_impersonal",
+            "split_long_sentence",
+            "split_causal",
+            "split_przy_czym",
+            "legal_style:w_znacznym_stopniu",
+            "legal_style:oznacza_to",
         ),
     ),
 }

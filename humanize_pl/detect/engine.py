@@ -29,6 +29,7 @@ def detect_document(
     *,
     profile: ReferenceProfile | None = None,
     calibrate_against_default: bool = True,
+    ignore_families: frozenset[str] = frozenset(),
 ) -> DocumentDiagnosis:
     """Locate AI-style signals in `text`.
 
@@ -41,6 +42,11 @@ def detect_document(
     writing. Without one, only the raw density score is available.
     """
     paragraphs = [part for part in re.split(r"\n+", text) if part.strip()]
+    # A profile's own list travels with it; the explicit one is for building
+    # a profile, which has none yet.
+    ignored = frozenset(ignore_families) | (
+        frozenset(profile.ignored_families) if profile is not None else frozenset()
+    )
 
     findings: list[Finding] = []
     indexed_sentences: list[tuple[int, int, str]] = []
@@ -57,11 +63,13 @@ def detect_document(
             indexed_sentences.append((paragraph_index, sentence_index, sentence))
             paragraph_words += len(WORD_RE.findall(sentence))
             paragraph_findings.extend(
-                sentence_findings(
+                finding
+                for finding in sentence_findings(
                     sentence,
                     paragraph_index=paragraph_index,
                     sentence_index=sentence_index,
                 )
+                if finding.family not in ignored
             )
 
         findings.extend(paragraph_findings)
@@ -77,7 +85,11 @@ def detect_document(
             )
         )
 
-    findings.extend(repeated_opening_findings(indexed_sentences))
+    findings.extend(
+        finding
+        for finding in repeated_opening_findings(indexed_sentences)
+        if finding.family not in ignored
+    )
     findings.sort(key=lambda f: (f.paragraph_index, f.sentence_index, f.char_start))
 
     diagnosis = DocumentDiagnosis(

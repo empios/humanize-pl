@@ -327,14 +327,17 @@ class OpenAICompatibleRewriter:
         previous_protected = protect_text(previous, include_sensitive=True).text if previous else ""
         following_protected = protect_text(following, include_sensitive=True).text if following else ""
         genre = GENRE_PROFILES[document_type]
-        profile_text = style_profile.prompt_text() if style_profile else "Brak profilu kancelarii."
+        if style_profile:
+            profile_text = style_profile.prompt_text()
+        else:
+            profile_text = "" if document_type == DocumentType.general else "Brak profilu kancelarii."
         issue_text = "; ".join(issues or []) or "pozostałe cechy schematycznego stylu AI"
         # The output instruction sits last on purpose. Without grammar-constrained
         # sampling nothing enforces the shape, and an instruction buried before
         # a paragraph of genre guidance is the one the model forgets.
         system = (
-            "Jesteś polskim redaktorem dokumentów prawnych. Redagujesz tylko wskazany "
-            "fragment i nie udzielasz porady prawnej. Zachowaj dokładnie wszystkie "
+            genre.editor_role
+            + " Zachowaj dokładnie wszystkie "
             "placeholdery __PROTECTED_XXXX__, liczby, nazwy, definicje, cytaty, przepisy, "
             "daty, kwoty, terminy i modalność może/powinien/musi. Nie dodawaj faktów. "
             + genre.prompt_text()

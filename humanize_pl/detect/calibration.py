@@ -37,6 +37,11 @@ FAMILY_PROFILES: dict[str, str] = {
     # it rests on 51 documents against SAOS's 1804, and on one firm's house
     # style rather than the register at large.
     "contract": "law_firm_contract",
+    # Human text of 150+ words from ŚMIGIEL (filmweb reviews, coursebooks,
+    # Wikipedia), CC-BY 4.0. Built on one half of a fixed split; the other
+    # half measured the threshold below. Ignores the em dash - ordinary
+    # Polish typography, commoner in human text than in model text.
+    "general": "general_polish",
 }
 
 # Families whose human p95 is at or near zero need a floor, otherwise a single
@@ -126,6 +131,22 @@ REVIEW_THRESHOLD = 0.25
 FAMILY_THRESHOLDS: dict[str, float] = {
     "filing_official": 0.15,
     "contract": 0.08,
+    # Measured 2026-09-22 against `general_polish`: 1391 held-out human texts
+    # (ŚMIGIEL filmweb/coursebooks/wiki, 150+ words) and 314 ChatGPT answers
+    # from WildChat-1M written on request (articles, descriptions, mails,
+    # essays, stories; 150+ words). AUC 0.92.
+    #
+    #   threshold  FPR(human)  recall(AI)
+    #   0.10       10.0%       77%
+    #   0.12        6.2%       62%
+    #   0.15        2.1%       40%   <-
+    #   0.18        0.6%       26%
+    #
+    # Same rule as for filings: few false alarms on human text, so a
+    # person's text is rarely called machine-like. The two sides still differ
+    # in genre (blog posts and mails against encyclopedia, reviews, textbooks),
+    # and the AI side is one assistant family. Re-measure with more.
+    "general": 0.15,
 }
 
 

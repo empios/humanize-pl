@@ -436,6 +436,7 @@ _FAMILY_NAMES = {
     "contract": "umowy",
     "filing_official": "pisma procesowe i urzędowe",
     "client_communication": "komunikacja z klientem",
+    "general": "tekst ogólny",
 }
 
 
@@ -1502,6 +1503,7 @@ class _Report:
                 "client_communication": "komunikacja z klientem",
                 "contract": "umowa",
                 "filing_official": "pismo urzędowe/procesowe",
+                "general": "tekst ogólny",
             }
             raw_type = str(item.get("document_type") or "brak danych")
             document_type = type_labels.get(raw_type, raw_type)

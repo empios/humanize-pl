@@ -25,6 +25,9 @@ Działa warstwowo:
 
 ## Co nowego (niewydane)
 
+- tryb „tekst ogólny” (`--document-type general`) dla tekstów spoza prawa:
+  artykułów, opisów, maili, prozy; osobny wzorzec i próg, bez szkieletów
+  i bez reguł, które psują tekst ludzki (patrz „Tekst ogólny” niżej),
 - frontend przeglądarkowy `humanize-pl-ui` (Gradio) dla obu przepływów, bez wiersza poleceń: wgrywanie plików, wynik opisany słowami, pobieranie poprawionych dokumentów i raportów,
 - rozpoznawanie trzech rodzin dokumentów: komunikacja z klientem, umowa,
   pismo procesowe lub urzędowe; wynik zawiera pewność i można go nadpisać
@@ -761,6 +764,47 @@ w innej skali: po podzieleniu wzoru `(σ−μ)/(σ+μ)` przez `μ` zostaje `(CV�
 funkcja ściśle rosnąca. Jest raportowana, ale ma wagę 0 — liczenie jej obok CV
 liczyłoby jeden dowód dwa razy, a na ujemnej skali `_exceedance_low` i tak
 zwracałoby zawsze zero.
+
+## Tekst ogólny (nie prawniczy)
+
+`--document-type general` (w interfejsie: „tekst ogólny”) uruchamia ten sam
+silnik na tekście spoza prawa. Nic go nie wybiera samo, więc ścieżka
+prawnicza się nie zmienia. Zmierzone na trzech zbiorach:
+- ŚMIGIEL (PolEval 2025): teksty ludzkie i generowane;
+- Wolne Lektury: proza polskich autorów;
+- WildChat-1M: 314 polskich odpowiedzi ChatGPT napisanych na prośbę, takich
+  jak artykuły, opisy, maile czy wypracowania.
+
+- **Wzorzec** `general_polish`: 1390 ludzkich tekstów 150+ słów z ŚMIGIELA
+  (Filmweb, podręczniki, Wikipedia). Druga połowa, 1391 tekstów, posłużyła do
+  ustalenia progu. AUC wobec odpowiedzi ChatGPT: 0,92. Próg 0,15 daje 2,1%
+  fałszywych alarmów i wykrywa 40% tekstów AI; 0,12 daje 6,2% i 62%.
+- **Pauza nie jest sygnałem.** W polszczyźnie to zwykła typografia, a w prozie
+  otwiera dialog. Ma ją 55–86% tekstów ludzkich i 14% odpowiedzi ChatGPT.
+  Wzorzec ją pomija (`ignored_families`), więc nie liczy się do wyniku ani do
+  zgodności zdań.
+- **Wyłączone reguły** zmieniają tekst ludzki równie często jak tekst modelu
+  albo częściej. W zmianach na 1000 słów:
+  - pauza: 6,3 w prozie wobec 0,1 u modelu;
+  - strona bierna na bezosobową: 1,4 u ludzi wobec 0,3 u modelu, bo ludzie
+    piszą w stronie biernej częściej niż asystent;
+  - dzielenie zdań;
+  - „w dużej mierze” → „w znacznym stopniu”;
+  - „polega na tym” → „oznacza to”.
+- **Zostają reguły**, które na odpowiedziach ChatGPT działają 3–10 razy
+  częściej niż na tekście ludzkim: „warto zauważyć, że”, powtarzane przejścia,
+  kancelaryzmy, „w celu + rzeczownik”, „właśnie”, pary tautologiczne.
+- **Poniżej 150 słów raport mówi, że wskaźnik nie jest wiarygodny.** Pod 50
+  słowami teksty ludzkie i generowane rozróżnia się na poziomie zgadywania
+  (AUC 0,48).
+- **Bez szkieletów, dopisywania sekcji i warstwy rytmu.** Rytm przesuwa
+  granice zdań, a dzielenie zdań zmieniało głównie tekst ludzki.
+
+Czego ten tryb nie robi: nie wykrywa „tekstu z maszyny” w ogóle, tylko tiki
+asystenta. Na tekstach ŚMIGIELA, generowanych jako ciąg dalszy cudzego
+fragmentu, AUC wynosi 0,55. To miarka stylu, nie detektor autorstwa. Same
+reguły usuwają około 5% tików z odpowiedzi ChatGPT; resztę może poprawić
+tylko redakcja modelem (`--rewrite-backend hybrid`).
 
 ## Sygnały strukturalne
 

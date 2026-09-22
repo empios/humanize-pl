@@ -342,6 +342,10 @@ def test_every_family_is_known_to_the_profile_and_to_the_gate() -> None:
     recognisable AI tell in Polish - was measured and then dropped twice: it
     could not raise the calibrated score, and it could not produce a single
     gate violation.
+
+    A profile may leave a family out only by saying so: `ignored_families`
+    (general text, where the em dash is ordinary Polish typography and
+    commoner in human writing than in model output).
     """
     import json
     from pathlib import Path
@@ -352,9 +356,11 @@ def test_every_family_is_known_to_the_profile_and_to_the_gate() -> None:
     assert set(FAMILY_CONSTRAINTS) == set(AI_FAMILIES)
 
     for path in sorted(Path("humanize_pl/data/reference_profiles").glob("*.json")):
-        rates = json.loads(path.read_text(encoding="utf-8"))["family_rates"]
-        assert set(rates) == set(AI_FAMILIES), (
-            f"{path.name}: {sorted(set(AI_FAMILIES) - set(rates))} not measured"
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        rates, ignored = set(payload["family_rates"]), set(payload["ignored_families"])
+        assert not rates & ignored, f"{path.name}: {sorted(rates & ignored)} both measured and ignored"
+        assert rates | ignored == set(AI_FAMILIES), (
+            f"{path.name}: {sorted(set(AI_FAMILIES) - rates - ignored)} not measured"
         )
 
 

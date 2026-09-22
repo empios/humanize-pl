@@ -60,6 +60,7 @@ class HumanizerSession:
             self.rule_engine = RuleEngine(
                 mode=self.config.mode,
                 preferred_terms=self.config.preferred_terms,
+                disabled_rules=self.config.disabled_rules,
             )
 
     def humanize(self, text: str, *, include_candidates: bool = False) -> HumanizeResult:
@@ -79,6 +80,7 @@ class HumanizerSession:
             or RuleEngine(
                 mode=self.config.mode,
                 preferred_terms=self.config.preferred_terms,
+                disabled_rules=self.config.disabled_rules,
             ),
             stanza_engine=self.stanza_engine,
             semantic=self.semantic,
@@ -156,6 +158,7 @@ def create_humanizer_session(
     agreement_gate_enabled: bool = True,
     require_morfeusz: bool = False,
     preferred_terms: dict[str, str] | None = None,
+    disabled_rules: frozenset[str] = frozenset(),
 ) -> HumanizerSession:
     mode_v = _coerce_mode(mode)
     engine_v = _coerce_engine(engine)
@@ -168,6 +171,7 @@ def create_humanizer_session(
         semantic_model=semantic_model,
         fluency_model=fluency_model,
         preferred_terms=preferred_terms,
+        disabled_rules=frozenset(disabled_rules),
         require_models=require_models,
         offline_models=offline_models,
         agreement_gate_enabled=agreement_gate_enabled,

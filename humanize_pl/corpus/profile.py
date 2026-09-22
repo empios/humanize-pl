@@ -17,6 +17,7 @@ def build_reference_profile(
     genre: str,
     source: str,
     families: Iterable[str] | None = None,
+    ignored_families: Iterable[str] = (),
 ) -> ReferenceProfile:
     """Measure the human baseline by running our own detectors over human text.
 
@@ -29,7 +30,11 @@ def build_reference_profile(
     happened to see, and calibration silently stops measuring the rest - so a
     corpus of genuinely clean writing produces the blindest baseline of all,
     which is exactly backwards.
+
+    `ignored_families` are left out of every number here and recorded on the
+    profile, so the detector drops them too wherever the profile is used.
     """
+    ignored = frozenset(ignored_families)
     sentence_words: list[float] = []
     cvs: list[float] = []
     sentence_burstinesses: list[float] = []
@@ -40,14 +45,16 @@ def build_reference_profile(
     densities: list[float] = []
     anonymisations: list[float] = []
     scores: list[float] = []
-    family_rates: dict[str, list[float]] = {family: [] for family in families or ()}
+    family_rates: dict[str, list[float]] = {
+        family: [] for family in families or () if family not in ignored
+    }
 
     document_count = 0
     word_count = 0
     sentence_count = 0
 
     for text in texts:
-        diagnosis = detect_document(text)
+        diagnosis = detect_document(text, ignore_families=ignored)
         if not diagnosis.word_count or not diagnosis.metrics:
             continue
 
@@ -96,4 +103,5 @@ def build_reference_profile(
         family_rates={
             family: Distribution.of(values) for family, values in sorted(family_rates.items())
         },
+        ignored_families=tuple(sorted(ignored)),
     )

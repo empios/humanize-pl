@@ -26,6 +26,11 @@ class RuleEngine:
     # Terminology the office wrote down, applied rather than only reported.
     # Empty for every caller that has no profile, which is most of them.
     preferred_terms: dict[str, str] | None = None
+    # Rule ids, or prefixes before a ":", that never produce a candidate.
+    disabled_rules: frozenset[str] = frozenset()
+
+    def _enabled(self, rule: str) -> bool:
+        return not any(rule == name or rule.startswith(name + ":") for name in self.disabled_rules)
 
     def generate_candidates(
         self,
@@ -69,6 +74,8 @@ class RuleEngine:
         candidates.extend(passive_candidates(sentence, analysis=analysis, mode=self.mode))
         if self.mode in {Mode.standard, Mode.strong}:
             candidates.extend(sentence_flow_candidates(sentence, mode=self.mode))
+        if self.disabled_rules:
+            candidates = [c for c in candidates if self._enabled(c.rule)]
 
         candidates = [
             score_candidate(

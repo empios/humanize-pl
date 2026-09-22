@@ -80,6 +80,13 @@ class ReferenceProfile:
     anonymisation_rate: Distribution
     signal_score: Distribution
     family_rates: dict[str, Distribution] = field(default_factory=dict)
+    # Families that are not a machine's habit in this register, measured on
+    # it: the em dash is ordinary Polish typography and opens every line of
+    # dialogue in prose (55-86% of human general texts carry one, 14% of
+    # assistant answers). A profile that lists a family here makes the
+    # detector drop its findings, so they neither score nor count against
+    # a sentence.
+    ignored_families: tuple[str, ...] = ()
 
     def to_json(self) -> dict:
         payload = asdict(self)
@@ -115,6 +122,7 @@ class ReferenceProfile:
             family: Distribution(**values)
             for family, values in (data.get("family_rates") or {}).items()
         }
+        data["ignored_families"] = tuple(data.get("ignored_families") or ())
         known = {field.name for field in fields(cls)}
         return cls(**{key: value for key, value in data.items() if key in known})
 

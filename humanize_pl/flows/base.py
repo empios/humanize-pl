@@ -20,12 +20,14 @@ from typing import Any
 
 from humanize_pl.artifacts import find_artifacts, strip_markup
 from humanize_pl.blueprint import blueprint_for, check_category
-from humanize_pl.categories import classify_category
+from humanize_pl.categories import UNSPECIFIED, CategoryGuess, classify_category
+from humanize_pl.categories import get as get_category
 from humanize_pl.config import Engine, LegalReviewProfile, Mode
 from humanize_pl.core import HumanizerSession, create_humanizer_session
 from humanize_pl.detect import detect_document, load_profile, profile_for_family
 from humanize_pl.detect.calibration import threshold_for_family
 from humanize_pl.document import (
+    GENRE_PROFILES,
     DocumentType,
     FormatPolicy,
     ReadinessStatus,
@@ -55,6 +57,11 @@ EXAMPLES_PER_ITEM = 4
 # human legal writing than in model output, so this measures "few flagged
 # sentences", not "reads as human". At 90%, 217 of the 300 judgments pass.
 READY_COMPLIANCE = 0.96
+
+# Below this, a general text's score says nothing. Measured on ŚMIGIEL:
+# under 50 words human and model text are told apart at chance (AUC 0.48),
+# and from 50 to 299 words only at 0.61-0.64.
+GENERAL_MIN_WORDS = 150
 
 
 def held_back(outcome: Any) -> bool:
@@ -221,6 +228,7 @@ class FlowSettings:
         # stop at the hosted model's prompt and at a compliance check, so the
         # part of the engine that actually edits never saw it.
         office = self.load_style_profile()
+        genre = GENRE_PROFILES.get(self.document_type)
         return create_humanizer_session(
             mode=self.mode,
             engine=self.engine,
@@ -229,6 +237,7 @@ class FlowSettings:
             require_models=self.require_models,
             require_morfeusz=self.require_morfeusz,
             preferred_terms=office.preferred_terms if office else None,
+            disabled_rules=frozenset(genre.disabled_rules) if genre else frozenset(),
         )
 
     def load_style_profile(self) -> StyleProfile | None:
@@ -525,6 +534,12 @@ def run_all_layers(
     """Detect, optionally rewrite, re-detect, then gate."""
     guess = classify_document(text)
     category = classify_category(text)
+    general = settings.document_type == DocumentType.general
+    if general:
+        # Not a legal document, so no legal category: no skeleton to check,
+        # nothing to draft, no clause to verify. A text that only mentions
+        # "czynsz" must not become a lease with sections missing.
+        category = CategoryGuess(get_category(UNSPECIFIED), 0.0)
     # The family sets the threshold, the human baseline and the formatting
     # norms, so it is taken from the better of the two classifiers. Measured
     # on the 32-document model corpus: the family classifier alone was right
@@ -606,6 +621,11 @@ def run_all_layers(
 
     outcome.warnings.extend(profile_warnings)
     outcome.warnings.extend(llm_initialization_warnings or [])
+    if general and before.word_count < GENERAL_MIN_WORDS:
+        outcome.warnings.append(
+            f"Tekst ma {before.word_count} słów. Poniżej {GENERAL_MIN_WORDS} słów wskaźnik "
+            "stylu AI nie jest wiarygodny; oceń tekst sam."
+        )
     # Two classifiers looked at the same text: the coarse family one and the
     # evidence-gated category one. When they disagree, one of them is wrong,
     # and which one decides the formatting norms and the genre profile - so it
@@ -662,8 +682,10 @@ def run_all_layers(
 
         # Rhythm runs on text the rules have already cleaned, and before the
         # hosted model sees it: the model then reads the shape we intend
-        # rather than the one we were about to change.
-        if settings.rhythm:
+        # rather than the one we were about to change. Not for general text:
+        # it moves sentence boundaries, and splitting sentences was measured
+        # to touch human text there more than model text.
+        if settings.rhythm and not general:
             rhythm = apply_rhythm_pass(
                 text_out,
                 profile=reference,
@@ -695,7 +717,9 @@ def run_all_layers(
                 rewriter.metadata.duration_ms,
             )
             reasons_before = dict(rewriter.metadata.decision_reasons)
-            remaining = detect_document(text_out, calibrate_against_default=False)
+            # With the profile, so the families it ignores (the em dash in
+            # general text) are not handed to the model as problems to fix.
+            remaining = detect_document(text_out, profile=reference, calibrate_against_default=False)
             text_out, llm_changes, llm_rejections = _rewrite_remaining_with_llm(
                 text_out,
                 remaining,

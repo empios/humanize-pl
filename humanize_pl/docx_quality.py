@@ -67,6 +67,16 @@ _STYLE_FAMILIES = {
         "heading2": 11,
         "line_spacing": 1.15,
     },
+    # No house norm exists for a general text; the neutral one above for
+    # letters to clients is the closest.
+    DocumentType.general: {
+        "font": "Arial",
+        "size": 11,
+        "title": 16,
+        "heading1": 14,
+        "heading2": 12,
+        "line_spacing": 1.15,
+    },
 }
 
 

@@ -75,6 +75,12 @@ class LlmSettings:
     # latency, which is how a long fragment reaches the timeout. Default stays
     # at the point where throughput rises without latency moving.
     concurrency: int = 3
+    # For reasoning models (Qwen 3.5): ask the chat template not to think.
+    # Thinking, the model spent its whole token budget on "Thinking
+    # Process" before any answer - minutes per sentence; without, a probe
+    # answered in 2 s. Off by default: a server that does not know
+    # `chat_template_kwargs` may refuse the request.
+    disable_thinking: bool = False
 
     @property
     def endpoint(self) -> str:
@@ -133,6 +139,7 @@ class LlmSettings:
             api_key=value("HUMANIZE_PL_LLM_API_KEY"),
             timeout_seconds=timeout,
             concurrency=concurrency,
+            disable_thinking=value("HUMANIZE_PL_LLM_DISABLE_THINKING").lower() in {"1", "true", "yes", "tak"},
         )
 
 
@@ -591,6 +598,8 @@ class OpenAICompatibleRewriter:
         }
         if max_tokens is not None:
             payload["max_tokens"] = max_tokens
+        if self.settings.disable_thinking:
+            payload["chat_template_kwargs"] = {"enable_thinking": False}
         if not use_response_format:
             return self._post_with_retries(payload), False
 

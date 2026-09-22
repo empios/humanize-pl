@@ -617,3 +617,22 @@ def test_an_echo_that_only_differs_in_spacing_still_counts() -> None:
         "Warto podkreślić, że ogród  zimą odpoczywa.", fragment_id="p-1", document_type=DocumentType.general
     )
     assert result.accepted
+
+
+def test_a_reasoning_model_can_be_told_not_to_think() -> None:
+    """Qwen 3.5 spent its whole budget on "Thinking Process" before answering."""
+    requests: list[dict] = []
+    handler = _echo_handler(requests)
+
+    def rewriter_for(disable: bool) -> OpenAICompatibleRewriter:
+        settings = LlmSettings("https://model.test/v1", "qwen", "none", 2, disable_thinking=disable)
+        return OpenAICompatibleRewriter(settings, client=httpx.Client(transport=httpx.MockTransport(handler)))
+
+    assert rewriter_for(True).probe()
+    assert requests[-1]["chat_template_kwargs"] == {"enable_thinking": False}
+    assert rewriter_for(False).probe()
+    assert "chat_template_kwargs" not in requests[-1]
+    assert LlmSettings.from_environment(
+        environ={"HUMANIZE_PL_LLM_BASE_URL": "https://m.test/v1", "HUMANIZE_PL_LLM_MODEL": "q",
+                 "HUMANIZE_PL_LLM_DISABLE_THINKING": "1"}
+    ).disable_thinking

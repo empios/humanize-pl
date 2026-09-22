@@ -395,6 +395,9 @@ class ItemOutcome:
     # is the only record that a machine wrote them and the report prints
     # every one in full.
     drafted_sections: list[dict[str, Any]] = field(default_factory=list)
+    # Sections the patterns missed and the model found, label -> a passage
+    # verified to be in the document. Not drafted, and not blocking.
+    sections_found_by_model: dict[str, str] = field(default_factory=dict)
     # Traces of the tool rather than the style - markdown, a chatbot's aside
     # to its user, unfilled fields. See `humanize_pl.artifacts`.
     artifacts_before: dict[str, Any] = field(default_factory=dict)
@@ -485,6 +488,7 @@ class ItemOutcome:
             "nli_before": self.nli_before,
             "nli_after": self.nli_after,
             "drafted_sections": self.drafted_sections,
+            "sections_found_by_model": self.sections_found_by_model,
             "artifacts_before": self.artifacts_before,
             "artifacts_after": self.artifacts_after,
             "notes": self.notes,
@@ -950,7 +954,14 @@ def run_all_layers(
     # This is the document axis, not the processing axis: `status` stays
     # "ok" because the run itself succeeded, and the CLI exit code (which
     # keys on processing failures) does not move.
-    if structure.checked and structure.blocking:
+    # A section the model found, with a passage verified to be in the text,
+    # is there in other words: it holds the document back (its warning does)
+    # but does not fail it.
+    unresolved = [
+        label for label in structure.missing_required
+        if label not in outcome.sections_found_by_model
+    ]
+    if structure.checked and (unresolved or structure.empty_sections):
         outcome.readiness_status = ReadinessStatus.failed.value
     if owned_rewriter and rewriter is not None:
         rewriter.close()
@@ -991,6 +1002,7 @@ def _supply_missing_sections(
         draft_missing_sections,
         drafted_payload,
         insert_drafts,
+        section_presence,
     )
 
     if not category.specified:
@@ -1010,9 +1022,29 @@ def _supply_missing_sections(
         )
         return text
 
-    result = draft_missing_sections(
-        text, blueprint, list(structure.missing_required), client=rewriter
-    )
+    # Asked before written: the patterns look for phrases, and a section put
+    # in other words reads as missing. Only a confirmed absence is drafted.
+    by_label = {section.label_pl: section for section in blueprint.sections}
+    absent: list[str] = []
+    for label in structure.missing_required:
+        presence = section_presence(text, by_label[label], client=rewriter)
+        if presence.state == "absent":
+            absent.append(label)
+        elif presence.state == "present":
+            outcome.sections_found_by_model[label] = presence.quote
+            outcome.warnings.append(
+                f"Sekcji „{label}” nie dopisano: model wskazuje, że już jest, innymi "
+                f"słowami: „{presence.quote[:160]}”. Sprawdź."
+            )
+        else:
+            outcome.warnings.append(
+                f"Sekcji „{label}” nie dopisano: nie udało się potwierdzić, czy jej "
+                f"brakuje ({presence.reason}). Sprawdź dokument."
+            )
+    if not absent:
+        return text
+
+    result = draft_missing_sections(text, blueprint, absent, client=rewriter)
     outcome.warnings.extend(result.warnings)
     if not result.any_drafted:
         return text

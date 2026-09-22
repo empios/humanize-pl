@@ -155,6 +155,85 @@ class DraftingResult:
         return bool(self.drafts)
 
 
+# Longer than this, a document is not sent whole to ask whether a section is
+# in it: cut down, a "no" could only mean the section sat past the cut.
+PRESENCE_MAX_CHARS = 30000
+PRESENCE_QUOTE_MIN_CHARS = 12
+
+
+@dataclass(frozen=True)
+class SectionPresence:
+    """Whether the model finds a section the patterns missed.
+
+    `state` is "absent" (drafting may go ahead), "present" (with `quote`, a
+    passage verified to be in the document) or "unclear" (with `reason`).
+    Anything short of a verified answer counts as unclear, and unclear
+    never leads to drafting.
+    """
+
+    state: str
+    quote: str = ""
+    reason: str = ""
+
+
+def section_presence(
+    document: str, section: Section, *, client: OpenAICompatibleRewriter
+) -> SectionPresence:
+    """Ask whether `document` already has `section`, in words the patterns lack.
+
+    The structure check looks for phrases, and the firm writes the same
+    clause in its own words: on its complete documents the check called 14
+    of 20 incomplete. A section is drafted only when the model says it is
+    not there; a "yes" must come with a passage that really is in the
+    document, so an invented quote cannot stop - or start - anything.
+    """
+    protected = protect_text(document, include_sensitive=True)
+    if len(protected.text) > PRESENCE_MAX_CHARS:
+        return SectionPresence("unclear", reason="dokument za długi, by sprawdzić go w całości")
+    clauses = " ".join(section.expects) or f"Sekcja dotyczy: {section.label_pl}."
+    messages = [
+        {
+            "role": "system",
+            "content": (
+                "Sprawdzasz, czy dokument zawiera wskazaną część, choćby opisaną innymi "
+                "słowami. Odpowiadasz wyłącznie obiektem JSON z polami: obecna (true albo "
+                "false) i cytat (tekst). Jeżeli część jest w dokumencie, w polu cytat "
+                "przepisz z dokumentu dosłownie, znak w znak, jedno zdanie, które ją "
+                "stanowi. Jeżeli jej nie ma, cytat zostaw pusty. Bez komentarza."
+            ),
+        },
+        {
+            "role": "user",
+            "content": (
+                f"Część: {section.label_pl}.\nCo powinna zawierać: {clauses}\n\n"
+                f"Dokument:\n{protected.text}"
+            ),
+        },
+    ]
+    try:
+        answer = client.complete_json(messages, max_tokens=400)
+    except (LlmEndpointError, OSError, ValueError) as exc:
+        return SectionPresence("unclear", reason=_safe_error(exc))
+    present = answer.get("obecna")
+    if present is False:
+        return SectionPresence("absent")
+    if present is not True:
+        return SectionPresence("unclear", reason="odpowiedź modelu bez rozstrzygnięcia")
+    quote = str(answer.get("cytat") or "").strip().strip("„”\"")
+
+    def squash(value: str) -> str:
+        return " ".join(value.split()).casefold()
+
+    if len(quote) >= PRESENCE_QUOTE_MIN_CHARS:
+        # The model reads the document with names and figures masked, so its
+        # quote carries the placeholders; restored, it is the document's own.
+        if squash(quote) in squash(protected.text):
+            return SectionPresence("present", quote=protected.restore(quote))
+        if squash(quote) in squash(document):
+            return SectionPresence("present", quote=quote)
+    return SectionPresence("unclear", reason="model wskazał cytat, którego nie ma w dokumencie")
+
+
 def invented_particulars(draft: str, document: str) -> list[str]:
     """Figures, dates and legal references the draft has and the document does not.
 

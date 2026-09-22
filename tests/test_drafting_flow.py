@@ -41,9 +41,19 @@ ANSWERS = {
 class FakeModel:
     """Answers each drafting request by the section it names."""
 
-    def __init__(self, answers: dict[str, str] = ANSWERS) -> None:
+    def __init__(self, answers: dict[str, str] = ANSWERS, presence: dict[str, dict] | None = None) -> None:
         self.answers = answers
+        # What the model says when asked whether a section is already there;
+        # by default every section the fixture lacks really is missing.
+        self.presence = presence or {}
         self.metadata = SimpleNamespace(to_report=lambda: {"backend": "fake"})
+
+    def complete_json(self, messages, *, max_tokens=None) -> dict:
+        prompt = messages[-1]["content"]
+        for label, answer in self.presence.items():
+            if f"Część: {label}." in prompt:
+                return answer
+        return {"obecna": False, "cytat": ""}
 
     def complete_text(self, messages, *, max_tokens=None, temperature=None) -> str:
         prompt = messages[-1]["content"]
@@ -215,3 +225,42 @@ def test_the_docx_command_can_leave_missing_sections_unwritten(monkeypatch, tmp_
     assert seen["draft_missing"] is False
     CliRunner().invoke(cli.app, ["docx", str(tmp_path), "--no-pdf"])
     assert seen["draft_missing"] is True
+
+
+def test_a_section_the_model_finds_in_other_words_is_not_drafted():
+    """The firm writes "Każda ze stron może wypowiedzieć…" where the pattern
+    wants "rozwiązanie umowy": asked first, the model points at it."""
+    text = FIXTURE.read_text(encoding="utf-8")
+    quote = next(line.strip() for line in text.split("\n") if len(line.strip()) > 40)
+    model = FakeModel(presence={"rozwiązanie i wypowiedzenie umowy": {"obecna": True, "cytat": quote}})
+
+    outcome, _ = run_all_layers(text, name="umowa.txt", settings=SETTINGS, rewriter=model)
+
+    drafted = [row["label_pl"] for row in outcome.drafted_sections]
+    assert "rozwiązanie i wypowiedzenie umowy" not in drafted
+    assert outcome.sections_found_by_model["rozwiązanie i wypowiedzenie umowy"] == quote
+    assert any("model wskazuje, że już jest" in warning for warning in outcome.warnings)
+
+
+def test_an_invented_quote_neither_drafts_nor_clears_the_section():
+    text = FIXTURE.read_text(encoding="utf-8")
+    model = FakeModel(presence={"rozwiązanie i wypowiedzenie umowy": {
+        "obecna": True, "cytat": "Każda ze stron może wypowiedzieć umowę z miesięcznym wyprzedzeniem."}})
+
+    outcome, _ = run_all_layers(text, name="umowa.txt", settings=SETTINGS, rewriter=model)
+
+    assert "rozwiązanie i wypowiedzenie umowy" not in [row["label_pl"] for row in outcome.drafted_sections]
+    assert "rozwiązanie i wypowiedzenie umowy" not in outcome.sections_found_by_model
+    assert any("cytat, którego nie ma w dokumencie" in warning for warning in outcome.warnings)
+    # Still missing as far as anyone can tell, so the document still fails.
+    assert outcome.readiness_status == ReadinessStatus.failed.value
+
+
+def test_an_answer_without_a_verdict_drafts_nothing():
+    text = FIXTURE.read_text(encoding="utf-8")
+    model = FakeModel(presence={label: {"cytat": ""} for label in ANSWERS})
+
+    outcome, _ = run_all_layers(text, name="umowa.txt", settings=SETTINGS, rewriter=model)
+
+    assert outcome.drafted_sections == []
+    assert outcome.text_out.count("Kodeksu cywilnego") == text.count("Kodeksu cywilnego")

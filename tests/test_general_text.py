@@ -129,3 +129,39 @@ def test_a_proposal_that_adds_an_ai_tic_is_turned_down():
 
     assert added_ai_signals(source, worse) == ["summary_frame"]
     assert added_ai_signals(source, better) == []
+
+
+def test_only_assistant_tics_go_to_the_model_in_general_text():
+    """Nominalisation and enumeration are as much a writer's as a model's;
+    sending those sentences is where Bielik changed human text."""
+    from dataclasses import replace
+
+    from humanize_pl.document import RewriteBackend
+
+    sent: list[str] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        payload = json.loads(request.content)
+        user = payload["messages"][1]["content"]
+        fragment_id = re.search(r"fragment_id: (\S+)", user)
+        source = re.search(r"Fragment do redakcji:\n(.*?)\nZauważone problemy:", user, re.DOTALL)
+        if source:
+            sent.append(source.group(1))
+        text = source.group(1) if source else "To jest test połączenia."
+        body = {"fragment_id": fragment_id.group(1) if fragment_id else "capability-test",
+                "source": text, "proposal": text, "rationale": "bez zmian"}
+        return httpx.Response(200, json={"choices": [{"message": {"content": json.dumps(body, ensure_ascii=False)}}]})
+
+    rewriter = OpenAICompatibleRewriter(
+        LlmSettings("https://model.test/v1", "pl", "token", 2),
+        client=httpx.Client(transport=httpx.MockTransport(handler)),
+    )
+    assert rewriter.probe()
+    text = " ".join(
+        ["Realizacja zadania wymaga zaangażowania, planowania i przygotowania zespołu."] * 20
+        + ["Podsumowując, ogród zimą potrzebuje mniej pracy."]
+    )
+    settings = replace(GENERAL, rewrite_backend=RewriteBackend.hybrid)
+    run_all_layers(text, name="t.txt", settings=settings, rewriter=rewriter, llm_prepared=True)
+
+    assert sent and all("Podsumowując" in fragment for fragment in sent)

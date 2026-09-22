@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Any, TypeVar
 
 import httpx
+import regex
 
 from humanize_pl.document import GENRE_PROFILES, DocumentType, StyleProfile
 from humanize_pl.safety.protectors import protect_text
@@ -158,6 +159,9 @@ class LlmBatchMetadata:
     model: str | None = None
     status: str = "not_requested"
     supports_response_format: bool | None = None
+    # Which shape of structured output the endpoint took (a key of
+    # `_RESPONSE_FORMATS`), so later calls go straight to it.
+    response_format_kind: str | None = None
     duration_ms: int = 0
     proposals: int = 0
     accepted: int = 0
@@ -177,6 +181,7 @@ class LlmBatchMetadata:
                 "model": self.model,
                 "status": self.status,
                 "supports_response_format": self.supports_response_format,
+                "response_format_kind": self.response_format_kind,
                 "duration_ms": self.duration_ms,
                 "proposals": self.proposals,
                 "accepted": self.accepted,
@@ -233,6 +238,16 @@ _JSON_SCHEMA = {
             },
         },
     },
+}
+
+
+# Tried in order until the endpoint takes one. The OpenAI shape first; then
+# the one llama.cpp servers read without it - the same schema under
+# `json_object` - which Bielik's server needed: without any, half of its
+# answers in the general-text run were unusable JSON or a mangled echo.
+_RESPONSE_FORMATS: dict[str, dict[str, Any]] = {
+    "json_schema": _JSON_SCHEMA,
+    "json_object": {"type": "json_object", "schema": _JSON_SCHEMA["json_schema"]["schema"]},
 }
 
 
@@ -385,7 +400,9 @@ class OpenAICompatibleRewriter:
             proposal = self._parse_proposal(data)
             if proposal.fragment_id != fragment_id:
                 raise LlmEndpointError("Odpowiedź ma niewłaściwy identyfikator fragmentu.")
-            if proposal.source != protected.text:
+            # Spacing aside: a model that collapsed a double space has still
+            # read the right sentence.
+            if " ".join(proposal.source.split()) != " ".join(protected.text.split()):
                 raise LlmEndpointError("Model nie zwrócił identycznego tekstu źródłowego.")
             validation = validate_candidate(
                 protected.text,
@@ -408,6 +425,19 @@ class OpenAICompatibleRewriter:
                     source,
                     False,
                     f"validation_failed: {validation.reason}",
+                    rationale=proposal.rationale,
+                    validation_checks=checks,
+                )
+            names = new_proper_names(protected.text, proposal.proposal)
+            if names:
+                # Numbers are guarded by the validators, names were not: a
+                # model reading the neighbouring paragraphs brought "PiS-u"
+                # and "Guillermo" into sentences that never had them.
+                self.metadata.note_rejected("rejected:new_proper_name")
+                return LlmRewriteResult(
+                    source,
+                    False,
+                    f"new_proper_name: {', '.join(names)}",
                     rationale=proposal.rationale,
                     validation_checks=checks,
                 )
@@ -561,20 +591,25 @@ class OpenAICompatibleRewriter:
         }
         if max_tokens is not None:
             payload["max_tokens"] = max_tokens
-        if use_response_format:
-            payload["response_format"] = _JSON_SCHEMA
+        if not use_response_format:
+            return self._post_with_retries(payload), False
 
-        try:
-            response = self._post_with_retries(payload)
-        except LlmEndpointError as exc:
-            # Some compatible servers reject response_format while supporting
-            # the rest of Chat Completions.  Retry once with the strict prompt.
-            if use_response_format and getattr(exc, "status_code", None) in {400, 404, 415, 422}:
-                payload.pop("response_format", None)
+        known = self.metadata.response_format_kind
+        for kind in [known] if known else list(_RESPONSE_FORMATS):
+            payload["response_format"] = _RESPONSE_FORMATS[kind]
+            try:
                 response = self._post_with_retries(payload)
-                return response, False
-            raise
-        return response, use_response_format
+            except LlmEndpointError as exc:
+                # Some compatible servers reject a response_format shape while
+                # supporting the rest of Chat Completions: try the next one.
+                if getattr(exc, "status_code", None) in {400, 404, 415, 422}:
+                    continue
+                raise
+            self.metadata.response_format_kind = kind
+            return response, True
+        # None taken: the strict prompt alone.
+        payload.pop("response_format", None)
+        return self._post_with_retries(payload), False
 
     def _post_with_retries(self, payload: dict[str, Any]) -> dict[str, Any]:
         last_error: Exception | None = None
@@ -631,6 +666,28 @@ class OpenAICompatibleRewriter:
         if any(not isinstance(payload.get(key), str) for key in required):
             raise LlmEndpointError("W odpowiedzi modelu brakuje wymaganych pól tekstowych.")
         return LlmProposal(**{key: payload[key] for key in required})
+
+
+_CAPITALISED = regex.compile(r"\b\p{Lu}[\p{L}-]*")
+_SENTENCE_START = regex.compile(r"(?:^|[.!?:]\s+|\n)\W*$")
+
+
+def new_proper_names(source: str, proposal: str) -> list[str]:
+    """Capitalised words mid-sentence in the proposal that the source lacks.
+
+    Compared by the first four letters, so inflection passes ("Polska" /
+    "Polsce") and a word the source had lower-case passes too. Placeholders
+    are skipped: they stand for protected text, not a name the model chose.
+    """
+    stems = {word[:4].lower() for word in regex.findall(r"\p{L}[\p{L}-]*", source)}
+    names = []
+    for match in _CAPITALISED.finditer(proposal):
+        word = match.group(0)
+        if "PROTECTED" in word or _SENTENCE_START.search(proposal[: match.start()]):
+            continue
+        if word[:4].lower() not in stems:
+            names.append(word)
+    return names
 
 
 def added_ai_signals(source: str, proposal: str) -> list[str]:

@@ -1095,8 +1095,12 @@ def _rewrite_remaining_with_llm(
     """
     lines = text.split("\n")
     nonempty = [index for index, value in enumerate(lines) if value.strip()]
+    genre = GENRE_PROFILES.get(document_type)
+    wanted = set(genre.llm_families) if genre and genre.llm_families else None
     findings_by_sentence: dict[tuple[int, int], list[str]] = {}
     for finding in diagnosis.findings:
+        if wanted is not None and finding.family not in wanted:
+            continue
         findings_by_sentence.setdefault(
             (finding.paragraph_index, finding.sentence_index), []
         ).append(finding.detail or finding.evidence or finding.family)

@@ -142,7 +142,8 @@ def test_response_format_falls_back_to_strict_prompt() -> None:
         client=httpx.Client(transport=httpx.MockTransport(handler)),
     )
     assert rewriter.probe()
-    assert calls == 2
+    # The OpenAI shape, the llama.cpp shape, then the strict prompt alone.
+    assert calls == 3
     assert rewriter.metadata.supports_response_format is False
 
 
@@ -525,3 +526,94 @@ def test_a_rejected_sentence_leaves_its_paragraph_untouched() -> None:
     assert rejected >= 1
     assert changes == []
     assert result == paragraph
+
+
+def _echo_handler(requests: list[dict], *, proposal=None, reject_formats=()):
+    """An endpoint that echoes the source; `proposal(source)` shapes the answer."""
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        payload = json.loads(request.content)
+        requests.append(payload)
+        shape = (payload.get("response_format") or {}).get("type")
+        if shape in reject_formats:
+            return httpx.Response(400, json={"error": "unsupported"})
+        user = _fields(payload["messages"][1]["content"])
+        source = user["source"] or "To jest test połączenia."
+        return _response(
+            {
+                "fragment_id": user["fragment_id"] or "capability-test",
+                "source": source,
+                "proposal": proposal(source) if proposal and user["source"] else source,
+                "rationale": "test",
+            }
+        )
+
+    return handler
+
+
+def test_a_llama_cpp_endpoint_gets_the_schema_in_the_shape_it_reads() -> None:
+    """Bielik's llama.cpp refused the OpenAI shape, so nothing constrained its
+    output and half of its answers were unusable."""
+    requests: list[dict] = []
+    handler = _echo_handler(requests, proposal=lambda s: s.replace("Warto podkreślić, że ", ""),
+                            reject_formats=("json_schema",))
+    rewriter = OpenAICompatibleRewriter(
+        LlmSettings("https://model.test/v1", "pl", "token", 2),
+        client=httpx.Client(transport=httpx.MockTransport(handler)),
+    )
+
+    assert rewriter.probe()
+    assert rewriter.metadata.response_format_kind == "json_object"
+    assert rewriter.metadata.supports_response_format is True
+    sent_before = len(requests)
+    result = rewriter.rewrite_fragment(
+        "Warto podkreślić, że ogród zimą odpoczywa.", fragment_id="p-1", document_type=DocumentType.general
+    )
+    assert result.accepted
+    # Straight to the shape that worked, no second refusal on the way.
+    assert [r["response_format"]["type"] for r in requests[sent_before:]] == ["json_object"]
+    assert "schema" in requests[-1]["response_format"]
+
+
+def test_a_proposal_bringing_in_a_new_name_is_turned_down() -> None:
+    requests: list[dict] = []
+    handler = _echo_handler(requests, proposal=lambda s: s.replace("del Toro", "Guillermo del Toro"))
+    rewriter = OpenAICompatibleRewriter(
+        LlmSettings("https://model.test/v1", "pl", "token", 2),
+        client=httpx.Client(transport=httpx.MockTransport(handler)),
+    )
+    assert rewriter.probe()
+
+    result = rewriter.rewrite_fragment(
+        "Krytycy chwalili najnowszy film del Toro.", fragment_id="p-1", document_type=DocumentType.general
+    )
+    assert not result.accepted
+    assert result.reason.startswith("new_proper_name: Guillermo")
+
+
+def test_an_echo_that_only_differs_in_spacing_still_counts() -> None:
+    requests: list[dict] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        payload = json.loads(request.content)
+        requests.append(payload)
+        user = _fields(payload["messages"][1]["content"])
+        source = user["source"] or "To jest test połączenia."
+        return _response(
+            {
+                "fragment_id": user["fragment_id"] or "capability-test",
+                "source": " ".join(source.split()),
+                "proposal": " ".join(source.split()).replace("Warto podkreślić, że o", "O"),
+                "rationale": "test",
+            }
+        )
+
+    rewriter = OpenAICompatibleRewriter(
+        LlmSettings("https://model.test/v1", "pl", "token", 2),
+        client=httpx.Client(transport=httpx.MockTransport(handler)),
+    )
+    assert rewriter.probe()
+    result = rewriter.rewrite_fragment(
+        "Warto podkreślić, że ogród  zimą odpoczywa.", fragment_id="p-1", document_type=DocumentType.general
+    )
+    assert result.accepted

@@ -63,6 +63,8 @@ class GenreProfile:
     )
     # Rules the genre does not want, by rule id or id prefix.
     disabled_rules: tuple[str, ...] = ()
+    # Signal families whose sentences go to the hosted model; empty for all.
+    llm_families: tuple[str, ...] = ()
 
     def prompt_text(self) -> str:
         return (
@@ -180,6 +182,14 @@ GENRE_PROFILES: dict[DocumentType, GenreProfile] = {
             "legal_style:w_znacznym_stopniu",
             "legal_style:oznacza_to",
         ),
+        # Only what marks an assistant rather than a writer. Share of texts
+        # carrying the family, ChatGPT answers against human text:
+        # summary_frame 9.9% / 0.5%, abstract_frame 1.9% / 0.7%,
+        # concessive_reversal 0.3% / 0.1%. Everything else is within 1.5x -
+        # nominalisation 60% / 37%, enumeration 65% / 46% - and sending those
+        # sentences is where Bielik changed human text: 13 of 24 texts, one
+        # "komór olejkowych" into "komórek", for 14% fewer tics on model text.
+        llm_families=("summary_frame", "abstract_frame", "concessive_reversal"),
     ),
 }
 

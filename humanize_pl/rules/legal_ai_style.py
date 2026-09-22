@@ -63,7 +63,9 @@ def _paragraph_has_ai_style_issue(
 def _drop_empty_emphasis(sentence: str, *, nlp_confidence: float | None) -> list[Candidate]:
     out: list[Candidate] = []
 
-    candidate = re.sub(r"\b[Tt]o właśnie\b", "To", sentence, count=1)
+    # The case of "to" is kept: mid-sentence it was written back as "To" -
+    # "Myślę, że To nazywane jest miłością", found on ChatGPT answers.
+    candidate = re.sub(r"\b([Tt])o właśnie\b", r"\1o", sentence, count=1)
     if candidate != sentence:
         out.append(
             _candidate(

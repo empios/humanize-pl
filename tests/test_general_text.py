@@ -106,3 +106,14 @@ def test_the_model_is_told_it_edits_a_text_not_a_legal_document():
     system = systems[-1]
     assert "redaktorem tekstów" in system
     assert "prawnych" not in system and "kancelarii" not in system
+
+
+def test_dropping_wlasnie_keeps_the_case_of_to():
+    """Mid-sentence "to właśnie" came back as "To", on a ChatGPT answer."""
+    from humanize_pl.rules.legal_ai_style import _drop_empty_emphasis
+
+    mid = _drop_empty_emphasis("Myślę, że to właśnie nazywane jest miłością.", nlp_confidence=None)
+    start = _drop_empty_emphasis("To właśnie ono odróżnia zatrudnienie od zlecenia.", nlp_confidence=None)
+
+    assert mid[0].text == "Myślę, że to nazywane jest miłością."
+    assert start[0].text == "To ono odróżnia zatrudnienie od zlecenia."

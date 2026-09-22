@@ -215,12 +215,19 @@ def test_w_celu_ger_candidates():
     from humanize_pl.config import Mode
     from humanize_pl.rules.nominalization import nominalization_candidates
 
-    cands = nominalization_candidates(
-        "W celu przeprowadzenia kontroli należy złożyć wniosek.", mode=Mode.standard
-    )
-    w_celu = [c for c in cands if "w_celu" in c.rule]
-    assert w_celu, "No w_celu_ger candidate generated"
-    assert any("aby przeprowadzić" in c.text.lower() for c in w_celu)
+    def w_celu(sentence: str) -> list[str]:
+        cands = nominalization_candidates(sentence, mode=Mode.standard)
+        return [c.text for c in cands if "w_celu" in c.rule]
+
+    # Mid-sentence "aby" takes the comma "w celu" did not need.
+    assert w_celu("Złożył wniosek w celu dostosowania się do przepisów.") == [
+        "Złożył wniosek, aby dostosować się do przepisów."
+    ]
+    assert any("aby ustalić, czy" in text for text in w_celu("Sąd wezwał świadka w celu ustalenia, czy umowa istniała."))
+    # An object after the gerund stays genitive under an infinitive: "aby
+    # przeprowadzić kontroli", "aby zapewnić sprawnego zarządzania". Skipped.
+    assert w_celu("W celu przeprowadzenia kontroli należy złożyć wniosek.") == []
+    assert w_celu("Działa w celu zapewnienia sprawnego i skutecznego zarządzania.") == []
 
 
 def test_lix_in_sentence_features():

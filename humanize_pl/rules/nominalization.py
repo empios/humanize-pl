@@ -268,18 +268,35 @@ def _ger_auto_entry(
     return _NlpEntry(infinitive, frozenset({"standard", "strong"}), 0.16)
 
 
+# What may follow the gerund for the rewrite to stay grammatical: nothing,
+# "się", or a preposition. Anything else is its object, in the genitive the
+# gerund governs, and an infinitive needs it in another case.
+_W_CELU_FREE_AFTER = frozenset(
+    {"się", "z", "ze", "w", "we", "na", "do", "dla", "przez", "od", "po", "o", "przy",
+     "między", "pomiędzy", "wobec", "u", "za", "nad", "pod", "przed"}
+)
+_NEXT_WORD_RE = re.compile(r"\s*(\p{L}+)")
+
+
 def _w_celu_ger_candidates(
     sentence: str, *, mode: Mode, morfeusz: MorfeuszAnalyzer
 ) -> list[Candidate]:
-    """Replace 'w celu GERUNDIVE' → 'aby INFINITIVE'.
+    """Replace 'w celu GERUNDIVE' → 'aby INFINITIVE' where the grammar allows.
 
-    Example: 'w celu przeprowadzenia kontroli' → 'aby przeprowadzić kontroli'
-    (the noun complement stays in its original case — an acceptable approximation).
+    'w celu dostosowania się do przepisów' → 'aby dostosować się do
+    przepisów'; 'w celu ustalenia, czy' → 'aby ustalić, czy'. Not when an
+    object follows: it used to leave it in the genitive - "aby zapewnić
+    sprawnego i skutecznego zarządzania", found on ChatGPT answers - and
+    the engine skips rather than emit a case mismatch (as the light-verb
+    reduction does, see `_reduction_leaves_dangling_genitive`).
     """
     if mode == Mode.conservative:
         return []
     candidates: list[Candidate] = []
     for m in _W_CELU_RE.finditer(sentence):
+        following = _NEXT_WORD_RE.match(sentence, m.end())
+        if following and following.group(1).casefold() not in _W_CELU_FREE_AFTER:
+            continue
         ger_word = m.group(1)
         infinitive = ger_to_infinitive(ger_word, morfeusz)
         if not infinitive:
@@ -290,7 +307,12 @@ def _w_celu_ger_candidates(
             replacement = "Aby " + infinitive
         else:
             replacement = "aby " + infinitive
-        result = sentence[:phrase_start] + replacement + sentence[m.end():]
+        before = sentence[:phrase_start].rstrip()
+        # "aby" opens a clause: mid-sentence it takes a comma, which
+        # "w celu" did not need.
+        if before and not before.endswith((",", "(", "—", "–", ":", ";")):
+            before += ","
+        result = (before + " " if before else "") + replacement + sentence[m.end():]
         result = re.sub(r"  +", " ", result).strip()
         if result == sentence:
             continue

@@ -21,8 +21,15 @@ def _spacing(text: str) -> str:
     return re.sub(r"([,;:!?])(?=[\p{L}\p{N}])", r"\1 ", cleaned)
 
 
+# Source code pasted into a text. Its spacing is syntax, not typography: a
+# ChatGPT answer's C++ came out as "=:: CreateFileA(...)" and ")!= 0".
+_CODE = re.compile(r"::|->|!=|==|&&|\|\||[{}]|\w\([^)]*\)\s*;")
+
+
 def cleanup_candidates(sentence: str) -> list[Candidate]:
     out: list[Candidate] = []
+    if _CODE.search(sentence):
+        return out
 
     # 1. Normalize typography (em-dash -> en-dash with spaces)
     # AI often uses em-dash without spaces like "słowo—słowo"

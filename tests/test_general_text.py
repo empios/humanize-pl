@@ -165,3 +165,16 @@ def test_only_assistant_tics_go_to_the_model_in_general_text():
     run_all_layers(text, name="t.txt", settings=settings, rewriter=rewriter, llm_prepared=True)
 
     assert sent and all("Podsumowując" in fragment for fragment in sent)
+
+
+def test_code_in_a_text_keeps_its_spacing():
+    """A ChatGPT answer's C++ came out as "=:: CreateFileA" and ")!= 0"."""
+    from humanize_pl.rules.cleanup import cleanup_candidates
+
+    for line in (
+        "HANDLE h = ::CreateFileA(name, GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);",
+        "if (::DeviceIoControl(h, code, &index, 4, NULL, 0, &bytes, NULL) != 0) {",
+    ):
+        assert cleanup_candidates(line) == []
+    # Prose keeps its cleanup.
+    assert cleanup_candidates("Zdanie  z podwójną spacją .")

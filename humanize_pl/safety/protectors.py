@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+
 import regex as re
 
 PROTECTED_PATTERNS = [
@@ -17,19 +18,28 @@ PROTECTED_PATTERNS = [
     # Quoted text
     r"„[^”]+”",
     r"\"[^\"]+\"",
-    # Enumerations
-    r"^\s*(?:\d+\.|[a-z]\)|[ivxlcdm]+\))\s+",
+    # Enumerations. Spaces and tabs only: with `\s`, `^` on a blank line let
+    # the pattern swallow the newline before "1.", the placeholder then sat
+    # at the start of a paragraph, and the spacing cleanup stripped it - a
+    # real model contract lost 53 of its 92 blank lines that way.
+    r"^[ \t]*(?:\d+\.|[a-z]\)|[ivxlcdm]+\))[ \t]+",
 ]
 
 # Used for text that leaves the process.  The local rule engine keeps its
 # established protection set for compatibility, while the hosted-model path
 # additionally pseudonymises likely parties and direct identifiers.
 SENSITIVE_PATTERNS = [
+    # Address plus optional postcode/city, before names and bare numbers.
+    r"\b(?:ul\.|al\.|aleja|plac|pl\.|os\.)[ \t]+[^\n,;]{2,70}?\s+\d+[A-Za-z]?(?:\s*/\s*\d+[A-Za-z]?)?(?:,\s*(?:\d{2}-\d{3}\s+)?[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż-]+(?:\s+[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż-]+){0,2})?",
+    r"\b\d{2}-\d{3}\s+[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż-]+(?:\s+[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż-]+){0,2}",
+    r"\b(?:Pan|Pani|Panem|Panią|Panu|Pana|nazwisko[: ]+|Nazwisko[: ]+)\s*[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż-]+",
+    r"\b[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż-]*(?:ski|ska|skiego|skiej|skim|ską|scy|cki|cka|ckiego|ckiej|ckim|cką|wicz|wicza)\b",
     r"\b[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}\b",
     r"https?://[^\s<>()]+",
     r"\b(?:\+48\s*)?(?:\d[ -]?){9}\b",
     r"\b(?:PESEL|NIP|REGON|KRS)\s*[:#]?\s*[A-Z0-9 -]{6,20}\b",
     r"\bPL\d{26}\b",
+    r"\b(?:PL\s*)?\d{2}(?:\s+\d{4}){6}\b",
     r"\b[A-ZĄĆĘŁŃÓŚŹŻ]{2,}(?:[- ][A-ZĄĆĘŁŃÓŚŹŻ0-9]{2,})*\b",
     r"\b[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+(?:[- ][A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+)+\b",
 ]
@@ -43,7 +53,7 @@ class ProtectedText:
     mapping: dict[str, str]
 
     def restore(self, value: str) -> str:
-        for placeholder, original in self.mapping.items():
+        for placeholder, original in reversed(list(self.mapping.items())):
             value = value.replace(placeholder, original)
         return value
 
@@ -62,9 +72,9 @@ class ProtectedText:
         return result
 
 
-def protect_text(text: str, *, include_sensitive: bool = False) -> ProtectedText:
+def protect_text(text: str, *, include_sensitive: bool = False, start_index: int = 0) -> ProtectedText:
     mapping: dict[str, str] = {}
-    counter = 0
+    counter = start_index
 
     def repl(match: re.Match) -> str:
         nonlocal counter

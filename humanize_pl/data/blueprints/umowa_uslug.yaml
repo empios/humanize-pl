@@ -12,49 +12,100 @@ sections:
   - id: komparycja
     label_pl: komparycja (data, miejsce, strony)
     severity: required
+    # Poza numeracją: komparycja poprzedza § 1, podpisy następują po ostatnim §.
+    unit: false
     matches: ["zawarta w dniu", "zawarto umowę", "pomiędzy"]
+    expects:
+      - "Umowa wskazuje datę i miejsce jej zawarcia."
+      - "Umowa oznacza obie strony w sposób pozwalający je zidentyfikować."
 
   - id: przedmiot
     label_pl: przedmiot umowy
     severity: required
-    matches: ["przedmiot umowy", "przedmiotem umowy", "przedmiotem niniejszej umowy"]
+    # The firm often states the subject without naming it: "Zleceniodawca
+    # zleca, a Zleceniobiorca zobowiązuje się…". Not "zobowiązuje się do
+    # świadczenia": it recurs in the obligations clause, and a cut subject
+    # section then went unnoticed.
+    matches: ["przedmiot umowy", "przedmiotem umowy", "przedmiotem niniejszej umowy",
+              "zleca, a ", "powierza, a "]
+    expects:
+      - "Umowa określa, jakie usługi wykonawca ma świadczyć."
+      - "Zakres usług jest opisany na tyle konkretnie, by dało się stwierdzić ich wykonanie."
 
   - id: termin
     label_pl: termin i sposób wykonania
     severity: required
-    matches: ["termin wykonania", "terminy i sposób", "sposób wykonania", "harmonogram"]
+    # A continuing service states its period, not a deadline: "zawarta na
+    # czas określony od dnia…", "wykonanie nastąpi w okresie od … do …".
+    # Chosen with tools/audit_blueprints.py: no false draft left on the
+    # firm's contracts, 8 of 9 cut sections still noticed. "będzie wykonywał"
+    # silenced the same drafts but sits in every obligations clause, so a
+    # cut section went unnoticed.
+    matches: ["termin wykonania", "terminy i sposób", "sposób wykonania", "harmonogram",
+              "czas określony", "czas nieokreślony", "czas oznaczony", "czas nieoznaczony",
+              "w okresie od"]
+    expects:
+      - "Umowa określa termin lub okres wykonywania usług."
+      - "Umowa wskazuje sposób wykonania usług albo tryb ich odbioru."
 
   - id: wynagrodzenie
     label_pl: wynagrodzenie
     severity: required
     matches: ["wynagrodzenie"]
+    expects:
+      - "Umowa określa wysokość wynagrodzenia albo sposób jego obliczenia."
+      - "Umowa określa termin i sposób zapłaty wynagrodzenia."
 
   - id: odpowiedzialnosc
     label_pl: odpowiedzialność
     severity: required
     matches: ["odpowiedzialność", "odpowiada za"]
+    expects:
+      - "Umowa określa zasady odpowiedzialności za niewykonanie lub nienależyte wykonanie usług."
 
   - id: poufnosc
     label_pl: poufność
     severity: expected
     matches: ["poufnoś", "informacje poufne"]
+    expects:
+      - "Umowa zobowiązuje stronę do zachowania w poufności informacji uzyskanych przy wykonywaniu umowy."
 
   - id: rozwiazanie
     label_pl: rozwiązanie i wypowiedzenie umowy
     severity: required
-    matches: ["rozwiązanie umowy", "wypowiedzenie", "odstąpienie od umowy"]
+    # The verb forms the firm uses: "może rozwiązać umowę", "umowa może być
+    # rozwiązana przez każdą ze stron". Not the stem "wypowiedzeni" nor
+    # "rozwiązania umowy": both sit in other clauses ("w przypadku
+    # rozwiązania umowy…"), and a cut section then went unnoticed - 4 of 7
+    # caught against 6 of 7 with this list.
+    matches: ["rozwiązanie umowy", "rozwiązać umowę", "rozwiązać niniejszą umowę",
+              "rozwiązana przez", "wypowiedzenie", "odstąpienie od umowy"]
+    expects:
+      - "Umowa określa, w jaki sposób i z jakim skutkiem można ją rozwiązać lub wypowiedzieć."
+      - "Umowa wskazuje termin wypowiedzenia albo przesłanki odstąpienia."
 
   - id: postanowienia_koncowe
     label_pl: postanowienia końcowe
     severity: required
     matches: ["postanowienia końcowe", "w sprawach nieuregulowanych"]
+    expects:
+      - "Umowa wskazuje, jakie przepisy stosuje się w sprawach w niej nieuregulowanych."
+      - "Umowa określa formę wymaganą dla jej zmian."
 
   - id: wlasciwosc
     label_pl: właściwość sądu
     severity: expected
     matches: ["właściwy sąd", "sądem właściwym", "właściwości sądu"]
+    expects:
+      - "Umowa wskazuje sąd właściwy do rozpoznawania sporów z niej wynikających."
 
   - id: podpisy
     label_pl: podpisy stron
     severity: required
+    unit: false
     matches: ["podpis", "zamawiający:", "wykonawca:"]
+    # The block by its shape - dots beside the parties' names - because the
+    # role as a word is in every clause (`blueprint.SIGNATURE_BLOCK`).
+    signature_block: true
+    expects:
+      - "Dokument przewiduje miejsce na podpisy obu stron."

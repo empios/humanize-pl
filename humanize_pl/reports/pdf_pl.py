@@ -33,12 +33,22 @@ from collections import Counter
 from datetime import datetime
 from difflib import SequenceMatcher
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar
 from xml.sax.saxutils import escape
 
-from humanize_pl.detect.calibration import REVIEW_THRESHOLD, load_profile
-from humanize_pl.flows.base import collapse_visible_changes, describe_visible_change
+from humanize_pl.artifacts import is_markup_only
+from humanize_pl.detect.calibration import (
+    REVIEW_THRESHOLD,
+    load_profile,
+    threshold_for_family,
+)
+from humanize_pl.flows.base import (
+    READY_COMPLIANCE,
+    collapse_visible_changes,
+    describe_visible_change,
+)
 from humanize_pl.gate import FAMILY_CONSTRAINTS
+from humanize_pl.reports.operations import operation_lines
 
 # --- Fonts ------------------------------------------------------------------
 # reportlab's built-in fonts and its bundled Vera face both lack ą, ę, ś, ż and
@@ -175,6 +185,12 @@ FAMILY_GLOSSARY: dict[str, dict[str, str]] = {
         "example": "„dokonanie zapłaty” zamiast „zapłacić”",
         "auto": "tak",
     },
+    "typography_artifact": {
+        "label": "Maniery typograficzne",
+        "what": "Amerykańskie znaki interpunkcyjne (np. em-dash bez spacji) zamiast polskich.",
+        "example": "\"fakt—wbrew pozorom—nie ma znaczenia\"",
+        "auto": "tak",
+    },
     "repeated_opening": {
         "label": "Powtarzany początek zdania",
         "what": "Ten sam zwrot otwiera zdania w całym dokumencie.",
@@ -190,6 +206,20 @@ METRIC_GLOSSARY: dict[str, dict[str, str]] = {
         "label": "Zróżnicowanie długości zdań",
         "how": "Im wyżej, tym bardziej zdania różnią się długością.",
         "why": "Tekst nadmiernie schematyczny trzyma zdania w jednej mierze. Człowiek miesza długie z krótkimi.",
+        "direction": "low",
+        "scored": True,
+    },
+    "sentence_burstiness": {
+        "label": "Wybuchowość (Burstiness)",
+        "how": "Mierzy zmienność długości zdań na przestrzeni tekstu.",
+        "why": "Teksty AI mają płaską rytmikę, człowiek pisze impulsywnie, przeplatając zdania.",
+        "direction": "low",
+        "scored": True,
+    },
+    "sentence_entropy": {
+        "label": "Entropia strukturalna",
+        "how": "Poziom nieprzewidywalności struktury zdań w akapitach.",
+        "why": "AI używa wysoce przewidywalnych wzorców budowy, prowadząc do niskiej entropii.",
         "direction": "low",
         "scored": True,
     },
@@ -222,23 +252,36 @@ METRIC_GLOSSARY: dict[str, dict[str, str]] = {
         "direction": "high",
         "scored": False,
     },
+    "connective_density": {
+        "label": "Gęstość spójników",
+        "how": "Liczba spójników dyskursywnych (np. ponadto, jednakże) na 1000 słów.",
+        "why": "Modele językowe często nadużywają takich łączników, co sztucznie napusza tekst.",
+        "direction": "low",
+        "scored": True,
+    },
 }
 
 SHAPE_METRIC_ORDER = (
     "sentence_length_cv",
+    "sentence_burstiness",
+    "sentence_entropy",
     "paragraph_shape_cv",
     "mean_sentence_words",
     "opening_diversity",
     "type_token_ratio",
+    "connective_density",
 )
 
 # Reference-profile attribute backing each metric, for the "human" column.
 PROFILE_ATTRIBUTE = {
     "sentence_length_cv": "sentence_length_cv",
+    "sentence_burstiness": "sentence_burstiness",
+    "sentence_entropy": "sentence_entropy",
     "paragraph_shape_cv": "paragraph_shape_cv",
     "mean_sentence_words": "sentence_words",
     "opening_diversity": "opening_diversity",
-    "type_token_ratio": "windowed_ttr",
+    "type_token_ratio": "mtld",
+    "connective_density": "connective_density",
 }
 
 ISSUE_WORDS = {
@@ -307,7 +350,7 @@ def pdf_available() -> bool:
 
 
 def _covers_polish(path: str) -> bool:
-    from reportlab.pdfbase.ttfonts import TTFont, TTFError
+    from reportlab.pdfbase.ttfonts import TTFError, TTFont
 
     try:
         face = TTFont("probe", path).face
@@ -334,9 +377,9 @@ def _resolve_font_paths() -> tuple[str, str]:
 
 
 def _register_fonts() -> None:
+    from reportlab.lib.fonts import addMapping
     from reportlab.pdfbase import pdfmetrics
     from reportlab.pdfbase.ttfonts import TTFont
-    from reportlab.lib.fonts import addMapping
 
     if BASE_FONT in pdfmetrics.getRegisteredFontNames():
         return
@@ -373,12 +416,41 @@ def _plural(count: int, one: str, few: str, many: str) -> str:
     return many
 
 
-def _verdict_colour(score: float) -> str:
-    if score >= REVIEW_THRESHOLD:
+def _verdict_colour(score: float, threshold: float | None = REVIEW_THRESHOLD) -> str:
+    """Colour of a score against the threshold that applied to it.
+
+    `None` when a batch mixes kinds of document with different thresholds:
+    a mean over a contract and a filing has no threshold of its own, and
+    colouring it would pass a verdict nobody measured.
+    """
+    if threshold is None:
+        return INK
+    if score >= threshold:
         return BAD
-    if score >= REVIEW_THRESHOLD * 0.6:
+    if score >= threshold * 0.6:
         return WARN
     return GOOD
+
+
+# Polish names for the kinds of document, as a threshold is quoted for them.
+_FAMILY_NAMES = {
+    "contract": "umowy",
+    "filing_official": "pisma procesowe i urzędowe",
+    "client_communication": "komunikacja z klientem",
+    "general": "tekst ogólny",
+}
+
+
+def _baseline_description(profile: Any) -> str:
+    """What a reference profile is, in words: "1804 uzasadnień sądowych (SAOS)"."""
+    count = int(getattr(profile, "document_count", 0) or 0)
+    genre = str(getattr(profile, "genre", ""))
+    if genre == "court_reasoning":
+        return f"{_thousands(count)} uzasadnień sądowych (SAOS)"
+    if genre == "law_firm_contract":
+        return f"{_thousands(count)} zatwierdzonych umów kancelarii"
+    noun = _plural(count, "dokument kancelarii", "dokumenty kancelarii", "dokumentów kancelarii")
+    return f"{_thousands(count)} {noun}"
 
 
 def _shorten(text: str, limit: int = EXAMPLE_CHARS) -> str:
@@ -519,12 +591,22 @@ def _scale_bar_class():
         the calibration notes.
         """
 
-        def __init__(self, before: float, after: float, width: float):
+        def __init__(
+            self,
+            before: float,
+            after: float,
+            width: float,
+            thresholds: list[float] | None = None,
+        ):
             super().__init__()
             self.before = max(0.0, min(1.0, before))
             self.after = max(0.0, min(1.0, after))
             self.width = width
             self.height = 30 * mm
+            # One threshold per kind of document in the batch. With one, the
+            # scale is split into its two zones; with several, each is drawn
+            # as a line and the readings are not coloured against any.
+            self.thresholds = sorted(set(thresholds or [REVIEW_THRESHOLD]))
 
         def wrap(self, available_width, available_height):
             self.width = min(self.width, available_width)
@@ -535,16 +617,22 @@ def _scale_bar_class():
             mm_ = self.height / 30
             track_y = 13 * mm_
             track_h = 4.5 * mm_
-            cut = REVIEW_THRESHOLD * self.width
+            cut = self.thresholds[0] * self.width
 
-            canvas.setFillColor(colors.HexColor("#e7f0ea"))
-            canvas.rect(0, track_y, cut, track_h, stroke=0, fill=1)
-            canvas.setFillColor(colors.HexColor("#f8e7e4"))
-            canvas.rect(cut, track_y, self.width - cut, track_h, stroke=0, fill=1)
+            if len(self.thresholds) == 1:
+                canvas.setFillColor(colors.HexColor("#e7f0ea"))
+                canvas.rect(0, track_y, cut, track_h, stroke=0, fill=1)
+                canvas.setFillColor(colors.HexColor("#f8e7e4"))
+                canvas.rect(cut, track_y, self.width - cut, track_h, stroke=0, fill=1)
+            else:
+                canvas.setFillColor(colors.HexColor(BAND))
+                canvas.rect(0, track_y, self.width, track_h, stroke=0, fill=1)
 
             canvas.setStrokeColor(colors.HexColor(BAD))
             canvas.setLineWidth(1)
-            canvas.line(cut, track_y - 1.5 * mm_, cut, track_y + track_h + 1.5 * mm_)
+            for value in self.thresholds:
+                x = value * self.width
+                canvas.line(x, track_y - 1.5 * mm_, x, track_y + track_h + 1.5 * mm_)
 
             # The axis sits below the "po" label, not beside it: the two collide
             # whenever a reading lands near a tick, and 0,25 is exactly where
@@ -557,9 +645,16 @@ def _scale_bar_class():
             canvas.drawRightString(self.width, 1 * mm_, "więcej cech schematycznych")
 
             canvas.setFillColor(colors.HexColor(BAD))
-            canvas.drawCentredString(
-                cut, track_y + track_h + 7.4 * mm_, "próg: powyżej warto przejrzeć tekst"
-            )
+            if len(self.thresholds) == 1:
+                canvas.drawCentredString(
+                    cut, track_y + track_h + 7.4 * mm_, "próg: powyżej warto przejrzeć tekst"
+                )
+            else:
+                canvas.drawString(
+                    0,
+                    track_y + track_h + 7.4 * mm_,
+                    "progi zależą od rodzaju dokumentu (zob. 5.1)",
+                )
 
             self._marker(self.before, "przed", above=True)
             self._marker(self.after, "po", above=False)
@@ -572,7 +667,8 @@ def _scale_bar_class():
             x = value * self.width
             track_y = 13 * mm_
             track_h = 4.5 * mm_
-            colour = _colors.HexColor(_verdict_colour(value))
+            threshold = self.thresholds[0] if len(self.thresholds) == 1 else None
+            colour = _colors.HexColor(_verdict_colour(value, threshold))
             canvas.setFillColor(colour)
             canvas.setStrokeColor(colour)
             y = track_y + track_h if above else track_y
@@ -613,17 +709,36 @@ class _Report:
         self.failed = [row for row in self.rows if row.get("status") != "ok"]
         self.summary = payload.get("summary", {})
         self.settings = payload.get("settings", {})
-        calibrated_items = [
-            item
-            for item in self.items
-            if not str(item.get("calibration_status", "")).startswith("uncalibrated")
-        ]
-        # Old reports have no calibration_status and retain their historical
-        # SAOS comparison. New genre-aware flows are explicitly uncalibrated
-        # until a matching human corpus exists.
-        self.profile = load_profile() if calibrated_items or not any(
-            "calibration_status" in item for item in self.items
-        ) else None
+        # Which human baselines the items were actually measured against.
+        #
+        # This used to load the court-judgment profile whenever anything was
+        # calibrated, so a batch of contracts measured against the firm's own
+        # 51 contracts was described as compared with "1804 pism sądowych".
+        # Old reports carry no calibration_status and keep their historical
+        # SAOS comparison.
+        statuses = [str(item.get("calibration_status", "")) for item in self.items]
+        if not any("calibration_status" in item for item in self.items):
+            names = ["saos_common_2018_2024"] if self.items else []
+        else:
+            names = sorted(
+                {status.split(":", 1)[1] for status in statuses if status.startswith("calibrated:")}
+            )
+        self.baselines: list[tuple[str, Any]] = [(name, load_profile(name)) for name in names]
+        self.calibrated = bool(self.baselines)
+        # One loadable profile: its distributions can stand in the "human"
+        # column of the metrics table. Several, or an office profile that
+        # lives outside the shipped set, and no single column is true.
+        loaded = [profile for _, profile in self.baselines if profile is not None]
+        self.profile = loaded[0] if len(self.baselines) == 1 and loaded else None
+
+        # The threshold is per kind of document (0.08 for contracts, 0.15
+        # for filings), not the global 0.25 the report used to quote for all.
+        kinds = sorted({str(item.get("document_type") or "") for item in self.items})
+        self.thresholds = {kind: threshold_for_family(kind) for kind in kinds}
+        distinct = set(self.thresholds.values())
+        self.threshold: float | None = (
+            distinct.pop() if len(distinct) == 1 else (None if distinct else REVIEW_THRESHOLD)
+        )
         self.rebuilt = bool(payload.get("rebuilt"))
         self.changes_known = not self.rebuilt and self.settings.get("rewrite", True)
 
@@ -654,6 +769,28 @@ class _Report:
         )
         self.has_family_data = any("family_counts_before" in item for item in self.items)
         self.has_metric_data = any("metrics_before" in item for item in self.items)
+
+    def _threshold_for(self, item: dict[str, Any]) -> float:
+        return threshold_for_family(str(item.get("document_type") or ""))
+
+    def _baseline_sentence(self) -> str:
+        """Which humans the score was measured against, in one sentence."""
+        parts = []
+        for name, profile in self.baselines:
+            parts.append(
+                _baseline_description(profile)
+                if profile is not None
+                else f"dokumenty kancelarii (wzorzec „{name}”)"
+            )
+        return "Zbiór porównawczy: " + "; ".join(parts) + "."
+
+    def _threshold_sentence(self) -> str:
+        """The threshold that applied, per kind of document in the batch."""
+        rows = [
+            f"<b>{_fmt(value)}</b> dla: {_FAMILY_NAMES.get(kind, kind or 'nieznany rodzaj')}"
+            for kind, value in sorted(self.thresholds.items())
+        ]
+        return "; ".join(rows) or f"<b>{_fmt(REVIEW_THRESHOLD)}</b>"
 
     # -- building blocks --
 
@@ -761,6 +898,8 @@ class _Report:
         sections = (
             self.cover,
             self.headline,
+            self.what_changed,
+            self.drafted_sections,
             self.xlsx_changes,
             self.xlsx_unresolved,
             self.xlsx_basis,
@@ -809,6 +948,12 @@ class _Report:
     def headline(self) -> list:
         from reportlab.platypus import Spacer
 
+        if any(not item.get("signal_interpretable", True) for item in self.items):
+            return [
+                self.para("1. Wynik redakcji", "h1"),
+                self.para(f"Zastosowano {self.changes} poprawek. Zestaw obejmuje krótkie teksty; wskaźnik stylu i jego średnia nie są miarodajną oceną jakości.", "body"),
+                *[self.para(escape(line), "body") for line in operation_lines(self.items)],
+            ]
         count = len(self.items)
         changes_cell = (
             f"<b>{self.changes}</b>"
@@ -824,9 +969,9 @@ class _Report:
             ),
             [
                 self.cell(
-                    f"<font size='13' color='{_verdict_colour(self.before)}'>"
+                    f"<font size='13' color='{_verdict_colour(self.before, self.threshold)}'>"
                     f"{_fmt(self.before)}</font> → "
-                    f"<font size='13' color='{_verdict_colour(self.after)}'><b>"
+                    f"<font size='13' color='{_verdict_colour(self.after, self.threshold)}'><b>"
                     f"{_fmt(self.after)}</b></font>"
                 ),
                 self.cell(f"<font size='13'>{self.findings_before} → "
@@ -841,9 +986,138 @@ class _Report:
             self.para("1. Najważniejsze liczby", "h1"),
             self.table(tiles, [self.width / 4] * 4),
             Spacer(1, 8),
-            _scale_bar_class()(self.before, self.after, self.width),
+            _scale_bar_class()(
+                self.before, self.after, self.width, list(self.thresholds.values())
+            ),
             self.para(self.headline_sentence(), "lead"),
+            *[self.para(escape(line), "body") for line in operation_lines(self.items)],
         ]
+        return story
+
+    # --- Co się zmieniło, oś po osi -------------------------------------
+
+    def _axis_rows(self) -> list[tuple[str, str, str, str]]:
+        """(axis, measure, before, after) as the table prints them.
+
+        Computed in `humanize_pl.reports.axes`, which flow-report.json and
+        the spreadsheet read too; an axis with nothing behind it prints
+        "nie dotyczy" and why, never a zero.
+        """
+        from humanize_pl.reports.axes import axis_rows
+
+        return [
+            (
+                row.axis,
+                row.measure,
+                row.shown(row.before),
+                row.shown(row.after) if row.applicable else row.reason,
+            )
+            for row in axis_rows(self.items)
+        ]
+
+    def what_changed(self) -> list:
+        """The three axes, before and after, in one place.
+
+        The rest of this report answers "what was found". This answers the
+        question the reader actually opens it with: did anything get better.
+        Until every layer was measured on the way in as well as out, two of
+        these three rows had no left-hand column at all.
+        """
+        if not self.items:
+            return []
+
+        header = ("Oś", "Miara", "Przed", "Po")
+        rows = [header] + [
+            (axis, measure, before, after)
+            for axis, measure, before, after in self._axis_rows()
+        ]
+        story = [
+            self.para("1.1. Co się zmieniło, oś po osi", "h2"),
+            self.table(
+                rows,
+                [self.width * 0.22, self.width * 0.44, self.width * 0.17, self.width * 0.17],
+            ),
+        ]
+        if not self.changes_known:
+            story.append(
+                self.para(
+                    "Ten przebieg odtworzono z zapisanego wyniku, więc obie kolumny "
+                    "pochodzą z ponownego pomiaru, a nie z przebiegu redakcji.",
+                    "small",
+                )
+            )
+        return story
+
+    def drafted_sections(self) -> list:
+        """Every clause the model wrote, in full, before anything else.
+
+        The clauses enter the document unmarked, by the owner's decision, so
+        this is the only place that says a machine wrote them. It sits right
+        after the before/after table and is not folded into the per-item
+        detail at the back: a reader who stops after the first page must
+        still learn that the document contains text nobody has approved.
+        """
+        from reportlab.platypus import KeepTogether, Spacer
+
+        rows_by_item = [
+            (position, item, row)
+            for position, item in enumerate(self.items, 1)
+            for row in item.get("drafted_sections") or []
+        ]
+        if not rows_by_item:
+            return []
+
+        inserted = sum(1 for _, _, row in rows_by_item if row.get("inserted", True))
+        story: list[Any] = [
+            self.para("1.2. Sekcje dopisane przez model, do zatwierdzenia", "h2"),
+            self.note(
+                f"Model dopisał {len(rows_by_item)} "
+                f"{_plural(len(rows_by_item), 'sekcję', 'sekcje', 'sekcji')}, których "
+                "dokument wymagał według szkieletu swojej kategorii. W dokumencie "
+                "nie są oznaczone. Każdą trzeba przeczytać i zatwierdzić przed "
+                "wysłaniem, a miejsca „…” uzupełnić danymi, których model nie znał "
+                "i których nie wolno mu było wymyślić."
+                + (
+                    ""
+                    if inserted == len(rows_by_item)
+                    else f" {len(rows_by_item) - inserted} z nich nie weszło do pliku, "
+                    "bo zapis został wycofany. Są tu wyłącznie jako propozycja."
+                )
+            ),
+            Spacer(1, 6),
+        ]
+        for index, (position, item, row) in enumerate(rows_by_item, 1):
+            label = str(row.get("label_pl", ""))
+            title = f"{_item_label(position, self.one, item)} | dopisana sekcja {index}"
+            # Blanks in colour, whichever way the model wrote them: "…" as
+            # asked, or a dotted line as in a paper form.
+            body = re.sub(
+                r"…+|\.{3,}",
+                lambda match: f"<font color='{BAD}'><b>{match.group(0)}</b></font>",
+                escape(str(row.get("text", ""))),
+            ).replace("\n", "<br/>")
+            heading = str(row.get("heading") or "")
+            status = (
+                "wstawiono do dokumentu, bez oznaczenia"
+                if row.get("inserted", True)
+                else "<b>nie wstawiono</b>, zapis dokumentu wycofano"
+            )
+            card = [
+                ("Sekcja", escape(label)),
+                ("Status", status),
+            ]
+            if heading:
+                card.append(("Nagłówek", escape(heading)))
+            card.append(("Treść", body))
+            blanks = int(row.get("blanks") or 0)
+            if blanks:
+                card.append(("Do uzupełnienia", f"{blanks} {_plural(blanks, 'miejsce', 'miejsca', 'miejsc')} „…”"))
+            expects = [str(line) for line in row.get("expects") or []]
+            if expects:
+                card.append(("Wymóg szkieletu", escape(" ".join(expects))))
+            story.append(
+                KeepTogether([self.review_card(title, card, accent=BAD), Spacer(1, 7)])
+            )
         return story
 
     def headline_sentence(self) -> str:
@@ -888,13 +1162,40 @@ class _Report:
         return f"{moved} {verdict}"
 
     def _xlsx_change_entries(self) -> list[tuple[int, dict, int, dict]]:
-        """All visible edits, including payloads created before the full register."""
+        """All visible edits, including payloads created before the full register.
+
+        Markup removals are left out: "**Przedmiot umowy**" -> "Przedmiot
+        umowy" changes nothing a lawyer reviews, and on the model corpus a
+        thousand such cards made a 303-page report of 32 documents. They are
+        counted in `_markup_only_count` and said in one sentence instead. A
+        chain where a rule went on to change the words stays a card.
+        """
         entries: list[tuple[int, dict, int, dict]] = []
         for position, item in enumerate(self.items, 1):
             changes = item.get("applied_changes") or item.get("examples", [])
-            for change_index, change in enumerate(_collapse_chains(changes), 1):
+            visible = [
+                change for change in _collapse_chains(changes) if not is_markup_only(change)
+            ]
+            for change_index, change in enumerate(visible, 1):
                 entries.append((position, item, change_index, change))
         return entries
+
+    @property
+    def _locative(self) -> tuple[str, str, str]:
+        """"w 1 dokumencie", "w 3 dokumentach" - after "w", not the nominative."""
+        if self.is_xlsx:
+            return ("wierszu", "wierszach", "wierszach")
+        return ("dokumencie", "dokumentach", "dokumentach")
+
+    def _markup_only_count(self) -> tuple[int, int]:
+        """(edits, documents) that only removed markdown markers."""
+        edits = documents = 0
+        for item in self.items:
+            changes = item.get("applied_changes") or item.get("examples", [])
+            found = sum(1 for change in _collapse_chains(changes) if is_markup_only(change))
+            edits += found
+            documents += bool(found)
+        return edits, documents
 
     def xlsx_changes(self) -> list:
         """Printable change register with exact inline additions and removals."""
@@ -902,6 +1203,20 @@ class _Report:
 
         entries = self._xlsx_change_entries()
         story: list[Any] = [self.para("2. Wykaz zastosowanych zmian", "h1")]
+        markup_edits, markup_documents = self._markup_only_count()
+        if markup_edits:
+            story.append(
+                self.note(
+                    f"Usunięto znaczniki markdown (**, #, ---) w {markup_edits} "
+                    f"{_plural(markup_edits, 'miejscu', 'miejscach', 'miejscach')}, w "
+                    f"{markup_documents} "
+                    f"{_plural(markup_documents, *self._locative)}. "
+                    "To zmiany mechaniczne, bez wpływu na treść, więc nie są "
+                    "wypisywane pojedynczo."
+                )
+            )
+        if not entries and markup_edits:
+            return story
         if not entries:
             if not self.changes_known:
                 story.append(
@@ -1055,14 +1370,10 @@ class _Report:
         layers = self.payload.get("layers", {})
         detection = layers.get("detection", {})
         rewrite = layers.get("rewrite", {})
-        if self.profile is None:
+        if not self.calibrated:
             profile_text = "Profil porównawczy nie był dostępny w tym przebiegu."
         else:
-            profile_text = (
-                f"Profil {self.profile.name}: {_thousands(self.profile.document_count)} "
-                f"uzasadnień i {_thousands(self.profile.word_count)} słów; "
-                f"źródło: {self.profile.source}; gatunek: {self.profile.genre}."
-            )
+            profile_text = self._baseline_sentence()
         hosted = layers.get("hosted_model", {})
         backend = self.settings.get("rewrite_backend", "rules")
         model_text = (
@@ -1200,6 +1511,7 @@ class _Report:
                 "client_communication": "komunikacja z klientem",
                 "contract": "umowa",
                 "filing_official": "pismo urzędowe/procesowe",
+                "general": "tekst ogólny",
             }
             raw_type = str(item.get("document_type") or "brak danych")
             document_type = type_labels.get(raw_type, raw_type)
@@ -1218,7 +1530,7 @@ class _Report:
             )
             formatting = item.get("formatting")
             if formatting:
-                rendered = "render poprawny" if formatting.get("rendered") else "bez renderu"
+                rendered = "render wykonany" if formatting.get("rendered") else "bez renderu"
                 issue_count = len(formatting.get("issues") or [])
                 format_text = f"{rendered}; problemy: {issue_count}"
             else:
@@ -1230,8 +1542,14 @@ class _Report:
             readiness_label = {
                 "ready": "gotowy",
                 "ready_with_warnings": "gotowy z ostrzeżeniami",
-                "failed": "błąd",
+                # Not "błąd": the run succeeded and the text is here. What is
+                # missing is a section the document owes its category, which
+                # the reader has to supply before sending it.
+                "failed": "niegotowy — brak wymaganej sekcji",
             }.get(readiness, readiness)
+            compliance = item.get("compliance")
+            if isinstance(compliance, (int, float)):
+                readiness_label += f" (zgodność {compliance:.0%})"
             rows.append(
                 [
                     self.cell(escape(_item_label(position, self.one, item))),
@@ -1249,7 +1567,9 @@ class _Report:
             self.para(
                 "Ocena gotowości łączy wynik redakcji, zgodność z profilem, "
                 "zachowanie treści prawnie wrażliwej oraz audyt wyglądu i render DOCX. "
-                f"Nierozwiązane uwagi: {unresolved}.",
+                f"Pojedyncza uwaga nie odbiera gotowości: dokument jest gotowy, gdy co "
+                f"najmniej {READY_COMPLIANCE:.0%} zdań jest bez uwag i nic innego go nie "
+                f"blokuje. Nierozwiązane uwagi: {unresolved}.",
                 "body",
             ),
             self.table(
@@ -1342,9 +1662,9 @@ class _Report:
             [
                 self.cell("<b>2. Poprawki</b>"),
                 self.cell(
-                    "Zmieniamy tylko to, co da się zmienić jednoznacznie. Narzędzie nie "
-                    "parafrazuje i nie pisze tekstu od nowa. Jeśli poprawka mogłaby ruszyć "
-                    "sens, jest odrzucana."
+                    "Redagujemy istniejący tekst w zakresie włączonych reguł i modelu. "
+                    "Propozycje przechodzą kontrole zachowania treści. Dopisywanie sekcji "
+                    "wymaga osobnego włączenia i przeglądu prawnika."
                 ),
                 self.cell(
                     f"{self.changes} "
@@ -1373,16 +1693,17 @@ class _Report:
         return [
             self.para("3. Jak to sprawdzaliśmy", "h1"),
             self.para(
-                "Każdy tekst przechodzi przez cztery kroki. Mierzymy dwa razy, przed "
-                "poprawkami i po nich, bo dopiero różnica pokazuje efekt pracy.",
+                "Poniżej opis pomiarów i redakcji oraz zakres włączonych czynności. "
+                "Status przebiegu nie potwierdza poprawności prawnej dokumentu.",
                 "body",
             ),
             self.table(rows, [28 * self.mm, self.width - 28 * self.mm - 40 * self.mm, 40 * self.mm]),
+            *[self.para(escape(line), "body") for line in operation_lines(self.items)],
         ]
 
     def metrics(self) -> list:
         section = "5"
-        if self.profile is None:
+        if not self.calibrated:
             signal_explanation = (
                 "To opisowy, nieskalibrowany wskaźnik gęstości wykrytych cech. "
                 "Nie porównujemy go z korpusem uzasadnień SAOS, ponieważ badany "
@@ -1398,21 +1719,15 @@ class _Report:
             self.para(f"{section}.1. Wskaźnik stylu schematycznego", "h2"),
             self.para(signal_explanation, "body"),
         ]
-        if self.profile is not None:
-            story.append(
-                self.para(
-                    f"Zbiór porównawczy to {_thousands(self.profile.document_count)} "
-                    "pism sądowych napisanych przez ludzi.",
-                    "small",
-                )
-            )
+        if self.calibrated:
+            story.append(self.para(escape(self._baseline_sentence()), "small"))
         threshold_text = (
-            f"Wynik <b>{_fmt(REVIEW_THRESHOLD)}</b> i wyżej to prośba o przejrzenie "
-            "tekstu, a nie ocena ani wyrok. Poniżej tej granicy tekst mieści się w tym, "
-            "co zwykle piszą ludzie w profilu."
-            if self.profile is not None
+            f"Próg przeglądu: {self._threshold_sentence()}. Wynik na progu i wyżej "
+            "to prośba o przejrzenie tekstu, a nie ocena ani wyrok. Poniżej progu "
+            "tekst mieści się w tym, co zwykle piszą ludzie w zbiorze porównawczym."
+            if self.calibrated
             else (
-                f"Robocza granica <b>{_fmt(REVIEW_THRESHOLD)}</b> porządkuje przegląd, "
+                f"Robocza granica {self._threshold_sentence()} porządkuje przegląd, "
                 "ale bez korpusu tego samego gatunku nie jest statystycznym progiem "
                 "tekstu ludzkiego ani dowodem autorstwa."
             )
@@ -1420,11 +1735,19 @@ class _Report:
         story.append(self.para(threshold_text, "body"))
 
         story.append(self.para(f"{section}.2. Rytm tekstu", "h2"))
-        rhythm_comparison = (
-            "Kolumna „ocena” porównuje wynik po poprawkach z tym, co typowe u ludzi."
-            if self.profile is not None
-            else "Bez korpusu tego samego gatunku kolumna „ocena” pokazuje brak porównania."
-        )
+        if self.profile is not None:
+            rhythm_comparison = (
+                "Kolumna „ocena” porównuje wynik po poprawkach z tym, co typowe u ludzi."
+            )
+        elif self.calibrated:
+            rhythm_comparison = (
+                "Dokumenty tej partii porównano z różnymi zbiorami ludzkich tekstów, "
+                "więc jednej kolumny „ocena” nie da się uczciwie wypełnić."
+            )
+        else:
+            rhythm_comparison = (
+                "Bez korpusu tego samego gatunku kolumna „ocena” pokazuje brak porównania."
+            )
         story.append(
             self.para(
                 "Te liczby opisują rytm, a nie treść. Tekst nadmiernie schematyczny bywa "
@@ -1573,7 +1896,7 @@ class _Report:
                     "W tym zestawie nie znaleźliśmy ani jednego z tych zwrotów.", "body"
                 )
             )
-            return story
+            return story + self._silent_families(counts_before)
 
         rows = [self.head("Rodzaj zwrotu", "Przykład", "Poprawia automat", "Wystąpienia")]
         for family, count in counts_before.most_common():
@@ -1602,6 +1925,59 @@ class _Report:
                 ],
             )
         )
+        return story + self._silent_families(counts_before)
+
+    # Where, in Polish, for "W {…} model nie użył…".
+    _DOCUMENT_FAMILY_WHERE: ClassVar[dict[str, str]] = {
+        "contract": "umowach, regulaminach i politykach",
+        "filing_official": "pismach procesowych i urzędowych",
+        "client_communication": "opiniach i tekstach dla klienta",
+    }
+
+    def _silent_families(self, found: Counter[str]) -> list:
+        """Which absences in the table above prove nothing.
+
+        The table lists what was found, so every family missing from it reads
+        as checked and clean. For most of them in a contract or a filing that
+        is empty: the model the corpus was generated with never produced them
+        in such documents either, so a human text and an AI one both show
+        none. Said once per kind of document in the batch, with the size of
+        the measurement, because one generator is thin ground for more.
+        """
+        from humanize_pl.detect.activity import activity_for
+
+        story: list[Any] = []
+        kinds = sorted({str(item.get("document_type") or "") for item in self.items})
+        for kind in kinds:
+            activity = activity_for(kind)
+            where = self._DOCUMENT_FAMILY_WHERE.get(kind)
+            if activity is None or where is None:
+                continue
+            # A family found here despite never appearing in the corpus is
+            # evidence after all, and stays out of the "proves nothing" list.
+            silent = [name for name in activity.silent if not found.get(name)]
+            if not silent:
+                continue
+            labels = ", ".join(self._family_entry(name)["label"] for name in silent)
+            generators = ", ".join(activity.generators) or "jeden model"
+            documents = activity.documents
+            who = (
+                "żaden z modeli, na których to mierzyliśmy, nie użył"
+                if len(activity.generators) > 1
+                else "model, na którym to mierzyliśmy, nie użył"
+            )
+            story.append(
+                self.note(
+                    f"W {where} {who} ani razu "
+                    f"{len(silent)} z {len(activity.hits)} rodzajów zwrotów z tej listy: "
+                    f"{escape(labels)}. Ich brak niczego więc nie dowodzi, bo tak samo "
+                    "wygląda tekst napisany przez model. Pomiar: "
+                    f"{documents} {_plural(documents, 'dokument', 'dokumenty', 'dokumentów')} "
+                    f"{_plural(documents, 'wygenerowany', 'wygenerowane', 'wygenerowanych')} "
+                    f"przez {escape(generators)}. Inny model może pisać "
+                    "inaczej, dlatego nadal ich szukamy."
+                )
+            )
         return story
 
     @staticmethod
@@ -1647,8 +2023,8 @@ class _Report:
                         self.cell(str(item.get("words", 0))),
                         self.cell(
                             f"{_fmt(float(item.get('signal_before', 0.0)))} → "
-                            f"<font color='{_verdict_colour(item_after)}'><b>"
-                            f"{_fmt(item_after)}</b></font>"
+                            f"<font color='{_verdict_colour(item_after, self._threshold_for(item))}'><b>"
+                            f"{_fmt(item_after)}</b></font>" if item.get("signal_interpretable", True) else "Niemiarodajny: krótki tekst"
                         ),
                         self.cell(
                             str(item.get("changes_applied", 0)) if self.changes_known else "nie wiadomo"
@@ -1764,8 +2140,9 @@ class _Report:
                     self.cell(f"<b>{escape(_item_label(position, self.one, item))}</b>"),
                     self.cell(
                         f"wskaźnik {_fmt(float(item.get('signal_before', 0.0)))} → "
-                        f"<font color='{_verdict_colour(after)}'><b>{_fmt(after)}</b></font>"
-                        f" · {status}"
+                        f"<font color='{_verdict_colour(after, self._threshold_for(item))}'><b>"
+                        f"{_fmt(after)}</b></font>"
+                        f" · {status}" if item.get("signal_interpretable", True) else f"Krótki tekst: bez oceny wskaźnikiem · {status}"
                     ),
                 ]
             ],
@@ -1968,7 +2345,7 @@ def write_flow_pdf(payload: dict[str, Any], path: str | Path) -> Path:
         title="Raport zmian",
     )
     report = _Report(payload, document.width, _styles())
-    report.generated_at = datetime.now().strftime("%d.%m.%Y, %H:%M")
+    report.generated_at = datetime.now().astimezone().strftime("%d.%m.%Y, %H:%M")
 
     def decorate(canvas, doc) -> None:
         canvas.saveState()

@@ -9,6 +9,7 @@ import pytest
 
 from humanize_pl.config import Engine, Mode
 from humanize_pl.flows import FlowSettings, run_all_layers, run_docx_flow, run_xlsx_flow
+from humanize_pl.flows.docx_flow import docx_files
 from humanize_pl.flows.xlsx_flow import CHANGED_TEXT_COLOR, REMOVED_TEXT_COLOR
 
 openpyxl = pytest.importorskip("openpyxl")
@@ -99,6 +100,8 @@ def test_run_all_layers_keeps_all_changes_for_detailed_xlsx_report() -> None:
     ]
 
     class FakeSession:
+        nli = None
+
         def humanize(self, text):
             return SimpleNamespace(text=text, changes=changes)
 
@@ -145,6 +148,8 @@ def test_run_all_layers_omits_changes_without_a_visible_difference() -> None:
     ]
 
     class FakeSession:
+        nli = None
+
         def humanize(self, text):
             return SimpleNamespace(text="Sąd nie uwzględnił wniosku.", changes=changes)
 
@@ -220,6 +225,55 @@ def test_docx_flow_keeps_going_after_a_broken_file(tmp_path) -> None:
 
     assert payload["summary"]["ok"] == 1
     assert payload["summary"]["failed"] == 1
+
+
+def test_docx_flow_resume_skips_finished_documents(tmp_path, monkeypatch) -> None:
+    source = tmp_path / "in"
+    source.mkdir()
+    write_docx(source / "a.docx", AI_TEXT)
+    write_docx(source / "b.docx", AI_TEXT)
+    output = tmp_path / "out"
+
+    # First pass processes only the first document (simulating a killed run).
+    monkeypatch.setattr(
+        "humanize_pl.flows.docx_flow.docx_files",
+        lambda directory: docx_files(directory)[:1],
+    )
+    first = run_docx_flow(source, output, settings=BASIC)
+    assert first["summary"]["ok"] == 1
+    assert (output / "a_humanized.docx").exists()
+    assert not (output / "b_humanized.docx").exists()
+
+    # Second pass resumes: a is replayed from disk, b is processed fresh.
+    monkeypatch.setattr(
+        "humanize_pl.flows.docx_flow.docx_files",
+        lambda directory: docx_files(directory),
+    )
+    resumed = run_docx_flow(source, output, settings=BASIC, resume=True)
+
+    assert resumed["summary"]["ok"] == 2
+    assert (output / "b_humanized.docx").exists()
+    by_name = {doc["name"]: doc for doc in resumed["documents"]}
+    assert by_name["a.docx"]["findings_before"] == first["documents"][0]["findings_before"]
+    assert by_name["a.docx"]["changes_applied"] == first["documents"][0]["changes_applied"]
+    # The replayed detail file carries the register, so no warning is added.
+    assert not any("Rejestr zmian" in warning for warning in by_name["a.docx"]["warnings"])
+
+
+def test_docx_flow_resume_reruns_a_document_without_detail(tmp_path) -> None:
+    """A target file whose detail JSON is missing is re-run, not replayed."""
+    source = tmp_path / "in"
+    source.mkdir()
+    write_docx(source / "a.docx", AI_TEXT)
+    output = tmp_path / "out"
+
+    run_docx_flow(source, output, settings=BASIC_NO_REWRITE)
+    (output / "details" / "a.json").unlink()
+
+    resumed = run_docx_flow(source, output, settings=BASIC_NO_REWRITE, resume=True)
+    assert resumed["summary"]["ok"] == 1
+    by_name = {doc["name"]: doc for doc in resumed["documents"]}
+    assert by_name["a.docx"]["findings_before"] > 0
 
 
 @pytest.mark.parametrize("column", ["B", "2", "Odpowiedź AI", "odpowiedz ai"])
@@ -540,3 +594,219 @@ def test_run_command_refuses_both_profile_options_at_once(tmp_path) -> None:
         ["run", str(source), "--profile-from", str(source), "--style-profile", str(source)],
     )
     assert result.exit_code != 0
+
+
+def test_every_layer_is_measured_on_the_way_in_as_well_as_out():
+    """"What changed" needs a left column, and three layers had none.
+
+    The AI signal always had a before/after pair; style compliance, house
+    tone and structure were computed on the output only. So the report could
+    say "signal 0.31 -> 0.22" and could not say "four forbidden phrases, now
+    none" - it had never looked at the input. A document arriving with three
+    style departures and leaving with one showed "1 departure", which reads
+    as a fault rather than an improvement of two.
+    """
+    from humanize_pl.flows.base import run_all_layers
+
+    outcome, _verdict = run_all_layers(AI_TEXT, name="a.docx", settings=BASIC)
+
+    for layer in ("style_compliance", "tone", "blueprint"):
+        assert getattr(outcome, f"{layer}_before"), f"{layer}: brak pomiaru wejściowego"
+        assert getattr(outcome, f"{layer}_after"), f"{layer}: brak pomiaru wyjściowego"
+        # The unsuffixed name keeps meaning "the state it left in", because
+        # the PDF report, the replay path and the UI all read it.
+        assert getattr(outcome, layer) == getattr(outcome, f"{layer}_after")
+
+    payload = outcome.to_json()
+    for layer in ("style_compliance", "tone", "blueprint", "nli"):
+        assert f"{layer}_before" in payload
+        assert f"{layer}_after" in payload
+        assert payload[layer] == payload[f"{layer}_after"]
+
+
+def test_without_a_rewrite_the_two_sides_agree():
+    """Diagnosis-only must not look like an improvement."""
+    from humanize_pl.flows.base import run_all_layers
+
+    outcome, _verdict = run_all_layers(
+        AI_TEXT, name="a.docx", settings=BASIC_NO_REWRITE
+    )
+
+    assert outcome.text_out == AI_TEXT
+    for layer in ("style_compliance", "tone", "blueprint"):
+        assert getattr(outcome, f"{layer}_before") == getattr(outcome, f"{layer}_after")
+
+
+def test_an_older_detail_file_still_resumes():
+    """Detail JSON written before the split carries only the unsuffixed key.
+
+    It held the output state, so it has to land on `_after`. Dropping it
+    would turn "measured, clean" into "not measured", which reads the same
+    in a report and means the opposite.
+    """
+    from humanize_pl.flows.base import ItemOutcome
+
+    legacy = {
+        "name": "stary.docx",
+        "blueprint": {"checked": True, "passed": True},
+        "tone": {"checked": True, "deviations": []},
+        "style_compliance": {"passed": True, "issues": []},
+    }
+    outcome = ItemOutcome.from_json(legacy)
+
+    assert outcome.blueprint_after == {"checked": True, "passed": True}
+    assert outcome.blueprint == outcome.blueprint_after
+    assert outcome.blueprint_before == {}
+    assert outcome.style_compliance_after["passed"] is True
+
+
+def test_the_flow_report_carries_what_changed_as_numbers(tmp_path) -> None:
+    """The PDF's before/after table, readable by a script aggregating a batch."""
+    source = tmp_path / "in"
+    source.mkdir()
+    write_docx(source / "opinia.docx", AI_TEXT)
+
+    payload = run_docx_flow(source, tmp_path / "out", settings=BASIC, pdf=False)
+    rows = {row["key"]: row for row in payload["summary"]["what_changed"]}
+
+    assert rows["words"]["applicable"] is True
+    assert rows["words"]["before"] >= rows["words"]["after"]
+    # No skeleton for this text: said, not zeroed.
+    assert rows["structure"]["applicable"] is False
+    assert rows["structure"]["before"] is None
+    assert "szkieletu" in rows["structure"]["reason"]
+
+
+def test_the_spreadsheet_gets_a_column_per_axis_that_applies(tmp_path) -> None:
+    """One column per axis - but no column of "nie dotyczy": an answer cell
+    has no skeleton, so there is no structure column at all."""
+    source = tmp_path / "odpowiedzi.xlsx"
+    write_xlsx(source, [(1, AI_TEXT.replace("\n", " "))])
+    output = tmp_path / "wynik.xlsx"
+
+    run_xlsx_flow(source, output, column="Odpowiedź AI", settings=BASIC, pdf=False, report=False)
+
+    sheet = openpyxl.load_workbook(str(output))["Sheet"]
+    headers = [cell.value for cell in sheet[1]]
+    assert "Słowa: przed → po" in headers
+    assert "Ślady czatbota: przed → po" in headers
+    assert not any(str(header).startswith("Struktura") for header in headers)
+    words = sheet.cell(row=2, column=headers.index("Słowa: przed → po") + 1).value
+    assert "→" in words
+
+
+def test_a_note_about_the_run_is_not_a_warning_about_the_document() -> None:
+    """On DOCX the rhythm's "paragraph axis off" note put 30 of 32 documents
+    below "ready" - a fact about the tool, charged to every document."""
+    from humanize_pl.flows.base import run_all_layers as run
+
+    outcome, _verdict = run(
+        AI_TEXT, name="x.txt", settings=FlowSettings(mode=Mode.conservative, engine=Engine.basic)
+    )
+
+    assert any(note.startswith("Rytm:") for note in outcome.notes)
+    assert not any(warning.startswith("Rytm:") for warning in outcome.warnings)
+    assert outcome.to_json()["notes"] == outcome.notes
+
+
+DEMAND_FOR_PAYMENT = (
+    "WEZWANIE DO ZAPŁATY\n"
+    "W nawiązaniu do zawartej między stronami umowy o dostawę towarów oraz faktury "
+    "nr 12/2026 informuję, że do dnia dzisiejszego nie uregulowano należności "
+    "wynikającej z faktury.\n"
+    "W związku z powyższym wzywam do zapłaty kwoty 27 300,00 zł w terminie 7 dni od "
+    "dnia otrzymania niniejszego wezwania na rachunek bankowy wierzyciela.\n"
+    "W przypadku braku zapłaty w wyznaczonym terminie sprawa zostanie skierowana na "
+    "drogę postępowania sądowego, co narazi dłużnika na dodatkowe koszty."
+)
+
+
+def test_the_family_comes_from_the_category_when_one_is_recognised() -> None:
+    """The family classifier reads this demand for payment as a contract (one
+    mention of "strony" outweighs the rest); the category classifier knows it
+    is a demand, and a demand is a filing. On the 32-document model corpus the
+    family classifier alone was right 16 times, the category's family 29."""
+    from humanize_pl.document import DocumentType, classify_document
+
+    assert classify_document(DEMAND_FOR_PAYMENT).document_type is DocumentType.contract
+
+    outcome, _verdict = run_all_layers(DEMAND_FOR_PAYMENT, name="w.txt", settings=BASIC)
+
+    assert outcome.document_type == DocumentType.filing_official.value
+    assert outcome.document_type_evidence[0] == "kategoria: wezwanie do zapłaty"
+    assert not any("wskazuje rodzinę" in warning for warning in outcome.warnings)
+
+
+def test_a_type_set_by_the_user_still_wins() -> None:
+    from dataclasses import replace
+
+    from humanize_pl.document import DocumentType
+
+    outcome, _verdict = run_all_layers(
+        DEMAND_FOR_PAYMENT,
+        name="w.txt",
+        settings=replace(BASIC, document_type=DocumentType.contract),
+    )
+
+    assert outcome.document_type == DocumentType.contract.value
+
+
+def test_the_acceptance_sheet_does_not_list_markup_removals(tmp_path) -> None:
+    """A row per "**X**" -> "X" buried the edits that need a decision; they
+    are counted in the summary line instead."""
+    source = tmp_path / "odpowiedzi.xlsx"
+    write_xlsx(source, [(1, "**Podsumowanie** " + AI_TEXT.replace("\n", " "))])
+    output = tmp_path / "wynik.xlsx"
+
+    run_xlsx_flow(source, output, column="Odpowiedź AI", settings=BASIC, pdf=False, report=False)
+
+    sheet = openpyxl.load_workbook(str(output))["Do akceptacji"]
+    before_cells = [str(sheet.cell(row=row, column=5).value or "") for row in range(6, sheet.max_row + 1)]
+    assert not any(cell.startswith("**") and cell.count("**") == 2 and len(cell) < 20 for cell in before_cells)
+    assert "Usunięte znaczniki markdown" in str(sheet["A3"].value)
+
+
+def test_a_resumed_outcome_keeps_its_readiness() -> None:
+    """from_json rebuilt the outcome and __post_init__ overwrote a stored
+    "failed" with "ready_with_warnings" because it also needed review: a
+    resumed batch promoted every document missing a required section."""
+    from humanize_pl.flows.base import ItemOutcome
+
+    stored = ItemOutcome(name="umowa.docx", needs_review=True)
+    stored.readiness_status = "failed"
+
+    rebuilt = ItemOutcome.from_json(stored.to_json())
+
+    assert rebuilt.readiness_status == "failed"
+    assert ItemOutcome(name="x", needs_review=True).readiness_status == "ready_with_warnings"
+
+
+def test_a_single_finding_no_longer_holds_a_document_back() -> None:
+    """Any unresolved finding used to cost "ready", and 291 of 300 held-out
+    judgments carry one. Readiness reads compliance instead: at least 96% of
+    sentences with no finding (the owner's number)."""
+    from humanize_pl.flows.base import READY_COMPLIANCE, ItemOutcome, held_back
+
+    assert READY_COMPLIANCE == 0.96
+    clean_enough = ItemOutcome(name="a", compliance=0.97, unresolved_findings=[{"family": "tricolon"}])
+    too_many = ItemOutcome(name="b", compliance=0.95)
+    warned = ItemOutcome(name="c", compliance=1.0, warnings=["Sekcja 1 nie ma formatu A4."])
+
+    assert not held_back(clean_enough)
+    assert held_back(too_many)
+    assert held_back(warned)
+
+
+def test_compliance_counts_flagged_sentences_not_findings() -> None:
+    """Three findings in one sentence flag one sentence."""
+    from types import SimpleNamespace
+
+    from humanize_pl.flows.base import sentence_compliance
+
+    finding = lambda p, s: SimpleNamespace(paragraph_index=p, sentence_index=s)
+    diagnosis = SimpleNamespace(
+        sentence_count=20, findings=[finding(0, 1), finding(0, 1), finding(0, 1), finding(2, 0)]
+    )
+
+    assert sentence_compliance(diagnosis) == 0.9
+    assert sentence_compliance(SimpleNamespace(sentence_count=0, findings=[])) == 1.0

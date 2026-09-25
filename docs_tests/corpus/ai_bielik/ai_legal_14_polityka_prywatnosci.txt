@@ -1,0 +1,81 @@
+Oto kompletna polityka prywatności dla aplikacji mobilnej zbierającej dane lokalizacyjne:
+
+Polityka Prywatności Aplikacji [Nazwa Aplikacji]
+
+1. Wprowadzenie
+Niniejsza Polityka Prywatności określa zasady przetwarzania danych osobowych użytkowników aplikacji [Nazwa Aplikacji], w szczególności danych lokalizacyjnych, przez [Nazwa Firmy/Dewelopera], z siedzibą w [Adres], zwanego dalej "Administratorem".
+
+2. Dane osobowe i ich przetwarzanie
+2.1. Administrator przetwarza następujące dane osobowe użytkowników:
+   - Dane lokalizacyjne (współrzędne GPS, adres IP, dane z czujników)
+   - Dane dotyczące korzystania z aplikacji (logi, identyfikatory urządzeń)
+   - Dane wprowadzane przez użytkownika (np. dane profilowe)
+
+2.2. Dane są przetwarzane w celu:
+   - Świadczenia usług oferowanych przez aplikację
+   - Poprawy funkcjonalności i bezpieczeństwa aplikacji
+   - Personalizacji treści i reklam
+   - Analizy i ulepszania działania aplikacji
+
+2.3. Podstawą prawną przetwarzania danych jest:
+   - Zgoda użytkownika (art. 6 ust. 1 lit. a RODO)
+   - Wykonanie umowy lub działania na żądanie użytkownika (art. 6 ust. 1 lit. b RODO)
+   - Zabezpieczenie interesów ważnych w kontekście publicznym (art. 6 ust. 1 lit. e RODO)
+
+3. Udostępnianie danych
+3.1. Dane mogą być udostępniane:
+   - Podmiotom świadczącym usługi na rzecz Administratora (np. dostawcy hostingu, firmy analityczne)
+   - Podmiotom uprawnionym na mocy przepisów prawa
+   - Partnerom biznesowym w ramach współpracy
+
+3.2. Dane nie są przekazywane poza Europejski Obszar Gospodarczy, chyba że wynika to z funkcjonalności aplikacji lub na wyraźne żądanie użytkownika.
+
+4. Okres przechowywania danych
+Dane są przechowywane przez okres niezbędny do realizacji celów przetwarzania, nie dłużej niż:
+   - 3 miesiące dla danych lokalizacyjnych
+   - 12 miesięcy dla danych wprowadzanych przez użytkownika
+   - 3 lata dla danych dotyczących korzystania z aplikacji
+
+5. Prawa użytkowników
+Użytkownicy mają prawo do:
+   - Dostępu do swoich danych
+   - Sprostowania danych
+   - Usunięcia danych (prawo do bycia zapomnianym)
+   - Ograniczenia przetwarzania
+   - Przenoszenia danych
+   - Wniesienia sprzeciwu wobec przetwarzania
+   - Cofnięcia zgody w dowolnym momencie
+
+6. Zgoda na przetwarzanie danych lokalizacyjnych
+6.1. Aplikacja [Nazwa Aplikacji] wymaga zgody użytkownika na zbieranie i przetwarzanie danych lokalizacyjnych.
+6.2. Użytkownik może w każdej chwili wycofać zgodę, zmieniając ustawienia prywatności w aplikacji.
+6.3. Wycofanie zgody nie wpływa na zgodność z prawem przetwarzania, które miało miejsce przed jej wycofaniem.
+
+7. Bezpieczeństwo danych
+Administrator stosuje odpowiednie środki techniczne i organizacyjne w celu zapewnienia bezpieczeństwa danych, w tym:
+   - Szyfrowanie danych
+   - Ograniczony dostęp do danych
+   - Regularne aktualizacje systemów
+   - Procedury reagowania na incydenty
+
+8. Pliki cookies i podobne technologie
+Aplikacja wykorzystuje pliki cookies i podobne technologie w celu:
+   - Zapewnienia prawidłowego działania aplikacji
+   - Analizy ruchu w aplikacji
+   - Personalizacji treści
+   - Wyświetlania reklam
+
+Użytkownik może zarządzać ustawieniami plików cookies w ustawieniach swojego urządzenia.
+
+9. Kontakt
+W sprawach związanych z przetwarzaniem danych osobowych można skontaktować się z Administratorem:
+   - Adres: [Adres]
+   - E-mail: [Adres e-mail]
+   - Telefon: [Numer telefonu]
+
+10. Zmiany Polityki Prywatności
+Administrator zastrzega sobie prawo do aktualizacji Polityki Prywatności. Wszelkie zmiany będą publikowane na stronie internetowej aplikacji.
+
+Data ostatniej aktualizacji: [Data]
+
+Ta polityka prywatności jest zgodna z obowiązującymi przepisami prawa, w szczególności z Rozporządzeniem Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych oraz uchylenia dyrektywy 95/46/WE (ogólne rozporządzenie o ochronie danych).

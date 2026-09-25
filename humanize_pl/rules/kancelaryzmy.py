@@ -3,6 +3,7 @@ from __future__ import annotations
 import regex as re
 
 from humanize_pl.config import Mode
+
 from .base import Candidate
 
 # `niniejszy → ten` lives in lemma_swaps.yaml + lemma_engine.py and is the
@@ -64,6 +65,69 @@ def _preserve_case(original: str, replacement: str) -> str:
     return replacement
 
 
+# Light-verb reductions that DELETE a complement noun (e.g. "dokonać weryfikacji"
+# → "zweryfikować"). If that noun heads a genitive chain ("weryfikacji
+# poprawności wykonania"), the reduction would strand the chain in the genitive
+# case — ungrammatical Polish (the new verb's object must be accusative).
+# Map pattern → the complement noun's surface form inside the pattern.
+_LIGHT_VERB_COMPLEMENTS: dict[str, str] = {
+    r"\bdokonywać oceny\b": "oceny",
+    r"\bdokonać oceny\b": "oceny",
+    r"\bdokonano oceny\b": "oceny",
+    r"\bdokonywać kontroli\b": "kontroli",
+    r"\bdokonać kontroli\b": "kontroli",
+    r"\bdokonano kontroli\b": "kontroli",
+    r"\bdokonywać weryfikacji\b": "weryfikacji",
+    r"\bdokonać weryfikacji\b": "weryfikacji",
+    r"\bdokonano weryfikacji\b": "weryfikacji",
+    r"\bw celu dokonania oceny\b": "oceny",
+    r"\bw celu przeprowadzenia analizy\b": "analizy",
+}
+
+
+def _complement_dangles(analysis, match_start: int, match_end: int, complement: str) -> bool:
+    """True if the complement noun (surface form *complement* within
+    [match_start, match_end]) heads a genitive chain in *analysis*.
+
+    Used to skip a light-verb reduction that would otherwise leave the
+    complement's genitive dependents dangling in the wrong case.
+    """
+    if analysis is None:
+        return False
+    for tok in analysis.tokens:
+        if tok.upos != "NOUN":
+            continue
+        if tok.start_char is None or tok.end_char is None:
+            continue
+        if not (match_start <= tok.start_char and tok.end_char <= match_end):
+            continue
+        if (tok.text or "").lower() != complement.lower():
+            continue
+        return any(
+            d.upos == "NOUN" and "Case=Gen" in (d.feats or "")
+            for d in analysis.tokens
+            if getattr(d, "head", None) == tok.id
+        )
+    return False
+
+
+def _should_skip_light_verb(pattern: str, sentence: str, analysis) -> bool:
+    """True if *pattern* is a light-verb reduction whose complement noun would
+    be left dangling in the genitive case.
+
+    Evaluated against the *original* sentence (the analysis's offsets refer to
+    it), so the result is stable regardless of how many earlier edits have been
+    applied to a running text.
+    """
+    complement = _LIGHT_VERB_COMPLEMENTS.get(pattern)
+    if complement is None or analysis is None:
+        return False
+    match = re.compile(pattern, re.IGNORECASE).search(sentence)
+    if not match:
+        return False
+    return _complement_dangles(analysis, match.start(), match.end(), complement)
+
+
 def kancelaryzm_candidates(
     sentence: str, *, mode: Mode, analysis=None
 ) -> list[Candidate]:
@@ -83,7 +147,9 @@ def kancelaryzm_candidates(
         regex = re.compile(pattern, re.IGNORECASE)
         if not regex.search(combined):
             continue
-        combined = regex.sub(lambda m: _preserve_case(m.group(0), replacement), combined)
+        if _should_skip_light_verb(pattern, sentence, analysis):
+            continue
+        combined = regex.sub(lambda m, replacement=replacement: _preserve_case(m.group(0), replacement), combined)
         applied.append(pattern)
     if combined != sentence:
         candidates.append(Candidate(combined, "kancelaryzm:combined", 0.65))
@@ -93,7 +159,9 @@ def kancelaryzm_candidates(
         match = regex.search(sentence)
         if not match:
             continue
-        candidate = regex.sub(lambda m: _preserve_case(m.group(0), replacement), sentence, count=1)
+        if _should_skip_light_verb(pattern, sentence, analysis):
+            continue
+        candidate = regex.sub(lambda m, replacement=replacement: _preserve_case(m.group(0), replacement), sentence, count=1)
         if candidate != sentence:
             candidates.append(Candidate(candidate, f"kancelaryzm:{pattern}", 0.55))
     return candidates

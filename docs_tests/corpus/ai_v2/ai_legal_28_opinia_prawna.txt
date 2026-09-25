@@ -1,0 +1,79 @@
+**OPINIA PRAWNA**
+
+**Dotyczy:** dopuszczalności zastrzeżenia kary umownej za odstąpienie od umowy
+
+**Zleceniodawca:** [nazwa podmiotu]
+**Data sporządzenia:** 21.01.2026 r.
+**Sporządzający:** adw./radca prawny
+
+---
+
+### I. Wstęp
+
+Niniejsza opinia została sporządzona na wniosek Zleceniodawcy w celu oceny, czy i na jakich warunkach dopuszczalne jest w polskim porządku prawnym zastrzeżenie kary umownej za odstąpienie od umowy przez jedną ze stron.
+
+### II. Przedmiot opinii i pytania prawne
+
+Przedmiotem opinii jest ocena zgodności z prawem klauzuli umownej przewidującej obowiązek zapłaty kary umownej przez stronę, która odstąpi od umowy.
+
+Pytania prawne:
+1. Czy kara umowna może być uzależniona od zdarzenia w postaci odstąpienia od umowy?
+2. Czy zastrzeżenie kary umownej za odstąpienie od umowy jest zgodne z art. 483 k.c. oraz art. 3531 k.c.?
+3. Czy istnieją ograniczenia dopuszczalności takiej kary w zależności od podstawy odstąpienia oraz statusu stron.
+
+### III. Założony stan faktyczny
+
+Strony umowy zawierają postanowienie, zgodnie z którym odstąpienie od umowy przez którąkolwiek ze stron, bez względu na podstawę prawną odstąpienia, albo odstąpienie bez uzasadnionej przyczyny, albo odstąpienie z winy odstępującej, rodzi obowiązek zapłaty kary umownej na rzecz strony przeciwnej.
+
+### IV. Podstawy prawne
+
+* art. 3531 k.c. - zasada swobody umów
+* art. 58 k.c. - nieważność czynności prawnej sprzecznej z ustawą lub zasadami współżycia społecznego
+* art. 483 §1, §2 k.c. - definicja i przedmiot kary umownej
+* art. 484 §1 k.c. - nadmierność kary umownej
+* art. 492 k.c. - stosunek kary umownej do odszkodowania
+* art. 394 §1 k.c., art. 395 k.c., art. 491 k.c. - instytucja odstąpienia od umowy
+* ustawa z dnia 23 sierpnia 2007 r. o przeciwdziałaniu nieuczciwym praktykom rynkowym oraz przepisy o klauzulach abuzywnych
+
+### V. Analiza prawna
+
+**1. Istota kary umownej.**
+
+Zgodnie z art. 483 §1 k.c. dłużnik może być obowiązany względem wierzyciela do zapłaty określonej sumy na wypadek niewykonania lub nienależytego wykonania zobowiązania. Kara umowna ma charakter sankcji za naruszenie zobowiązania, a nie za samo jednostronne oświadczenie woli.
+
+**2. Charakter prawny odstąpienia od umowy.**
+
+Odstąpienie od umowy, o którym mowa w art. 394 §1 k.c., jest jednostronnym oświadczeniem woli wywołującym ex tunc skutek rozwiązania stosunku zobowiązaniowego. Jest ono dopuszczalne z mocy ustawy, np. art. 395 k.c. w razie niewykonania lub nienależytego wykonania zobowiązania, albo umownie, na podstawie art. 491 k.c.
+
+Odstąpienie nie jest samo w sobie niewykonaniem zobowiązania. Jest konsekwencją niewykonania, albo realizacją uprawnienia kształtującego.
+
+**3. Dopuszczalność kary umownej uzależnionej od odstąpienia.**
+
+Doktryna i orzecznictwo przyjmują rozróżnienie:
+
+a) **Kara umowna za odstąpienie stanowiące niewykonanie zobowiązania** - jest dopuszczalna. Gdy strony zastrzegają karę umowną za odstąpienie od umowy w razie niewykonania lub nienależytego wykonania zobowiązania, w istocie kara ta zabezpiecza wykonanie zobowiązania głównego. Odstąpienie jest wtedy jedynie formą reakcji na niewykonanie. Tak rozumiana kara podlega art. 483 k.c.
+
+b) **Kara umowna za samo odstąpienie, niezależnie od podstawy prawnej** - jest niedopuszczalna. Karanie strony za skorzystanie z uprawnienia ustawowego do odstąpienia stanowiłoby ograniczenie tego uprawnienia i byłoby sprzeczne z naturą stosunku zobowiązaniowego oraz zasadą swobody kontraktowania z art. 3531 k.c. w zw. z art. 58 k.c. W szczególności niedopuszczalne jest zastrzeganie kary za legalne odstąpienie od umowy z winy drugiej strony, tj. odstąpienie przewidziane w art. 395 k.c.
+
+Sąd Najwyższy wielokrotnie podkreślał, że kara umowna nie może obciążać strony za czynność prawną dozwoloną prawem. Zastrzeżenie kary za odstąpienie bez wskazania, że chodzi o odstąpienie bez podstawy prawnej lub stanowiące niewykonanie zobowiązania przez odstępującego, jest nieważne jako sprzeczne z zasadami współżycia społecznego.
+
+c) **Kara umowna za odstąpienie bez uzasadnionej przyczyny / z winy odstępującego.** 
+Jest dopuszczalna. Strony mogą umownie uzależnić obowiązek zapłaty kary od odstąpienia bez uzasadnionej przyczyny, od jednostronnego wypowiedzenia lub odstąpienia stanowiącego niewykonanie zobowiązania do kontynuacji stosunku. W tym przypadku kara zabezpiecza interes strony w utrzymaniu umowy i ma charakter sankcji za niewykonanie zobowiązania do współpracy.
+
+**4. Szczególne ograniczenia.**
+
+W relacjach przedsiębiorca - konsument zastrzeżenie kary umownej za odstąpienie od umowy jest traktowane jako potencjalnie niedozwolona klauzula abuzywna, szczególnie gdy ogranicza ustawowe prawo odstąpienia konsumenta. Zgodnie z art. 3851 k.c. nie wiążą konsumenta postanowienia umowne nieuzgodnione indywidualnie, które kształtują prawa konsumenta w sposób sprzeczny z dobrymi obyczajami.
+
+### VI. Wnioski
+
+1. Kara umowna za odstąpienie od umowy jest dopuszczalna w polskim prawie, pod warunkiem że zastrzeżenie to ma charakter sankcji za niewykonanie lub nienależyte wykonanie zobowiązania, a nie za samo skorzystanie z ustawowego uprawnienia do odstąpienia.
+
+2. Nieważne jest postanowienie, które nakłada karę umowną za legalne odstąpienie od umowy z winy drugiej strony lub z przyczyn przewidzianych ustawą.
+
+3. Dopuszczalne jest zastrzeżenie kary umownej za odstąpienie bez uzasadnionej przyczyny, za odstąpienie stanowiące niewykonanie zobowiązania przez odstępującego, lub za odstąpienie wbrew postanowieniom umowy.
+
+4. W umowach konsumenckich zastrzeżenie kary umownej za odstąpienie od umowy wymaga szczególnej ostrożności i wykładni zgodnej z przepisami o klauzulach abuzywnych.
+
+W razie potrzeby możliwe jest sformułowanie klauzuli dopuszczalnej w brzmieniu np.: *"Strona odstępująca od umowy bez uzasadnionej przyczyny lub z przyczyn leżących po jej stronie zapłaci drugiej stronie karę umowną w wysokości..."*.
+
+Opinia ma charakter ogólny i nie stanowi porady indywidualnej.

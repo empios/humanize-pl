@@ -7,6 +7,36 @@ if TYPE_CHECKING:
     from .calibration import Calibration
 
 
+# Every signal family the detector can emit, in one place.
+#
+# It exists because the alternative failed silently. A reference profile only
+# records the families its corpus happened to contain, the quality gate only
+# constrains the families someone remembered to write a constraint for, and
+# nothing compared the two lists. `typography_artifact` fell through both:
+# fired by the detector, absent from the shipped profile, absent from the
+# gate — so the em dash, one of the most recognisable AI tells in Polish, was
+# measured and then dropped on the floor twice.
+#
+# A family added below and nowhere else fails the tests in
+# tests/test_calibration.py, which is the point: the list is the contract.
+AI_FAMILIES: tuple[str, ...] = (
+    "abstract_frame",
+    "antithesis",
+    "balanced_pair",
+    "concessive_reversal",
+    "discourse_frame",
+    "empty_emphasis",
+    "nominalization",
+    "practical_implication",
+    "repeated_opening",
+    "summary_frame",
+    "transition_marker",
+    "tricolon",
+    "typography_artifact",
+    "vague_reference",
+)
+
+
 @dataclass(frozen=True)
 class Finding:
     """A single located AI-style signal in the source text.
@@ -65,7 +95,7 @@ class DocumentDiagnosis:
     paragraphs: list[ParagraphDiagnosis] = field(default_factory=list)
     metrics: dict[str, float] = field(default_factory=dict)
     # None when no reference profile is installed for the genre.
-    calibration: "Calibration | None" = None
+    calibration: Calibration | None = None
 
     @property
     def rewritable_count(self) -> int:

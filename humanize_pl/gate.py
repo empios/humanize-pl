@@ -64,6 +64,10 @@ FAMILY_CONSTRAINTS: dict[str, str] = {
         "(„dokonanie zapłaty” → „zapłacić”)."
     ),
     "repeated_opening": "Nie powtarzaj tego samego otwarcia zdania w odpowiedzi.",
+    "typography_artifact": (
+        "Nie używaj długiego myślnika jako wtrącenia. Wtrącenie zapisz w nawiasie "
+        "albo osobnym zdaniem."
+    ),
 }
 
 SHAPE_CONSTRAINTS: dict[str, str] = {
@@ -93,6 +97,33 @@ class GateViolation:
     constraint: str
 
 
+# Below this the calibrated score stops being a measurement.
+#
+# Every family signal is a rate per 1000 words and every shape signal is a
+# distribution over sentences. In a 55-word answer one em dash reads as 18.2
+# per 1000 - enough to saturate any human baseline on its own - and seven
+# sentences cannot produce a human spread of lengths no matter who wrote
+# them. The reference corpus is court judgments thousands of words long, so
+# a short answer is not a small sample of that population; it is a different
+# kind of object.
+#
+# 150 words is the threshold `humanize_pl.corpus.normalize` already uses to
+# decide a document is worth measuring at all. Reusing it keeps one answer to
+# one question.
+MIN_SCORABLE_WORDS = 150
+
+# What makes a short answer read as machine-written is reaching for several
+# different frames at once, not one isolated tic.
+#
+# Measured on the two gate fixtures, both ~55 words: the machine-drafted one
+# fires six distinct families (discourse frame, abstract frame, balanced
+# pair, concessive reversal, practical implication, summary frame), the
+# human-drafted one fires two, and both of those are hygiene rather than
+# register - an em dash and a nominalisation. Three separates them with room
+# on either side.
+SHORT_TEXT_FAMILY_THRESHOLD = 3
+
+
 @dataclass(frozen=True)
 class GateVerdict:
     needs_revision: bool
@@ -101,11 +132,16 @@ class GateVerdict:
     diagnosis: DocumentDiagnosis
     violations: list[GateViolation] = field(default_factory=list)
     prompt_constraints: list[str] = field(default_factory=list)
+    # False when the text is too short for the score to mean anything. The
+    # score is still reported - hiding it would invite someone to compute
+    # their own - but it did not decide the verdict.
+    score_is_meaningful: bool = True
 
     def to_json(self) -> dict:
         return {
             "needs_revision": self.needs_revision,
             "score": self.score,
+            "score_is_meaningful": self.score_is_meaningful,
             "threshold": self.threshold,
             "violations": [
                 {
@@ -172,13 +208,24 @@ def review_response(
     if missing_anchor:
         constraints.append(ANCHOR_CONSTRAINT)
 
+    # A short answer is judged on how many different machine frames it reaches
+    # for, because its rates are unreadable (see MIN_SCORABLE_WORDS). The
+    # findings themselves stay in the verdict either way: an em dash is worth
+    # reporting even when it is not worth a rewrite.
+    score_is_meaningful = diagnosis.word_count >= MIN_SCORABLE_WORDS
+    if score_is_meaningful:
+        reads_as_machine = score >= threshold
+    else:
+        reads_as_machine = len(violations) >= SHORT_TEXT_FAMILY_THRESHOLD
+
     return GateVerdict(
-        needs_revision=score >= threshold or missing_anchor,
+        needs_revision=reads_as_machine or missing_anchor,
         score=score,
         threshold=threshold,
         diagnosis=diagnosis,
         violations=violations,
         prompt_constraints=constraints,
+        score_is_meaningful=score_is_meaningful,
     )
 
 

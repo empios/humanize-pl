@@ -1,0 +1,91 @@
+Oto przykładowa umowa o świadczenie usług doradztwa podatkowego dla spółki z o.o.:
+
+UMOWA O ŚWIADCZENIE USŁUG DORADZTWA PODATKOWEGO
+
+zawarta w dniu [DATA] w [MIEJSCE] pomiędzy:
+
+[NAZWA SPÓŁKI Z O.O.] z siedzibą w [ADRES], wpisaną do rejestru przedsiębiorców Krajowego Rejestru Sądowego pod numerem KRS [NUMER], NIP [NUMER], REGON [NUMER], reprezentowaną przez [IMIĘ I NAZWISKO] jako Prezesa Zarządu, zwaną dalej "Zleceniodawcą",
+
+a
+
+[NAZWA FIRMY DORADZTWA PODATKOWEGO] z siedzibą w [ADRES], wpisaną do rejestru przedsiębiorców Krajowego Rejestru Sądowego pod numerem KRS [NUMER], NIP [NUMER], REGON [NUMER], reprezentowaną przez [IMIĘ I NAZWISKO] jako Właściciela, zwaną dalej "Zleceniobiorcą",
+
+zwanymi łącznie "Stronami".
+
+§ 1
+Przedmiot umowy
+
+1. Zleceniodawca zleca, a Zleceniobiorca zobowiązuje się do świadczenia usług doradztwa podatkowego na rzecz Zleceniodawcy.
+
+2. Usługi doradztwa podatkowego obejmują w szczególności:
+   a) doradztwo w zakresie podatku dochodowego od osób prawnych,
+   b) doradztwo w zakresie podatku od towarów i usług,
+   c) doradztwo w zakresie podatku od nieruchomości,
+   d) doradztwo w zakresie cen transferowych,
+   e) przygotowywanie wniosków o wydanie interpretacji podatkowych,
+   f) reprezentowanie Zleceniodawcy w kontaktach z organami podatkowymi,
+   g) sporządzanie i składanie deklaracji podatkowych,
+   h) analizę i optymalizację obciążeń podatkowych.
+
+3. Zleceniobiorca zobowiązuje się do świadczenia usług z należytą starannością, zgodnie z obowiązującymi przepisami prawa oraz zasadami etyki zawodowej.
+
+§ 2
+Okres obowiązywania umowy
+
+1. Umowa zostaje zawarta na czas nieokreślony, począwszy od dnia [DATA].
+
+2. Każda ze Stron może wypowiedzieć umowę z zachowaniem 3-miesięcznego okresu wypowiedzenia.
+
+§ 3
+Wynagrodzenie
+
+1. Za świadczone usługi Zleceniodawca zapłaci Zleceniobiorcy miesięczne wynagrodzenie w wysokości [KWOTA] zł netto (słownie: [KWOTA SŁOWNIE] złotych).
+
+2. Wynagrodzenie będzie płatne z góry, do 10. dnia każdego miesiąca za dany miesiąc, na podstawie prawidłowo wystawionej faktury VAT.
+
+3. Dodatkowe usługi wykraczające poza zakres określony w § 1 będą rozliczane na podstawie odrębnych ustaleń i faktur.
+
+§ 4
+Poufność
+
+1. Strony zobowiązują się do zachowania w tajemnicy wszelkich informacji uzyskanych w związku z realizacją niniejszej umowy.
+
+2. Obowiązek zachowania poufności obowiązuje zarówno w trakcie trwania umowy, jak i po jej zakończeniu.
+
+§ 5
+Odpowiedzialność
+
+1. Zleceniobiorca ponosi odpowiedzialność za szkody wyrządzone Zleceniodawcy w związku z niewłaściwym wykonaniem usług, zgodnie z przepisami Kodeksu cywilnego.
+
+2. Zleceniobiorca posiada ubezpieczenie odpowiedzialności cywilnej w zakresie prowadzonej działalności doradztwa podatkowego.
+
+§ 6
+Postanowienia końcowe
+
+1. Wszelkie zmiany niniejszej umowy wymagają formy pisemnej pod rygorem nieważności.
+
+2. W sprawach nieuregulowanych niniejszą umową mają zastosowanie przepisy Kodeksu cywilnego oraz ustawy o doradztwie podatkowym.
+
+3. Umowę sporządzono w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze Stron.
+
+[PODPIS ZLECENIODAWCY]                      [PODPIS ZLECENIOBIORCY]
+
+[IMIĘ I NAZWISKO]                           [IMIĘ I NAZWISKO]
+
+Zleceniodawca                               Zleceniobiorca
+
+Potwierdzam zapoznanie się z klauzulą informacyjną RODO i wyrażam zgodę na przetwarzanie moich danych osobowych w celu realizacji umowy.
+
+[PODPIS]
+
+[IMIĘ I NAZWISKO]
+
+Klauzula informacyjna RODO (można dodać odpowiednią treść zgodnie z wymogami RODO)
+
+Wyrażam zgodę na przetwarzanie moich danych osobowych zawartych w niniejszej umowie w celu realizacji obowiązków wynikających z przepisów prawa oraz w celach związanych z realizacją niniejszej umowy. Oświadczam, że zostałem/am poinformowany/a o przysługujących mi prawach, w szczególności o prawie do dostępu do treści swoich danych oraz ich poprawiania.
+
+[PODPIS]
+
+[IMIĘ I NAZWISKO]
+
+Ta umowa stanowi podstawowy wzór umowy o świadczenie usług doradztwa podatkowego. W zależności od konkretnej sytuacji i potrzeb stron, może wymagać dostosowania i uzupełnienia o dodatkowe postanowienia.

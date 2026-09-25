@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-
 import pytest
 import yaml
 
 from humanize_pl.blueprint import _load
 from humanize_pl.blueprint_learning import (
-    MIN_DOCUMENTS,
     detect_numbering,
     document_headings,
     learn_blueprint,
@@ -46,17 +44,18 @@ def test_sections_present_in_every_document_become_required() -> None:
     assert learned.numbering == "paragraph"
 
 
-def test_a_section_in_a_minority_of_documents_is_dropped_not_required() -> None:
-    """One office's habit is not a house rule.
+def test_a_section_in_a_minority_of_documents_is_kept_not_dropped() -> None:
+    """No lower bound: a clause in one office's habit is still part of the style.
 
-    A clause appearing in two contracts out of eight says something about
-    those two, and proposing it as required would fail every document that
-    never owed it.
+    The source documents are assumed correctly constructed, so a section seen
+    in two contracts out of eight is kept (and suggested `expected`), not
+    filtered out as "too rare" - the human decides whether it is required.
     """
     texts = [contract(n, extra="Poufność" if n % 4 == 0 else None) for n in range(1, 9)]
     learned = learn_blueprint(texts, category="umowa_uslug")
-    assert "Poufność" not in [row.label_pl for row in learned.sections]
-    assert any("Poufność" in row for row in learned.skipped)
+    poufnosc = next(row for row in learned.sections if row.label_pl == "Poufność")
+    assert poufnosc.severity(learned.documents) == "expected"
+    assert poufnosc.documents == 2
 
 
 def test_a_section_in_half_the_documents_is_expected_not_required() -> None:
@@ -96,9 +95,18 @@ def test_patterns_that_depend_on_a_document_number_are_refused() -> None:
         assert all(not any(ch.isdigit() for ch in row) for row in section.variants)
 
 
-def test_too_few_documents_is_refused_rather_than_guessed() -> None:
-    with pytest.raises(ValueError, match=str(MIN_DOCUMENTS)):
-        learn_blueprint([contract(1), contract(2)], category="umowa_uslug")
+def test_a_single_document_is_a_valid_blueprint() -> None:
+    """No lower bound: one approved document is ground truth for its type."""
+    learned = learn_blueprint([contract(1)], category="umowa_uslug")
+    assert learned.documents == 1
+    assert learned.sections, "jeden dokument opisuje co najmniej jedną sekcję"
+    # Every section seen in the only document is suggested required.
+    assert all(row.severity(learned.documents) == "required" for row in learned.sections)
+
+
+def test_no_documents_is_refused() -> None:
+    with pytest.raises(ValueError, match="Brak dokumentów"):
+        learn_blueprint([], category="umowa_uslug")
 
 
 def test_headings_named_at_two_lengths_are_one_section() -> None:

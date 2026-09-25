@@ -6,6 +6,8 @@ legal text trades away the precision that is the product, and does so silently.
 
 from __future__ import annotations
 
+import pytest
+
 from humanize_pl.gate import ANCHOR_CONSTRAINT, review_response
 
 AI_STYLE_ANSWER = (
@@ -38,10 +40,64 @@ def test_ai_style_answer_is_sent_back_for_revision() -> None:
 
 
 def test_lawyerly_answer_passes() -> None:
+    """A direct, anchored answer passes even though its rates look terrible.
+
+    At 55 words every rate is quantised: the single em dash reads as 18.2 per
+    1000 words and saturates on its own, so the calibrated score lands above
+    the threshold. That score is not a measurement at this length, and the
+    verdict does not use it - the answer reaches for two families where a
+    machine-drafted one reaches for six.
+    """
     verdict = review_response(LAWYERLY_ANSWER)
 
     assert not verdict.needs_revision
-    assert verdict.score < verdict.threshold
+    assert not verdict.score_is_meaningful
+    assert len(verdict.violations) < 3
+
+
+def test_a_short_answer_is_judged_on_frames_not_on_its_score() -> None:
+    """The two fixtures are the same length; only the register differs."""
+    from humanize_pl.gate import MIN_SCORABLE_WORDS
+
+    machine = review_response(AI_STYLE_ANSWER)
+    human = review_response(LAWYERLY_ANSWER)
+
+    assert machine.diagnosis.word_count < MIN_SCORABLE_WORDS
+    assert human.diagnosis.word_count < MIN_SCORABLE_WORDS
+    assert not machine.score_is_meaningful
+    assert not human.score_is_meaningful
+
+    assert machine.needs_revision
+    assert not human.needs_revision
+    assert len(machine.violations) > len(human.violations)
+
+
+def test_a_full_length_document_is_still_judged_on_its_score() -> None:
+    """The short-text rule must not leak into the case the score was built for."""
+    from pathlib import Path
+
+    from humanize_pl.detect import profile_for_family
+    from humanize_pl.gate import MIN_SCORABLE_WORDS
+
+    text = (Path("docs_tests/corpus") / "saos_holdout.jsonl")
+    if not text.exists():  # the raw corpus stays local and is gitignored
+        pytest.skip("reference corpus not present")
+    import json
+
+    with text.open(encoding="utf-8") as handle:
+        for line in handle:
+            document = json.loads(line)["text"]
+            if len(document.split()) > MIN_SCORABLE_WORDS * 3:
+                break
+
+    verdict = review_response(
+        document,
+        require_anchor=False,
+        calibrate_against_default=False,
+        profile=profile_for_family("filing_official"),
+    )
+    assert verdict.score_is_meaningful
+    assert verdict.needs_revision == (verdict.score >= verdict.threshold)
 
 
 def test_every_violation_carries_an_actionable_constraint() -> None:

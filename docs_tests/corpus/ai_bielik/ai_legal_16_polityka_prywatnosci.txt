@@ -1,0 +1,66 @@
+Polityka Prywatności Serwisu Rekrutacyjnego [Nazwa Serwisu]
+
+1. Wprowadzenie
+Niniejsza Polityka Prywatności określa zasady przetwarzania danych osobowych użytkowników serwisu rekrutacyjnego [Nazwa Serwisu] (dalej: Serwis). Administratorem danych osobowych jest [Nazwa Firmy], z siedzibą w [Adres], zwana dalej Administratorem.
+
+2. Zakres przetwarzanych danych
+Serwis przetwarza następujące dane osobowe:
+a) Dane identyfikacyjne: imię, nazwisko, data urodzenia, adres zamieszkania, numer telefonu, adres e-mail.
+b) Dane zawodowe: historia zatrudnienia, wykształcenie, umiejętności, doświadczenie zawodowe.
+c) Preferencje rekrutacyjne: preferowane stanowiska, lokalizacja, oczekiwania finansowe.
+d) Inne dane: zdjęcie profilowe (opcjonalnie), linki do portfolio/CV (opcjonalnie).
+
+3. Cele przetwarzania danych
+Dane osobowe są przetwarzane w następujących celach:
+a) Rekrutacja i selekcja kandydatów na stanowiska pracy.
+b) Prowadzenie bazy danych kandydatów.
+c) Realizacja procesów rekrutacyjnych.
+d) Odpowiedź na zapytania kandydatów.
+e) Wysyłka powiadomień o nowych ofertach pracy (za zgodą).
+f) Analiza i raportowanie trendów rynku pracy.
+
+4. Podstawa prawna przetwarzania
+Dane są przetwarzane na podstawie:
+a) Zgody kandydata (art. 6 ust. 1 lit. a RODO).
+b) Konieczności realizacji umowy lub podjęcia działań na żądanie kandydata (art. 6 ust. 1 lit. b RODO).
+c) Obowiązku prawnego ciążącego na Administratorze (art. 6 ust. 1 lit. c RODO).
+
+5. Okres przechowywania danych
+Dane są przechowywane przez okres:
+a) Niezbędny do realizacji celów rekrutacyjnych (maksymalnie 2 lata).
+b) Do momentu wycofania zgody (w przypadku przetwarzania na podstawie zgody).
+c) Wymagany przez przepisy prawa (np. Kodeks pracy).
+
+6. Odbiorcy danych
+Dane mogą być przekazywane:
+a) Podmiotom świadczącym usługi IT i hostingowe.
+b) Firmom rekrutacyjnym i agencjom pracy.
+c) Dostawcom usług prawnych i księgowych.
+d) Uprawnionym organom publicznym.
+
+7. Prawa osób, których dane dotyczą
+Każda osoba ma prawo do:
+a) Dostępu do swoich danych.
+b) Sprostowania nieprawidłowych danych.
+c) Usunięcia danych (prawo do bycia zapomnianym).
+d) Ograniczenia przetwarzania.
+e) Przenoszenia danych.
+f) Wniesienia sprzeciwu wobec przetwarzania.
+g) Cofnięcia zgody w dowolnym momencie (bez wpływu na zgodność z prawem przetwarzania przed cofnięciem).
+
+8. Zgoda na przetwarzanie danych
+Zgoda na przetwarzanie danych jest dobrowolna, ale niezbędna do uczestnictwa w procesach rekrutacyjnych. Brak zgody uniemożliwia korzystanie z usług Serwisu.
+
+9. Bezpieczeństwo danych
+Administrator zapewnia bezpieczeństwo danych poprzez:
+a) Stosowanie środków technicznych i organizacyjnych.
+b) Regularne audyty bezpieczeństwa.
+c) Ograniczony dostęp do danych.
+
+10. Kontakt w sprawie danych
+Wszelkie pytania i wnioski dotyczące przetwarzania danych należy kierować na adres: [Adres e-mail] lub [Numer telefonu].
+
+11. Zmiany Polityki Prywatności
+Administrator zastrzega sobie prawo do aktualizacji Polityki Prywatności. Aktualna wersja jest dostępna na stronie Serwisu.
+
+Data ostatniej aktualizacji: [Data]

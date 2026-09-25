@@ -29,7 +29,7 @@ def _response(payload: dict) -> httpx.Response:
 def _fields(content: str) -> dict[str, str]:
     """Read the labelled plain-text prompt the rewriter now sends."""
     fragment_id = re.search(r"fragment_id: (\S+)", content)
-    source = re.search(r"Fragment do redakcji:\n(.*?)\nZauważone problemy:", content, re.S)
+    source = re.search(r"Fragment do redakcji:\n(.*?)\nZauważone problemy:", content, re.DOTALL)
     return {
         "fragment_id": fragment_id.group(1) if fragment_id else "",
         "source": source.group(1) if source else "",
@@ -100,7 +100,7 @@ def test_client_probes_and_rewrites_with_strict_json() -> None:
         )
 
     settings = LlmSettings("https://model.test/v1", "legal-pl", "token", 2)
-    client = httpx.Client(transport=httpx.MockTransport(handler))
+    client = httpx.AsyncClient(transport=httpx.MockTransport(handler))
     rewriter = OpenAICompatibleRewriter(settings, client=client)
     assert rewriter.probe()
     result = rewriter.rewrite_fragment(
@@ -139,10 +139,11 @@ def test_response_format_falls_back_to_strict_prompt() -> None:
 
     rewriter = OpenAICompatibleRewriter(
         LlmSettings("https://model.test/v1", "legal-pl"),
-        client=httpx.Client(transport=httpx.MockTransport(handler)),
+        client=httpx.AsyncClient(transport=httpx.MockTransport(handler)),
     )
     assert rewriter.probe()
-    assert calls == 2
+    # The OpenAI shape, the llama.cpp shape, then the strict prompt alone.
+    assert calls == 3
     assert rewriter.metadata.supports_response_format is False
 
 
@@ -167,7 +168,7 @@ def test_transient_http_errors_retry_at_most_twice(monkeypatch, status: int) -> 
 
     rewriter = OpenAICompatibleRewriter(
         LlmSettings("https://model.test/v1", "legal-pl"),
-        client=httpx.Client(transport=httpx.MockTransport(handler)),
+        client=httpx.AsyncClient(transport=httpx.MockTransport(handler)),
     )
     assert rewriter.probe()
     assert calls == 3
@@ -176,7 +177,7 @@ def test_transient_http_errors_retry_at_most_twice(monkeypatch, status: int) -> 
 def test_invalid_response_marks_endpoint_unavailable() -> None:
     rewriter = OpenAICompatibleRewriter(
         LlmSettings("https://model.test/v1", "legal-pl"),
-        client=httpx.Client(
+        client=httpx.AsyncClient(
             transport=httpx.MockTransport(
                 lambda _request: httpx.Response(
                     200, json={"choices": [{"message": {"content": "not json"}}]}
@@ -203,7 +204,7 @@ def test_missing_token_sends_no_authorization_header() -> None:
 
     rewriter = OpenAICompatibleRewriter(
         LlmSettings("https://model.test/v1", "legal-pl", api_key=""),
-        client=httpx.Client(transport=httpx.MockTransport(handler)),
+        client=httpx.AsyncClient(transport=httpx.MockTransport(handler)),
     )
     assert rewriter.probe()
 
@@ -211,7 +212,7 @@ def test_missing_token_sends_no_authorization_header() -> None:
 def test_unknown_model_is_reported_without_response_body() -> None:
     rewriter = OpenAICompatibleRewriter(
         LlmSettings("https://model.test/v1", "missing-model"),
-        client=httpx.Client(
+        client=httpx.AsyncClient(
             transport=httpx.MockTransport(
                 lambda _request: httpx.Response(404, json={"error": "secret provider body"})
             )
@@ -234,7 +235,7 @@ def test_timeout_retries_only_twice(monkeypatch) -> None:
 
     rewriter = OpenAICompatibleRewriter(
         LlmSettings("https://model.test/v1", "legal-pl"),
-        client=httpx.Client(transport=httpx.MockTransport(handler)),
+        client=httpx.AsyncClient(transport=httpx.MockTransport(handler)),
     )
     assert not rewriter.probe()
     assert calls == 3
@@ -248,8 +249,8 @@ def test_fragments_are_rewritten_concurrently_but_applied_in_document_order() ->
     back first. The assembled text has to be identical to the sequential one,
     otherwise the same input would produce different documents run to run.
     """
+    import asyncio
     import threading
-    import time
 
     from humanize_pl.detect import detect_document
     from humanize_pl.flows.base import _rewrite_remaining_with_llm
@@ -261,7 +262,7 @@ def test_fragments_are_rewritten_concurrently_but_applied_in_document_order() ->
     peak = 0
     lock = threading.Lock()
 
-    def handler(request: httpx.Request) -> httpx.Response:
+    async def handler(request: httpx.Request) -> httpx.Response:
         nonlocal in_flight, peak
         payload = json.loads(request.content)
         content = payload["messages"][1]["content"]
@@ -279,7 +280,7 @@ def test_fragments_are_rewritten_concurrently_but_applied_in_document_order() ->
         with lock:
             in_flight += 1
             peak = max(peak, in_flight)
-        time.sleep(delays.get(user["fragment_id"], 0.0))
+        await asyncio.sleep(delays.get(user["fragment_id"], 0.0))
         with lock:
             in_flight -= 1
         return _response(
@@ -299,7 +300,7 @@ def test_fragments_are_rewritten_concurrently_but_applied_in_document_order() ->
     text = "\n".join(paragraphs)
 
     settings = LlmSettings("https://model.test/v1", "legal-pl", "", 5, concurrency=3)
-    client = httpx.Client(transport=httpx.MockTransport(handler))
+    client = httpx.AsyncClient(transport=httpx.MockTransport(handler))
     rewriter = OpenAICompatibleRewriter(settings, client=client)
     assert rewriter.probe()
 
@@ -360,7 +361,7 @@ def test_the_prompt_never_hands_the_model_an_object_shaped_like_the_answer() -> 
 
     settings = LlmSettings("https://model.test/v1", "legal-pl", "", 5)
     rewriter = OpenAICompatibleRewriter(
-        settings, client=httpx.Client(transport=httpx.MockTransport(handler))
+        settings, client=httpx.AsyncClient(transport=httpx.MockTransport(handler))
     )
     assert rewriter.probe()
     result = rewriter.rewrite_fragment(
@@ -433,7 +434,7 @@ def _sentence_handler(rewrite):
 def _rewriter(handler):
     settings = LlmSettings("https://model.test/v1", "legal-pl", "", 5)
     return OpenAICompatibleRewriter(
-        settings, client=httpx.Client(transport=httpx.MockTransport(handler))
+        settings, client=httpx.AsyncClient(transport=httpx.MockTransport(handler))
     )
 
 
@@ -525,3 +526,201 @@ def test_a_rejected_sentence_leaves_its_paragraph_untouched() -> None:
     assert rejected >= 1
     assert changes == []
     assert result == paragraph
+
+
+def _echo_handler(requests: list[dict], *, proposal=None, reject_formats=()):
+    """An endpoint that echoes the source; `proposal(source)` shapes the answer."""
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        payload = json.loads(request.content)
+        requests.append(payload)
+        shape = (payload.get("response_format") or {}).get("type")
+        if shape in reject_formats:
+            return httpx.Response(400, json={"error": "unsupported"})
+        user = _fields(payload["messages"][1]["content"])
+        source = user["source"] or "To jest test połączenia."
+        return _response(
+            {
+                "fragment_id": user["fragment_id"] or "capability-test",
+                "source": source,
+                "proposal": proposal(source) if proposal and user["source"] else source,
+                "rationale": "test",
+            }
+        )
+
+    return handler
+
+
+def test_a_llama_cpp_endpoint_gets_the_schema_in_the_shape_it_reads() -> None:
+    """Bielik's llama.cpp refused the OpenAI shape, so nothing constrained its
+    output and half of its answers were unusable."""
+    requests: list[dict] = []
+    handler = _echo_handler(requests, proposal=lambda s: s.replace("Warto podkreślić, że ", ""),
+                            reject_formats=("json_schema",))
+    rewriter = OpenAICompatibleRewriter(
+        LlmSettings("https://model.test/v1", "pl", "token", 2),
+        client=httpx.AsyncClient(transport=httpx.MockTransport(handler)),
+    )
+
+    assert rewriter.probe()
+    assert rewriter.metadata.response_format_kind == "json_object"
+    assert rewriter.metadata.supports_response_format is True
+    sent_before = len(requests)
+    result = rewriter.rewrite_fragment(
+        "Warto podkreślić, że ogród zimą odpoczywa.", fragment_id="p-1", document_type=DocumentType.general
+    )
+    assert result.accepted
+    # Straight to the shape that worked, no second refusal on the way.
+    assert [r["response_format"]["type"] for r in requests[sent_before:]] == ["json_object"]
+    assert "schema" in requests[-1]["response_format"]
+
+
+def test_a_proposal_bringing_in_a_new_name_is_turned_down() -> None:
+    requests: list[dict] = []
+    handler = _echo_handler(requests, proposal=lambda s: s.replace("del Toro", "Guillermo del Toro"))
+    rewriter = OpenAICompatibleRewriter(
+        LlmSettings("https://model.test/v1", "pl", "token", 2),
+        client=httpx.AsyncClient(transport=httpx.MockTransport(handler)),
+    )
+    assert rewriter.probe()
+
+    result = rewriter.rewrite_fragment(
+        "Krytycy chwalili najnowszy film del Toro.", fragment_id="p-1", document_type=DocumentType.general
+    )
+    assert not result.accepted
+    assert result.reason.startswith("new_proper_name: Guillermo")
+
+
+def test_an_echo_that_only_differs_in_spacing_still_counts() -> None:
+    requests: list[dict] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        payload = json.loads(request.content)
+        requests.append(payload)
+        user = _fields(payload["messages"][1]["content"])
+        source = user["source"] or "To jest test połączenia."
+        return _response(
+            {
+                "fragment_id": user["fragment_id"] or "capability-test",
+                "source": " ".join(source.split()),
+                "proposal": " ".join(source.split()).replace("Warto podkreślić, że o", "O"),
+                "rationale": "test",
+            }
+        )
+
+    rewriter = OpenAICompatibleRewriter(
+        LlmSettings("https://model.test/v1", "pl", "token", 2),
+        client=httpx.AsyncClient(transport=httpx.MockTransport(handler)),
+    )
+    assert rewriter.probe()
+    result = rewriter.rewrite_fragment(
+        "Warto podkreślić, że ogród  zimą odpoczywa.", fragment_id="p-1", document_type=DocumentType.general
+    )
+    assert result.accepted
+
+
+def test_a_reasoning_model_can_be_told_not_to_think() -> None:
+    """Qwen 3.5 spent its whole budget on "Thinking Process" before answering."""
+    requests: list[dict] = []
+    handler = _echo_handler(requests)
+
+    def rewriter_for(disable: bool) -> OpenAICompatibleRewriter:
+        settings = LlmSettings("https://model.test/v1", "qwen", "none", 2, disable_thinking=disable)
+        return OpenAICompatibleRewriter(settings, client=httpx.AsyncClient(transport=httpx.MockTransport(handler)))
+
+    assert rewriter_for(True).probe()
+    assert requests[-1]["chat_template_kwargs"] == {"enable_thinking": False}
+    assert rewriter_for(False).probe()
+    assert "chat_template_kwargs" not in requests[-1]
+    assert LlmSettings.from_environment(
+        environ={"HUMANIZE_PL_LLM_BASE_URL": "https://m.test/v1", "HUMANIZE_PL_LLM_MODEL": "q",
+                 "HUMANIZE_PL_LLM_DISABLE_THINKING": "1"}
+    ).disable_thinking
+
+
+@pytest.mark.parametrize(("source", "candidate"), [
+    ("Kot goni psa.", "Pies goni kota."),
+    ("Pacjent ma gorączkę.", "Pacjent nie ma gorączki."),
+    ("Warto podkreślić, że dostawca przekazuje klientowi dokumentację.",
+     "Klient przekazuje dostawcy dokumentację."),
+    ("Pacjent ma gorączkę i kaszel.", "Pacjent ma gorączkę."),
+])
+def test_hosted_rewrite_rejects_unverified_changes_of_meaning(source, candidate):
+    rewriter = _rewriter(_sentence_handler(lambda text: candidate))
+    result = rewriter.rewrite_fragment(source, fragment_id="p-1", document_type=DocumentType.general)
+    assert not result.accepted
+    assert result.text == source
+
+
+def test_hosted_rewrite_uses_supplied_meaning_validator():
+    calls = []
+
+    class Equivalence:
+        def check_entailment(self, left, right):
+            calls.append((left, right))
+            return True
+
+    source, candidate = "Pacjent ma gorączkę.", "Pacjent gorączkuje."
+    rewriter = _rewriter(_sentence_handler(lambda text: candidate))
+    result = rewriter.rewrite_fragment(
+        source, fragment_id="p-1", document_type=DocumentType.general, nli=Equivalence(),
+    )
+    assert result.accepted
+    assert calls == [(source, candidate), (candidate, source)]
+    assert result.validation_checks[-1]["method"] == "bidirectional_nli"
+
+
+@pytest.mark.parametrize("source,old,new", [
+    ("Dostawca przekazuje klientowi dokumentację.", "przekazuje", "odbiera"),
+    ("Zwrot następuje w ciągu 14 dni od doręczenia wezwania.", "doręczenia", "wysłania"),
+    ("Może odmówić zapłaty i odbioru towaru.", " i ", " lub "),
+    ("Jeżeli dostawa opóźni się, nalicza się karę.", "dostawa", "płatność"),
+    ("Zastosowanie ma art. 22 k.c.", "k.c.", "k.p."),
+])
+def test_legal_hosted_rewrite_cannot_override_scope_guard(source, old, new):
+    class Overconfident:
+        def check_entailment(self, left, right):
+            return True
+
+    rewriter = _rewriter(_sentence_handler(lambda text: text.replace(old, new)))
+    try:
+        result = rewriter.rewrite_fragment(
+            source, fragment_id="p-1", document_type=DocumentType.contract, nli=Overconfident(),
+        )
+    finally:
+        rewriter.close()
+    assert not result.accepted
+    assert result.text == source
+    assert any(c["name"].startswith("legal_") and not c["ok"] for c in result.validation_checks)
+
+
+def test_flow_passes_its_meaning_validator_to_hosted_rewrites():
+    from humanize_pl.config import Engine, Mode
+    from humanize_pl.document import RewriteBackend
+    from humanize_pl.flows.base import FlowSettings, run_all_layers
+
+    calls = []
+
+    class Equivalence:
+        def check_entailment(self, premise, hypothesis):
+            calls.append((premise, hypothesis))
+            return True
+
+    settings = FlowSettings(
+        mode=Mode.standard, engine=Engine.basic, document_type=DocumentType.general,
+        rewrite_backend=RewriteBackend.hybrid, draft_missing=False,
+    )
+    session = settings.session()
+    session.nli = Equivalence()
+    candidate = "Ogród wymaga zimą mniej pracy."
+    rewriter = _rewriter(_sentence_handler(lambda text: candidate))
+    try:
+        outcome, _ = run_all_layers(
+            "Podsumowując, ogród zimą potrzebuje mniej pracy.", name="ogród",
+            settings=settings, session=session, rewriter=rewriter, llm_prepared=True,
+        )
+    finally:
+        rewriter.close()
+    assert outcome.text_out == candidate
+    assert ("ogród zimą potrzebuje mniej pracy.", candidate) in calls
+    assert (candidate, "ogród zimą potrzebuje mniej pracy.") in calls

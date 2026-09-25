@@ -1,12 +1,14 @@
 from __future__ import annotations
 
+import itertools
 from dataclasses import dataclass, replace
+
 import regex as re
 
+from humanize_pl.nlp.frequency import sentence_formality
+from humanize_pl.nlp.morphology import lix_score, mean_dependency_distance
 from humanize_pl.rules.legal_features import analyze_legal_review_features
 from humanize_pl.safety.anchors import content_anchor_tokens
-from humanize_pl.nlp.morphology import lix_score, mean_dependency_distance
-from humanize_pl.nlp.frequency import sentence_formality
 
 
 @dataclass(frozen=True)
@@ -176,7 +178,7 @@ def analyze_paragraph_features(sentences: list[str]) -> ParagraphFeatures:
     repeated_opening_count = sum(count - 1 for count in opening_counts.values() if count > 1)
     repeated_frame_count = sum(count - 1 for count in frame_counts.values() if count > 1)
     overlaps: list[float] = []
-    for left, right in zip(sentence_anchors, sentence_anchors[1:]):
+    for left, right in itertools.pairwise(sentence_anchors):
         if not left or not right:
             continue
         overlaps.append(len(left & right) / len(left | right))

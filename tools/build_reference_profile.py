@@ -17,6 +17,7 @@ import json
 from pathlib import Path
 
 from humanize_pl.corpus import build_reference_profile
+from humanize_pl.detect import AI_FAMILIES
 
 DEFAULT_OUTPUT_DIR = Path("humanize_pl/data/reference_profiles")
 
@@ -45,14 +46,29 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--source", default="SAOS (saos.org.pl) dump API")
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
+    parser.add_argument(
+        "--ignore-family",
+        action="append",
+        default=[],
+        help="Rodzina sygnałów, która w tym rejestrze nie świadczy o AI (np. typography_artifact)",
+    )
     args = parser.parse_args(argv)
 
     texts = load_corpus(args.corpus, limit=args.limit)
     if not texts:
         parser.error(f"No usable documents in {args.corpus}")
 
+    # `families` is not optional in practice. Without it the profile records
+    # only the families this particular corpus happened to contain, and every
+    # other family silently stops being calibrated - so the cleaner the human
+    # corpus, the blinder the baseline it produces.
     profile = build_reference_profile(
-        texts, name=args.name, genre=args.genre, source=args.source
+        texts,
+        name=args.name,
+        genre=args.genre,
+        source=args.source,
+        families=AI_FAMILIES,
+        ignored_families=args.ignore_family,
     )
     output = args.output_dir / f"{args.name}.json"
     profile.save(output)

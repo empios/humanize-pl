@@ -1,0 +1,104 @@
+**POLITYKA PRYWATNOŚCI APLIKACJI MOBILNEJ**
+
+**[NAZWA APLIKACJI]**
+
+Obowiązuje od: [DD.MM.RRRR]
+
+### 1. Postanowienia wstępne
+
+Niniejsza Polityka Prywatności określa zasady przetwarzania danych osobowych, w tym danych lokalizacyjnych, przez [Nazwa Administratora], zwanego dalej „Administratorem”, za pośrednictwem aplikacji mobilnej [Nazwa Aplikacji] dostępnej na systemy iOS/Android.
+Korzystanie z Aplikacji oznacza akceptację niniejszej Polityki.
+
+### 2. Administrator danych
+
+Administratorem danych osobowych jest:
+[Nazwa firmy], [forma prawna]
+[Adres]
+NIP: [....]
+E-mail: [....]
+Telefon: [....]
+
+Dane kontaktowe Inspektora Ochrony Danych: iod@[domena].pl
+
+### 3. Zakres zbieranych danych
+
+**3.1 Dane lokalizacyjne**
+Aplikacja zbiera dane o lokalizacji Użytkownika. Mogą to być:
+* Lokalizacja precyzyjna w czasie rzeczywistym na podstawie GPS, Wi-Fi, Bluetooth i stacji bazowych, gdy Aplikacja działa w tle lub na pierwszym planie;
+* Lokalizacja przybliżona na podstawie adresu IP lub identyfikatorów sieci komórkowej.
+
+Zbieranie lokalizacji precyzyjnej następuje wyłącznie po uzyskaniu wyraźnej zgody Użytkownika w systemie operacyjnym oraz w Aplikacji i może być ograniczone do czasu korzystania z Aplikacji lub ciągłe, w zależności od wybranej funkcji.
+
+**3.2 Pozostałe dane**
+* Dane identyfikacyjne: identyfikator urządzenia, ID reklamowe IDFA/GAID, wersja systemu.
+* Dane konta: adres e-mail, login, hasło w formie zaszyfrowanej.
+* Dane użytkowania: logi techniczne, historia korzystania z funkcji, interakcje w aplikacji.
+* Dane przekazane dobrowolnie: imię, numer telefonu, preferencje.
+
+### 4. Cele przetwarzania i podstawy prawne
+
+Dane lokalizacyjne przetwarzane są na podstawie:
+
+1. **Art. 6 ust. 1 lit. a RODO** - zgoda Użytkownika na zbieranie lokalizacji w celu:
+   - świadczenia usług zależnych od lokalizacji, np. nawigacja, wyszukiwanie punktów w pobliżu, powiadomienia lokalne;
+   - personalizacji treści i rekomendacji;
+   - analizy statystycznej i usprawniania działania Aplikacji.
+
+2. **Art. 6 ust. 1 lit. b RODO** - realizacja umowy w zakresie świadczenia usług na żądanie Użytkownika.
+
+3. **Art. 6 ust. 1 lit. f RODO** - prawnie uzasadniony interes Administratora, tj. zapewnienie bezpieczeństwa aplikacji, zapobieganie nadużyciom.
+
+W przypadku przetwarzania danych lokalizacyjnych w tle zgoda może być wycofana w każdej chwili w ustawieniach urządzenia lub w Aplikacji.
+
+### 5. Okres przechowywania danych
+
+Dane lokalizacyjne są przechowywane przez okres:
+* 12 miesięcy od ostatniego korzystania z Aplikacji w przypadku danych zbieranych na podstawie zgody i uzasadnionego interesu;
+* przez czas trwania umowy oraz okres przedawnienia roszczeń, gdy przetwarzanie jest niezbędne do jej wykonania.
+
+Po upływie terminu dane są usuwane lub anonimizowane.
+
+### 6. Odbiorcy danych
+
+Dane mogą być przekazywane:
+* Podmiotom przetwarzającym na zlecenie Administratora, np. dostawcom usług cloud, analityki, powiadomień push;
+* Podmiotom uprawnionym na podstawie przepisów prawa.
+
+Dane lokalizacyjne nie są sprzedawane podmiotom trzecim w celach marketingowych.
+
+### 7. Przekazywanie danych poza EOG
+
+W przypadku korzystania z dostawców z siedzibą poza Europejskim Obszarem Gospodarczym, przekazywanie danych odbywa się na podstawie standardowych klauzul umownych zatwierdzonych przez Komisję Europejską lub innych adekwatnych zabezpieczeń.
+
+### 8. Prawa Użytkownika
+
+Użytkownikowi przysługuje prawo do:
+* dostępu do danych i uzyskania kopii;
+* sprostowania danych niezgodnych z prawdą;
+* usunięcia danych, tzw. prawo do bycia zapomnianym;
+* ograniczenia przetwarzania;
+* przenoszenia danych;
+* wniesienia sprzeciwu wobec przetwarzania opartego na interesie prawnym;
+* wycofania zgody w dowolnym momencie bez wpływu na zgodność z prawem przetwarzania dokonanego przed cofnięciem.
+
+Wnioski należy kierować na adres e-mail wskazany w pkt 2. Administrator ustosunkuje się do wniosku w terminie do 1 miesiąca.
+
+### 9. Bezpieczeństwo danych
+
+Administrator wdrożył środki techniczne i organizacyjne, w tym szyfrowanie w tranzycie i spoczynku, kontrolę dostępu i regularne audyty, aby chronić dane lokalizacyjne przed nieuprawnionym dostępem, utratą lub modyfikacją.
+
+### 10. Dzieci
+
+Aplikacja nie jest przeznaczona dla osób poniżej 16 roku życia. Administrator nie przetwarza świadomie danych dzieci bez zgody opiekuna prawnego.
+
+### 11. Zmiany Polityki
+
+Administrator zastrzega sobie prawo do zmiany Polityki. O istotnych zmianach Użytkownik zostanie poinformowany w Aplikacji z co najmniej 14-dniowym wyprzedzeniem. Aktualna wersja dostępna jest zawsze w Aplikacji w zakładce Ustawienia > Polityka Prywatności.
+
+### 12. Kontakt
+
+W sprawach dotyczących ochrony danych można kontaktować się z Administratorem pod adresem: [e-mail] lub pisemnie na adres wskazany w pkt 2.
+
+---
+
+*Niniejszy dokument ma charakter wzorcowy i nie stanowi porady prawnej. Zaleca się dostosowanie treści do konkretnej funkcjonalności Aplikacji i weryfikację przez prawnika.*

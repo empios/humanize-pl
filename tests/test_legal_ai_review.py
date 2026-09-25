@@ -10,7 +10,6 @@ from humanize_pl.reports.report import write_json_report
 from humanize_pl.safety.protectors import protect_text
 from humanize_pl.safety.validators import validate_candidate
 
-
 FIXTURE_PATH = Path(__file__).parent / "fixtures" / "ai_legal_samples.json"
 
 
@@ -43,7 +42,7 @@ def test_validator_rejects_normativity_changes():
         max_length_ratio=2.0,
     )
     assert not validation.ok
-    assert validation.reason == "normativity changed"
+    assert validation.reason.startswith("deontic drift")
 
     original = "Pracownik powinien wykonać obowiązek zgodnie z umową."
     validation = validate_candidate(
@@ -53,7 +52,7 @@ def test_validator_rejects_normativity_changes():
         max_length_ratio=2.0,
     )
     assert not validation.ok
-    assert validation.reason == "normativity changed"
+    assert validation.reason.startswith("deontic drift")
 
 
 def test_validator_rejects_loss_of_legal_party_or_obligation():

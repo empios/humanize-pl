@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-
-from datetime import date
+from datetime import datetime
 
 from humanize_pl.detect import detect_document
+from humanize_pl.detect.lexical import connective_density, mtld
+from humanize_pl.detect.reference import Distribution, ReferenceProfile
+
 from .normalize import anonymisation_rate
-from humanize_pl.detect.reference import Distribution, ReferenceProfile, windowed_ttr
 
 
 def build_reference_profile(
@@ -16,6 +17,7 @@ def build_reference_profile(
     genre: str,
     source: str,
     families: Iterable[str] | None = None,
+    ignored_families: Iterable[str] = (),
 ) -> ReferenceProfile:
     """Measure the human baseline by running our own detectors over human text.
 
@@ -28,22 +30,31 @@ def build_reference_profile(
     happened to see, and calibration silently stops measuring the rest - so a
     corpus of genuinely clean writing produces the blindest baseline of all,
     which is exactly backwards.
+
+    `ignored_families` are left out of every number here and recorded on the
+    profile, so the detector drops them too wherever the profile is used.
     """
+    ignored = frozenset(ignored_families)
     sentence_words: list[float] = []
     cvs: list[float] = []
+    sentence_burstinesses: list[float] = []
+    sentence_entropies: list[float] = []
     shape_cvs: list[float] = []
     diversities: list[float] = []
-    ttrs: list[float] = []
+    mtlds: list[float] = []
+    densities: list[float] = []
     anonymisations: list[float] = []
     scores: list[float] = []
-    family_rates: dict[str, list[float]] = {family: [] for family in families or ()}
+    family_rates: dict[str, list[float]] = {
+        family: [] for family in families or () if family not in ignored
+    }
 
     document_count = 0
     word_count = 0
     sentence_count = 0
 
     for text in texts:
-        diagnosis = detect_document(text)
+        diagnosis = detect_document(text, ignore_families=ignored)
         if not diagnosis.word_count or not diagnosis.metrics:
             continue
 
@@ -53,9 +64,12 @@ def build_reference_profile(
 
         sentence_words.append(diagnosis.metrics["mean_sentence_words"])
         cvs.append(diagnosis.metrics["sentence_length_cv"])
+        sentence_burstinesses.append(diagnosis.metrics.get("sentence_burstiness", 0.0))
+        sentence_entropies.append(diagnosis.metrics.get("sentence_entropy", 0.0))
         shape_cvs.append(diagnosis.metrics.get("paragraph_shape_cv", 0.0))
         diversities.append(diagnosis.metrics["opening_diversity"])
-        ttrs.append(windowed_ttr(text))
+        mtlds.append(mtld(text))
+        densities.append(connective_density(text))
         anonymisations.append(anonymisation_rate(text))
         scores.append(diagnosis.ai_signal_score)
 
@@ -72,18 +86,22 @@ def build_reference_profile(
         name=name,
         genre=genre,
         source=source,
-        built_on=date.today().isoformat(),
+        built_on=datetime.now().astimezone().date().isoformat(),
         document_count=document_count,
         word_count=word_count,
         sentence_count=sentence_count,
         sentence_words=Distribution.of(sentence_words),
         sentence_length_cv=Distribution.of(cvs),
+        sentence_burstiness=Distribution.of(sentence_burstinesses),
+        sentence_entropy=Distribution.of(sentence_entropies),
         paragraph_shape_cv=Distribution.of([cv for cv in shape_cvs if cv > 0]),
         opening_diversity=Distribution.of(diversities),
-        windowed_ttr=Distribution.of(ttrs),
+        mtld=Distribution.of(mtlds),
+        connective_density=Distribution.of(densities),
         anonymisation_rate=Distribution.of(anonymisations),
         signal_score=Distribution.of(scores),
         family_rates={
             family: Distribution.of(values) for family, values in sorted(family_rates.items())
         },
+        ignored_families=tuple(sorted(ignored)),
     )

@@ -14,48 +14,69 @@ sections:
     label_pl: tożsamość administratora
     severity: required
     matches: ["administratorem danych", "administrator danych"]
+    expects:
+      - "Polityka wskazuje, kto jest administratorem danych."
 
   - id: kontakt
     label_pl: dane kontaktowe (administrator lub IOD)
     severity: required
     matches: ["inspektor ochrony danych", "kontakt", "adres e-mail", "@"]
+    expects:
+      - "Polityka podaje dane kontaktowe administratora albo inspektora ochrony danych."
 
   - id: cele
     label_pl: cele przetwarzania
     severity: required
     matches: ["cele przetwarzania", "cel przetwarzania", "przetwarzane w celu"]
+    expects:
+      - "Polityka wskazuje, w jakich celach dane są przetwarzane."
 
   - id: podstawy
     label_pl: podstawa prawna przetwarzania
     severity: required
     matches: ["podstawa prawna", "podstawy prawne", "podstawą przetwarzania"]
+    expects:
+      - "Polityka wskazuje podstawę prawną przetwarzania dla każdego celu."
 
   - id: odbiorcy
     label_pl: odbiorcy danych
     severity: required
     matches: ["odbiorcy danych", "odbiorcami danych", "podmioty przetwarzające"]
+    expects:
+      - "Polityka wskazuje odbiorców danych albo ich kategorie."
 
   - id: okres
     label_pl: okres przechowywania
     severity: required
     matches: ["okres przechowywania", "przechowywane przez okres"]
+    expects:
+      - "Polityka określa okres przechowywania danych albo kryteria jego ustalenia."
 
   - id: prawa
     label_pl: prawa osoby, której dane dotyczą
     severity: required
     matches: ["prawo dostępu", "prawa osoby", "przysługuje prawo"]
+    expects:
+      - "Polityka wymienia prawa osoby, której dane dotyczą."
+      - "Polityka wskazuje, w jaki sposób te prawa zrealizować."
 
   - id: skarga
     label_pl: prawo skargi do organu nadzorczego
     severity: required
     matches: ["skargi do", "organu nadzorczego", "prezesa urzędu ochrony danych", "uodo"]
+    expects:
+      - "Polityka poucza o prawie wniesienia skargi do organu nadzorczego."
 
   - id: panstwa_trzecie
     label_pl: przekazywanie do państw trzecich
     severity: expected
     matches: ["państwa trzeciego", "poza europejski obszar", "państw trzecich"]
+    expects:
+      - "Polityka informuje o przekazywaniu danych poza Europejski Obszar Gospodarczy."
 
   - id: profilowanie
     label_pl: informacja o profilowaniu
     severity: expected
     matches: ["profilowani", "zautomatyzowanego podejmowania decyzji"]
+    expects:
+      - "Polityka informuje o zautomatyzowanym podejmowaniu decyzji, w tym profilowaniu."

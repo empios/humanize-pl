@@ -1,0 +1,33 @@
+Oto przykładowe wezwanie do zapłaty wynagrodzenia za wykonane usługi doradcze:
+
+[Nazwa Twojej firmy/Twoje imię i nazwisko]
+[Adres]
+[NIP]
+
+[Miejscowość], [data]
+
+[Nazwa firmy/imię i nazwisko dłużnika]
+[Adres dłużnika]
+
+WEZWANIE DO ZAPŁATY
+
+Działając w imieniu [nazwa Twojej firmy/Twoje imię i nazwisko], niniejszym wzywam do zapłaty kwoty [kwota] zł (słownie: [kwota słownie]) w terminie 7 dni od daty otrzymania niniejszego wezwania.
+
+Podstawą do wystawienia niniejszego wezwania jest umowa nr [numer umowy] z dnia [data umowy] dotycząca świadczenia usług doradczych, na mocy której wykonałem/am usługi doradcze na rzecz [nazwa firmy/imię i nazwisko dłużnika].
+
+Termin wykonania usług upłynął [data], jednak do dnia dzisiejszego nie otrzymałem/am należnego wynagrodzenia w wysokości [kwota] zł.
+
+W związku z powyższym wzywam do uregulowania zaległej kwoty na poniższy numer rachunku bankowego:
+
+[Nazwa banku]
+[Numer rachunku bankowego]
+
+W przypadku braku zapłaty w wyznaczonym terminie, będę zmuszony/a podjąć dalsze kroki prawne w celu wyegzekwowania należności, co może wiązać się z dodatkowymi kosztami.
+
+Jeśli kwota do zapłaty jest kwestionowana lub termin płatności został ustalony inaczej niż wynika to z powyższego wezwania, proszę o niezwłoczny kontakt w celu wyjaśnienia sprawy.
+
+Z poważaniem,
+
+[Twoje imię i nazwisko]
+[Stanowisko]
+[Nazwa firmy/Twoje imię i nazwisko]

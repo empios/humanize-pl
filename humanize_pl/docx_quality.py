@@ -2,17 +2,18 @@
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass, field
-from pathlib import Path
+import itertools
 import re
 import shutil
 import subprocess
 import tempfile
+from dataclasses import asdict, dataclass, field
+from pathlib import Path
 from typing import Any
 from zipfile import ZIP_DEFLATED, ZipFile
 
 from humanize_pl.document import DocumentType, FormatPolicy
-from humanize_pl.io.docx_structure import DocxInventory, inventory_docx
+from humanize_pl.io.docx_structure import DocxInventory, inventory_docx, iter_text_units
 
 
 @dataclass
@@ -22,6 +23,8 @@ class FormattingReport:
     warnings: list[str] = field(default_factory=list)
     fixes: list[str] = field(default_factory=list)
     protected_elements: dict[str, int] = field(default_factory=dict)
+    skipped_units: list[dict[str, Any]] = field(default_factory=list)
+    excluded_parts: list[str] = field(default_factory=list)
     inventory_preserved: bool = True
     inventory_differences: list[str] = field(default_factory=list)
     renderer_available: bool = False
@@ -66,6 +69,16 @@ _STYLE_FAMILIES = {
         "heading2": 11,
         "line_spacing": 1.15,
     },
+    # No house norm exists for a general text; the neutral one above for
+    # letters to clients is the closest.
+    DocumentType.general: {
+        "font": "Arial",
+        "size": 11,
+        "title": 16,
+        "heading1": 14,
+        "heading2": 12,
+        "line_spacing": 1.15,
+    },
 }
 
 
@@ -76,6 +89,8 @@ def _inventory_warnings(inventory: DocxInventory) -> tuple[list[str], dict[str, 
         "fields": inventory.fields,
         "content_controls": inventory.content_controls,
         "text_boxes": inventory.text_boxes,
+        "hyperlinks": inventory.hyperlinks,
+        "bookmarks": inventory.bookmarks,
         "footnotes_or_endnotes": len(inventory.notes_text),
     }
     warnings: list[str] = []
@@ -85,6 +100,8 @@ def _inventory_warnings(inventory: DocxInventory) -> tuple[list[str], dict[str, 
         "fields": "pola dokumentu",
         "content_controls": "kontrolki treści",
         "text_boxes": "pola tekstowe",
+        "hyperlinks": "hiperłącza",
+        "bookmarks": "zakładki i cele odesłań",
         "footnotes_or_endnotes": "przypisy lub komentarze OOXML",
     }
     for key, count in counts.items():
@@ -104,6 +121,20 @@ def audit_document(document: Any, source_path: str | Path, *, policy: FormatPoli
     warnings, protected = _inventory_warnings(inventory)
     report.warnings.extend(warnings)
     report.protected_elements = protected
+    report.skipped_units = [
+        {"location": unit.location, "reasons": unit.protection_reasons}
+        for unit in iter_text_units(document) if unit.protected
+    ]
+    report.excluded_parts = [name for name in inventory.parts if name.startswith(
+        ("word/header", "word/footer", "word/footnotes", "word/endnotes", "word/comments")
+    ) and name.endswith(".xml")]
+    if report.skipped_units:
+        report.warnings.append(
+            f"Bez redakcji pozostawiono {len(report.skipped_units)} chronionych akapitów; "
+            "ich lokalizacje i przyczyny są w szczegółowym raporcie."
+        )
+    if report.excluded_parts:
+        report.warnings.append("Pomiar tekstu i redakcja nie obejmują nagłówków, stopek, przypisów ani treści komentarzy.")
 
     a4_width = Mm(210)
     a4_height = Mm(297)
@@ -120,10 +151,10 @@ def audit_document(document: Any, source_path: str | Path, *, policy: FormatPoli
     heading_levels: list[int] = []
     for paragraph in document.paragraphs:
         style_name = paragraph.style.name if paragraph.style is not None else ""
-        match = re.search(r"(?:Heading|Nagłówek)\s*(\d+)", style_name, re.I)
+        match = re.search(r"(?:Heading|Nagłówek)\s*(\d+)", style_name, re.IGNORECASE)
         if match:
             heading_levels.append(int(match.group(1)))
-    for previous, current in zip(heading_levels, heading_levels[1:]):
+    for previous, current in itertools.pairwise(heading_levels):
         if current > previous + 1:
             report.issues.append(
                 f"Hierarchia nagłówków przeskakuje z poziomu {previous} na {current}."
@@ -151,7 +182,7 @@ def audit_document(document: Any, source_path: str | Path, *, policy: FormatPoli
     breaks = root.xpath(".//w:br[@w:type='page'] | .//w:lastRenderedPageBreak")
     if len(breaks) > 1:
         report.warnings.append(
-            "Dokument zawiera wiele jawnych podziałów strony; wynik sprawdzono w renderze."
+            "Dokument zawiera wiele jawnych podziałów strony; układ wymaga sprawdzenia w renderze."
         )
     return report
 
@@ -265,9 +296,17 @@ def apply_template_style_parts(target: str | Path, template: str | Path) -> None
 
 
 def compare_inventories(
-    before: DocxInventory, after_path: str | Path, report: FormattingReport
+    before: DocxInventory,
+    after_path: str | Path,
+    report: FormattingReport,
+    *,
+    expected_paragraph_delta: int = 0,
+    allow_formatting_changes: bool = False,
 ) -> None:
-    differences = before.structural_differences(inventory_docx(after_path))
+    differences = before.structural_differences(
+        inventory_docx(after_path), expected_paragraph_delta=expected_paragraph_delta,
+        allow_formatting_changes=allow_formatting_changes,
+    )
     report.inventory_differences = differences
     report.inventory_preserved = not differences
     if differences:
@@ -317,8 +356,7 @@ def render_and_audit(
                     str(temp_path),
                     str(source),
                 ],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
+                capture_output=True,
                 text=True,
                 timeout=120,
                 check=False,

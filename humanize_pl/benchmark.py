@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 import csv
-from dataclasses import asdict, dataclass, field
 import json
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from statistics import mean
-import tempfile
 from time import perf_counter
 from typing import Any
 
@@ -14,14 +13,13 @@ import typer
 from rich import print
 
 from humanize_pl.config import Engine, Mode
-from humanize_pl.core import HumanizeResult, humanize_text
 from humanize_pl.detect import detect_document
-from humanize_pl.io.docx_io import process_docx
+from humanize_pl.document import HumanizeTrack, RewriteBackend
+from humanize_pl.flow import FlowResult, humanize
+from humanize_pl.io.atomic import write_text_atomic
 from humanize_pl.io.docx_structure import inventory_docx
-from humanize_pl.reports.report import write_json_report
 from humanize_pl.safety.protectors import protect_text
 from humanize_pl.safety.validators import has_stranded_relative_clause, legal_sensitive_inventory
-
 
 DEFAULT_MANIFEST = Path("docs_tests/ai_generated/manifest.json")
 DEFAULT_OUTPUT = Path("docs_tests/results/latest")
@@ -38,6 +36,7 @@ class BenchmarkDocument:
     focus: list[str] = field(default_factory=list)
     source_kind: str = "txt"
     lawyer_path: Path | None = None
+    track: HumanizeTrack = HumanizeTrack.legal
 
 
 @dataclass
@@ -51,9 +50,9 @@ class BenchmarkRow:
     output_path: str | None = None
     report_path: str | None = None
     accepted_changes: int = 0
-    rejected_candidates: int = 0
-    skipped_sentences: int = 0
-    all_candidates: int = 0
+    rejected_candidates: int | None = None
+    skipped_sentences: int | None = None
+    all_candidates: int | None = None
     processing_seconds: float = 0.0
     changes_per_1000_words: float = 0.0
     average_accepted_risk: float = 0.0
@@ -66,6 +65,8 @@ class BenchmarkRow:
     warnings: list[str] = field(default_factory=list)
     evaluation: dict[str, Any] = field(default_factory=dict)
     error: str | None = None
+    track: str = "legal"
+    readiness_status: str | None = None
 
 
 @app.command()
@@ -87,6 +88,8 @@ def main(
         "--include-docx",
         help="Additional DOCX file to benchmark",
     ),
+    rewrite_backend: RewriteBackend = typer.Option(RewriteBackend.rules, "--rewrite-backend"),
+    require_llm: bool = typer.Option(False, "--require-llm"),
 ) -> None:
     documents = load_manifest(manifest)
     documents.extend(_docx_documents(include_docx))
@@ -99,6 +102,8 @@ def main(
         offline_models=offline_models,
         require_models=require_models,
         allow_fallback=allow_fallback,
+        rewrite_backend=rewrite_backend,
+        require_llm=require_llm,
     )
     write_summary_artifacts(rows, output)
     print(f"[green]Benchmark zapisany:[/green] {output}")
@@ -128,6 +133,8 @@ def load_manifest(path: str | Path) -> list[BenchmarkDocument]:
     data = json.loads(path.read_text(encoding="utf-8"))
     documents: list[BenchmarkDocument] = []
     for item in data:
+        if not re.fullmatch(r"[A-Za-z0-9_-]+", str(item.get("id", ""))):
+            raise ValueError("Identyfikator benchmarku może zawierać tylko litery ASCII, cyfry, '_' i '-'.")
         file_name = item["file"]
         source_path = path.parent / file_name
         if not source_path.exists():
@@ -141,10 +148,13 @@ def load_manifest(path: str | Path) -> list[BenchmarkDocument]:
                 path=source_path,
                 type=item.get("type", "unknown"),
                 focus=list(item.get("focus", [])),
-                source_kind="txt",
+                source_kind="docx" if source_path.suffix.lower() == ".docx" else "txt",
                 lawyer_path=lawyer_path,
+                track=HumanizeTrack(item.get("track", "legal")),
             )
         )
+    if len({document.id for document in documents}) != len(documents):
+        raise ValueError("Powtórzone identyfikatory benchmarku.")
     return sorted(documents, key=lambda doc: doc.id)
 
 
@@ -157,6 +167,8 @@ def run_benchmark(
     offline_models: bool,
     require_models: bool,
     allow_fallback: bool,
+    rewrite_backend: RewriteBackend = RewriteBackend.rules,
+    require_llm: bool = False,
 ) -> list[BenchmarkRow]:
     output_dir.mkdir(parents=True, exist_ok=True)
     rows: list[BenchmarkRow] = []
@@ -171,6 +183,8 @@ def run_benchmark(
                 mode=mode,
                 offline_models=offline_models,
                 require_models=require_models or (engine != Engine.basic and not allow_fallback),
+                rewrite_backend=rewrite_backend,
+                require_llm=require_llm,
             )
             rows.append(row)
     return rows
@@ -266,7 +280,7 @@ def render_review_markdown(rows: list[BenchmarkRow]) -> str:
     lines.append("## Rejected Candidates")
     lines.append("")
     rejected_sections = _rejected_sections(rows)
-    lines.extend(rejected_sections or ["Brak odrzuconych kandydatów."])
+    lines.extend(rejected_sections or ["Kanoniczny przepływ nie udostępnia pełnego rejestru odrzuconych kandydatów regułowych; brak wpisów nie oznacza zera odrzuceń."])
     lines.append("")
     lines.append("## Needs Review")
     lines.append("")
@@ -289,6 +303,8 @@ def _run_one(
     mode: Mode,
     offline_models: bool,
     require_models: bool,
+    rewrite_backend: RewriteBackend = RewriteBackend.rules,
+    require_llm: bool = False,
 ) -> BenchmarkRow:
     engine_dir = output_dir / engine.value
     engine_dir.mkdir(parents=True, exist_ok=True)
@@ -299,6 +315,7 @@ def _run_one(
         mode=mode.value,
         status="ok",
         source_path=str(document.path),
+        track=document.track.value,
     )
     try:
         started_at = perf_counter()
@@ -309,6 +326,8 @@ def _run_one(
             mode=mode,
             offline_models=offline_models,
             require_models=require_models,
+            rewrite_backend=rewrite_backend,
+            require_llm=require_llm,
         )
         row.processing_seconds = round(perf_counter() - started_at, 4)
     except RuntimeError as exc:
@@ -318,9 +337,14 @@ def _run_one(
         return row
 
     report_path = engine_dir / f"{document.id}.json"
-    write_json_report(result, report_path)
+    write_text_atomic(report_path, json.dumps(result.payload, ensure_ascii=False, indent=2) + "\n")
     payload = json.loads(report_path.read_text(encoding="utf-8"))
-    rewritten_text = result.text if document.source_kind == "txt" else _read_docx_text(output_path)
+    if result.status != "ok" or not output_path.is_file():
+        row.status = "failed_flow"
+        row.report_path = str(report_path)
+        row.error = "Kanoniczny przepływ nie zapisał poprawnego wyniku."
+        return row
+    rewritten_text = output_path.read_text(encoding="utf-8") if document.source_kind == "txt" else _read_docx_text(output_path)
     safety = safety_checks(original_text, rewritten_text)
     evaluation = _four_layer_evaluation(
         document,
@@ -330,6 +354,19 @@ def _run_one(
         safety=safety,
     )
     row.evaluation = evaluation
+    item = (payload.get("documents") or [{}])[0]
+    row.readiness_status = result.readiness_status
+    evaluation["canonical_flow"] = {
+        "passed": result.status == "ok" and result.text == rewritten_text
+        and payload.get("settings", {}).get("track") == document.track.value
+        and bool(result.pdf_report and result.pdf_report.is_file())
+        and not payload.get("pdf_error"),
+        "readiness_status": result.readiness_status,
+        "operations": item.get("operations", {}),
+        "scope": "technical_regression_not_human_quality_acceptance",
+        "pdf_available": bool(result.pdf_report and result.pdf_report.is_file()),
+        "pdf_error": payload.get("pdf_error"),
+    }
     if all(layer["passed"] for layer in evaluation.values()):
         status = "ok"
     elif not evaluation["safety"]["passed"]:
@@ -355,31 +392,14 @@ def _process_document(
     mode: Mode,
     offline_models: bool,
     require_models: bool,
-) -> tuple[HumanizeResult, Path]:
-    if document.source_kind == "docx":
-        output_path = engine_dir / f"{document.id}.docx"
-        result, _stats = process_docx(
-            document.path,
-            output_path,
-            mode=mode,
-            engine=engine,
-            include_candidates=True,
-            offline_models=offline_models,
-            require_models=require_models,
-        )
-        return result, output_path
-
-    text = document.path.read_text(encoding="utf-8")
-    result = humanize_text(
-        text,
-        mode=mode,
-        engine=engine,
-        include_candidates=True,
-        offline_models=offline_models,
-        require_models=require_models,
-    )
-    output_path = engine_dir / f"{document.id}.txt"
-    output_path.write_text(result.text, encoding="utf-8")
+    rewrite_backend: RewriteBackend = RewriteBackend.rules,
+    require_llm: bool = False,
+) -> tuple[FlowResult, Path]:
+    output_path = engine_dir / f"{document.id}{'.docx' if document.source_kind == 'docx' else '.txt'}"
+    result = humanize(document.path, output=output_path, mode=mode, engine=engine,
+                      track=document.track, offline_models=offline_models, require_models=require_models,
+                      rewrite_backend=rewrite_backend, require_llm=require_llm, pdf=True,
+                      report=engine_dir / f"{document.id}.json")
     return result, output_path
 
 
@@ -387,7 +407,7 @@ def _row_from_payload(
     row: BenchmarkRow,
     *,
     payload: dict[str, Any],
-    result: HumanizeResult,
+    result: FlowResult,
     output_path: Path,
     report_path: Path,
     safety: dict[str, Any],
@@ -396,17 +416,17 @@ def _row_from_payload(
     row.status = status
     row.output_path = str(output_path)
     row.report_path = str(report_path)
-    row.accepted_changes = payload["summary"]["accepted_changes"]
-    row.rejected_candidates = payload["summary"]["rejected_candidates"]
-    row.skipped_sentences = payload["summary"]["skipped_sentences"]
-    row.all_candidates = payload["summary"]["all_candidates"]
-    row.changes_per_1000_words = payload["quality"]["changes_per_1000_words"]
-    row.average_accepted_risk = payload["quality"]["average_accepted_risk"]
-    row.operation_types = payload["quality"]["operation_types"]
-    row.gate_rejections = payload["quality"]["gate_rejections"]
-    row.model_status = result.model_status
-    row.semantic_model = result.semantic_model
-    row.fluency_model = result.fluency_model
+    row.accepted_changes = result.changes_applied
+    item = (payload.get("documents") or [{}])[0]
+    row.changes_per_1000_words = 1000 * row.accepted_changes / max(1, item.get("words", 0))
+    risks = [change["risk"] for change in result.applied_changes if isinstance(change.get("risk"), (float, int))]
+    row.average_accepted_risk = mean(risks) if risks else 0.0
+    row.model_status = payload.get("layers", {}).get("rewrite", {})
+    row.semantic_model = row.model_status.get("semantic_model")
+    row.fluency_model = row.model_status.get("fluency_model")
+    for change in result.applied_changes:
+        issue = change.get("issue", "unknown")
+        row.operation_types[issue] = row.operation_types.get(issue, 0) + 1
     row.warnings = result.warnings
     row.safety = safety
     return row
@@ -520,7 +540,10 @@ def _aggregate(rows: list[BenchmarkRow]) -> dict[str, Any]:
         "failed_quality": sum(1 for row in rows if row.status == "failed_quality"),
         "model_unavailable": sum(1 for row in rows if row.status == "model_unavailable"),
         "accepted_changes": sum(row.accepted_changes for row in rows),
-        "rejected_candidates": sum(row.rejected_candidates for row in rows),
+        "rejected_candidates": None,  # local candidate counts are not exposed by canonical flow
+        "tracks": {track: {"runs": sum(row.track == track for row in rows),
+                            "ok": sum(row.track == track and row.status == "ok" for row in rows)}
+                   for track in sorted({row.track for row in rows})},
         "processing_seconds": round(sum(row.processing_seconds for row in rows), 4),
         "average_risk": round(
             mean([row.average_accepted_risk for row in rows if row.accepted_changes]),
@@ -555,9 +578,10 @@ def _needs_review_sections(rows: list[BenchmarkRow]) -> list[str]:
         if not row.report_path or not Path(row.report_path).exists():
             continue
         payload = json.loads(Path(row.report_path).read_text(encoding="utf-8"))
+        accepted = payload.get("accepted") or [change for item in payload.get("documents", []) for change in item.get("applied_changes", item.get("examples", []))]
         risky = [
             item
-            for item in payload.get("accepted", [])
+            for item in accepted
             if _accepted_item_needs_review(item)
             or (item.get("semantic_similarity") is not None and item["semantic_similarity"] < 0.92)
             or (item.get("fluency_delta") is not None and item["fluency_delta"] < 0)
@@ -579,9 +603,7 @@ def _needs_review_sections(rows: list[BenchmarkRow]) -> list[str]:
 def _accepted_item_needs_review(item: dict[str, Any]) -> bool:
     if (item.get("risk") or 0.0) < 0.15:
         return False
-    if item.get("operation_type") == "ai_artifact_reduction" and _all_gates_passed(item):
-        return False
-    return True
+    return not (item.get("operation_type") == "ai_artifact_reduction" and _all_gates_passed(item))
 
 
 def _all_gates_passed(item: dict[str, Any]) -> bool:
@@ -660,10 +682,9 @@ def _read_document_text(document: BenchmarkDocument) -> str:
 
 
 def _read_docx_text(path: Path) -> str:
-    from docx import Document  # type: ignore
+    from humanize_pl.io.docx_structure import document_text, load_document
 
-    doc = Document(str(path))
-    return "\n".join(paragraph.text for paragraph in doc.paragraphs)
+    return document_text(load_document(path))
 
 
 def _numbers(text: str) -> list[str]:
@@ -672,21 +693,6 @@ def _numbers(text: str) -> list[str]:
 
 def _protected_values(protected) -> set[str]:
     return set(protected.mapping.values())
-
-
-def run_basic_tmp_benchmark(manifest: Path) -> Path:
-    output = Path(tempfile.mkdtemp(prefix="humanize-pl-benchmark-"))
-    rows = run_benchmark(
-        load_manifest(manifest),
-        output_dir=output,
-        engines=[Engine.basic],
-        mode=Mode.standard,
-        offline_models=True,
-        require_models=False,
-        allow_fallback=True,
-    )
-    write_summary_artifacts(rows, output)
-    return output
 
 
 if __name__ == "__main__":

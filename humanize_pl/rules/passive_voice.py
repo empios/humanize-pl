@@ -9,6 +9,7 @@ from humanize_pl.nlp.morfeusz import (
     impersonal_form_for_participle,
     try_load_morfeusz,
 )
+
 from .base import Candidate
 
 _PL_WORD = r"[\p{L}-]+"

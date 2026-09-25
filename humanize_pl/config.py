@@ -20,6 +20,7 @@ class LegalReviewProfile(str, Enum):
     client_communication = "client_communication"
     contract = "contract"
     filing_official = "filing_official"
+    general = "general"
     # Compatibility alias accepted by existing integrations.  New flow code
     # uses DocumentType and never applies the SAOS reasoning calibration to a
     # contract or client letter.
@@ -50,6 +51,12 @@ class HumanizeConfig:
     min_fluency_delta: float = -1.0
     agreement_gate_enabled: bool = True
     require_morfeusz: bool = False
+    # Office terminology, carried from the flow's StyleProfile so the
+    # rules engine can act on it. The profile itself stays in the flow -
+    # only the pairs the engine can use travel this far.
+    preferred_terms: dict[str, str] | None = None
+    # Rule ids (or id prefixes) the document's genre switches off.
+    disabled_rules: frozenset[str] = frozenset()
 
     def similarity_threshold(self) -> float:
         if self.semantic_threshold is not None:

@@ -1,0 +1,85 @@
+Poniżej wzór pozwu o zapłatę 27 300 zł z tytułu niezapłaconych faktur za dostawę towarów. Dokument wymaga uzupełnienia danych oznaczonych nawiasami kwadratowymi.
+
+---
+
+**Sąd Rejonowy w [miejscowość]**  
+**Wydział Cywilny**
+
+**Pozwany:**  
+[Nazwa / imię i nazwisko pozwanego]  
+[adres siedziby / zamieszkania]  
+NIP: [NIP pozwanego]  
+KRS: [numer KRS, jeśli dotyczy]
+
+**Pozew o zapłatę**
+
+**Wartość przedmiotu sporu:** 27 300 zł  
+**Opłata sądowa:** 1 365 zł
+
+**Pozwany** wniósł pozew przeciwko:
+
+**Pozwanemu:**  
+[Nazwa / imię i nazwisko pozwanego]  
+[adres siedziby / zamieszkania]  
+NIP: [NIP pozwanego]
+
+o zapłatę kwoty **27 300 zł** z tytułu niezapłaconych faktur za dostawę towarów.
+
+### Wnioskuję o:
+
+1. Zasądzenie od Pozwanego na rzecz Powoda kwoty **27 300 zł** z odsetkami ustawowymi za opóźnienie od dnia wymagalności poszczególnych faktur do dnia zapłaty.
+
+2. Zasądzenie od Pozwanego na rzecz Powoda kosztów procesu, w tym kosztów zastępstwa procesowego, według norm przepisanych.
+
+3. Nadanie wyrokowi rygoru natychmiastowej wykonalności.
+
+### Uzasadnienie
+
+Powód prowadzi działalność gospodarczą pod firmą [nazwa firmy], z siedzibą w [miejscowość], wpisaną do [KRS / CEIDG] pod numerem [numer].
+
+W dniu [data] pomiędzy Powodem a Pozwanym została zawarta umowa [sprzedaży / dostawy towarów], na mocy której Powód zobowiązał się do dostarczenia towarów, a Pozwany do ich odbioru oraz zapłaty ceny.
+
+W wykonaniu ww. umowy Powód dostarczył Pozwanemu towary, co potwierdzają faktury:
+
+- faktura nr [numer] z dnia [data] na kwotę [kwota] zł,
+- faktura nr [numer] z dnia [data] na kwotę [kwota] zł,
+- faktura nr [numer] z dnia [data] na kwotę [kwota] zł,
+
+o łącznej wartości **27 300 zł** [netto / brutto, w tym VAT 23%: [kwota] zł].
+
+Zgodnie z umową / fakturami termin płatności za dostarczone towary upłynął w dniu [data].
+
+Pomimo upływu terminu płatności Pozwany nie dokonał zapłaty należności. Powód wielokrotnie wzywał Pozwanego do zapłaty, w tym pismem z dnia [data], nadanym w dniu [data], jednakże wezwania pozostały bezskuteczne.
+
+Wobec powyższego roszczenie Powoda o zapłatę kwoty 27 300 zł jest zasadne i wymagalne.
+
+Podstawą prawną żądania są art. 451, 461, 481, 535 i ewentualnie 536 Kodeksu cywilnego.
+
+### Dowody:
+
+1. Faktura nr [numer] z dnia [data] – załącznik nr 1.  
+2. Faktura nr [numer] z dnia [data] – załącznik nr 2.  
+3. Faktura nr [numer] z dnia [data] – załącznik nr 3.  
+4. Potwierdzenia odbioru towarów / listy przewozowe / awizacje – załącznik nr 4.  
+5. Umowa / zamówienie – załącznik nr 5.  
+6. Korespondencja z Pozwanym, w tym wezwanie do zapłaty z dnia [data] – załącznik nr 6.  
+7. Odpis pozwu z załącznikami dla Pozwanego.  
+8. Dowód uiszczenia opłaty sądowej.
+
+### Załączniki:
+
+1. Odpis pozwu z załącznikami dla Pozwanego.  
+2. Odpisy załączników do pozwu.  
+3. Dowód uiszczenia opłaty sądowej.
+
+[miejscowość], [data]
+
+..................................................  
+[imię i nazwisko / nazwa Powoda]  
+[adres]  
+NIP: [NIP]
+
+---
+
+**Uwaga praktyczna:**  
+Jeżeli faktury mają różne terminy płatności, w uzasadnieniu warto wskazać datę wymagalności każdej z faktur. Jeśli kwota 27 300 zł obejmuje VAT, należy w pozwie wyraźnie wskazać, czy jest to kwota netto, brutto, a także kwotę VAT.

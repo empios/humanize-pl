@@ -1,17 +1,17 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from contextlib import contextmanager
-from functools import lru_cache
 import math
 import os
+import threading
+from contextlib import contextmanager
+from dataclasses import dataclass
+from functools import lru_cache
 
 import numpy as np
 
-
 DEFAULT_SEMANTIC_MODEL = "sdadas/st-polish-paraphrase-from-distilroberta"
 DEFAULT_FLUENCY_MODEL = "allegro/herbert-base-cased"
-
+DEFAULT_NLI_MODEL = "MoritzLaurer/mDeBERTa-v3-base-mnli-xnli"
 
 @dataclass(frozen=True)
 class TransformerValidationResult:
@@ -19,6 +19,40 @@ class TransformerValidationResult:
     fluency_delta: float | None = None
     semantic_model: str | None = None
     fluency_model: str | None = None
+    nli_model: str | None = None
+
+
+class NLIValidator:
+    """One-way entailment; callers must check both directions for equivalence."""
+
+    def __init__(self, model_name: str | None = None, *, offline: bool = False) -> None:
+        self.model_name = model_name or DEFAULT_NLI_MODEL
+        self.offline = offline
+        self._pipeline = _get_nli_pipeline(self.model_name, offline)
+        self._lock = threading.Lock()
+
+    def check_entailment(self, premise: str, hypothesis: str) -> bool:
+        """Neutral, unknown, low-confidence and failed checks are not entailment.
+
+        Never truncate: ignoring the tail could conceal a lost condition.
+        Oversized inputs fail closed through the common meaning gate.
+        """
+        with self._lock:
+            result = self._pipeline(
+                {"text": premise, "text_pair": hypothesis}, truncation=False
+            )
+        if isinstance(result, list) and len(result) == 1:
+            result = result[0]
+        if not isinstance(result, dict):
+            return False
+        label = str(result.get("label", "")).casefold()
+        score = result.get("score")
+        return (
+            label == "entailment"
+            and isinstance(score, (int, float))
+            and math.isfinite(score)
+            and 0.80 <= score <= 1.0
+        )
 
 
 class EmbeddingSimilarityValidator:
@@ -101,6 +135,17 @@ def _get_masked_lm(model_name: str, offline: bool):
         )
     model.eval()
     return tokenizer, model
+
+
+@lru_cache(maxsize=2)
+def _get_nli_pipeline(model_name: str, offline: bool):
+    from transformers import pipeline  # type: ignore
+
+    with _offline_env(offline):
+        return pipeline(
+            "text-classification",
+            model=model_name,
+        )
 
 
 @contextmanager

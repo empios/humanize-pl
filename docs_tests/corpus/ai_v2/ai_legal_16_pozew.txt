@@ -1,0 +1,121 @@
+Poniżej znajduje się **wzór pozwu o zapłatę kary umownej za opóźnienie w wykonaniu robót**. Uzupełnij pola oznaczone nawiasami kwadratowymi. Przed złożeniem pozwu koniecznie zweryfikuj postanowienia umowne dotyczące kary umownej, jej stawki, terminów i wymagalności oraz oblicz wartość przedmiotu sporu i opłatę sądową. Niniejszy wzór ma charakter informacyjny i nie stanowi indywidualnej porady prawnej.
+
+---
+
+**Sąd [Rejonowy/Okręgowy] w [miejscowość]**  
+**Wydział Cywilny**  
+**[adres sądu]**
+
+Data: [miejscowość], [data]
+
+**Powód:**  
+[nazwa / imię i nazwisko]  
+[KRS: …, NIP: …, REGON: …]  
+[adres siedziby / zamieszkania]
+
+**Pozwany:**  
+[nazwa / imię i nazwisko]  
+[KRS: …, NIP: …, REGON: …]  
+[adres siedziby / zamieszkania]
+
+**Pełnomocnik:**  
+[jeśli dotyczy: imię i nazwisko, adwokat/radca prawny, adres]
+
+---
+
+## POZEW  
+## o zapłatę kary umownej za opóźnienie w wykonaniu robót
+
+Na podstawie art. 180 k.p.c. wnoszę o:
+
+1. **zasądzenie od Pozwanego na rzecz Powoda kwoty [kwota] zł [słownie] tytułem kary umownej za opóźnienie w wykonaniu robót;**
+
+2. **zasądzenie od Pozwanego na rzecz Powoda odsetek ustawowych za opóźnienie od kwoty [kwota] zł od dnia [data] do dnia zapłaty;**
+
+3. **zasądzenie od Pozwanego na rzecz Powoda kosztów postępowania, w tym kosztów zastępstwa procesowego, według norm przepisanych.**
+
+---
+
+## Uzasadnienie
+
+1. W dniu [data] Powód i Pozwany zawarli umowę [o roboty budowlane / o wykonanie robót] nr [numer umowy] (dalej: „Umowa”), której przedmiotem było wykonanie [opis robót, np.: „robót ogólnobudowlanych polegających na wykonaniu …”, „modernizacji …”, „wykonania instalacji …”].
+
+2. Zgodnie z § [numer] Umowy, termin wykonania robót upływał w dniu [data]. Wynagrodzenie [brutto/netto] wynoszące [kwota] zł było ustalone w § [numer] Umowy.
+
+3. Zgodnie z § [numer] Umowy, w przypadku opóźnienia w wykonaniu robót, Pozwany zobowiązany jest zapłacić Powodowi karę umowną w wysokości [np.: „0,05% wynagrodzenia netto za każdy dzień opóźnienia” / „500 zł za każdy dzień opóźnienia”], przy czym suma kar umownych nie może przekroczyć [np.: „10% wynagrodzenia” / „20% wynagrodzenia”].
+
+4. Pozwany nie wykonał przedmiotu Umowy w terminie określonym w Umowie. W dniu [data] termin wykonania robót upłynął, a Pozwany nie zakończył robót. Do dnia [data] Pozwany nadal nie wykonał robót [ewentualnie: „wykonał je dopiero w dniu …”, „Powód rozwiązał Umowę w dniu … z powodu opóźnienia Pozwanego”].
+
+5. Opóźnienie w wykonaniu robót trwało [liczba] dni, tj. od dnia [data] do dnia [data]. W dniu [data] Powód [np.: „wezwania Pozwanego do wykonania robót”, „odmówił przyjęcia wykonania”, „rozwiązał Umowę z winy Pozwanego”].
+
+6. Na podstawie § [numer] Umowy oraz art. 483 §1 i §3 Kodeksu cywilnego, Powodowi przysługuje kara umowna za opóźnienie w wykonaniu robót. Zgodnie z treścią Umowy, kara umowna staje się wymagalna [np.: „z upływem terminu wykonania robót” / „z upływem dnia opóźnienia” / „po upływie terminu wyznaczonego w wezwaniu do wykonania”].
+
+7. Obliczenie kary umownej:
+
+   - stawka kary umownej za 1 dzień opóźnienia: [kwota] zł / [kwota]% wynagrodzenia,  
+   - liczba dni opóźnienia: [liczba] dni,  
+   - należna kara umowna: [kwota] zł.
+
+8. W dniu [data] Powód wezwał Pozwanego do zapłaty kary umownej w terminie do dnia [data]. Pomimo upływu wyznaczonego terminu Pozwany nie uiścił żądanej kwoty.
+
+9. Podstawa prawna żądania: § [numer] Umowy, art. 483 §1, §2 i §3 Kodeksu cywilnego, a co do odsetek — art. 481, art. 359 i art. 455 §1 Kodeksu cywilnego.
+
+10. W związku z powyższym wnoszę jak na wstępie.
+
+---
+
+## Wartość przedmiotu sporu i opłaty sądowe
+
+Wartość przedmiotu sporu: [kwota] zł.
+
+Opłata sądowa od pozwu: [10% wartości przedmiotu sporu] zł.
+
+Opłata za odpis pozwu z załącznikami: [np. 6 zł] zł.
+
+[Jeśli dotyczy: Wnoszę o rozliczenie opłat sądowych na rzecz Skarbu Państwa.]
+
+---
+
+## Załączniki:
+
+1. Odpis pozwu z załącznikami dla Pozwanego;  
+2. Odpis Umowy nr [numer] z dnia [data];  
+3. [Harmonogram / specyfikacja / przedmiar — jeśli dotyczy];  
+4. [Protokół, pismo, notatka służbowa, e-mail potwierdzające opóźnienie — jeśli dotyczy];  
+5. [Wezwanie do wykonania robót / odmowa przyjęcia wykonania / rozwiązanie Umowy — jeśli dotyczy];  
+6. Wezwanie do zapłaty kary umownej;  
+7. Dowód doręczenia wezwania do zapłaty;  
+8. Obliczenie kary umownej;  
+9. Aktualny wypis z KRS / zaświadczenie o wpisie do EIDBI / zaświadczenie z CEIDG — jeśli dotyczy;  
+10. Pełnomocnictwo — jeśli dotyczy;  
+11. [Inne dowody, np. korespondencja, protokoły, potwierdzenia zgłoszenia opóźnienia].
+
+---
+
+[Podpis Powoda]
+
+---
+
+## Praktyczne uwagi do uzupełnienia
+
+1. **Sprawdź postanowienie o karze umownej**  
+   W pozwie musisz dokładnie wskazać, z jakiego paragrafu Umowy wynika kara umowna, w jakiej wysokości, jak jest liczona i kiedy staje się wymagalna.
+
+2. **Liczba dni opóźnienia**  
+   Zwykle opóźnienie liczy się od dnia następnego po terminie wykonania, chyba że umowa stanowi inaczej. W uzasadnieniu podaj konkretne daty: dzień upływu terminu i dzień, do którego naliczasz karę.
+
+3. **Termin naliczania kary**  
+   Jeśli roboty zostały wykonane po terminie, kara powinna obejmować okres od upływu terminu do dnia faktycznego wykonania.  
+   Jeśli roboty nie zostały wykonane, a Powód rozwiązał umowę, sprawdź, czy umowa przewiduje karę umowną do dnia rozwiązania, do dnia wykonania zastępczego lub w innym zakresie.
+
+4. **Wymagalność kary umownej**  
+   W niektórych umowach kara umowna staje się wymagalna dopiero po upływie terminu wyznaczonego w wezwaniu do wykonania lub po wypowiedzeniu. Jeśli tak jest, dołącz takie pismo i wskaż jego datę.
+
+5. **Odsetki od kary umownej**  
+   Wniosek o odsetki sformułuj tak, aby nie było wątpliwości, od jakiego dnia domagasz się odsetek. Najczęściej odsetki nalicza się od dnia, w którym kara umowna stała się wymagalna.
+
+6. **Opłata sądowa**  
+   Opłata od pozwu wynosi co do zasady 10% wartości przedmiotu sporu. Wartość przedmiotu sporu powinna obejmować przede wszystkim kwotę kary umownej, a w uzasadnieniu warto wskazać również odsetki.
+
+7. **Wartość przedmiotu sporu a właściwość sądu**  
+   Jeśli wartość przedmiotu sporu nie przekracza 75 000 zł, sprawę rozpoznaje co do zasady sąd rejonowy. Jeżeli wartość przedmiotu sporu jest wyższa niż 75 000 zł, właściwy jest co do zasady sąd okręgowy, o ile nie zachodzą inne przesłanki właściwości.

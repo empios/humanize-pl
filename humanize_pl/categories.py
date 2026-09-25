@@ -61,9 +61,24 @@ class LegalCategory:
     # essay about employment law scores as an employment contract, because it
     # discusses exactly the same things - topic is not genre.
     requires_any: tuple[str, ...] = ()
+    # What the document calls itself. Found in its title, one of these
+    # settles the category before any vocabulary is weighed: on the firm's
+    # documents the vocabulary put a deed of gift, two leases of land and a
+    # data-processing agreement among the leases, because each says "najemca"
+    # or "czynsz" somewhere.
+    titles: tuple[str, ...] = ()
 
-    def score(self, lowered_text: str) -> tuple[int, list[str]]:
-        """Weighted hits plus the phrases that produced them."""
+    def score(
+        self, lowered_text: str, *, shared: frozenset[str] = frozenset()
+    ) -> tuple[int, list[str]]:
+        """Weighted hits plus the phrases that produced them.
+
+        `shared` gate markers - "zawarta w dniu", "niniejsza umowa", which
+        every contract carries - open the gate but score nothing: they say
+        "a contract", not which one. Scored, they gave every contract the
+        same three points and alphabetical order picked the winner, which is
+        how a deed of gift became a lease.
+        """
         gate_hits = [phrase for phrase in self.requires_any if phrase in lowered_text]
         if self.requires_any and not gate_hits:
             return 0, []
@@ -71,8 +86,9 @@ class LegalCategory:
         # the document perform this genre at all - so it scores as one.
         # Leaving it at zero meant a letter opening "zwracam się z wnioskiem"
         # could fall through as unrecognised for lacking incidental vocabulary.
-        evidence: list[str] = list(gate_hits)
-        total = STRONG_WEIGHT * len(gate_hits)
+        own_gate_hits = [phrase for phrase in gate_hits if phrase not in shared]
+        evidence: list[str] = list(own_gate_hits)
+        total = STRONG_WEIGHT * len(own_gate_hits)
         counted = set(gate_hits)
         for phrase in self.signals_strong:
             if phrase in lowered_text and phrase not in counted:
@@ -140,6 +156,7 @@ def _load(path: Path) -> dict[str, LegalCategory]:
             signals_strong=tuple(str(v).casefold() for v in row.get("signals_strong") or ()),
             signals=tuple(str(v).casefold() for v in row.get("signals") or ()),
             requires_any=tuple(str(v).casefold() for v in row.get("requires_any") or ()),
+            titles=tuple(str(v).casefold() for v in row.get("titles") or ()),
         )
 
     if UNSPECIFIED not in catalogue:
@@ -155,6 +172,17 @@ def catalogue() -> dict[str, LegalCategory]:
     return _load(CATALOGUE_PATH)
 
 
+@lru_cache(maxsize=1)
+def shared_gate_markers() -> frozenset[str]:
+    """Gate phrases three or more categories share: evidence of a genre
+    family, not of one category."""
+    counts: dict[str, int] = {}
+    for row in catalogue().values():
+        for phrase in row.requires_any:
+            counts[phrase] = counts.get(phrase, 0) + 1
+    return frozenset(phrase for phrase, count in counts.items() if count >= 3)
+
+
 def get(identifier: str) -> LegalCategory:
     try:
         return catalogue()[identifier]
@@ -166,20 +194,86 @@ def categories_for(family: DocumentType) -> list[LegalCategory]:
     return [row for row in catalogue().values() if row.family is family]
 
 
+# Words a document's title starts with. A line that opens with one of these,
+# near the top and short, is the title; a sentence such as "Umowa zawarta w
+# dniu … pomiędzy …" is not, whatever its first word.
+_TITLE_WORDS = (
+    "umowa", "przedwstępna", "porozumienie", "oświadczenie", "wypowiedzenie", "rozwiązanie",
+    "informacja", "klauzula", "aneks", "ugoda", "regulamin", "polityka", "pozew",
+)
+# Letters put the sender's and addressee's blocks first: the firm's notices
+# of termination carry their title on the ninth line.
+_TITLE_LINES = 12
+_TITLE_MAX_WORDS = 12
+_NOT_A_TITLE = ("zawarta", "zawarto", "pomiędzy", "dnia ")
+# "UMOWA" alone, or with a number, names no kind: the vocabulary decides.
+_BARE_TITLE_WORDS = frozenset({"umowa", "nr", "no."})
+TITLE_CONFIDENCE = 0.95
+# A contract whose title names no catalogued kind: a loan, an exchange, a
+# surety. Its own category has no skeleton, so nothing is checked or drafted.
+OTHER_CONTRACT = "umowa_inna"
+
+
+def document_title(text: str) -> str | None:
+    """The document's title, lower-cased, or None when it has none."""
+    lines = [line for line in text.split("\n") if line.strip()][:_TITLE_LINES]
+    for index, raw in enumerate(lines):
+        # Whitespace normalised: a non-breaking space in "Informacja o\xa0prawach"
+        # kept the title from matching.
+        line = " ".join(raw.strip().strip("#*_„”\"' ").casefold().split())
+        if (
+            line.startswith(_TITLE_WORDS)
+            and len(line.split()) <= _TITLE_MAX_WORDS
+            and not line.endswith(".")
+            and not any(marker in line for marker in _NOT_A_TITLE)
+        ):
+            # A title broken over two lines - "PRZEDWSTĘPNA UMOWA" /
+            # "SPRZEDAŻY NIERUCHOMOŚCI" - is read whole.
+            following = lines[index + 1].strip() if index + 1 < len(lines) else ""
+            if following.isupper() and len(following.split()) <= 6:
+                line = f"{line} {' '.join(following.casefold().split())}"
+            return line
+    return None
+
+
 def classify_category(text: str) -> CategoryGuess:
     """Assign the document to exactly one category.
+
+    What the document calls itself decides first: a title naming a catalogued
+    kind settles it, and a contract title naming none makes it `umowa_inna`.
+    Without a title, the vocabulary decides as before.
 
     An unrecognised document is reported as `nieokreslony` rather than pushed
     into the closest-looking bucket. A blueprint chosen from a guessed category
     would report missing sections the document was never supposed to have,
     which is worse than admitting the category is unknown.
     """
+    title = document_title(text)
+    if title:
+        # The kind named first is the kind: "Umowa o dzieło i przeniesienie
+        # praw autorskich" is a contract for a work that also transfers
+        # rights. Ties go to the longer name.
+        named = [
+            (title.find(stem), -len(stem), row.id, row)
+            for row in catalogue().values()
+            for stem in row.titles
+            if stem in title
+        ]
+        if named:
+            winner = min(named, key=lambda item: item[:3])[3]
+            return CategoryGuess(winner, TITLE_CONFIDENCE, (f"tytuł: {title[:80]}",))
+        words = title.split()
+        names_a_kind = any(word not in _BARE_TITLE_WORDS and not word[:1].isdigit() for word in words)
+        if "umowa" in words[:2] and names_a_kind and OTHER_CONTRACT in catalogue():
+            return CategoryGuess(get(OTHER_CONTRACT), TITLE_CONFIDENCE, (f"tytuł: {title[:80]}",))
+
     lowered = text.casefold()
     scored: list[tuple[int, LegalCategory, list[str]]] = []
+    shared = shared_gate_markers()
     for row in catalogue().values():
         if row.id == UNSPECIFIED:
             continue
-        total, evidence = row.score(lowered)
+        total, evidence = row.score(lowered, shared=shared)
         if total:
             scored.append((total, row, evidence))
 

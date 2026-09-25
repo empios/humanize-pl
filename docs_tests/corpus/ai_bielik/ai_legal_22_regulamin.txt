@@ -1,0 +1,117 @@
+Oto kompletny regulamin sklepu internetowego sprzedającego odzież konsumentom:
+
+Regulamin sklepu internetowego "ModnyStyl"
+
+1. Postanowienia ogólne
+1.1. Sklep internetowy "ModnyStyl" (zwany dalej Sklepem) jest prowadzony przez firmę "ModnyStyl Sp. z o.o." z siedzibą w Warszawie przy ul. Modnej 10, 00-001 Warszawa, wpisaną do rejestru przedsiębiorców Krajowego Rejestru Sądowego pod numerem KRS 0000000000, NIP 123-456-78-90, REGON 123456789, kapitał zakładowy 5000 zł.
+
+1.2. Regulamin określa zasady korzystania ze Sklepu, w szczególności:
+   a) warunki zawierania umów sprzedaży,
+   b) procedurę składania zamówień,
+   c) zasady realizacji zamówień,
+   d) warunki płatności,
+   e) zasady zwrotu towaru,
+   f) zasady reklamacji,
+   g) zasady ochrony danych osobowych.
+
+1.3. Każdy użytkownik Sklepu zobowiązany jest do zapoznania się z treścią niniejszego Regulaminu i akceptacji jego postanowień przed rozpoczęciem korzystania ze Sklepu.
+
+2. Definicje
+Użyte w Regulaminie pojęcia oznaczają:
+a) Klient - osoba fizyczna, osoba prawna lub jednostka organizacyjna nieposiadająca osobowości prawnej, która korzysta ze Sklepu w celu nabycia towaru,
+b) Konsument - Klient będący osobą fizyczną dokonującą z przedsiębiorcą czynności prawnej niezwiązanej bezpośrednio z jej działalnością gospodarczą lub zawodową,
+c) Konto Klienta - indywidualne konto Klienta w Sklepie, za pomocą którego Klient może składać zamówienia i zarządzać swoimi danymi,
+d) Zamówienie - oświadczenie woli Klienta, zmierzające bezpośrednio do zawarcia umowy sprzedaży, określające w szczególności rodzaj i liczbę towaru,
+e) Towar - produkt prezentowany w Sklepie, przeznaczony do sprzedaży.
+
+3. Warunki korzystania ze Sklepu
+3.1. Korzystanie ze Sklepu możliwe jest pod warunkiem spełnienia przez system teleinformatyczny Klienta następujących wymagań technicznych:
+   a) dostęp do Internetu,
+   b) przeglądarka internetowa (Internet Explorer 10.0 lub nowsza, Firefox 3.0 lub nowsza, Chrome 10.0 lub nowsza),
+   c) rozdzielczość ekranu 1280x800 pikseli lub wyższa.
+
+3.2. Klient zobowiązany jest do korzystania ze Sklepu w sposób zgodny z przepisami obowiązującego prawa, postanowieniami Regulaminu, a także z przyjętymi zwyczajami i zasadami współżycia społecznego.
+
+4. Zamówienia
+4.1. Zamówienia można składać 24 godziny na dobę, 7 dni w tygodniu.
+
+4.2. W celu złożenia zamówienia Klient powinien:
+   a) zalogować się do swojego Konta Klienta,
+   b) wybrać towar,
+   c) dodać towar do koszyka,
+   d) wybrać sposób dostawy,
+   e) wybrać sposób płatności,
+   f) potwierdzić zamówienie.
+
+4.3. Po złożeniu zamówienia Klient otrzymuje na podany adres e-mail potwierdzenie zamówienia wraz z numerem zamówienia.
+
+4.4. Klient ma możliwość modyfikacji zamówienia do momentu jego wysyłki.
+
+5. Ceny i płatności
+5.1. Wszystkie ceny towarów podawane są w złotych polskich (PLN) i zawierają podatek VAT.
+
+5.2. Klient może dokonać płatności w następujący sposób:
+   a) przelewem bankowym na rachunek bankowy Sklepu,
+   b) kartą płatniczą za pośrednictwem serwisu PayU,
+   c) za pobraniem przy odbiorze przesyłki.
+
+5.3. W przypadku wyboru płatności przelewem, Klient zobowiązany jest do dokonania płatności w terminie 7 dni od daty złożenia zamówienia.
+
+6. Realizacja zamówień
+6.1. Sklep realizuje zamówienia w terminie 24 godzin od momentu otrzymania płatności (w dni robocze).
+
+6.2. Zamówienia są realizowane na terenie Polski. W przypadku chęci wysyłki za granicę, Klient powinien skontaktować się ze Sklepem w celu ustalenia indywidualnych warunków dostawy.
+
+6.3. Sklep zastrzega sobie prawo do odmowy realizacji zamówienia w przypadku braku towaru w magazynie lub błędu w systemie.
+
+7. Dostawa
+7.1. Dostawa towaru odbywa się za pośrednictwem firmy kurierskiej lub Poczty Polskiej.
+
+7.2. Koszty dostawy pokrywa Klient i są one podane przy składaniu zamówienia.
+
+7.3. W przypadku zamówień powyżej 500 zł dostawa jest bezpłatna.
+
+8. Zwrot towaru
+8.1. Konsument ma prawo odstąpić od umowy sprzedaży bez podania przyczyny w terminie 14 dni od dnia otrzymania towaru.
+
+8.2. W celu skorzystania z prawa do odstąpienia od umowy, Konsument powinien złożyć oświadczenie o odstąpieniu od umowy i przesłać je na adres Sklepu.
+
+8.3. Zwrot towaru powinien nastąpić niezwłocznie, nie później niż w terminie 14 dni od dnia złożenia oświadczenia o odstąpieniu od umowy.
+
+8.4. Sklep zwraca wszystkie otrzymane od Konsumenta płatności, w tym koszty dostawy (z wyjątkiem dodatkowych kosztów wynikających z wybranego przez Konsumenta sposobu dostawy innego niż najtańszy zwykły sposób dostawy oferowany przez Sklep).
+
+9. Reklamacje
+9.1. Sklep odpowiada za wady fizyczne i prawne towaru na zasadach określonych w Kodeksie cywilnym.
+
+9.2. Reklamacje można składać w formie pisemnej na adres Sklepu lub w formie elektronicznej na adres e-mail Sklepu.
+
+9.3. Sklep rozpatruje reklamacje w terminie 14 dni od dnia jej otrzymania.
+
+10. Ochrona danych osobowych
+10.1. Administratorem danych osobowych Klientów jest "ModnyStyl Sp. z o.o.".
+
+10.2. Dane osobowe Klientów są przetwarzane zgodnie z ustawą o ochronie danych osobowych oraz RODO.
+
+10.3. Klient ma prawo dostępu do swoich danych osobowych, ich sprostowania, usunięcia lub ograniczenia przetwarzania.
+
+10.4. Szczegółowe informacje dotyczące przetwarzania danych osobowych zawarte są w Polityce Prywatności dostępnej na stronie Sklepu.
+
+11. Postanowienia końcowe
+11.1. Sklep zastrzega sobie prawo do zmiany Regulaminu. Zmiany wchodzą w życie z dniem ich opublikowania na stronie Sklepu.
+
+11.2. W sprawach nieuregulowanych niniejszym Regulaminem zastosowanie mają przepisy Kodeksu cywilnego oraz inne właściwe przepisy prawa polskiego.
+
+11.3. Wszelkie spory wynikłe w związku z korzystaniem ze Sklepu będą rozstrzygane przez sąd właściwy dla siedziby Sklepu.
+
+11.4. Regulamin wchodzi w życie z dniem 01.01.2023 r.
+
+Kontakt:
+"ModnyStyl Sp. z o.o."
+ul. Modna 10
+00-001 Warszawa
+tel. 123-456-78-90
+e-mail: kontakt@modnystyl.pl
+
+Załączniki:
+1. Wzór oświadczenia o odstąpieniu od umowy
+2. Polityka Prywatności

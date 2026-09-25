@@ -1,0 +1,223 @@
+Poniżej przedstawiam wzór regulaminu aplikacji mobilnej do rezerwacji usług. Dokument ma charakter ogólny i powinien zostać dostosowany do konkretnego modelu biznesowego, zakresu usług, metod płatności, polityki prywatności oraz danych administratora. Pola do uzupełnienia oznaczyłem nawiasami kwadratowymi.
+
+---
+
+# REGULAMIN APLIKACJI MOBILNEJ [NAZWA APLIKACJI]
+
+**Wersja 1.0 z dnia [data]**
+
+## § 1. Definicje
+
+1. **„Aplikacja”** – oznacza aplikację mobilną [nazwa aplikacji] udostępnianą przez Administratora na urządzeniach mobilnych, w szczególności [iOS / Android / inne], służącą do przeglądania, rezerwowania i zarządzania Usługami.
+2. **„Administrator”** – oznacza [pełna nazwa firmy / spółki], z siedzibą w [adres], zarejestrowaną w [rejestr, np. KRS], NIP: [NIP], REGON: [REGON], reprezentowaną przez [dane reprezentantów], będącą administratorem danych osobowych oraz podmiotem świadczącym Usługi za pośrednictwem Aplikacji.
+3. **„Użytkownik”** – oznacza osobę fizyczną, osobę prawną lub jednostkę organizacyjną nieposiadającą osobowości prawnej, która korzysta z Aplikacji, dokonuje Rezerwacji lub zawiera Umowę.
+4. **„Konsument”** – oznacza osobę fizyczną dokonującą Rezerwacji lub zawierającą Umowę w celu niezwiązanym bezpośrednio z jej działalnością gospodarczą lub zawodową.
+5. **„Przedsiębiorca”** – oznacza osobę fizyczną, osobę prawną lub jednostkę organizacyjną nieposiadającą osobowości prawnej, dokonującą Rezerwacji lub zawierającą Umowę w związku z prowadzoną przez nią działalnością gospodarczą lub zawodową.
+6. **„Konto”** – oznacza indywidualne, przypisane Użytkownikowi konto w Aplikacji, umożliwiające dokonywanie Rezerwacji, zarządzanie danymi oraz historią Usług.
+7. **„Usługa”** – oznacza usługę świadczone przez Administratora lub podmioty współpracujące z Administratorem, udostępnianą do rezerwacji za pośrednictwem Aplikacji.
+8. **„Rezerwacja”** – oznacza proces wyboru przez Użytkownika Usługi, terminu, lokalizacji, ewentualnych dodatków oraz danych niezbędnych do realizacji Usługi.
+9. **„Umowa”** – oznacza umowę o świadczenie Usługi zawartą pomiędzy Użytkownikiem a Administratorem za pośrednictwem Aplikacji.
+10. **„Płatność”** – oznacza uregulowanie przez Użytkownika ceny Usługi lub innej należności wynikającej z Umowy.
+11. **„Regulamin”** – oznacza niniejszy regulamin aplikacji mobilnej [nazwa aplikacji].
+12. **„Polityka prywatności”** – oznacza dokument określający zasady przetwarzania danych osobowych, dostępny pod adresem [adres URL] lub w Aplikacji.
+
+## § 2. Postanowienia ogólne
+
+1. Niniejszy Regulamin określa zasady korzystania z Aplikacji, warunki dokonywania Rezerwacji, zawierania Umów, dokonywania Płatności, anulowania Rezerwacji, zwrotów, ochrony danych osobowych, odpowiedzialności stron oraz trybu reklamacyjnego.
+2. Korzystanie z Aplikacji jest bezpłatne, chyba że w Aplikacji lub w odrębnych informacjach wskazano inaczej. Płatne są Usługi rezerwowane za pośrednictwem Aplikacji.
+3. Dokonanie Rezerwacji lub rozpoczęcie korzystania z Aplikacji oznacza akceptację postanowień niniejszego Regulaminu.
+4. W sprawach nieuregulowanych w Regulaminie zastosowanie mają przepisy prawa polskiego, w szczególności:
+   - Kodeks cywilny,
+   - ustawa z dnia 30 maja 2014 r. o prawach konsumenta,
+   - ustawa z dnia 18 lipca 2002 r. o świadczeniu usług drogą elektroniczną,
+   - ustawa z dnia 10 maja 2018 r. o ochronie danych osobowych,
+   - rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych oraz uchylenia dyrektywy 95/46/WE (RODO).
+
+## § 3. Warunki korzystania z Aplikacji
+
+1. Administrator zapewnia dostępność Aplikacji, jednak nie gwarantuje jej nieprzerwanej dostępności w każdym czasie.
+2. Użytkownik zobowiązany jest do korzystania z Aplikacji zgodnie z Regulaminem, przepisami prawa oraz dobrymi obyczajami.
+3. Użytkownik zapewnia, że jego urządzenie mobilne oraz oprogramowanie spełniają wymagania techniczne niezbędne do korzystania z Aplikacji.
+4. Użytkownik nie może:
+   1) wykorzystywać Aplikacji w sposób sprzeczny z prawem, Regulaminem lub dobrymi obyczajami,
+   2) naruszać praw własności intelektualnej Administratora lub osób trzecich,
+   3) wprowadzać do Aplikacji złośliwego kodu, wirusów lub innych elementów mogących zakłócić jej działanie,
+   4) omijać zabezpieczeń technicznych Aplikacji,
+   5) dokonywać Rezerwacji na rzecz osób trzecich w sposób naruszający Regulamin,
+   6) wykorzystywać Aplikacji do działań marketingowych, handlowych lub reklamowych bez zgody Administratora,
+   7) podawać nieprawdziwych danych osobowych lub danych kontaktowych,
+   8) dokonywać Rezerwacji w sposób sugerujący nadużycie, w szczególności w celu uzyskania nieuzasadnionej korzyści.
+5. Administrator może odmówić udostępnienia Aplikacji lub ograniczyć dostęp do niej, jeżeli zachodzą uzasadnione przesłanki, w szczególności w przypadku naruszenia Regulaminu, zagrożenia bezpieczeństwa Aplikacji lub konieczności wykonania prac technicznych.
+
+## § 4. Konto Użytkownika
+
+1. Aby dokonywać Rezerwacji, Użytkownik może zostać zobowiązany do założenia Konta.
+2. W celu założenia Konta Użytkownik podaje dane wymagane do rejestracji, w szczególności:
+   1) imię i nazwisko,
+   2) adres e-mail,
+   3) numer telefonu,
+   4) hasło,
+   5) inne dane wymagane do realizacji Umowy.
+3. Użytkownik zobowiązany jest do:
+   1) podawania prawdziwych i aktualnych danych,
+   2) aktualizowania danych w razie ich zmiany,
+   3) zachowania w tajemnicy hasła dostępu do Konta,
+   4) niezwłocznego informowania Administratora o jakimkolwiek nieuprawnionym korzystaniu z Konta.
+4. Administrator może odmówić rejestracji, zawiesić lub usunąć Konto, jeżeli:
+   1) Użytkownik narusza Regulamin,
+   2) dane podane przez Użytkownika są nieprawdziwe,
+   3) korzystanie z Konta stwarza zagrożenie dla bezpieczeństwa Aplikacji lub osób trzecich,
+   4) zachodzą uzasadnione przesłanki wskazujące na nadużycie.
+5. Użytkownik może w każdej chwili usunąć swoje Konto, chyba że trwa postępowanie reklamacyjne, rozliczenie Płatności lub inne zobowiązanie wynikające z Umowy.
+
+## § 5. Rezerwacja Usług
+
+1. Użytkownik dokonuje Rezerwacji poprzez wybór w Aplikacji:
+   1) Usługi,
+   2) terminu świadczenia Usługi,
+   3) lokalizacji, o ile dotyczy,
+   4) ewentualnych dodatków lub opcji,
+   5) danych niezbędnych do realizacji Usługi.
+2. Przed potwierdzeniem Rezerwacji Użytkownik zobowiązany jest do zapoznania się z ceną Usługi, terminem, lokalizacją oraz innymi istotnymi informacjami.
+3. Cena Usługi prezentowana w Aplikacji jest ceną ostateczną, chyba że w Aplikacji wskazano, że cena może ulec zmianie przed potwierdzeniem Rezerwacji.
+4. Umowa zostaje zawarta w momencie, w którym Administrator wyśle do Użytkownika potwierdzenie Rezerwacji, w szczególności za pośrednictwem wiadomości e-mail, powiadomienia push lub w Aplikacji.
+5. Jeżeli Rezerwacja wymaga Płatności online, Umowa zostaje zawarta po zaksięgowaniu Płatności na rachunku Administratora lub po otrzymaniu potwierdzenia płatności od operatora płatności.
+6. Administrator może odmówić realizacji Rezerwacji, w szczególności w przypadku:
+   1) braku dostępności Usługi w wybranym terminie,
+   2) oczywistego błędu w cenie lub opisie Usługi,
+   3) uzasadnionego podejrzenia nadużycia,
+   4) podania nieprawdziwych danych,
+   5) innych przyczyn leżących po stronie Użytkownika.
+7. W przypadku odmowy realizacji Rezerwacji Administrator niezwłocznie poinformuje Użytkownika o przyczynie odmowy.
+8. Użytkownik może zmienić termin Rezerwacji, o ile Usługa na to pozwala, zgodnie z zasadami wskazanymi w Aplikacji.
+9. Zmiana Rezerwacji może być dokonana przez Użytkownika w Aplikacji lub za pośrednictwem danych kontaktowych Administratora.
+
+## § 6. Płatności
+
+1. Ceny Usług podawane są w złotych polskich i zawierają podatek VAT, o ile taki podatek jest naliczany.
+2. Płatność za Usługi może być dokonywana metodami wskazanymi w Aplikacji, w szczególności:
+   1) kartą płatniczą,
+   2) BLIK,
+   3) przelewem online,
+   4) przelewem tradycyjnym,
+   5) gotówką,
+   6) inną metodą wskazaną w Aplikacji.
+3. Użytkownik zobowiązany jest do dokonania Płatności w terminie wskazanym w Aplikacji lub potwierdzeniu Rezerwacji.
+4. W przypadku opóźnienia w dokonaniu Płatności Administrator może naliczyć odsetki ustawowe za opóźnienie.
+5. Administrator może wystawić fakturę VAT na dane wskazane przez Użytkownika.
+6. W razie braku możliwości realizacji Płatności online Użytkownik może zostać zobowiązany do dokonania Płatności w inny sposób wskazany przez Administratora.
+
+## § 7. Anulowanie Rezerwacji, zwroty i prawo odstąpienia
+
+1. Użytkownik może anulować Rezerwację zgodnie z zasadami wskazanymi w Aplikacji.
+2. W przypadku anulowania Rezerwacji przez Użytkownika:
+   1) do [X] godzin / [X] dni przed terminem Usługi – bez opłat,
+   2) mniej niż [X] godzin / [X] dni przed terminem Usługi – opłata w wysokości [X]% ceny Usługi lub [X] PLN,
+   3) w dniu Usługi lub po rozpoczęciu Usługi – opłata w wysokości [X]% ceny Usługi lub [X] PLN.
+3. W przypadku anulowania Rezerwacji przez Administratora, w szczególności z przyczyn leżących po jego stronie, Użytkownikowi przysługuje zwrot całości dokonanej Płatności.
+4. Zwrot Płatności następuje w terminie [14] dni od dnia otrzymania przez Administratora oświadczenia o anulowaniu Rezerwacji lub odstąpieniu od Umowy.
+5. Zwrot Płatności dokonywany jest na rachunek bankowy wskazany przez Użytkownika lub metodą odpowiadającą metodzie dokonania Płatności, o ile jest to technicznie możliwe i nie wiąże się z dodatkowymi kosztami dla Użytkownika.
+6. Konsument ma prawo odstąpić od Umowy w terminie 14 dni od dnia zawarcia Umowy, bez podania przyczyny.
+7. Prawo odstąpienia od Umowy nie przysługuje Konsumentowi, jeżeli Umowa dotyczy świadczenia usług, których wykonanie rozpoczęło się za wyraźną zgodą Konsumenta przed upływem terminu 14 dni i z potwierdzeniem, że Konsument utraci prawo odstąpienia od Umowy po całkowitym wykonaniu Umowy przez Administratora.
+8. W celu skorzystania z prawa odstąpienia Konsument powinien złożyć oświadczenie o odstąpieniu od Umowy na adres e-mail: [adres e-mail] lub na adres pocztowy: [adres Administratora].
+9. Skutkiem odstąpienia od Umowy jest zwrot całości Płatności dokonanej przez Konsumenta, z wyjątkiem ewentualnych uzasadnionych kosztów wykonania Usługi do momentu odstąpienia, o ile Konsument wyraźnie zażądał dalszego świadczenia.
+
+## § 8. Odpowiedzialność
+
+1. Administrator odpowiada za niewykonanie lub nienależyte wykonanie Umowy na zasadach określonych w przepisach prawa.
+2. Odpowiedzialność Administratora z tytułu niewykonania lub nienależytego wykonania Umowy jest ograniczona do wysokości ceny Usługi, chyba że szkoda powstała z winy umyślnej lub rażącego niedbalstwa Administratora.
+3. Administrator nie ponosi odpowiedzialności za szkody wynikłe z przyczyn niezależnych, w szczególności z siły wyższej, awarii sieci telekomunikacyjnych, awarii systemów płatności, działań osób trzecich lub zdarzeń, których Administrator nie mógł przewidzieć lub zapobiec.
+4. Użytkownik odpowiada za szkody wyrządzone Administratorowi lub osobom trzecim w związku z naruszeniem Regulaminu lub przepisów prawa.
+5. Administrator nie odpowiada za treści publikowane przez Użytkowników, o ile Aplikacja umożliwia ich publikację, chyba że Administrator nie usunął takich treści po otrzymaniu wiarygodnego zawiadomienia o ich sprzeczności z prawem.
+
+## § 9. Ochrona danych osobowych
+
+1. Administratorem danych osobowych Użytkowników jest Administrator wskazany w § 1 pkt 2.
+2. Dane osobowe Użytkowników przetwarzane są w celu:
+   1) zawarcia i realizacji Umowy,
+   2) dokonywania Rezerwacji i zarządzania Kontem,
+   3) rozliczania Płatności,
+   4) obsługi reklamacji i zapytań,
+   5) zapewnienia bezpieczeństwa Aplikacji,
+   6) wykonywania obowiązków prawnych ciążących na Administratorze,
+   7) marketingu własnego Administratora, o ile Użytkownik wyrazi na to zgodę,
+   8) realizacji prawnie uzasadnionego interesu Administratora, w szczególności w zakresie dochodzenia roszczeń i obrony przed roszczeniami.
+3. Podstawą prawną przetwarzania danych osobowych jest w szczególności:
+   1) art. 6 ust. 1 lit. b RODO – wykonanie Umowy,
+   2) art. 6 ust. 1 lit. c RODO – obowiązek prawny,
+   3) art. 6 ust. 1 lit. f RODO – prawnie uzasadniony interes Administratora,
+   4) art. 6 ust. 1 lit. a RODO – zgoda Użytkownika, w zakresie marketingu.
+4. Odbiorcami danych osobowych mogą być:
+   1) podmioty przetwarzające dane w imieniu Administratora,
+   2) dostawcy usług płatniczych,
+   3) dostawcy usług technicznych i hostingowych,
+   4) podmioty świadczące usługi kurierskie lub pocztowe, o ile dotyczy,
+   5) organy publiczne, jeżeli Administrator jest zobowiązany do udostępnienia danych.
+5. Dane osobowe będą przetwarzane przez czas niezbędny do realizacji Umowy, a po jej zakończeniu przez okres wymagany do realizacji obowiązków prawnych, archiwizacyjnych oraz przedawnienia roszczeń.
+6. Użytkownik ma prawo do:
+   1) dostępu do swoich danych osobowych,
+   2) sprostowania danych osobowych,
+   3) usunięcia danych osobowych,
+   4) ograniczenia przetwarzania danych osobowych,
+   5) przenoszenia danych osobowych,
+   6) wycofania zgody w dowolnym momencie, jeżeli przetwarzanie odbywa się na podstawie zgody,
+   7) wniesienia sprzeciwu wobec przetwarzania danych osobowych.
+7. Użytkownik ma prawo wniesienia skargi do Prezesa Urzędu Ochrony Danych Osobowych, jeżeli uważa, że przetwarzanie jego danych osobowych narusza przepisy RODO.
+8. W sprawach dotyczących ochrony danych osobowych Użytkownik może kontaktować się z Inspektorem Ochrony Danych, o ile został wyznaczony, pod adresem: [adres e-mail / dane DPO].
+9. Szczegółowe informacje dotyczące przetwarzania danych osobowych zawiera Polityka prywatności dostępna pod adresem: [adres URL].
+
+## § 10. Własność intelektualna
+
+1. Wszelkie prawa do Aplikacji, w tym prawa autorskie, prawa własności przemysłowej, znaki towarowe, wzory, bazy danych, oprogramowanie, treści graficzne, tekstowe i multimedialne, przysługują Administratorowi lub podmiotom uprawnionym.
+2. Użytkownik nie może kopiować, modyfikować, dystrybuować, publikować, odwracać inżynieryjnie ani wykorzystywać Aplikacji lub jej elementów w sposób niezgodny z Regulaminem lub przepisami prawa.
+3. Administrator może udzielić Użytkownikowi niewyłącznej, nieprzenoszalnej, ograniczonej licencji na korzystanie z Aplikacji wyłącznie na własny użytek, chyba że Regulamin stanowi inaczej.
+
+## § 11. Reklamacje
+
+1. Użytkownik może składać reklamacje dotyczące działania Aplikacji, Rezerwacji, Usług lub Płatności.
+2. Reklamację należy złożyć na adres e-mail: [adres e-mail] lub na adres pocztowy: [adres Administratora].
+3. W reklamacji Użytkownik powinien wskazać:
+   1) dane kontaktowe,
+   2) numer Rezerwacji lub Konta, o ile dotyczy,
+   3) opis zastrzeżeń,
+   4) żądanie Użytkownika,
+   5) inne informacje istotne dla rozpatrzenia reklamacji.
+4. Administrator rozpatrzy reklamację w terminie [14] dni od dnia jej otrzymania. W przypadku reklamacji o skomplikowanym charakterze termin ten może ulec przedłużeniu do [30] dni.
+5. O rozstrzygnięciu reklamacji Administrator poinformuje Użytkownika za pośrednictwem wskazanego adresu e-mail lub innego kontaktu podanego przez Użytkownika.
+6. Konsument ma możliwość skorzystania z pozasądowych sposobów rozpatrywania reklamacji i dochodzenia roszczeń.
+7. Informacje o organach, do których Konsument może zwrócić się o pozasądowe rozstrzygnięcie sporu, są dostępne w gminie (mieście) zamieszkania Konsumenta oraz na stronie internetowej Urzędu Ochrony Konkurencji i Konsumentów.
+8. Konsument może również skorzystać z platformy ODR, o której mowa w rozporządzeniu Parlamentu Europejskiego i Rady (UE) nr 524/2013, dostępnej pod adresem: [https://ec.europa.eu/consumers/odr/].
+
+## § 12. Zmiany Regulaminu
+
+1. Administrator może zmieniać postanowienia Regulaminu.
+2. O istotnych zmianach Regulaminu Administrator poinformuje Użytkowników z wyprzedzeniem [30] dni przed wejściem zmian w życie, w szczególności za pośrednictwem Aplikacji, wiadomości e-mail lub powiadomienia push.
+3. W przypadku zmiany Regulaminu przed zawarciem Umowy, Użytkownik zostanie poinformowany o treści zmian przed dokonaniem Rezerwacji.
+4. Użytkownik, który nie akceptuje zmian Regulaminu, może zrezygnować z korzystania z Aplikacji przed dokonaniem Rezerwacji lub przed terminem świadczenia Usługi, zgodnie z zasadami anulowania.
+5. Nowa wersja Regulaminu wchodzi w życie z dniem wskazanym w informacji o zmianie.
+
+## § 13. Postanowienia końcowe
+
+1. Regulamin jest sporządzony w języku polskim.
+2. Wszelkie spory wynikające z Regulaminu lub Umowy podlegają prawu polskiemu.
+3. W sprawach spornych właściwy jest sąd powszechny właściwy dla siedziby Administratora.
+4. W przypadku sporów z Konsumentem Konsument może również zwrócić się do sądu właściwego zgodnie z przepisami o właściwości sądów, w szczególności do sądu właściwego dla miejsca zamieszkania Konsumenta.
+5. Regulamin wchodzi w życie z dniem [data].
+6. Wersja Regulaminu obowiązująca w dniu [data] jest dostępna w Aplikacji oraz pod adresem: [adres URL].
+
+---
+
+### Wskazania praktyczne do adaptacji regulaminu
+
+Przed publikacją regulaminu należy w szczególności uzupełnić i dostosować:
+
+1. **Dane Administratora** – pełna nazwa, adres, NIP, REGON, dane kontaktowe.
+2. **Nazwę aplikacji** – w tytule, definicjach i postanowieniach końcowych.
+3. **Zakres usług** – jeśli aplikacja dotyczy konkretnego typu usług, np. usług beauty, medycznych, transportowych, gastronomicznych, warto dodać odrębne postanowienia dotyczące specyfiki tych usług.
+4. **Terminy anulowania** – należy wskazać konkretne godziny lub dni przed terminem usługi oraz ewentualne opłaty.
+5. **Metody płatności** – należy wskazać dostępne metody i ewentualne prowizje.
+6. **Zasady zwrotów** – należy dostosować do modelu rozliczeń, operatora płatności i czasu zwrotu środków.
+7. **Politykę prywatności** – regulamin powinien zawierać link do pełnej polityki prywatności.
+8. **Dane DPO** – jeśli administrator wyznaczył inspektora ochrony danych.
+9. **Zasady reklamacji** – terminy i dane kontaktowe.
+10. **Klauzule dotyczące usług medycznych, transportowych lub innych regulowanych** – jeśli aplikacja rezerwuje usługi podlegające szczególnym przepisom, regulamin powinien zawierać dodatkowe postanowienia zgodne z tymi przepisami.

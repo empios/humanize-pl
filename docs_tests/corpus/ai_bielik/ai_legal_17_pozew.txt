@@ -1,0 +1,54 @@
+Oto przykładowy pozew o zapłatę 27 300 zł z tytułu niezapłaconych faktur za dostawę towarów:
+
+[Miejscowość], [data]
+
+Sąd Rejonowy w [nazwa miejscowości]
+Wydział Cywilny
+[adres sądu]
+
+Powód:
+[imię i nazwisko/nazwa firmy powoda]
+[adres powoda]
+[PESEL/NIP powoda]
+
+Pozwany:
+[imię i nazwisko/nazwa firmy pozwanego]
+[adres pozwanego]
+
+Wartość przedmiotu sporu: 27 300 zł
+
+POZEW
+
+Wnoszę o:
+
+1. Zasądzenie od pozwanego na rzecz powoda kwoty 27 300 zł wraz z odsetkami ustawowymi za opóźnienie liczonymi od dnia wniesienia pozwu do dnia zapłaty.
+
+2. Zasądzenie od pozwanego na rzecz powoda kosztów procesu, w tym kosztów zastępstwa procesowego według norm przepisanych.
+
+3. Nadanie wyrokowi rygoru natychmiastowej wykonalności.
+
+UZASADNIENIE
+
+Powód dostarczył pozwanemu towary na podstawie następujących faktur:
+
+1. Faktura nr [numer] z dnia [data] na kwotę [kwota] zł, termin płatności: [data]
+2. Faktura nr [numer] z dnia [data] na kwotę [kwota] zł, termin płatności: [data]
+3. Faktura nr [numer] z dnia [data] na kwotę [kwota] zł, termin płatności: [data]
+
+Pomimo upływu terminów płatności wskazanych w fakturach, pozwany nie dokonał zapłaty należnych kwot. Powód wezwał pozwanego do zapłaty pismem z dnia [data], jednak wezwanie to pozostało bez odpowiedzi.
+
+Dowody:
+1. Kopie faktur VAT
+2. Wezwanie do zapłaty z dnia [data]
+
+W związku z powyższym powództwo jest zasadne.
+
+[podpis powoda lub pełnomocnika]
+
+Załączniki:
+1. Odpis pozwu
+2. Odpisy faktur VAT
+3. Odpis wezwania do zapłaty
+4. [inne załączniki, jeśli są]
+
+Uwaga: Ten wzór pozwu należy dostosować do konkretnej sytuacji, wypełniając odpowiednie dane i szczegóły dotyczące faktur oraz ewentualnych dodatkowych okoliczności sprawy. W przypadku skomplikowanych spraw lub wątpliwości prawnych zaleca się konsultację z prawnikiem.

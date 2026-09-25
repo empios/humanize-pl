@@ -1,0 +1,52 @@
+Oto przykładowy wzór pozwu o zapłatę kary umownej za opóźnienie w wykonaniu robót budowlanych:
+
+[Miejscowość], [data]
+
+Sąd Rejonowy w [nazwa miejscowości]
+Wydział Cywilny
+[adres sądu]
+
+Powód: [nazwa firmy lub imię i nazwisko]
+[adres]
+NIP: [numer NIP]
+
+Pozwany: [nazwa firmy lub imię i nazwisko]
+[adres]
+NIP: [numer NIP]
+
+Wartość przedmiotu sporu: [kwota] zł
+
+POZEW
+
+W imieniu własnym wnoszę o:
+
+1. Zasądzenie od pozwanego na rzecz powoda kwoty [kwota] złotych tytułem kary umownej za opóźnienie w wykonaniu robót budowlanych.
+
+2. Zasądzenie od pozwanego na rzecz powoda kosztów postępowania, w tym kosztów zastępstwa procesowego według norm przepisanych.
+
+3. Nadanie wyrokowi rygoru natychmiastowej wykonalności.
+
+UZASADNIENIE
+
+W dniu [data] strony zawarły umowę nr [numer] o wykonanie robót budowlanych w [lokalizacja], której przedmiotem było [krótki opis robót]. Umowa została zawarta na okres od [data rozpoczęcia] do [data zakończenia].
+
+Pozwany, będący wykonawcą robót, nie wywiązał się z obowiązku wykonania robót w umówionym terminie. Roboty zostały odebrane jako zakończone dopiero w dniu [data], czyli [liczba] dni po umówionym terminie.
+
+Zgodnie z §[numer] umowy, za każdy dzień opóźnienia w wykonaniu robót należna jest kara umowna w wysokości [kwota] zł. Łączna kwota kary umownej wynosi zatem:
+
+[liczba dni opóźnienia] dni × [kwota za dzień] zł = [całkowita kwota] zł
+
+Pomimo wezwania pozwanego do zapłaty kary umownej pismem z dnia [data], pozwany nie dokonał zapłaty w terminie.
+
+W związku z powyższym wnoszę o zasądzenie na rzecz powoda kwoty [kwota] zł tytułem kary umownej wraz z odsetkami ustawowymi od dnia wniesienia pozwu do dnia zapłaty.
+
+[podpis]
+Powód/pełnomocnik
+
+Załączniki:
+1. Umowa nr [numer] z dnia [data]
+2. Protokół odbioru robót
+3. Wezwanie do zapłaty z dnia [data]
+4. Odpis z KRS/CEIDG powoda
+5. Odpis z KRS/CEIDG pozwanego
+6. [inne istotne dokumenty]

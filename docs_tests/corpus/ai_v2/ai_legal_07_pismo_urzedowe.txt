@@ -1,0 +1,50 @@
+Poniżej gotowy wzór wniosku. Uzupełnij pola w nawiasach kwadratowych.
+
+---
+
+**[Miejscowość], [data]**
+
+**Urzęd Miasta [nazwa miasta]**  
+[adres urzędu]
+
+**Wnioskodawca:**  
+[imię i nazwisko / nazwa podmiotu]  
+[adres zamieszkania / siedziby]  
+[opcjonalnie: PESEL / NIP]  
+[opcjonalnie: adres e-mail / numer telefonu]
+
+### Wniosek  
+### o udostępnienie informacji publicznej
+
+Na podstawie art. 6 ust. 1 ustawy z dnia 6 września 2001 r. o dostępie do informacji publicznej (Dz.U. z 2022 r. poz. 2149 z późn. zm.) wnoszę o udostępnienie informacji publicznej w postaci:
+
+**[wybrać właściwe: odpisu / kopii / wyciągu / informacji / danych / dokumentu / zestawienia danych]**
+
+dotyczącej:
+
+**[precyzyjny opis żądanej informacji, np.]:**  
+- umowy nr [numer] z dnia [data] zawartej z [nazwa podmiotu] w sprawie [przedmiot umowy], wraz z załącznikami,  
+- protokołu odbioru [nazwa obiektu / etapu prac] z dnia [data],  
+- danych dotyczących [np. realizacji inwestycji, wydatków, planu, decyzji, korespondencji] z okresu [okres],  
+- [inne].
+
+Wnoszę o udostępnienie informacji publicznej:
+
+**[wybrać właściwe:]**  
+- w formie elektronicznej na adres e-mail: [adres e-mail],  
+- w formie papierowej na adres: [adres].
+
+W przypadku, gdy udostępnienie informacji publicznej w żądanej formie wiązałoby się z poniesieniem kosztów, proszę o uprzednią informację o wysokości opłaty oraz sposobie jej uiszczenia.
+
+W przypadku odmowy udostępnienia informacji publicznej proszę o wskazanie podstawy prawnej odmowy oraz informację o prawie do wniesienia odwołania do Rzecznika Praw Obywatelskich.
+
+Z poważaniem,  
+
+....................................................  
+[imię i nazwisko / nazwa podmiotu]  
+[podpis]
+
+---
+
+**Uwaga:**  
+Wniosek o udostępnienie informacji publicznej nie podlega opłacie skarbowej. Udostępnienie w formie elektronicznej jest co do zasady bezpłatne. Urząd powinien zrealizować wniosek co do zasady w terminie 14 dni.

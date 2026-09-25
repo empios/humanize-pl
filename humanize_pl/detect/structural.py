@@ -49,8 +49,8 @@ SCAFFOLD_PATTERNS: list[tuple[str, str, str, float]] = [
         0.6,
     ),
     (
-        r"\bstanowi\s+(?:jedno|jedną|jeden)\s+z\s+(?:kluczowych|najważniejszych|"
-        r"podstawowych|istotnych)\b",
+        (r"\bstanowi\s+(?:jedno|jedną|jeden)\s+z\s+(?:kluczowych|najważniejszych|"
+        r"podstawowych|istotnych)\b"),
         "abstract_frame",
         "stanowi_jedno_z",
         0.7,
@@ -147,3 +147,62 @@ def paragraph_shape_cv(sentence_counts: list[int]) -> float:
         return 0.0
     variance = sum((count - mean_count) ** 2 for count in counts) / len(counts)
     return round(variance**0.5 / mean_count, 4)
+
+
+def sentence_length_cv(lengths: list[int]) -> float:
+    """Coefficient of variation of sentence lengths.
+
+    The one definition in the project: the detector reports it and the rhythm
+    layer optimises toward it. Two implementations of the same formula would
+    let the layer chase a number the score does not actually contain, and the
+    drift would be invisible because both would look nearly right.
+    """
+    lengths = [length for length in lengths if length]
+    if not lengths:
+        return 0.0
+    mean_length = sum(lengths) / len(lengths)
+    if mean_length <= 0:
+        return 0.0
+    variance = sum((length - mean_length) ** 2 for length in lengths) / len(lengths)
+    return round(variance**0.5 / mean_length, 4)
+
+
+def sentence_length_burstiness(lengths: list[int]) -> float:
+    """Burstiness (wybuchowość) of sentence lengths.
+    
+    Formula: (std - mean) / (std + mean).
+    A measure of variation around the mean. Values closer to 1 indicate highly 
+    bursty text (human-like). Values closer to -1 indicate monotonic text (AI).
+    """
+    if len(lengths) < 3:
+        return 0.0
+    mean_len = sum(lengths) / len(lengths)
+    if mean_len == 0:
+        return 0.0
+    std_dev = (sum((length - mean_len) ** 2 for length in lengths) / len(lengths)) ** 0.5
+    return round((std_dev - mean_len) / (std_dev + mean_len), 4)
+
+
+def sentence_length_entropy(lengths: list[int]) -> float:
+    """Shannon entropy of sentence length distribution.
+    
+    Lengths are binned into buckets of 5 words to prevent extreme sparsity.
+    Lower entropy indicates higher predictability (typical of AI output).
+    """
+    import math
+    from collections import Counter
+    
+    if not lengths:
+        return 0.0
+        
+    bins = [length // 5 for length in lengths]
+    total = len(bins)
+    counts = Counter(bins)
+    
+    entropy = 0.0
+    for count in counts.values():
+        p = count / total
+        if p > 0:
+            entropy -= p * math.log2(p)
+            
+    return round(entropy, 4)

@@ -148,3 +148,71 @@ def test_normalization_uses_a4_and_keeps_direct_emphasis(monkeypatch, tmp_path) 
     assert abs(section.page_height - Mm(297)) < Mm(1)
     assert result.paragraphs[0].runs[0].bold is True
     assert result.paragraphs[0].runs[1].italic is True
+
+
+def _docx_with(tmp_path, name, paragraphs):
+    from docx import Document
+
+    document = Document()
+    for line in paragraphs:
+        document.add_paragraph(line)
+    path = tmp_path / name
+    document.save(str(path))
+    return path
+
+
+def test_a_declared_paragraph_delta_is_allowed_and_an_undeclared_one_is_not(tmp_path):
+    """Adding a clause the document owed has to be possible, and only that.
+
+    The guard compares paragraph counts, so anything that adds a missing
+    section made the flow discard the whole rewrite and restore the source.
+    A caller may now declare how many paragraphs it is adding.
+    """
+    from docx import Document
+
+    from humanize_pl.io.docx_structure import inventory_docx, save_with_inventory_guard
+
+    source = _docx_with(tmp_path, "zrodlo.docx", ["Pierwszy.", "Drugi."])
+
+    document = Document(str(source))
+    document.add_paragraph("Dopisana klauzula.")
+    undeclared = save_with_inventory_guard(document, source, tmp_path / "a.docx")
+    assert undeclared, "niezapowiedziany akapit musi zostać odrzucony"
+    assert inventory_docx(tmp_path / "a.docx").paragraphs == 2
+
+    document = Document(str(source))
+    document.add_paragraph("Dopisana klauzula.")
+    declared = save_with_inventory_guard(
+        document, source, tmp_path / "b.docx", expected_paragraph_delta=1
+    )
+    assert declared == []
+    assert inventory_docx(tmp_path / "b.docx").paragraphs == 3
+
+
+def test_the_declared_delta_is_exact_not_a_ceiling(tmp_path):
+    """"Paragraphs may grow" would hide a clause dropped while another is added."""
+    from docx import Document
+
+    from humanize_pl.io.docx_structure import save_with_inventory_guard
+
+    source = _docx_with(tmp_path, "zrodlo.docx", ["Pierwszy.", "Drugi.", "Trzeci."])
+
+    # Declares one, adds two.
+    document = Document(str(source))
+    document.add_paragraph("A.")
+    document.add_paragraph("B.")
+    differences = save_with_inventory_guard(
+        document, source, tmp_path / "za_duzo.docx", expected_paragraph_delta=1
+    )
+    assert differences and "zapowiedziano" in differences[0]
+
+    # Declares one, adds one and removes one: the net is right, the document
+    # is not. This is the case a ceiling would have let through.
+    document = Document(str(source))
+    document.add_paragraph("A.")
+    body = document.paragraphs[0]._element
+    body.getparent().remove(body)
+    differences = save_with_inventory_guard(
+        document, source, tmp_path / "wymiana.docx", expected_paragraph_delta=1
+    )
+    assert differences

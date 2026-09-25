@@ -1,0 +1,42 @@
+# Full install — core plus every extra in pyproject.toml.
+# python -m venv .venv
+# .venv\Scripts\activate          (Windows)
+# source .venv/bin/activate       (macOS/Linux)
+# python -m pip install -U pip
+# python -m pip install -r requirements.txt
+#
+# Same command from pyproject.toml:
+#   python -m pip install -e ".[all]"
+
+-e ".[all]"
+
+# Core
+regex>=2024.0.0
+python-docx>=1.1.0
+typer>=0.12.0
+rich>=13.0.0
+numpy>=1.24.0
+pyyaml>=6.0.0
+wordfreq>=3.0.0
+httpx>=0.27.0
+
+# NLP
+stanza>=1.8.0
+morfeusz2
+
+# Transformers
+torch>=2.2.0
+transformers>=4.40.0
+sentence-transformers>=3.0.0
+
+# Documents and UI
+openpyxl>=3.1.0
+reportlab>=4.0.0
+pypdf>=5.0.0
+gradio>=6.0,<7
+
+# Dev
+build>=1.2.0
+hatchling>=1.24
+pytest>=8.0.0
+ruff>=0.6.0

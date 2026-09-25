@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+import pytest
+
 from humanize_pl.config import Mode
 from humanize_pl.nlp.inflector import Inflector, parse_stanza_feats
 from humanize_pl.nlp.stanza_engine import SentenceAnalysis, TokenInfo
@@ -780,3 +782,188 @@ def test_new_lemmas_in_inflections_json():
     assert lookup is not None and lookup.form == "odpowiednia"
     lookup = inflector.inflect("obowiązkowy", {"Case": "Nom", "Degree": "Pos", "Gender": "Fem", "Number": "Sing"})
     assert lookup is not None and lookup.form == "obowiązkowa"
+
+
+# --- require_right_upos: substantivised adjectives ---------------------------
+#
+# The regression these cover produced "Mając te na uwadze" from "Mając
+# powyższe na uwadze" in an earlier evaluation run.
+
+
+def _powyzszy_rule(**guards) -> LemmaSwapRule:
+    return LemmaSwapRule(
+        id="kancelaryzm:powyzszy_to_ten",
+        from_lemma="powyższy",
+        to_lemma="ten",
+        upos="ADJ",
+        score=0.55,
+        risk=0.10,
+        stage="legal_rewrite",
+        operation_type="debureaucratization",
+        targeted_issue="vague_reference",
+        modes=frozenset({"standard", "strong"}),
+        forbid_left_lemmas=frozenset(),
+        forbid_right_lemmas=frozenset(),
+        require_context_lemmas=frozenset(),
+        require_right_upos=frozenset(guards.get("require_right_upos", ())),
+    )
+
+
+def _plural_inflector():
+    """Real shape of the shipped table: plural forms carry no Gender."""
+    return Inflector(
+        {
+            "ten": {
+                "upos": "ADJ",
+                "forms": {
+                    "Case=Acc|Degree=Pos|Gender=Neut|Number=Sing": "to",
+                    "Case=Acc|Degree=Pos|Number=Plur": "te",
+                    "Case=Nom|Degree=Pos|Number=Plur": "te",
+                },
+            }
+        }
+    )
+
+
+def test_powyzsze_standing_alone_is_not_swapped():
+    """"Mając powyższe na uwadze" - the adjective IS the noun here.
+
+    Stanza tags the standalone form as plural (it is homographic with the
+    non-masculine-personal plural), so without the guard the engine emitted
+    "Mając te na uwadze".
+    """
+    sentence = "Mając powyższe na uwadze, wnoszę jak na wstępie."
+    fake = FakeStanza(
+        {
+            sentence: [
+                _t("Mając", lemma="mieć", upos="VERB", feats="VerbForm=Conv",
+                   head=6, deprel="advcl", start=0, end=5, idx=1),
+                _t("powyższe", lemma="powyższy", upos="ADJ",
+                   feats="Case=Acc|Degree=Pos|Number=Plur",
+                   head=1, deprel="obj", start=6, end=14, idx=2),
+                _t("na", lemma="na", upos="ADP", feats="",
+                   head=4, deprel="case", start=15, end=17, idx=3),
+                _t("uwadze", lemma="uwaga", upos="NOUN",
+                   feats="Case=Loc|Gender=Fem|Number=Sing",
+                   head=1, deprel="obl", start=18, end=24, idx=4),
+            ]
+        }
+    )
+    cands = lemma_swap_candidates(
+        sentence,
+        analysis=fake.analyze_sentence(sentence),
+        mode=Mode.standard,
+        rules=[_powyzszy_rule(require_right_upos=["NOUN", "PROPN"])],
+        inflector=_plural_inflector(),
+    )
+    assert cands == []
+
+
+def test_powyzsze_modifying_a_noun_is_still_swapped():
+    """The guard must not disable the rule where it was always right."""
+    sentence = "Powyższe wnioski opierają się na aktualnym stanie prawnym."
+    fake = FakeStanza(
+        {
+            sentence: [
+                _t("Powyższe", lemma="powyższy", upos="ADJ",
+                   feats="Case=Nom|Degree=Pos|Number=Plur",
+                   head=2, deprel="amod", start=0, end=8, idx=1),
+                _t("wnioski", lemma="wniosek", upos="NOUN",
+                   feats="Case=Nom|Number=Plur",
+                   head=3, deprel="nsubj", start=9, end=16, idx=2),
+                _t("opierają", lemma="opierać", upos="VERB",
+                   feats="VerbForm=Fin|Number=Plur|Person=3",
+                   head=0, deprel="root", start=17, end=25, idx=3),
+            ]
+        }
+    )
+    cands = lemma_swap_candidates(
+        sentence,
+        analysis=fake.analyze_sentence(sentence),
+        mode=Mode.standard,
+        rules=[_powyzszy_rule(require_right_upos=["NOUN", "PROPN"])],
+        inflector=_plural_inflector(),
+    )
+    assert len(cands) == 1
+    assert cands[0].text == "Te wnioski opierają się na aktualnym stanie prawnym."
+
+
+def test_a_trailing_adjective_has_no_head_noun_and_is_refused():
+    """Nothing follows the token, so it cannot be modifying anything."""
+    sentence = "Sąd uwzględnił powyższe."
+    fake = FakeStanza(
+        {
+            sentence: [
+                _t("Sąd", lemma="sąd", upos="NOUN", feats="Case=Nom|Number=Sing",
+                   head=2, deprel="nsubj", start=0, end=3, idx=1),
+                _t("uwzględnił", lemma="uwzględnić", upos="VERB",
+                   feats="VerbForm=Fin|Number=Sing|Person=3",
+                   head=0, deprel="root", start=4, end=14, idx=2),
+                _t("powyższe", lemma="powyższy", upos="ADJ",
+                   feats="Case=Acc|Degree=Pos|Number=Plur",
+                   head=2, deprel="obj", start=15, end=23, idx=3),
+            ]
+        }
+    )
+    cands = lemma_swap_candidates(
+        sentence,
+        analysis=fake.analyze_sentence(sentence),
+        mode=Mode.standard,
+        rules=[_powyzszy_rule(require_right_upos=["NOUN", "PROPN"])],
+        inflector=_plural_inflector(),
+    )
+    assert cands == []
+
+
+def test_every_demonstrative_swap_requires_a_head_noun():
+    """The shipped YAML must carry the guard, not just the engine support it.
+
+    All four rules that swap to `ten` can be substantivised in legal Polish.
+    """
+    from humanize_pl.rules.lemma_engine import _load_rules_cached
+
+    guarded = {
+        "kancelaryzm:niniejszy_to_ten",
+        "kancelaryzm:przedmiotowy_to_ten",
+        "kancelaryzm:powyzszy_to_ten",
+        "kancelaryzm:rzeczony_to_ten",
+    }
+    by_id = {rule.id: rule for rule in _load_rules_cached()}
+    for rule_id in guarded:
+        assert rule_id in by_id, f"{rule_id} did not load"
+        assert by_id[rule_id].require_right_upos == frozenset({"NOUN", "PROPN"}), rule_id
+
+
+def test_an_unknown_guard_name_is_refused_rather_than_ignored():
+    """A typo in a guard name used to disable the guard with no trace."""
+    from humanize_pl.rules.lemma_engine import _coerce_rule
+
+    with pytest.raises(ValueError, match="nieznany strażnik"):
+        _coerce_rule(
+            {
+                "id": "test:typo",
+                "from_lemma": "powyższy",
+                "to_lemma": "ten",
+                "guards": {"require_rigth_upos": ["NOUN"]},
+            }
+        )
+
+
+def test_every_swap_target_has_an_inflection_paradigm():
+    """A rule whose target cannot be inflected is dead, not conservative.
+
+    `_build_replacement` returns None when the target lemma is missing from
+    inflections.json, so the rule never emits a candidate and never says so.
+    Two rules shipped in that state - `transparentny` and `finalny` - because
+    tools/rules_lemma_audit.py detected it and no gate ran the audit.
+    """
+    from humanize_pl.nlp.inflector import load_default
+    from humanize_pl.rules.lemma_engine import _load_rules_cached
+
+    inflector = load_default.__wrapped__()
+    missing = [
+        rule.id
+        for rule in _load_rules_cached()
+        if not inflector.has_lemma(rule.to_lemma)
+    ]
+    assert missing == []

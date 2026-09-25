@@ -1,0 +1,84 @@
+**REGULAMIN SERWISU Z TREŚCIAMI CYFROWYMI W MODELU ABONAMENTOWYM**
+
+*Niniejszy Regulamin jest wzorem. Wymaga dopasowania do konkretnej działalności serwisu. Nie stanowi porady prawnej.*
+
+---
+
+### §1 POSTANOWIENIA OGÓLNE
+
+1. Regulamin określa warunki świadczenia usług drogą elektroniczną przez [Nazwa Spółki / Przedsiębiorcy], z siedzibą w [adres], NIP [...], zwanego dalej **Usługodawcą**, poprzez serwis internetowy dostępny pod adresem [www.nazwa-serwisu.pl], zwany dalej **Serwisem**.
+2. Serwis umożliwia Abonentom dostęp do treści cyfrowych w postaci [np. kursów wideo, ebooków, webinarów, baz wiedzy, muzyki, oprogramowania SaaS] na podstawie wykupionej subskrypcji abonamentowej.
+3. Usługobiorcami mogą być osoby fizyczne, prawne i jednostki organizacyjne nieposiadające osobowości prawnej.
+4. Korzystanie z Serwisu oznacza akceptację Regulaminu.
+
+### §2 DEFINICJE
+
+**Abonament** - cykliczna usługa dostępu do Treści Cyfrowych świadczona odpłatnie na czas określony.
+**Treści Cyfrowe** - utwory, bazy danych, materiały multimedialne, oprogramowanie udostępniane w Serwisie w formie cyfrowej bez przenoszenia na nośnik materialny.
+**Konto** - indywidualny profil użytkownika w Serwisie.
+**Abonent / Użytkownik** - osoba fizyczna, prawna lub jednostka organizacyjna korzystająca z Serwisu.
+
+### §3 ZAKRES USŁUG
+
+1. Usługodawca świadczy usługę dostępu do Treści Cyfrowych zgodnie z wybranym Planem Abonamentowym.
+2. Szczegółowy zakres, funkcjonalności i okres dostępu do Treści Cyfrowych określa opis Planu Abonamentowego dostępny w Serwisie.
+3. Usługa jest świadczona w formie dostępu zdalnego przez Internet 24/7, z wyłączeniem przerw technicznych.
+4. Usługodawca nie gwarantuje nieprzerwanej dostępności Serwisu.
+
+### §4 REJESTRACJA I KONTO
+
+1. Utworzenie Konta wymaga podania adresu e-mail i hasła oraz akceptacji Regulaminu.
+2. Użytkownik zobowiązuje się do podania danych zgodnych z prawdą i utrzymania poufności danych dostępowych.
+3. Użytkownik odpowiada za wszelkie działania podjęte z wykorzystaniem jego Konta.
+4. Usługodawca może zablokować Konto w przypadku naruszenia Regulaminu lub prawa.
+
+### §5 ABONAMENTY, CENY I PŁATNOŚCI
+
+1. Abonamenty dostępne są w wariantach: [np. Miesięczny, Roczny, Pro]. Ceny brutto zawierają podatek VAT i są podane w Serwisie.
+2. Pierwszy okres Abonamentu liczony jest od momentu aktywacji płatności.
+3. Opłata za Abonament pobierana jest automatycznie w cyklu rozliczeniowym z użytych przez Użytkownika danych płatniczych. Płatność kartą / przelewem online realizowana jest przez podmioty zewnętrzne: [nazwa operatora płatności].
+4. W przypadku nieopłacenia kolejnej raty, dostęp do Serwisu zostaje zawieszony, a po 30 dniach Konto może zostać usunięte.
+5. Abonent może w dowolnym momencie wypowiedzieć Abonament z zachowaniem okresu wypowiedzenia określonego w opisie Planu. Wypowiedzenie nie zwalnia z opłaty za rozpoczęty okres rozliczeniowy.
+
+### §6 DOSTĘP DO TREŚCI CYFROWYCH
+
+1. Po opłaceniu Abonamentu Usługodawca udostępnia dostęp do Treści Cyfrowych zgodnie z opisem Planu.
+2. Udostępnienie następuje w formie natychmiastowego dostępu online. Treści Cyfrowe nie są dostarczane na nośniku materialnym.
+3. Użytkownik może pobrać Treści Cyfrowe na własne urządzenia wyłącznie w zakresie niezbędnym do ich korzystania. Zabrania się ich kopiowania, rozpowszechniania, modyfikacji, udostępniania osobom trzecim oraz wykorzystywania w celach komercyjnych.
+4. Ze względu na charakter świadczenia cyfrowego, zgodnie z art. 38 pkt 12 Ustawy o prawach konsumenta, Konsumentowi nie przysługuje prawo odstąpienia od umowy zawartej na odległość po rozpoczęciu świadczenia.
+
+### §7 PRAWA WŁASNOŚCI INTELEKTUALNEJ
+
+1. Wszelkie prawa do Treści Cyfrowych, Serwisu, znaków towarowych i oprogramowania stanowią własność Usługodawcy lub jego licencjodawców.
+2. Użytkownik nabywa jedynie ograniczone, niewyłączne prawo do korzystania z Treści Cyfrowych w ramach aktywnego Abonamentu na własny użytek osobisty.
+
+### §8 ODPOWIEDZIALNOŚĆ I REKLAMACJE
+
+1. Usługodawca odpowiada za niewykonanie lub nienależyte wykonanie usługi zgodnie z przepisami Kodeksu cywilnego.
+2. Reklamacje dotyczące dostępu, błędów technicznych lub zgodności Treści Cyfrowych należy zgłaszać na adres e-mail: [kontakt@...] wraz z opisem problemu.
+3. Usługodawca rozpatruje reklamację w terminie 14 dni od otrzymania.
+4. Usługodawca nie ponosi odpowiedzialności za przerwę w dostępie spowodowaną siłą wyższą, działaniem podmiotów trzecich lub niewłaściwą konfiguracją sprzętu Użytkownika.
+
+### §9 OCHRONA DANYCH OSOBOWYCH
+
+1. Administratorem danych osobowych jest Usługodawca.
+2. Dane przetwarzane są w celu świadczenia usług, rozliczeń i marketingu na podstawie zgody oraz art. 6 RODO. Szczegóły w Polityce Prywatności.
+3. Użytkownik ma prawo dostępu, sprostowania, usunięcia, ograniczenia przetwarzania i przenoszenia danych.
+
+### §10 ZMIANY REGULAMINU
+
+1. Usługodawca zastrzega sobie prawo do zmiany Regulaminu.
+2. Zmiany wchodzą w życie po 14 dniach od poinformowania Użytkownika. Kontynuacja korzystania z Serwisu po tym terminie oznacza akceptację zmian.
+3. W przypadku zmian niekorzystnych dla Abonenta, Abonent może wypowiedzieć Abonament bez zachowania okresu wypowiedzenia przed wejściem zmian w życie.
+
+### §11 POSTANOWIENIA KOŃCOWE
+
+1. W sprawach nieuregulowanych zastosowanie mają przepisy prawa polskiego, w szczególności Ustawa o świadczeniu usług drogą elektroniczną, Kodeks cywilny, Ustawa o prawach konsumenta, RODO.
+2. Spory będą rozstrzygane przez sąd właściwy dla siedziby Usługodawcy, z zachowaniem prawa Konsumenta do wyboru sądu właściwego.
+3. Regulamin obowiązuje od dnia [data].
+
+---
+**Dane kontaktowe Usługodawcy:**
+[email], [telefon], [adres]
+
+Chcesz żebym dopasował ten regulamin do Twojej konkretnej branży, np. kursy online, muzyka streaming, SaaS?

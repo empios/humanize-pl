@@ -3,7 +3,8 @@ from __future__ import annotations
 import regex as re
 
 from humanize_pl.rules.finite_verbs import FINITE_VERB_WORDS
-from .validators import GateCheck, SENTENCE_TRANSITIONS
+
+from .validators import SENTENCE_TRANSITIONS, GateCheck
 
 
 def stanza_finite_verb_gate(

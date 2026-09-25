@@ -1,0 +1,45 @@
+Oto przykładowe wezwanie do zapłaty kary umownej za opóźnienie w dostawie:
+
+[Nazwa firmy wierzyciela]
+[Adres firmy]
+[Kod pocztowy i miasto]
+
+[Miejscowość], [data]
+
+[Nazwa firmy dłużnika]
+[Adres firmy]
+[Kod pocztowy i miasto]
+
+WEZWANIE DO ZAPŁATY KARY UMOWNEJ
+
+Szanowni Państwo,
+
+Niniejszym wzywam do zapłaty kary umownej w wysokości [kwota] zł (słownie: [kwota słownie]) za opóźnienie w dostawie zamówienia nr [numer zamówienia] z dnia [data zamówienia], zgodnie z §[numer] umowy nr [numer umowy] z dnia [data umowy].
+
+Termin dostawy określony w umowie upłynął dnia [data terminu], natomiast dostawa nastąpiła z opóźnieniem [liczba] dni. W związku z tym należna jest kara umowna w wysokości określonej w umowie.
+
+Wpłaty proszę dokonać na rachunek bankowy:
+[Nazwa banku]
+nr konta: [numer konta]
+
+Termin płatności ustalam na 7 dni od daty otrzymania niniejszego wezwania. W przypadku braku wpłaty w wyznaczonym terminie, będziemy zmuszeni podjąć dalsze kroki prawne w celu wyegzekwowania należności.
+
+W przypadku jakichkolwiek uwag lub wątpliwości proszę o kontakt pod numerem telefonu: [numer telefonu] lub adresem e-mail: [adres e-mail].
+
+Z poważaniem,
+
+[Imię i nazwisko]
+[Stanowisko]
+[Nazwa firmy wierzyciela]
+
+Potwierdzenie odbioru:
+
+[Data i podpis odbiorcy]
+
+Uwaga: Przed wysłaniem wezwania do zapłaty upewnij się, że:
+1. Dokładnie sprawdziłeś należną kwotę kary umownej.
+2. Masz umowę i dokumentację potwierdzającą opóźnienie.
+3. Uwzględniłeś wszystkie wymagane prawem elementy wezwania.
+4. Dostosowałeś treść do swojej sytuacji prawnej i faktycznej.
+
+W razie wątpliwości warto skonsultować się z prawnikiem.

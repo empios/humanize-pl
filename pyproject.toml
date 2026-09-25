@@ -49,14 +49,20 @@ all = [
   "torch>=2.2.0",
   "transformers>=4.40.0",
   "sentence-transformers>=3.0.0",
+  "morfeusz2",
   "openpyxl>=3.1.0",
   "reportlab>=4.0.0",
   "pypdf>=5.0.0",
+  "gradio>=6.0,<7",
+  "build>=1.2.0",
+  "hatchling>=1.24",
+  "pytest>=8.0.0",
+  "ruff>=0.6.0",
 ]
 
 [project.scripts]
 humanize-pl = "humanize_pl.cli:app"
-humanize-pl-flow = "humanize_pl.flows.cli:app"
+humanize-pl-flow = "humanize_pl.cli:app"
 humanize-pl-benchmark = "humanize_pl.benchmark:app"
 humanize-pl-release-check = "humanize_pl.release_check:app"
 humanize-pl-ui = "humanize_pl.ui.app:main"
@@ -70,3 +76,13 @@ path = "humanize_pl/version.py"
 [tool.ruff]
 line-length = 100
 target-version = "py310"
+
+[tool.ruff.lint.flake8-bugbear]
+# typer declares CLI options as default values; that is the library's idiom,
+# not a shared mutable default.
+extend-immutable-calls = ["typer.Option", "typer.Argument"]
+
+[tool.ruff.lint.per-file-ignores]
+# A sample document written as "\n".join([...lines...]) reads as a document;
+# the f-string ruff proposes reads as one long line.
+"tests/*" = ["FLY002"]

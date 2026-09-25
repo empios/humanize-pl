@@ -1,17 +1,21 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 from collections import Counter
+from dataclasses import dataclass, field
+
 import regex as re
 
-from .anchors import content_anchor_retention, content_anchor_tokens
-from .protectors import ProtectedText
 from humanize_pl.rules.finite_verbs import has_finite_verb
 from humanize_pl.rules.legal_features import (
     legal_anchor_retention,
     lost_legal_anchors,
-    normativity_signature,
 )
+
+from .anchors import content_anchor_retention, content_anchor_tokens
+from .deontic import DeonticModality, extract_deontic_profile
+from .legal_meaning import legal_meaning_changes
+from .meaning import changed_operators, check_equivalence
+from .protectors import ProtectedText
 
 BANNED_WORDS = {
     "surprisingly",
@@ -72,10 +76,6 @@ SENSITIVE_INVENTORY_PATTERNS = {
     "defined_terms_and_quotes": (r"„[^”]+”", r'"[^"]+"'),
     "party_names": (
         r"\b[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+(?:[- ][A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+)+\b",
-    ),
-    "legal_modality": (
-        r"\b(?:może|mogą|mógł|mogła|powinien|powinna|powinno|powinni|musi|muszą|"
-        r"zobowiązuje\s+się|jest\s+zobowiązan[ay])\b",
     ),
 }
 
@@ -175,6 +175,8 @@ def validate_candidate(
     max_length_ratio: float,
     rule: str | None = None,
     operation_type: str | None = None,
+    nli=None,
+    legal: bool = True,
 ) -> ValidationResult:
     checks: list[GateCheck] = []
     if not candidate.strip():
@@ -225,13 +227,15 @@ def validate_candidate(
 
     restored_original = protected.restore(original)
     restored_candidate = protected.restore(candidate)
+    changed = changed_operators(restored_original, restored_candidate)
+    if changed:
+        return _failed("logical_operators_preserved", "changed: " + ", ".join(changed), checks)
+    _passed("logical_operators_preserved", checks)
     if "__PROTECTED_" in restored_candidate:
         return _failed("placeholder_restore", "unrestored placeholder leak", checks)
     _passed("placeholder_restore", checks)
 
-    if normativity_signature(restored_original) != normativity_signature(restored_candidate):
-        return _failed("normativity_preserved", "normativity changed", checks)
-    _passed("normativity_preserved", checks)
+
 
     source_inventory = legal_sensitive_inventory(restored_original)
     candidate_inventory = legal_sensitive_inventory(restored_candidate)
@@ -243,6 +247,22 @@ def validate_candidate(
                 checks,
             )
         _passed(f"{category}_preserved", checks)
+
+    # Deontic modality check
+    source_deontic = extract_deontic_profile(restored_original)
+    candidate_deontic = extract_deontic_profile(restored_candidate)
+    
+    # We strictly block shifts between OBLIGATION, PROHIBITION and PERMISSION.
+    # We also block removing them completely or adding them from nowhere.
+    for mod in (DeonticModality.OBLIGATION, DeonticModality.PROHIBITION, DeonticModality.PERMISSION):
+        if sum(source_deontic[mod].values()) != sum(candidate_deontic[mod].values()):
+            return _failed("deontic_modality_preserved", f"deontic drift in category {mod.value}", checks)
+    # For RECOMMENDATION, we just warn if we had a logger, but for now we also require them 
+    # to not drift into hard obligations. If sum of recommendations changes without changing hard modals, 
+    # we can be a bit more lenient, but to be safe let's ensure it matches too.
+    if sum(source_deontic[DeonticModality.RECOMMENDATION].values()) != sum(candidate_deontic[DeonticModality.RECOMMENDATION].values()):
+        return _failed("deontic_modality_preserved", "deontic drift in recommendation", checks)
+    _passed("deontic_modality_preserved", checks)
 
     anchor_tokens = content_anchor_tokens(protected.restore(original))
     if len(anchor_tokens) >= 4:
@@ -294,5 +314,18 @@ def validate_candidate(
         if placeholder in original and placeholder not in candidate:
             return _failed("protected_fragments", "protected fragment removed", checks)
     _passed("protected_fragments", checks)
+
+    if legal:
+        changed_legal = legal_meaning_changes(restored_original, restored_candidate)
+        if changed_legal:
+            return _failed(changed_legal[0], "legal meaning scope changed; review required", checks)
+        for name in ("legal_party_roles_preserved", "legal_party_action_preserved", "legal_reference_scope_preserved", "legal_scope_preserved"):
+            _passed(name, checks)
+
+    if nli is not None:
+        meaning = check_equivalence(restored_original, restored_candidate, nli=nli)
+        if not meaning.ok:
+            return _failed("semantic_contradiction", meaning.reason, checks)
+        _passed("semantic_contradiction", checks)
 
     return ValidationResult(True, checks=checks)

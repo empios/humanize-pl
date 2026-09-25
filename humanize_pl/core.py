@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-import regex as re
 from typing import Any
+
+import regex as re
 
 from .config import Engine, HumanizeConfig, LegalReviewProfile, Mode
 from .detect import detect_document
@@ -12,6 +13,7 @@ from .nlp.semantic import (
     DEFAULT_SEMANTIC_MODEL,
     EmbeddingSimilarityValidator,
     MaskedLMFluencyScorer,
+    NLIValidator,
 )
 from .nlp.stanza_engine import StanzaEngine
 from .pipeline import LegalPipeline
@@ -44,6 +46,7 @@ class HumanizerSession:
     stanza_engine: Any = None
     semantic: Any = None
     fluency: Any = None
+    nli: Any = None
     morfeusz: Any = None
     engine_used: str = "basic"
     model_status: dict[str, str] = field(default_factory=dict)
@@ -54,7 +57,11 @@ class HumanizerSession:
 
     def __post_init__(self) -> None:
         if self.rule_engine is None:
-            self.rule_engine = RuleEngine(mode=self.config.mode)
+            self.rule_engine = RuleEngine(
+                mode=self.config.mode,
+                preferred_terms=self.config.preferred_terms,
+                disabled_rules=self.config.disabled_rules,
+            )
 
     def humanize(self, text: str, *, include_candidates: bool = False) -> HumanizeResult:
         # Detection is deliberately outside the rewrite pipeline: it must report
@@ -69,10 +76,16 @@ class HumanizerSession:
         pipeline = LegalPipeline(
             config=self.config,
             protected=protected,
-            rule_engine=self.rule_engine or RuleEngine(mode=self.config.mode),
+            rule_engine=self.rule_engine
+            or RuleEngine(
+                mode=self.config.mode,
+                preferred_terms=self.config.preferred_terms,
+                disabled_rules=self.config.disabled_rules,
+            ),
             stanza_engine=self.stanza_engine,
             semantic=self.semantic,
             fluency=self.fluency,
+            nli=self.nli,
             morfeusz=self.morfeusz,
             include_candidates=include_candidates,
         )
@@ -144,6 +157,8 @@ def create_humanizer_session(
     offline_models: bool = False,
     agreement_gate_enabled: bool = True,
     require_morfeusz: bool = False,
+    preferred_terms: dict[str, str] | None = None,
+    disabled_rules: frozenset[str] = frozenset(),
 ) -> HumanizerSession:
     mode_v = _coerce_mode(mode)
     engine_v = _coerce_engine(engine)
@@ -155,6 +170,8 @@ def create_humanizer_session(
         semantic_threshold=semantic_threshold,
         semantic_model=semantic_model,
         fluency_model=fluency_model,
+        preferred_terms=preferred_terms,
+        disabled_rules=frozenset(disabled_rules),
         require_models=require_models,
         offline_models=offline_models,
         agreement_gate_enabled=agreement_gate_enabled,
@@ -188,6 +205,7 @@ def create_humanizer_session(
 
     semantic = None
     fluency = None
+    nli = None
     semantic_model_used = semantic_model or DEFAULT_SEMANTIC_MODEL
     fluency_model_used = fluency_model or DEFAULT_FLUENCY_MODEL
     if engine_v == Engine.hybrid:
@@ -228,8 +246,24 @@ def create_humanizer_session(
             )
             fluency = None
 
+        model_status["nli"] = "requested"
+        try:
+            nli = NLIValidator(model_name=None, offline=offline_models)
+            model_status["nli"] = "ready"
+        except Exception as exc:
+            model_status["nli"] = f"unavailable: {type(exc).__name__}"
+            if require_models:
+                raise RuntimeError(
+                    f"Required NLI model unavailable: {type(exc).__name__}: {exc}"
+                ) from exc
+            warnings.append(
+                f"NLI validator unavailable, continuing without it: "
+                f"{type(exc).__name__}: {exc}"
+            )
+            nli = None
+
     if engine_v == Engine.hybrid:
-        engine_used = "hybrid" if any([stanza_engine, semantic, fluency]) else "basic"
+        engine_used = "hybrid" if any([stanza_engine, semantic, fluency, nli]) else "basic"
     elif engine_v == Engine.nlp:
         engine_used = "nlp" if stanza_engine is not None else "basic"
 
@@ -256,6 +290,7 @@ def create_humanizer_session(
         stanza_engine=stanza_engine,
         semantic=semantic,
         fluency=fluency,
+        nli=nli,
         morfeusz=morfeusz,
         engine_used=engine_used,
         model_status=model_status,

@@ -4,6 +4,7 @@ import regex as re
 
 from humanize_pl.config import Mode
 from humanize_pl.rules.finite_verbs import has_finite_verb
+
 from .base import Candidate
 from .features import ParagraphFeatures, SentenceFeatures
 
@@ -62,7 +63,9 @@ def _paragraph_has_ai_style_issue(
 def _drop_empty_emphasis(sentence: str, *, nlp_confidence: float | None) -> list[Candidate]:
     out: list[Candidate] = []
 
-    candidate = re.sub(r"\b[Tt]o właśnie\b", "To", sentence, count=1)
+    # The case of "to" is kept: mid-sentence it was written back as "To" -
+    # "Myślę, że To nazywane jest miłością", found on ChatGPT answers.
+    candidate = re.sub(r"\b([Tt])o właśnie\b", r"\1o", sentence, count=1)
     if candidate != sentence:
         out.append(
             _candidate(
@@ -206,7 +209,7 @@ def _abstract_frame_rewrites(sentence: str, *, nlp_confidence: float | None) -> 
         match = regex.search(sentence)
         if not match:
             continue
-        candidate = regex.sub(lambda m: _preserve_case(m.group(0), replacement), sentence, count=1)
+        candidate = regex.sub(lambda m, replacement=replacement: _preserve_case(m.group(0), replacement), sentence, count=1)
         if candidate != sentence:
             out.append(_candidate(candidate, rule, issue, score, risk, nlp_confidence))
 

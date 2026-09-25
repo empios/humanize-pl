@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field, replace
 from typing import Any
 
-from humanize_pl.config import HumanizeConfig, Mode
+from humanize_pl.config import HumanizeConfig, LegalReviewProfile, Mode
 from humanize_pl.results import CandidateRejection, CandidateTrace, SentenceChange, SentenceSkip
 from humanize_pl.rules.base import Candidate
 from humanize_pl.rules.engine import RuleEngine
@@ -21,7 +21,6 @@ from humanize_pl.safety.protectors import ProtectedText
 from humanize_pl.safety.syntax import stanza_finite_verb_gate
 from humanize_pl.safety.validators import GateCheck, validate_candidate
 from humanize_pl.sentence_splitter import split_sentences
-
 
 # A masked-LM fluency scorer is structurally biased against AI-artifact removal:
 # "fluent" and "high-probability" are the same thing to a language model, and
@@ -95,6 +94,7 @@ class LegalPipeline:
         stanza_engine: Any = None,
         semantic: Any = None,
         fluency: Any = None,
+        nli: Any = None,
         morfeusz: Any = None,
         include_candidates: bool = False,
     ) -> None:
@@ -104,6 +104,7 @@ class LegalPipeline:
         self.stanza_engine = stanza_engine
         self.semantic = semantic
         self.fluency = fluency
+        self.nli = nli
         self.morfeusz = morfeusz
         self.include_candidates = include_candidates
 
@@ -347,6 +348,8 @@ class LegalPipeline:
                 max_length_ratio=self.config.length_ratio(),
                 rule=cand.rule,
                 operation_type=cand.operation_type,
+                nli=self.nli,
+                legal=self.config.legal_review_profile != LegalReviewProfile.general,
             )
             features_after = analyze_sentence_features(cand.text)
             if not validation.ok:
@@ -430,6 +433,15 @@ class LegalPipeline:
                 if effective_cand_text != restored_cand:
                     # NP agreement was auto-repaired — update cand to the repaired text.
                     cand = replace(cand, text=self.protected.re_protect(effective_cand_text))
+                    # Repair may change a party's grammatical case. Validate
+                    # what we will actually save, not only the earlier proposal.
+                    repaired_validation = validate_candidate(
+                        original, cand.text, protected=self.protected,
+                        max_length_ratio=self.config.length_ratio(), rule=cand.rule,
+                        operation_type=cand.operation_type, nli=self.nli,
+                        legal=self.config.legal_review_profile != LegalReviewProfile.general,
+                    )
+                    agreement_checks.extend(repaired_validation.checks)
                 failed_agreement = next(
                     (check for check in agreement_checks if not check.ok), None
                 )

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import regex as re
 
-
 LOW_SIGNAL_WORDS = {
     "albo",
     "bardzo",

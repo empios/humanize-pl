@@ -1,0 +1,67 @@
+Oto przykładowy regulamin korzystania z platformy internetowej z kontami użytkowników:
+
+Regulamin korzystania z platformy internetowej [nazwa platformy]
+
+1. Definicje
+
+- Platforma - serwis internetowy dostępny pod adresem [adres URL], umożliwiający użytkownikom zakładanie kont i korzystanie z usług elektronicznych.
+- Użytkownik - osoba fizyczna, osoba prawna lub jednostka organizacyjna nieposiadająca osobowości prawnej, która korzysta z Platformy.
+- Konto użytkownika - indywidualne konto przypisane do użytkownika, umożliwiające dostęp do określonych funkcjonalności Platformy.
+- Usługi elektroniczne - usługi świadczone drogą elektroniczną przez Administratora na rzecz Użytkowników.
+- Administrator - [nazwa firmy/organizacji] z siedzibą w [adres], będący właścicielem Platformy.
+
+2. Postanowienia ogólne
+
+1. Regulamin określa zasady korzystania z Platformy, w tym zakładania kont użytkowników i świadczenia usług elektronicznych.
+2. Korzystanie z Platformy jest równoznaczne z akceptacją niniejszego Regulaminu.
+3. Administrator zastrzega sobie prawo do zmiany Regulaminu w dowolnym czasie. Aktualna wersja Regulaminu jest zawsze dostępna na Platformie.
+
+3. Zakładanie konta użytkownika
+
+1. Aby założyć konto, należy wypełnić formularz rejestracyjny dostępny na Platformie, podając wymagane dane osobowe.
+2. Założenie konta jest bezpłatne.
+3. Użytkownik zobowiązuje się do podania prawdziwych i aktualnych danych osobowych.
+4. Administrator zastrzega sobie prawo do weryfikacji danych podanych przez użytkownika.
+
+4. Prawa i obowiązki użytkownika
+
+1. Użytkownik zobowiązuje się do korzystania z Platformy zgodnie z jej przeznaczeniem i niniejszym Regulaminem.
+2. Użytkownik jest odpowiedzialny za bezpieczeństwo swojego konta i hasła.
+3. Zabrania się udostępniania konta innym osobom bez zgody Administratora.
+4. Użytkownik zobowiązuje się do niepodejmowania działań naruszających prawa autorskie, prawa własności intelektualnej lub dobre obyczaje.
+5. Użytkownik może w każdej chwili zrezygnować z korzystania z Platformy, usuwając swoje konto.
+
+5. Prawa i obowiązki Administratora
+
+1. Administrator zobowiązuje się do zapewnienia prawidłowego funkcjonowania Platformy.
+2. Administrator zastrzega sobie prawo do czasowego zawieszenia dostępu do Platformy w celu jej modernizacji lub naprawy.
+3. Administrator nie ponosi odpowiedzialności za treści zamieszczane przez użytkowników.
+4. Administrator zastrzega sobie prawo do blokowania kont użytkowników naruszających Regulamin.
+
+6. Ochrona danych osobowych
+
+1. Administrator przetwarza dane osobowe użytkowników zgodnie z Polityką Prywatności dostępną na Platformie.
+2. Użytkownik wyraża zgodę na przetwarzanie swoich danych osobowych w zakresie niezbędnym do świadczenia usług elektronicznych.
+
+7. Odpowiedzialność
+
+1. Administrator nie ponosi odpowiedzialności za treści zamieszczane przez użytkowników.
+2. Użytkownik ponosi pełną odpowiedzialność za swoje działania na Platformie.
+3. Administrator nie ponosi odpowiedzialności za problemy techniczne leżące po stronie użytkownika.
+
+8. Rozwiązanie umowy
+
+1. Umowa o korzystanie z Platformy może zostać rozwiązana przez użytkownika w każdej chwili poprzez usunięcie konta.
+2. Administrator może rozwiązać umowę ze skutkiem natychmiastowym w przypadku naruszenia przez użytkownika Regulaminu.
+
+9. Postanowienia końcowe
+
+1. W sprawach nieuregulowanych niniejszym Regulaminem mają zastosowanie przepisy prawa polskiego.
+2. Wszelkie spory wynikłe w związku z korzystaniem z Platformy będą rozstrzygane przez sąd właściwy dla siedziby Administratora.
+3. Regulamin wchodzi w życie z dniem [data].
+
+[Miejsce i data]
+
+[Podpis Administratora]
+
+Ten regulamin zawiera podstawowe elementy, które powinny znaleźć się w dokumencie tego typu. Może wymagać dostosowania do konkretnych potrzeb i wymogów prawnych danej platformy.

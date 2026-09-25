@@ -1,0 +1,115 @@
+Oto kompletna umowa o świadczenie usług informatycznych - utrzymanie systemu i wsparcie techniczne:
+
+UMOWA O ŚWIADCZENIE USŁUG INFORMATYCZNYCH
+
+zawarta w dniu [DATA] w [MIEJSCOWOŚĆ] pomiędzy:
+
+[NAZWA FIRMY ZAMAWIAJĄCEGO], z siedzibą w [ADRES], NIP: [NUMER NIP], reprezentowaną przez [IMIĘ I NAZWISKO], zwaną dalej "Zamawiającym",
+
+a
+
+[NAZWA FIRMY WYKONAWCY], z siedzibą w [ADRES], NIP: [NUMER NIP], reprezentowaną przez [IMIĘ I NAZWISKO], zwaną dalej "Wykonawcą",
+
+zwanymi łącznie "Stronami".
+
+§ 1
+Przedmiot umowy
+
+1. Przedmiotem niniejszej umowy jest świadczenie przez Wykonawcę na rzecz Zamawiającego usług informatycznych polegających na utrzymaniu i wsparciu technicznym systemów informatycznych Zamawiającego.
+
+2. Szczegółowy zakres usług obejmuje:
+   a) Utrzymanie systemów operacyjnych i baz danych;
+   b) Zapewnienie ciągłości działania systemów;
+   c) Wykonywanie okresowych aktualizacji oprogramowania;
+   d) Reagowanie na zgłoszone awarie i usterki;
+   e) Zapewnienie wsparcia technicznego dla użytkowników końcowych;
+   f) Przeprowadzanie analiz i optymalizacji systemów.
+
+3. Wykonawca zobowiązuje się do świadczenia usług z należytą starannością, zgodnie z najlepszymi praktykami branżowymi.
+
+§ 2
+Okres obowiązywania umowy
+
+Umowa zostaje zawarta na czas [OKREŚLONY/NIEOKREŚLONY] od dnia [DATA ROZPOCZĘCIA] do dnia [DATA ZAKOŃCZENIA] w przypadku umowy na czas określony, lub do odwołania w przypadku umowy na czas nieokreślony.
+
+§ 3
+Wynagrodzenie
+
+1. Za wykonanie przedmiotu umowy Zamawiający zapłaci Wykonawcy wynagrodzenie w wysokości [KWOTA] zł netto (słownie: [KWOTA SŁOWNIE]) miesięcznie.
+
+2. Wynagrodzenie płatne będzie z góry, na podstawie faktury VAT wystawionej przez Wykonawcę, w terminie 14 dni od daty jej otrzymania przez Zamawiającego.
+
+3. Wynagrodzenie obejmuje wszystkie koszty związane ze świadczeniem usług, w tym koszty personelu, materiałów i oprogramowania.
+
+§ 4
+Obowiązki Wykonawcy
+
+Do obowiązków Wykonawcy należy w szczególności:
+
+1. Regularne monitorowanie stanu systemów informatycznych Zamawiającego.
+2. Wykonywanie planowanych prac konserwacyjnych i aktualizacyjnych.
+3. Reagowanie na zgłoszone awarie i usterki w czasie nie dłuższym niż [LICZBA] godzin roboczych.
+4. Zapewnienie wsparcia technicznego dla użytkowników końcowych w godzinach pracy Zamawiającego.
+5. Przygotowywanie raportów z wykonanych prac i zaistniałych problemów.
+6. Zachowanie poufności informacji uzyskanych w związku z realizacją umowy.
+
+§ 5
+Obowiązki Zamawiającego
+
+Do obowiązków Zamawiającego należy w szczególności:
+
+1. Terminowe regulowanie należności wynikających z faktur wystawionych przez Wykonawcę.
+2. Dostarczanie Wykonawcy niezbędnych informacji i dokumentacji technicznej.
+3. Zgłaszanie Wykonawcy wszelkich awarii i usterek w systemach.
+4. Współpraca z Wykonawcą w zakresie niezbędnym do prawidłowego wykonania umowy.
+
+§ 6
+Odpowiedzialność
+
+1. Wykonawca odpowiada za niewykonanie lub nienależyte wykonanie usług na zasadach ogólnych.
+
+2. Wykonawca nie ponosi odpowiedzialności za awarie spowodowane przez Zamawiającego lub użytkowników końcowych.
+
+3. Odpowiedzialność Wykonawcy jest ograniczona do wysokości 3-miesięcznego wynagrodzenia za niewykonanie lub nienależyte wykonanie umowy.
+
+§ 7
+Kary umowne
+
+1. Za opóźnienie w usunięciu awarii przekraczające [LICZBA] godzin roboczych, Wykonawca zapłaci karę umowną w wysokości [KWOTA] zł za każdą rozpoczętą godzinę opóźnienia.
+
+2. Za odstąpienie od umowy przez którąkolwiek ze Stron z przyczyn leżących po stronie Wykonawcy, Wykonawca zapłaci karę umowną w wysokości [PROCENT]% wynagrodzenia brutto za ostatnie 3 miesiące.
+
+3. Strony zastrzegają sobie prawo do dochodzenia odszkodowania uzupełniającego na zasadach ogólnych, jeżeli szkoda przekroczy wysokość kary umownej.
+
+§ 8
+Zachowanie poufności
+
+1. Strony zobowiązują się do zachowania w tajemnicy wszelkich informacji uzyskanych w związku z realizacją umowy, zarówno w trakcie jej trwania, jak i po jej zakończeniu.
+
+2. Naruszenie obowiązku zachowania poufności może skutkować odpowiedzialnością odszkodowawczą.
+
+§ 9
+Rozwiązanie umowy
+
+1. Każda ze Stron może wypowiedzieć umowę z zachowaniem 1-miesięcznego okresu wypowiedzenia.
+
+2. Zamawiający może odstąpić od umowy w przypadku rażącego naruszenia jej postanowień przez Wykonawcę.
+
+3. Umowa może zostać rozwiązana za porozumieniem Stron w każdym czasie.
+
+§ 10
+Postanowienia końcowe
+
+1. Wszelkie zmiany niniejszej umowy wymagają formy pisemnej pod rygorem nieważności.
+
+2. W sprawach nieuregulowanych niniejszą umową mają zastosowanie przepisy Kodeksu cywilnego.
+
+3. Ewentualne spory wynikłe z realizacji niniejszej umowy będą rozstrzygane przez sąd właściwy dla siedziby Zamawiającego.
+
+4. Umowę sporządzono w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze Stron.
+
+[PODPIS ZAMAWIAJĄCEGO]                      [PODPIS WYKONAWCY]
+
+Zamawiający                                 Wykonawca
+
+[MIEJSCOWOŚĆ], [DATA]

@@ -6,18 +6,26 @@ and raw responses intentionally have no report/log serialization path here.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+import asyncio
 import json
 import os
-from pathlib import Path
 import re
 import threading
 import time
-from typing import Any, Mapping
+from collections.abc import Mapping
+from concurrent.futures import TimeoutError as FutureTimeoutError
+from dataclasses import dataclass, field
+from functools import wraps
+from pathlib import Path
+from typing import Any, TypeVar
 
 import httpx
+import regex
 
 from humanize_pl.document import GENRE_PROFILES, DocumentType, StyleProfile
+from humanize_pl.privacy import RequestMask, processing_location
+from humanize_pl.runtime import current_control
+from humanize_pl.safety.meaning import check_equivalence
 from humanize_pl.safety.protectors import protect_text
 from humanize_pl.safety.validators import validate_candidate
 
@@ -28,6 +36,27 @@ class LlmConfigurationError(RuntimeError):
 
 class LlmEndpointError(RuntimeError):
     pass
+
+
+_http_loop: asyncio.AbstractEventLoop | None = None
+_http_loop_lock = threading.Lock()
+
+
+def _http_event_loop() -> asyncio.AbstractEventLoop:
+    """One I/O loop for synchronous callers, including concurrent batch workers.
+
+    Async HTTP lets cancellation interrupt headers/body reads and close the
+    connection, rather than leaving a blocking request running in a worker.
+    Clients and their connection pools stay on this loop for their lifetime.
+    """
+    global _http_loop
+    with _http_loop_lock:
+        if _http_loop is None:
+            _http_loop = asyncio.new_event_loop()
+            threading.Thread(
+                target=_http_loop.run_forever, name="humanize-http", daemon=True,
+            ).start()
+        return _http_loop
 
 
 def normalize_chat_completions_url(value: str) -> str:
@@ -57,6 +86,10 @@ def _read_env_file(path: Path) -> dict[str, str]:
     return values
 
 
+# `typing.Self` arrives in 3.11 and the package supports 3.10.
+_Rewriter = TypeVar("_Rewriter", bound="OpenAICompatibleRewriter")
+
+
 @dataclass(frozen=True)
 class LlmSettings:
     base_url: str = field(repr=False)
@@ -69,6 +102,12 @@ class LlmSettings:
     # latency, which is how a long fragment reaches the timeout. Default stays
     # at the point where throughput rises without latency moving.
     concurrency: int = 3
+    # For reasoning models (Qwen 3.5): ask the chat template not to think.
+    # Thinking, the model spent its whole token budget on "Thinking
+    # Process" before any answer - minutes per sentence; without, a probe
+    # answered in 2 s. Off by default: a server that does not know
+    # `chat_template_kwargs` may refuse the request.
+    disable_thinking: bool = False
 
     @property
     def endpoint(self) -> str:
@@ -86,7 +125,7 @@ class LlmSettings:
         env_file: str | Path | None = None,
         *,
         environ: Mapping[str, str] | None = None,
-    ) -> "LlmSettings":
+    ) -> LlmSettings:
         file_values: dict[str, str] = {}
         if env_file is not None:
             file_values = _read_env_file(Path(env_file))
@@ -127,6 +166,7 @@ class LlmSettings:
             api_key=value("HUMANIZE_PL_LLM_API_KEY"),
             timeout_seconds=timeout,
             concurrency=concurrency,
+            disable_thinking=value("HUMANIZE_PL_LLM_DISABLE_THINKING").lower() in {"1", "true", "yes", "tak"},
         )
 
 
@@ -153,12 +193,16 @@ class LlmBatchMetadata:
     model: str | None = None
     status: str = "not_requested"
     supports_response_format: bool | None = None
+    # Which shape of structured output the endpoint took (a key of
+    # `_RESPONSE_FORMATS`), so later calls go straight to it.
+    response_format_kind: str | None = None
     duration_ms: int = 0
     proposals: int = 0
     accepted: int = 0
     rejected: int = 0
     warnings: list[str] = field(default_factory=list)
     decision_reasons: dict[str, int] = field(default_factory=dict)
+    processing_location: str = "unknown"
     # Fragments are rewritten concurrently, so every counter below is touched
     # from several threads. Without this the tallies in the report silently
     # drift, and a report nobody can trust is worse than no report.
@@ -172,12 +216,15 @@ class LlmBatchMetadata:
                 "model": self.model,
                 "status": self.status,
                 "supports_response_format": self.supports_response_format,
+                "response_format_kind": self.response_format_kind,
                 "duration_ms": self.duration_ms,
                 "proposals": self.proposals,
                 "accepted": self.accepted,
                 "rejected": self.rejected,
                 "warnings": list(self.warnings),
                 "decision_reasons": dict(self.decision_reasons),
+                "processing_location": self.processing_location,
+                "masking": "patterns_all_message_fields_not_full_anonymisation",
             }
 
     def record_decision(self, reason: str) -> None:
@@ -231,28 +278,60 @@ _JSON_SCHEMA = {
 }
 
 
-class OpenAICompatibleRewriter:
-    """One reusable client and capability decision per batch."""
+# Tried in order until the endpoint takes one. The OpenAI shape first; then
+# the one llama.cpp servers read without it - the same schema under
+# `json_object` - which Bielik's server needed: without any, half of its
+# answers in the general-text run were unusable JSON or a mangled echo.
+_RESPONSE_FORMATS: dict[str, dict[str, Any]] = {
+    "json_schema": _JSON_SCHEMA,
+    "json_object": {"type": "json_object", "schema": _JSON_SCHEMA["json_schema"]["schema"]},
+}
 
-    def __init__(self, settings: LlmSettings, *, client: httpx.Client | None = None):
+
+def _report_errors(function):
+    @wraps(function)
+    def wrapped(self, *args, **kwargs):
+        try:
+            return function(self, *args, **kwargs)
+        except Exception as exc:
+            self.metadata.note_endpoint_error(_safe_error(exc))
+            raise
+    return wrapped
+
+
+class OpenAICompatibleRewriter:
+    """One reusable client and capability decision per batch.
+
+    Methods remain synchronous. An injected HTTP client must be an unused
+    AsyncClient so cancellable I/O and pooled connections share our event loop.
+    The caller retains ownership of an injected client.
+    """
+
+    def __init__(self, settings: LlmSettings, *, client: httpx.AsyncClient | None = None):
+        if client is not None and not isinstance(client, httpx.AsyncClient):
+            raise TypeError("Wstrzyknięty klient HTTP musi być typu httpx.AsyncClient.")
         self.settings = settings
         headers = {"Content-Type": "application/json"}
         if settings.api_key:
             headers["Authorization"] = f"Bearer {settings.api_key}"
         self._headers = headers
-        self._client = client or httpx.Client(
+        self._client = client or httpx.AsyncClient(
             timeout=settings.timeout_seconds,
             headers=headers,
         )
         self._owns_client = client is None
         self.metadata = LlmBatchMetadata(model=settings.model)
+        self.metadata.processing_location = processing_location(settings.endpoint)
         self._probed = False
+        self.control = current_control()
+        if self.control is not None:
+            self.control.cleanup(self.close)
 
     def close(self) -> None:
-        if self._owns_client:
-            self._client.close()
+        if self._owns_client and not self._client.is_closed:
+            asyncio.run_coroutine_threadsafe(self._client.aclose(), _http_event_loop()).result()
 
-    def __enter__(self) -> "OpenAICompatibleRewriter":
+    def __enter__(self: _Rewriter) -> _Rewriter:  # noqa: PYI019 - Self needs 3.11
         return self
 
     def __exit__(self, *_args: object) -> None:
@@ -293,7 +372,7 @@ class OpenAICompatibleRewriter:
             self.metadata.supports_response_format = used_format
             self.metadata.status = "ready"
             return True
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001 - endpoint failures are reported, never raised into the batch
             self.metadata.status = "unavailable"
             self.metadata.warnings.append(_safe_error(exc))
             return False
@@ -311,6 +390,10 @@ class OpenAICompatibleRewriter:
         following: str = "",
         outline: str = "",
         issues: list[str] | None = None,
+        section_context: str = "",
+        nli: Any = None,
+        general_options: Any = None,
+        original_source: str | None = None,
     ) -> LlmRewriteResult:
         if not self._probed and not self.probe():
             return LlmRewriteResult(source, False, "model_unavailable")
@@ -318,22 +401,39 @@ class OpenAICompatibleRewriter:
             return LlmRewriteResult(source, False, "model_unavailable")
 
         protected = protect_text(source, include_sensitive=True)
-        previous_protected = protect_text(previous, include_sensitive=True).text if previous else ""
-        following_protected = protect_text(following, include_sensitive=True).text if following else ""
+        context_index = len(protected.mapping)
+        def protect_context(value: str) -> str:
+            nonlocal context_index
+            masked = protect_text(protected.re_protect(value), include_sensitive=True, start_index=context_index)
+            context_index += len(masked.mapping)
+            return masked.text
+        previous_protected = protect_context(previous)
+        following_protected = protect_context(following)
         genre = GENRE_PROFILES[document_type]
-        profile_text = style_profile.prompt_text() if style_profile else "Brak profilu kancelarii."
+        if style_profile:
+            profile_text = style_profile.prompt_text()
+        else:
+            profile_text = "" if document_type == DocumentType.general else "Brak profilu kancelarii."
         issue_text = "; ".join(issues or []) or "pozostałe cechy schematycznego stylu AI"
         # The output instruction sits last on purpose. Without grammar-constrained
         # sampling nothing enforces the shape, and an instruction buried before
         # a paragraph of genre guidance is the one the model forgets.
         system = (
-            "Jesteś polskim redaktorem dokumentów prawnych. Redagujesz tylko wskazany "
-            "fragment i nie udzielasz porady prawnej. Zachowaj dokładnie wszystkie "
+            genre.editor_role
+            + " Zachowaj dokładnie wszystkie "
             "placeholdery __PROTECTED_XXXX__, liczby, nazwy, definicje, cytaty, przepisy, "
             "daty, kwoty, terminy i modalność może/powinien/musi. Nie dodawaj faktów. "
             + genre.prompt_text()
             + " "
             + profile_text
+            + (" " + general_options.prompt_text() if general_options is not None and document_type == DocumentType.general else "")
+            # Only the section this fragment sits in, never the whole
+            # skeleton. Shown every section a document owes, a model reads a
+            # missing one as an invitation to write it - and this path exists
+            # to redraft one sentence, not to draft clauses. Phrased as a
+            # narrowing ("stays within") rather than an instruction to cover
+            # the clauses, for the same reason.
+            + (f" {section_context}" if section_context else "")
             + " Odpowiadasz wyłącznie jednym obiektem JSON o dokładnie czterech polach "
             "tekstowych: fragment_id (przepisany bez zmian), source (powtórzony znak "
             "w znak), proposal (twoja redakcja fragmentu), rationale (jedno zdanie "
@@ -344,7 +444,7 @@ class OpenAICompatibleRewriter:
         # and all - instead of producing the answer shape. Measured: every one
         # of nine fragments came back as a copy of the input.
         outline_text = (
-            protect_text(outline, include_sensitive=True).text[:1200] if outline else ""
+            protect_context(outline)[:1200] if outline else ""
         )
         user = "\n".join(
             [
@@ -369,7 +469,9 @@ class OpenAICompatibleRewriter:
             proposal = self._parse_proposal(data)
             if proposal.fragment_id != fragment_id:
                 raise LlmEndpointError("Odpowiedź ma niewłaściwy identyfikator fragmentu.")
-            if proposal.source != protected.text:
+            # Spacing aside: a model that collapsed a double space has still
+            # read the right sentence.
+            if " ".join(proposal.source.split()) != " ".join(protected.text.split()):
                 raise LlmEndpointError("Model nie zwrócił identycznego tekstu źródłowego.")
             validation = validate_candidate(
                 protected.text,
@@ -378,6 +480,7 @@ class OpenAICompatibleRewriter:
                 max_length_ratio=1.60,
                 rule="llm:legal_style",
                 operation_type="llm_rewrite",
+                legal=document_type != DocumentType.general,
             )
             checks = [
                 {"name": check.name, "ok": check.ok, "reason": check.reason}
@@ -395,7 +498,43 @@ class OpenAICompatibleRewriter:
                     rationale=proposal.rationale,
                     validation_checks=checks,
                 )
+            names = new_proper_names(protected.text, proposal.proposal)
+            if names:
+                # Numbers are guarded by the validators, names were not: a
+                # model reading the neighbouring paragraphs brought "PiS-u"
+                # and "Guillermo" into sentences that never had them.
+                self.metadata.note_rejected("rejected:new_proper_name")
+                return LlmRewriteResult(
+                    source,
+                    False,
+                    f"new_proper_name: {', '.join(names)}",
+                    rationale=proposal.rationale,
+                    validation_checks=checks,
+                )
+            added = added_ai_signals(protected.text, proposal.proposal)
+            if added:
+                # Asked to remove a tic, a model can write a new one - Bielik
+                # turned "W kościołach znajdowały się ołtarze" into "ołtarze
+                # pełniły kluczową rolę". Only what the detector counts is
+                # caught here ("Podsumowując,", "Warto podkreślić, że",
+                # enumerations…); that phrase is not among it. The rules'
+                # version stands instead.
+                self.metadata.note_rejected("rejected:adds_ai_signal")
+                return LlmRewriteResult(
+                    source,
+                    False,
+                    f"adds_ai_signal: {', '.join(added)}",
+                    rationale=proposal.rationale,
+                    validation_checks=checks,
+                )
             restored = protected.restore(proposal.proposal)
+            if general_options is not None and document_type == DocumentType.general:
+                reason = general_options.rejection(
+                    original_source if original_source is not None else source, restored,
+                )
+                if reason or "\n" in restored:
+                    self.metadata.note_rejected("rejected:general_edit_limits")
+                    return LlmRewriteResult(source, False, reason or "Zmieniono podział akapitów.", validation_checks=checks)
             if restored == source:
                 self.metadata.note_rejected("rejected:no_visible_change")
                 return LlmRewriteResult(
@@ -405,6 +544,17 @@ class OpenAICompatibleRewriter:
                     rationale=proposal.rationale,
                     validation_checks=checks,
                 )
+            meaning = check_equivalence(source, restored, nli=nli)
+            checks.append({
+                "name": "semantic_equivalence", "ok": meaning.ok,
+                "reason": meaning.reason, "method": meaning.method,
+            })
+            if not meaning.ok:
+                self.metadata.note_rejected(f"rejected:meaning_{meaning.method}")
+                return LlmRewriteResult(
+                    source, False, f"meaning_not_preserved: {meaning.reason}",
+                    rationale=proposal.rationale, validation_checks=checks,
+                )
             self.metadata.note_accepted("accepted:local_validators_passed")
             return LlmRewriteResult(
                 restored,
@@ -413,45 +563,163 @@ class OpenAICompatibleRewriter:
                 rationale=proposal.rationale,
                 validation_checks=checks,
             )
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001 - endpoint failures are reported, never raised into the batch
             self.metadata.note_endpoint_error(_safe_error(exc))
             return LlmRewriteResult(source, False, _safe_error(exc))
         finally:
             self.metadata.note_duration(int((time.monotonic() - started) * 1000))
+
+    @_report_errors
+    def complete_json(
+        self,
+        messages: list[dict[str, str]],
+        *,
+        max_tokens: int | None = None,
+    ) -> dict[str, Any]:
+        """One JSON reply for a question whose shape is not a rewrite proposal.
+
+        The rewrite path constrains sampling to `_JSON_SCHEMA`; a different
+        question - does this clause cover that one - has a different shape, so
+        the format is asked for in the prompt and read back with the same
+        tolerant parser. Transport, retries, auth and redaction policy stay
+        exactly where they are; only the schema differs.
+        """
+        data, _used_format = self._completion(
+            messages, use_response_format=False, max_tokens=max_tokens
+        )
+        payload = _extract_json_object(self._message_content(data))
+        if payload is None:
+            raise LlmEndpointError("Model nie zwrócił poprawnego JSON-u.")
+        return payload
+
+    @_report_errors
+    def complete_text(
+        self,
+        messages: list[dict[str, str]],
+        *,
+        max_tokens: int | None = None,
+        temperature: float | None = None,
+    ) -> str:
+        """One plain-text reply, for asking the model to write rather than judge.
+
+        Every other caller here wants a decision back and reads it out of a
+        JSON envelope. Building a corpus wants the prose itself, and it wants
+        the temperature varied: a corpus generated at a single temperature
+        measures that setting as much as it measures the model. Transport,
+        retries, auth and error redaction are unchanged.
+        """
+        data, _used_format = self._completion(
+            messages,
+            use_response_format=False,
+            max_tokens=max_tokens,
+            temperature=temperature,
+        )
+        content = self._message_content(data)
+        if content.strip():
+            # A document cut off mid-clause is not a document. Reported
+            # rather than returned, because a truncated contract silently
+            # entering a corpus is worse than a gap in it.
+            if self._finish_reason(data) == "length":
+                raise LlmEndpointError(
+                    "Odpowiedź ucięta na limicie tokenów — zwiększ max_tokens."
+                )
+            return content
+
+        # An empty body from a reasoning model usually means the token budget
+        # went entirely on the reasoning trace and none was left for the
+        # answer. Measured here: a 4000-token budget produced 4000 completion
+        # tokens, `finish_reason: length`, ~12k characters of
+        # `reasoning_content` and an empty `content`. "Model returned an empty
+        # response" sent people looking at the prompt; this says where the
+        # budget went.
+        reasoning = self._reasoning_length(data)
+        if reasoning:
+            raise LlmEndpointError(
+                f"Model zużył cały budżet na rozumowanie ({reasoning} znaków) "
+                "i nie zdążył napisać odpowiedzi — zwiększ max_tokens albo "
+                "wyłącz tryb rozumowania."
+            )
+        raise LlmEndpointError("Model zwrócił pustą odpowiedź.")
+
+    @staticmethod
+    def _finish_reason(response: dict[str, Any]) -> str:
+        try:
+            return str(response["choices"][0].get("finish_reason") or "")
+        except (KeyError, IndexError, TypeError):
+            return ""
+
+    @staticmethod
+    def _reasoning_length(response: dict[str, Any]) -> int:
+        """Characters of reasoning trace, across the names servers use for it."""
+        try:
+            message = response["choices"][0]["message"]
+        except (KeyError, IndexError, TypeError):
+            return 0
+        if not isinstance(message, dict):
+            return 0
+        for key in ("reasoning_content", "reasoning", "thinking"):
+            value = message.get(key)
+            if isinstance(value, str) and value.strip():
+                return len(value)
+        return 0
 
     def _completion(
         self,
         messages: list[dict[str, str]],
         *,
         use_response_format: bool,
+        max_tokens: int | None = None,
+        temperature: float | None = None,
     ) -> tuple[dict[str, Any], bool]:
+        mask = RequestMask()
+        deadline = time.monotonic() + self.settings.timeout_seconds
         payload: dict[str, Any] = {
             "model": self.settings.model,
-            "temperature": 0,
-            "messages": messages,
+            # Zero everywhere except corpus generation: a rewrite that varies
+            # between runs cannot be reviewed, and a verdict that varies
+            # cannot be trusted.
+            "temperature": 0 if temperature is None else temperature,
+            "messages": mask.messages(messages),
         }
-        if use_response_format:
-            payload["response_format"] = _JSON_SCHEMA
+        if max_tokens is not None:
+            payload["max_tokens"] = max_tokens
+        if self.settings.disable_thinking:
+            payload["chat_template_kwargs"] = {"enable_thinking": False}
+        if not use_response_format:
+            return mask.response(self._post_with_retries(payload, deadline=deadline)), False
 
-        try:
-            response = self._post_with_retries(payload)
-        except LlmEndpointError as exc:
-            # Some compatible servers reject response_format while supporting
-            # the rest of Chat Completions.  Retry once with the strict prompt.
-            if use_response_format and getattr(exc, "status_code", None) in {400, 404, 415, 422}:
-                payload.pop("response_format", None)
-                response = self._post_with_retries(payload)
-                return response, False
-            raise
-        return response, use_response_format
+        known = self.metadata.response_format_kind
+        for kind in [known] if known else list(_RESPONSE_FORMATS):
+            payload["response_format"] = _RESPONSE_FORMATS[kind]
+            try:
+                response = self._post_with_retries(payload, deadline=deadline)
+            except LlmEndpointError as exc:
+                # Some compatible servers reject a response_format shape while
+                # supporting the rest of Chat Completions: try the next one.
+                if getattr(exc, "status_code", None) in {400, 404, 415, 422}:
+                    continue
+                raise
+            self.metadata.response_format_kind = kind
+            return mask.response(response), True
+        # None taken: the strict prompt alone.
+        payload.pop("response_format", None)
+        return mask.response(self._post_with_retries(payload, deadline=deadline)), False
 
-    def _post_with_retries(self, payload: dict[str, Any]) -> dict[str, Any]:
+    def _post_with_retries(self, payload: dict[str, Any], *, deadline: float | None = None) -> dict[str, Any]:
+        deadline = deadline if deadline is not None else time.monotonic() + self.settings.timeout_seconds
         last_error: Exception | None = None
         for attempt in range(3):
+            if self.control:
+                self.control.check()
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise LlmEndpointError("Przekroczono łączny limit czasu zapytania do modelu.")
             try:
-                response = self._client.post(
-                    self.settings.endpoint, json=payload, headers=self._headers
-                )
+                response = self._post_before_deadline(payload, deadline)
+                if self.control:
+                    self.control.check()
+                if time.monotonic() > deadline:
+                    raise LlmEndpointError("Przekroczono łączny limit czasu zapytania do modelu.")
                 if response.status_code >= 400:
                     error = LlmEndpointError(
                         f"Endpoint modelu zwrócił HTTP {response.status_code}."
@@ -460,7 +728,7 @@ class OpenAICompatibleRewriter:
                     if response.status_code == 429 or response.status_code >= 500:
                         last_error = error
                         if attempt < 2:
-                            time.sleep(0.25 * (2**attempt))
+                            self._wait_retry(min(0.25 * (2**attempt), max(0, deadline - time.monotonic())))
                             continue
                     raise error
                 body = response.json()
@@ -470,13 +738,58 @@ class OpenAICompatibleRewriter:
             except (httpx.TimeoutException, httpx.TransportError) as exc:
                 last_error = exc
                 if attempt < 2:
-                    time.sleep(0.25 * (2**attempt))
+                    self._wait_retry(min(0.25 * (2**attempt), max(0, deadline - time.monotonic())))
                     continue
                 raise LlmEndpointError(f"Błąd połączenia z modelem: {type(exc).__name__}.") from exc
         raise LlmEndpointError(_safe_error(last_error or RuntimeError("unknown")))
 
+    def _post_before_deadline(self, payload: dict[str, Any], deadline: float) -> httpx.Response:
+        finished = threading.Event()
+
+        async def request():
+            try:
+                remaining = max(0, deadline - time.monotonic())
+                return await asyncio.wait_for(
+                    self._client.post(
+                        self.settings.endpoint, json=payload, headers=self._headers, timeout=remaining,
+                    ),
+                    timeout=remaining,
+                )
+            except asyncio.TimeoutError as exc:
+                raise LlmEndpointError("Przekroczono łączny limit czasu zapytania do modelu.") from exc
+            finally:
+                finished.set()
+
+        future = asyncio.run_coroutine_threadsafe(request(), _http_event_loop())
+        try:
+            while True:
+                if self.control:
+                    self.control.check()
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    raise LlmEndpointError("Przekroczono łączny limit czasu zapytania do modelu.")
+                try:
+                    return future.result(timeout=min(0.05, remaining))
+                except FutureTimeoutError:
+                    # A transport can itself raise TimeoutError. Do not mistake
+                    # a completed request's exception for a polling timeout.
+                    if future.done():
+                        raise
+        finally:
+            if not future.done():
+                future.cancel()
+                # Let HTTPX finish cancellation/connection cleanup before an
+                # enclosing RunControl closes the reusable client.
+                finished.wait(timeout=1)
+
+    def _wait_retry(self, seconds: float) -> None:
+        if self.control:
+            self.control.wait(seconds)
+        else:
+            time.sleep(seconds)
+
     @staticmethod
-    def _parse_proposal(response: dict[str, Any]) -> LlmProposal:
+    def _message_content(response: dict[str, Any]) -> str:
         try:
             content = response["choices"][0]["message"]["content"]
         except (KeyError, IndexError, TypeError) as exc:
@@ -487,7 +800,11 @@ class OpenAICompatibleRewriter:
             )
         if not isinstance(content, str):
             raise LlmEndpointError("Treść odpowiedzi modelu nie jest tekstem.")
-        payload = _extract_json_object(content)
+        return content
+
+    @staticmethod
+    def _parse_proposal(response: dict[str, Any]) -> LlmProposal:
+        payload = _extract_json_object(OpenAICompatibleRewriter._message_content(response))
         if payload is None:
             raise LlmEndpointError("Model nie zwrócił poprawnego JSON-u.")
         if not isinstance(payload, dict):
@@ -496,6 +813,40 @@ class OpenAICompatibleRewriter:
         if any(not isinstance(payload.get(key), str) for key in required):
             raise LlmEndpointError("W odpowiedzi modelu brakuje wymaganych pól tekstowych.")
         return LlmProposal(**{key: payload[key] for key in required})
+
+
+_CAPITALISED = regex.compile(r"\b\p{Lu}[\p{L}-]*")
+_SENTENCE_START = regex.compile(r"(?:^|[.!?:]\s+|\n)\W*$")
+
+
+def new_proper_names(source: str, proposal: str) -> list[str]:
+    """Capitalised words mid-sentence in the proposal that the source lacks.
+
+    Compared by the first four letters, so inflection passes ("Polska" /
+    "Polsce") and a word the source had lower-case passes too. Placeholders
+    are skipped: they stand for protected text, not a name the model chose.
+    """
+    stems = {word[:4].lower() for word in regex.findall(r"\p{L}[\p{L}-]*", source)}
+    names = []
+    for match in _CAPITALISED.finditer(proposal):
+        word = match.group(0)
+        if "PROTECTED" in word or _SENTENCE_START.search(proposal[: match.start()]):
+            continue
+        if word[:4].lower() not in stems:
+            names.append(word)
+    return names
+
+
+def added_ai_signals(source: str, proposal: str) -> list[str]:
+    """Signal families the proposal has more of than the source did."""
+    from humanize_pl.detect import detect_document
+
+    def counts(text: str) -> dict[str, int]:
+        diagnosis = detect_document(text, calibrate_against_default=False)
+        return {row.family: row.count for row in diagnosis.families}
+
+    before, after = counts(source), counts(proposal)
+    return sorted(family for family, count in after.items() if count > before.get(family, 0))
 
 
 def _extract_json_object(content: str) -> dict[str, Any] | None:
@@ -525,7 +876,7 @@ def _extract_json_object(content: str) -> dict[str, Any] | None:
     if direct is not None:
         return direct
 
-    fenced = re.search(r"```(?:json)?\s*(.+?)\s*```", stripped, flags=re.I | re.S)
+    fenced = re.search(r"```(?:json)?\s*(.+?)\s*```", stripped, flags=re.IGNORECASE | re.DOTALL)
     if fenced is not None:
         candidate = as_object(fenced.group(1))
         if candidate is not None:

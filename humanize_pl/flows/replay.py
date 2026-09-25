@@ -15,10 +15,9 @@ found".
 from __future__ import annotations
 
 import json
+from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any
-
-from difflib import SequenceMatcher
 
 from humanize_pl.detect import detect_document
 from humanize_pl.sentence_splitter import split_sentences
@@ -105,7 +104,7 @@ def payload_from_workbook(
     than guessed, and the report says so.
     """
     from .base import ItemOutcome, summarise
-    from .xlsx_flow import REWRITE_COLUMN, resolve_column, _require_openpyxl
+    from .xlsx_flow import REWRITE_COLUMN, _require_openpyxl, resolve_column
 
     openpyxl = _require_openpyxl()
     path = Path(path)
@@ -176,8 +175,9 @@ def payload_from_workbook(
 def _rebuild_outcome(
     *, name: str, before_text: str, after_text: str, review: str, constraints: str
 ):
-    from .base import ItemOutcome
     from humanize_pl.gate import review_response
+
+    from .base import ItemOutcome
 
     before = detect_document(before_text)
     after = detect_document(after_text) if after_text != before_text else before
@@ -282,7 +282,7 @@ def backfill_payload(payload: dict[str, Any]) -> int:
             before_text = docx_text(source)
             rewritten = output_directory / f"{Path(str(item['name'])).stem}_humanized.docx"
             after_text = docx_text(rewritten) if rewritten.is_file() else before_text
-        except Exception:  # a document deleted or replaced since the run
+        except Exception:  # noqa: BLE001, S112 - a document deleted or replaced since the run
             continue
 
         before = detect_document(before_text)

@@ -1,0 +1,46 @@
+Poniżej gotowy wzór przedsądowego wezwania do zapłaty. Uzupełnij dane w nawiasach kwadratowych.
+
+---
+
+**[Nazwa firmy / imię i nazwisko wierzyciela]**  
+**[adres siedziby / zamieszkania]**  
+**[NIP / PESEL]**  
+**[telefon / e-mail]**
+
+**[Nazwa firmy / imię i nazwisko dłużnika]**  
+**[adres siedziby / zamieszkania]**  
+**[NIP / PESEL]**
+
+**[miejscowość], [data]**
+
+### WEZWANIE DO ZAPŁATY
+
+W nawiązaniu do zawartej między stronami umowy o dostawę towarów oraz wystawionej faktury nr **[numer faktury]** z dnia **[data wystawienia faktury]**, informuję, że do dnia dzisiejszego nie uregulowano należności wynikającej z przedmiotowej faktury.
+
+W związku z powyższym **wzywam do zapłaty kwoty 27 300,00 zł**  
+(słownie: dwadzieścia siedem tysięcy trzysta złotych 00/100)  
+w terminie **7 dni** od dnia otrzymania niniejszego wezwania, na rachunek bankowy:
+
+**[nazwa banku]**  
+**[numer rachunku bankowego]**
+
+w tytule przelewu: **[numer faktury / nazwa firmy / tytuł „zapłata za fakturę nr ...”]**.
+
+W przypadku braku zapłaty w wyznaczonym terminie, wierzyciel będzie uprawniony do dochodzenia roszczenia na drodze postępowania sądowego, w tym do wystąpienia o wydanie nakazu zapłaty w postępowaniu upominawczym.
+
+Jednocześnie informuję, że od dnia wymagalności roszczenia do dnia zapłaty naliczone zostaną odsetki ustawowe za opóźnienie w rozumieniu art. 481 Kodeksu cywilnego.
+
+W razie braku zapłaty w terminie wskazanym w niniejszym wezwaniu, wierzyciel zastrzega sobie prawo do dochodzenia od dłużnika, obok głównej należności, odsetek oraz kosztów postępowania sądowego, w tym kosztów zastępstwa procesowego, a także ewentualnych kosztów upominkowych.
+
+Załączniki:  
+1. Kopia faktury nr **[numer faktury]** z dnia **[data]**.  
+2. **[ewentualnie: kopia potwierdzenia dostawy / protokołu zdawczo-odbiorczego / korespondencji]**.
+
+---
+
+**[Imię i nazwisko / nazwa firmy wierzyciela]**  
+**[podpis / pieczęć]**
+
+---
+
+Jeśli chcesz, mogę przygotować też wersję bardziej formalną z powołaniem na konkretną umowę, datę dostawy, datę wymagalności oraz dokładną podstawę prawną odsetek.

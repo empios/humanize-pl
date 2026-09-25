@@ -1,0 +1,202 @@
+Poniżej znajduje się wzór **umowy o świadczenie usług księgowych** dla jednoosobowej działalności gospodarczej. Dokument należy uzupełnić o dane stron, kwoty oraz dostosować zakres usług do faktycznych potrzeb.
+
+---
+
+# UMOWA O ŚWIADCZENIE USŁUG KSIĘGOWYCH
+
+zawarta w dniu .................... r. w ...................., pomiędzy:
+
+**Zleceniobiorcą:**  
+............................................................  
+z siedzibą w: ............................................................  
+NIP: ............................................................  
+REGON: ............................................................  
+reprezentowany przez: ............................................................  
+zwanym dalej **„Zleceniobiorcą”**,
+
+a
+
+**Zleceniodawcą:**  
+............................................................ – jednoosobowa działalność gospodarcza  
+NIP: ............................................................  
+REGON: ............................................................  
+adres prowadzenia działalności: ............................................................  
+reprezentowany przez: ............................................................  
+zwanym dalej **„Zleceniodawcą”**,
+
+zwanymi łącznie **„Stronami”**.
+
+---
+
+## § 1. Przedmiot i zakres umowy
+
+1. Zleceniobiorca zobowiązuje się do świadczenia na rzecz Zleceniodawcy usług w zakresie prowadzenia księgowości oraz rozliczeń podatkowych i ubezpieczeniowych, a Zleceniodawca zobowiązuje się do zapłaty wynagrodzenia na warunkach określonych w niniejszej umowie.
+
+2. Przedmiotem umowy jest prowadzenie dla Zleceniodawcy:
+   1) ewidencji podatkowej, w szczególności:
+      - księgi przychodów i rozchodów,  
+      - ewidencji przychodów,  
+      - ewidencji środków trwałych i wartości niematerialnych oraz prawnych,  
+      - ewidencji VAT,
+   2) rozliczeń z tytułu podatku dochodowego od osób fizycznych,
+   3) rozliczeń z tytułu podatku od towarów i usług, w tym:
+      - sporządzanie i składanie deklaracji VAT-7 / VAT-7K,
+      - sporządzanie i składanie informacji JPK_VAT,
+      - sporządzanie i składanie informacji JPK_V7,
+      - sporządzanie i składanie informacji JPK_KR,
+      - sporządzanie i składanie informacji JPK_FA,
+   4) rozliczeń z tytułu składek na ubezpieczenia społeczne i zdrowotne, w tym:
+      - sporządzanie i składanie deklaracji DRA,
+      - sporządzanie i składanie raportów RCA,
+      - sporządzanie i składanie deklaracji ZCA,
+      - sporządzanie i składanie deklaracji ZZA,
+   5) prowadzenia ewidencji kadrowo-płacowej, w zakresie:
+      - naliczania wynagrodzeń,
+      - sporządzania list płac,
+      - sporządzania deklaracji PIT-11,
+      - sporządzania deklaracji IWA,
+      - sporządzania deklaracji RZA,
+   6) prowadzenia korespondencji z organami podatkowymi, ZUS oraz innymi instytucjami, w zakresie objętym przedmiotem umowy.
+
+3. Zleceniobiorca zobowiązuje się do:
+   1) prowadzenia ewidencji w sposób rzetelny, kompletny i zgodny z obowiązującymi przepisami prawa,
+   2) terminowego sporządzania i składania deklaracji oraz informacji,
+   3) prowadzenia korespondencji z organami podatkowymi, ZUS oraz innymi instytucjami,
+   4) informowania Zleceniodawcy o wszelkich istotnych okolicznościach mających wpływ na rozliczenia,
+   5) zachowania w tajemnicy wszelkich informacji uzyskanych w związku z wykonywaniem umowy.
+
+4. Zleceniodawca zobowiązuje się do:
+   1) terminowego przekazywania Zleceniobiorcy dokumentów źródłowych,
+   2) zapewnienia kompletności i prawidłowości przekazywanych dokumentów,
+   3) informowania Zleceniobiorcy o wszelkich zmianach mających wpływ na rozliczenia,
+   4) zapłaty wynagrodzenia na warunkach określonych w umowie.
+
+---
+
+## § 2. Obowiązki Zleceniodawcy
+
+1. Zleceniodawca zobowiązuje się do przekazywania Zleceniobiorcy dokumentów źródłowych w terminie do **10. dnia każdego miesiąca** za miesiąc poprzedni.
+
+2. Zleceniodawca oświadcza, że przekazywane dokumenty są kompletne, prawidłowe i zgodne z rzeczywistym stanem rzeczy.
+
+3. Zleceniodawca zobowiązuje się do informowania Zleceniobiorcy o wszelkich zmianach mających wpływ na rozliczenia, w szczególności:
+   1) zmianie formy opodatkowania,
+   2) zmianie statusu podatnika VAT,
+   3) zmianie zakresu działalności,
+   4) zmianie danych identyfikacyjnych,
+   5) zmianie liczby pracowników,
+   6) zmianie rodzaju prowadzonej działalności.
+
+4. Zleceniodawca wyraża zgodę na przetwarzanie przez Zleceniobiorcę danych osobowych w zakresie niezbędnym do realizacji przedmiotu umowy.
+
+---
+
+## § 3. Wynagrodzenie
+
+1. Za świadczenie usług określonych w niniejszej umowie Zleceniodawca zapłaci Zleceniobiorcy miesięczne wynagrodzenie w wysokości:
+
+   **............................................................ zł netto**  
+   plus należny podatek VAT,  
+   co łącznie stanowi kwotę:  
+   **............................................................ zł brutto.**
+
+2. Wynagrodzenie płatne jest z góry do **10. dnia każdego miesiąca** na rachunek bankowy Zleceniobiorcy:
+
+   ............................................................
+
+3. W przypadku opóźnienia w zapłacie wynagrodzenia Zleceniobiorcy przysługują odsetki ustawowe za opóźnienie.
+
+4. W przypadku, gdy Zleceniodawca nie przekaże dokumentów w terminie określonym w § 2 ust. 1, Zleceniobiorca nie ponosi odpowiedzialności za skutki wynikające z opóźnienia w rozliczeniach.
+
+---
+
+## § 4. Odpowiedzialność
+
+1. Zleceniobiorca ponosi odpowiedzialność za szkody powstałe w związku z nienależytym wykonaniem umowy, w granicach winy umyślnej i rażącego niedbalstwa.
+
+2. Odpowiedzialność Zleceniobiorcy z tytułu niniejszej umowy jest ograniczona do wysokości **dwunastokrotności miesięcznego wynagrodzenia** określonego w § 3 ust. 1.
+
+3. Zleceniobiorca nie ponosi odpowiedzialności za:
+   1) szkody pośrednie,
+   2) utracone korzyści,
+   3) kary, odsetki oraz koszty wynikające z decyzji organów podatkowych, ZUS lub innych instytucji,
+   4) skutki wynikające z nieprawidłowości w dokumentach przekazanych przez Zleceniodawcę,
+   5) skutki wynikające z opóźnienia w przekazaniu dokumentów przez Zleceniodawcę.
+
+4. Zleceniodawca ponosi pełną odpowiedzialność za:
+   1) prawdziwość i kompletność dokumentów przekazanych Zleceniobiorcy,
+   2) skutki podatkowe i ubezpieczeniowe wynikające z nieprawidłowości w dokumentacji,
+   3) kary, odsetki oraz koszty wynikające z opóźnień w rozliczeniach spowodowanych działaniem Zleceniodawcy.
+
+---
+
+## § 5. Ochrona danych osobowych
+
+1. Administratorem danych osobowych przetwarzanych w związku z realizacją niniejszej umowy jest Zleceniodawca.
+
+2. Zleceniobiorca zobowiązuje się do przetwarzania danych osobowych wyłącznie w zakresie niezbędnym do realizacji przedmiotu umowy i wyłącznie na polecenie administratora.
+
+3. Zleceniobiorca zobowiązuje się do:
+   1) zachowania w tajemnicy wszelkich danych osobowych,
+   2) stosowania odpowiednich środków technicznych i organizacyjnych zapewniających bezpieczeństwo danych,
+   3) udostępniania danych wyłącznie osobom upoważnionym,
+   4) usunięcia lub zwrócenia danych osobowych po zakończeniu realizacji umowy, chyba że przepisy prawa wymagają ich dalszego przechowywania.
+
+4. W przypadku, gdy Zleceniobiorca przetwarza dane osobowe w imieniu Zleceniodawcy, strony zobowiązują się do zawarcia odrębnej umowy powierzenia przetwarzania danych osobowych, o ile będzie to wymagane przepisami prawa.
+
+---
+
+## § 6. Poufność
+
+1. Strony zobowiązują się do zachowania w tajemnicy wszelkich informacji uzyskanych w związku z realizacją niniejszej umowy.
+
+2. Obowiązek zachowania poufności obowiązuje przez cały czas trwania umowy oraz przez okres **3 lat** po jej zakończeniu.
+
+3. Zakres informacji objętych obowiązkiem poufności obejmuje w szczególności:
+   1) dane finansowe,
+   2) dane podatkowe,
+   3) dane kadrowo-płacowe,
+   4) dane dotyczące działalności gospodarczej,
+   5) wszelkie inne informacje oznaczone jako poufne.
+
+---
+
+## § 7. Okres obowiązywania i wypowiedzenie
+
+1. Umowa zostaje zawarta na czas **nieokreślony** / **określony** do dnia .................... r.
+
+2. Każda ze Stron może wypowiedzieć umowę z zachowaniem **30-dniowego** okresu wypowiedzenia, ze skutkiem na koniec miesiąca kalendarzowego.
+
+3. Wypowiedzenie powinno zostać złożone w formie pisemnej.
+
+4. W przypadku istotnego naruszenia obowiązków wynikających z umowy, druga Strona może wypowiedzieć umowę bez zachowania okresu wypowiedzenia.
+
+5. Po zakończeniu umowy Zleceniobiorca zobowiązuje się do:
+   1) przekazania Zleceniodawcy wszystkich dokumentów,
+   2) przekazania ewidencji,
+   3) przekazania danych,
+   4) rozliczenia się z Zleceniodawcą.
+
+---
+
+## § 8. Postanowienia końcowe
+
+1. Wszelkie zmiany niniejszej umowy wymagają formy pisemnej pod rygorem nieważności.
+
+2. W sprawach nieuregulowanych niniejszą umową zastosowanie mają przepisy Kodeksu cywilnego oraz inne właściwe przepisy prawa polskiego.
+
+3. Wszelkie spory wynikłe w związku z niniejszą umową strony będą starały się rozwiązać polubownie, a w przypadku braku porozumienia właściwym będzie sąd powszechny właściwy miejscowo dla siedziby Zleceniobiorcy.
+
+4. Umowę sporządzono w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze Stron.
+
+---
+
+**ZLECENIODAWCA**  
+
+............................................................  
+............................................................
+
+**ZLECENIOBIORCA**  
+
+............................................................  
+............................................................

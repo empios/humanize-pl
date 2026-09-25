@@ -57,6 +57,10 @@ def test_docx_flow_writes_the_pdf_next_to_the_json_report(tmp_path) -> None:
     assert "Podstawa i ograniczenia analizy" in text
     assert "Co się zmieniło w tekście" not in text
     assert "Jak to sprawdzaliśmy" not in text
+    normalized = " ".join(text.split())
+    assert "Redakcja językowa: wykonana" in normalized
+    assert "Kontrola kompletności:" in normalized
+    assert "Dopisywanie sekcji: wyłączone" in normalized
 
 
 def test_pdf_can_be_turned_off(tmp_path) -> None:
@@ -258,7 +262,7 @@ def test_every_gate_family_has_a_polish_description() -> None:
 def test_every_scored_metric_has_a_polish_description() -> None:
     from humanize_pl.detect.engine import _metrics
 
-    measured = set(_metrics([(0, 0, "Pierwsze zdanie testowe ma kilka słów.")], 6,
+    measured = set(_metrics("Pierwsze zdanie testowe ma kilka słów.", [(0, 0, "Pierwsze zdanie testowe ma kilka słów.")], 6,
                             sentences_per_paragraph=[1]))
     described = set(pdf_pl.METRIC_GLOSSARY) | {"words"}
 
@@ -626,3 +630,351 @@ def test_an_untouched_text_yields_no_examples() -> None:
     from humanize_pl.flows.replay import reconstruct_examples
 
     assert reconstruct_examples("Termin minął.", "Termin minął.") == []
+
+
+def _axis_rows(items):
+    from humanize_pl.reports.pdf_pl import _Report
+
+    report = _Report.__new__(_Report)
+    report.items = items
+    report.summary = {}
+    return {row[0]: row for row in report._axis_rows()}
+
+
+def test_what_changed_reports_all_three_axes_before_and_after():
+    """The report answers "what was found"; this answers "did it get better"."""
+    rows = _axis_rows(
+        [
+            {
+                "words": 1000,
+                "findings_before": 12,
+                "findings_after": 5,
+                "style_compliance_before": {"issues": ["a", "b"]},
+                "style_compliance_after": {"issues": []},
+                "tone_before": {"checked": True, "deviations": [{}, {}]},
+                "tone_after": {"checked": True, "deviations": [{}]},
+                "blueprint_before": {
+                    "checked": True,
+                    "missing_required": ["podpisy"],
+                    "empty_sections": [],
+                },
+                "blueprint_after": {
+                    "checked": True,
+                    "missing_required": [],
+                    "empty_sections": [],
+                },
+            }
+        ]
+    )
+
+    assert rows["Styl kancelarii"][2:] == ("4", "1")
+    assert rows["Struktura dokumentu"][2:] == ("1", "0")
+    # Density, not a raw count: a 2700-word document and a 300-word one are
+    # not comparable on totals.
+    assert "1000" in rows["Słowa"][1]
+    assert rows["Słowa"][2].startswith("12")
+    assert rows["Słowa"][3].startswith("5")
+
+
+def test_an_axis_with_nothing_behind_it_says_so_instead_of_zero():
+    """"Not checked" and "checked, clean" must not print the same number.
+
+    A lawyer acts differently on each: one means supply a profile or a
+    skeleton, the other means nothing needs doing. Printing 0 for both tells
+    the reader the document passed a check that never ran.
+    """
+    rows = _axis_rows(
+        [
+            {
+                "words": 800,
+                "findings_before": 6,
+                "findings_after": 6,
+                "style_compliance_before": None,
+                "style_compliance_after": None,
+                "tone_before": {"checked": False, "deviations": []},
+                "tone_after": {"checked": False, "deviations": []},
+                "blueprint_before": {"checked": False},
+                "blueprint_after": {"checked": False},
+            }
+        ]
+    )
+
+    assert rows["Styl kancelarii"][2] == "nie dotyczy"
+    assert "brak profilu" in rows["Styl kancelarii"][3]
+    assert rows["Struktura dokumentu"][2] == "nie dotyczy"
+    assert "brak szkieletu" in rows["Struktura dokumentu"][3]
+
+
+def test_a_diagnosis_only_run_shows_equal_columns_not_empty_ones():
+    """--no-rewrite is not an improvement of zero; both sides are the state."""
+    same = {"issues": ["a"]}
+    rows = _axis_rows(
+        [
+            {
+                "words": 500,
+                "findings_before": 4,
+                "findings_after": 4,
+                "style_compliance_before": same,
+                "style_compliance_after": same,
+                "tone_before": {"checked": True, "deviations": []},
+                "tone_after": {"checked": True, "deviations": []},
+                "blueprint_before": {"checked": True, "missing_required": ["x"]},
+                "blueprint_after": {"checked": True, "missing_required": ["x"]},
+            }
+        ]
+    )
+
+    for axis in ("Styl kancelarii", "Słowa", "Struktura dokumentu"):
+        assert rows[axis][2] == rows[axis][3], axis
+
+
+def _drafted_payload(*, inserted: bool) -> dict:
+    return {
+        "flow": "docx",
+        "settings": {"mode": "standard", "engine": "basic", "rewrite": True},
+        "layers": {},
+        "summary": {"items": 1, "ok": 1, "failed": 0, "needs_review": 1},
+        "documents": [
+            {
+                "name": "umowa.docx",
+                "status": "ok",
+                "words": 400,
+                "signal_before": 0.3,
+                "signal_after": 0.2,
+                "findings_before": 3,
+                "findings_after": 1,
+                "readiness_status": "ready_with_warnings",
+                "blueprint_before": {
+                    "checked": True, "missing_required": ["odpowiedzialność"], "empty_sections": []
+                },
+                "blueprint_after": {
+                    "checked": True, "missing_required": [], "empty_sections": []
+                },
+                "drafted_sections": [
+                    {
+                        "section_id": "odpowiedzialnosc",
+                        "label_pl": "odpowiedzialność",
+                        "heading": "§ 2a. Odpowiedzialność",
+                        "text": "Odpowiedzialność Wykonawcy jest ograniczona do kwoty … .",
+                        "expects": ["Umowa określa zasady odpowiedzialności."],
+                        "after_line": 5,
+                        "rank": 4,
+                        "blanks": 1,
+                        "inserted": inserted,
+                    }
+                ],
+            }
+        ],
+    }
+
+
+def test_every_drafted_clause_is_listed_in_full_near_the_front(tmp_path) -> None:
+    """The clause is unmarked in the document by the owner's decision, so the
+    report is the only place that says a model wrote it."""
+    from pypdf import PdfReader
+
+    report = pdf_pl.write_flow_pdf(_drafted_payload(inserted=True), tmp_path / "r.pdf")
+    pages = [page.extract_text() or "" for page in PdfReader(report).pages]
+    text = "\n".join(pages)
+
+    assert "Sekcje dopisane przez model" in text
+    assert "ograniczona do kwoty" in text
+    assert "§ 2a. Odpowiedzialność" in text
+    # Before the per-item detail, not buried in it.
+    assert text.index("Sekcje dopisane przez model") < text.index("Co się zmieniło") + 2000
+    assert "dopisał model" in text
+
+
+def test_a_draft_that_did_not_reach_the_file_is_reported_as_a_proposal(tmp_path) -> None:
+    from pypdf import PdfReader
+
+    report = pdf_pl.write_flow_pdf(_drafted_payload(inserted=False), tmp_path / "r.pdf")
+    text = "\n".join(page.extract_text() or "" for page in PdfReader(report).pages)
+    # System font metrics change line wrapping between Linux and Windows.
+    text = " ".join(text.split())
+
+    assert "nie wstawiono" in text
+    assert "wyłącznie jako propozycja" in text
+
+
+def test_no_drafts_no_section(tmp_path) -> None:
+    from pypdf import PdfReader
+
+    payload = _drafted_payload(inserted=True)
+    payload["documents"][0]["drafted_sections"] = []
+    report = pdf_pl.write_flow_pdf(payload, tmp_path / "r.pdf")
+    text = "\n".join(page.extract_text() or "" for page in PdfReader(report).pages)
+
+    assert "Sekcje dopisane przez model" not in text
+
+
+def _family_payload(document_type: str, counts: dict[str, int]) -> dict:
+    return {
+        "flow": "docx",
+        "settings": {"mode": "standard", "engine": "basic", "rewrite": True},
+        "layers": {},
+        "summary": {"items": 1, "ok": 1, "failed": 0, "needs_review": 0},
+        "documents": [
+            {
+                "name": "umowa.docx",
+                "status": "ok",
+                "words": 900,
+                "signal_before": 0.1,
+                "signal_after": 0.05,
+                "findings_before": sum(counts.values()),
+                "findings_after": 0,
+                "document_type": document_type,
+                "family_counts_before": counts,
+                "family_counts_after": {},
+            }
+        ],
+    }
+
+
+def _pdf_text(payload: dict, path) -> str:
+    from pypdf import PdfReader
+
+    report = pdf_pl.write_flow_pdf(payload, path)
+    return " ".join(
+        " ".join((page.extract_text() or "").split()) for page in PdfReader(report).pages
+    )
+
+
+def test_a_contract_report_says_which_absences_prove_nothing(tmp_path) -> None:
+    """The table lists what was found, so a family missing from it reads as
+    checked and clean. In a contract, most of them are missing from AI-written
+    contracts too, and their absence tells the reader nothing."""
+    text = _pdf_text(_family_payload("contract", {"nominalization": 4}), tmp_path / "r.pdf")
+
+    assert "niczego więc nie dowodzi" in text
+    assert "umowach, regulaminach i politykach" in text
+    assert pdf_pl.FAMILY_GLOSSARY["discourse_frame"]["label"] in text
+
+
+def test_a_silent_family_that_was_found_after_all_is_not_called_uninformative(tmp_path) -> None:
+    from humanize_pl.detect.activity import activity_for
+
+    silent = activity_for("contract").silent
+    found = silent[0]
+    text = _pdf_text(_family_payload("contract", {found: 2}), tmp_path / "r.pdf")
+    listed = text.split("z tej listy:")[1].split("Ich brak")[0]
+
+    assert pdf_pl.FAMILY_GLOSSARY[found]["label"] not in listed
+    assert pdf_pl.FAMILY_GLOSSARY[silent[1]]["label"] in listed
+
+
+def _baseline_payload(items: list[tuple[str, str, float]]) -> dict:
+    """(document_type, calibration_status, signal_after) per item."""
+    return {
+        "flow": "docx",
+        "settings": {"mode": "standard", "engine": "basic", "rewrite": True},
+        "layers": {},
+        "summary": {"items": len(items), "ok": len(items), "failed": 0, "needs_review": 0},
+        "documents": [
+            {
+                "name": f"d{index}.docx",
+                "status": "ok",
+                "words": 900,
+                "signal_before": after + 0.05,
+                "signal_after": after,
+                "findings_before": 2,
+                "findings_after": 1,
+                "document_type": kind,
+                "calibration_status": status,
+            }
+            for index, (kind, status, after) in enumerate(items, 1)
+        ],
+    }
+
+
+def test_a_contract_batch_names_the_contracts_it_was_compared_with(tmp_path) -> None:
+    """The report used to load the court-judgment profile whenever anything
+    was calibrated, and describe contracts measured against the firm's own
+    51 contracts as compared with "pisma sądowe" at the global 0.25."""
+    text = _pdf_text(
+        _baseline_payload([("contract", "calibrated:law_firm_contract", 0.1)]),
+        tmp_path / "r.pdf",
+    )
+
+    assert "51 zatwierdzonych umów kancelarii" in text
+    assert "pism sądowych" not in text and "uzasadnień sądowych" not in text
+    assert "0,08 dla: umowy" in text
+
+
+def test_a_mixed_batch_quotes_each_kinds_threshold(tmp_path) -> None:
+    text = _pdf_text(
+        _baseline_payload(
+            [
+                ("contract", "calibrated:law_firm_contract", 0.1),
+                ("filing_official", "calibrated:saos_common_2018_2024", 0.1),
+            ]
+        ),
+        tmp_path / "r.pdf",
+    )
+
+    assert "0,08 dla: umowy" in text and "0,15 dla: pisma procesowe i urzędowe" in text
+    assert "1 804 uzasadnień sądowych (SAOS)" in text or "1804 uzasadnień sądowych (SAOS)" in text
+    assert "51 zatwierdzonych umów kancelarii" in text
+    assert "progi zależą od rodzaju dokumentu" in text
+
+
+def test_an_office_baseline_is_named_even_when_it_is_not_shipped(tmp_path) -> None:
+    text = _pdf_text(
+        _baseline_payload([("contract", "calibrated:kancelaria_x", 0.1)]),
+        tmp_path / "r.pdf",
+    )
+
+    assert "wzorzec „kancelaria_x”" in text
+
+
+def test_a_score_is_coloured_against_its_own_threshold() -> None:
+    """0.10 is past the contract threshold and well inside the filing one;
+    a mean over both has no threshold of its own and gets no verdict colour."""
+    assert pdf_pl._verdict_colour(0.10, 0.08) == pdf_pl.BAD
+    assert pdf_pl._verdict_colour(0.10, 0.15) != pdf_pl.BAD
+    assert pdf_pl._verdict_colour(0.10, None) == pdf_pl.INK
+
+
+def test_without_an_office_profile_the_style_row_does_not_claim_the_office_style():
+    """The genre's banned phrases are still checked; that is not the office's
+    style, and a row titled "Styl kancelarii" at 0 -> 0 would say it was."""
+    rows = _axis_rows(
+        [
+            {
+                "words": 500,
+                "findings_before": 2,
+                "findings_after": 1,
+                "style_compliance_before": {"issues": ["zakazany zwrot: x"], "profile": None},
+                "style_compliance_after": {"issues": [], "profile": None},
+                "tone_before": {"checked": False, "deviations": []},
+                "tone_after": {"checked": False, "deviations": []},
+            }
+        ]
+    )
+
+    assert "Styl kancelarii" not in rows
+    assert rows["Styl"][1].endswith("(bez profilu kancelarii)")
+    assert rows["Styl"][2:] == ("1", "0")
+
+
+def test_markup_removal_is_one_sentence_not_a_card_per_line(tmp_path) -> None:
+    """On the model corpus a thousand "**X**" -> "X" cards made a 303-page
+    report of 32 documents. A chain where a rule then changed the words is
+    still a card of its own."""
+    payload = _drafted_payload(inserted=True)
+    payload["documents"][0]["drafted_sections"] = []
+    payload["documents"][0]["applied_changes"] = [
+        {"before": "**§ 1. Przedmiot umowy**", "after": "§ 1. Przedmiot umowy", "issue": "markdown"},
+        {"before": "# UMOWA", "after": "UMOWA", "issue": "markdown"},
+        {
+            "before": "**Należy wskazać, że** strony zawierają umowę.",
+            "after": "Strony zawierają umowę.",
+            "issue": "markdown",
+        },
+    ]
+    report = pdf_pl._Report(payload, 400, pdf_pl._styles())
+
+    assert report._markup_only_count() == (2, 1)
+    assert len(report._xlsx_change_entries()) == 1
+    text = _pdf_text(payload, tmp_path / "r.pdf")
+    assert "Usunięto znaczniki markdown (**, #, ---) w 2 miejscach, w 1 dokumencie" in text

@@ -1,0 +1,69 @@
+**OPINIA PRAWNA**
+
+**dotycząca skutków prawnych przedawnienia roszczenia o zapłatę**
+
+**I. Stan faktyczny i pytania prawne**
+
+Przyjąć należy, że przedmiotem analizy jest roszczenie majątkowe o zapłatę należności pieniężnej, w szczególności z umowy sprzedaży, dostawy, zlecenia, o zapłatę wynagrodzenia, ceny, należności z faktury, którego termin płatności minął, a wierzyciel nie podjął skutecznych działań zmierzających do jego dochodzenia.
+
+Pytanie prawne:
+Jakie są skutki prawne uchybienia terminu przedawnienia roszczenia o zapłatę w świetle art. 117-123 k.c. i czy przedawnienie powoduje wygaśnięcie długu?
+
+**II. Podstawy prawne**
+
+Art. 118 §1 k.c. – termin przedawnienia roszczeń majątkowych wynosi lat sześć. 
+Art. 118 §4 k.c. – w szczególności termin przedawnienia roszczeń z umów wynosi trzy lata i biegnie od dnia wymagalności świadczenia, a jeżeli świadczenie jest wymagalne w częściach – od wymagalności każdej z części.
+Art. 117 §1 k.c. – przedawnienie nie następuje pomimo upływu terminu, jeżeli wierzyciel nie mógł dochodzić roszczenia z powodu siły wyższej.
+Art. 117 §2 k.c. – nie można się powołać na przedawnienie, jeżeli wierzyciel ze względu na wiek, chorobę lub inne okoliczności wywołane siłą wyższą nie mógł działać, chyba że pozwany w dobrej wierze... 
+Art. 117 §3 k.c. – nie można uchylić przedawnienia w drodze czynności prawnej.
+Art. 120 §1 k.c. – przedawnienie roszczeń nie wywołuje z mocy prawa innych skutków niż określone w ustawie.
+Art. 121 k.c. – zarzut przedawnienia może być podniesiony tylko przez osobę zainteresowaną. Sąd nie może go podnieść z urzędu.
+Art. 196 k.p.c. – zarzuty co do prawa materialnego.
+
+**III. Analiza**
+
+**1. Przedawnienie jako instytucja prawa materialnego, a nie procesowego.**
+Przedawnienie nie jest instytucją extinguishing dług, lecz instytucją ograniczającą możliwość jego dochodzenia. Art. 120 k.c. stanowi expressis verbis, że przedawnienie nie wywołuje z mocy prawa innych skutków niż określone w ustawie. Dług w sensie materialnym nadal istnieje – jest tzw. długiem naturalnym. Dłużnik może spełnić świadczenie dobrowolnie, a po spełnieniu nie może żądać zwrotu na zasadzie art. 410 k.c.
+
+**2. Skutek procesowy – utrata legitymacji do skutecznego dochodzenia roszczenia.**
+Z upływem terminu przedawnienia wierzyciel traci możliwość skutecznego uzyskania ochrony sądowej. Powództwo o zapłatę wniesione po upływie terminu przedawnienia zostanie oddalone przez sąd na podstawie art. 118 k.c. w zw. z art. 3 k.p.c., jeżeli pozwany podniesie zarzut przedawnienia.
+
+Zgodnie z art. 121 k.c. w brzmieniu obowiązującym od 1.09.2018 r., zarzut przedawnienia może być podniesiony wyłącznie przez dłużnika. Sąd nie jest uprawniony do podnoszenia go z urzędu. Wierzyciel zachowuje więc możliwość uzyskania wyroku, jeżeli dłużnik z jakichkolwiek przyczyn – np. z powodu nieświadomości, dobrej wiary, czy też zamiaru dobrowolnego spełnienia świadczenia – nie podniesie zarzutu.
+
+**3. Skutek materialny – przekształcenie roszczenia w naturalne.**
+
+Po upływie terminu przedawnienia roszczenie o zapłatę staje się roszczeniem naturalnym w rozumieniu art. 5 k.c. i doktryny. 
+- Dłużnik może je spełnić dobrowolnie, bez skutku nieważności.
+- Spełnione świadczenie nie podlega powrotowi jako bezpodstawne wzbogacenie.
+- Przedawnione roszczenie nie może być podstawą potrącenia z mocy prawa art. 498 k.c., chyba że dłużnik wyraźnie wyraził zgodę na potrącenie. Potrącenie przedawnionego roszczenia bez zgody wierzyciela jest niedopuszczalne.
+- Przedawnienie roszczenia o zapłatę nie rodzi skutków dla ważności samej umowy źródłowej. Umowa pozostaje ważna, dług istnieje jako naturalny.
+
+**4. Skutek wobec wierzyciela.**
+
+Uchybienie terminu przedawnienia powoduje:
+a) utratę możliwości skutecznego dochodzenia należności na drodze sądowej i egzekucyjnej, jeżeli dłużnik podniesie zarzut;
+b) utratę możliwości zabezpieczenia roszczenia w postępowaniu zabezpieczającym;
+c) niemożność uznania przedawnienia za przesłankę wygaśnięcia zobowiązania do celów podatkowych i bilansowych. Wierzyciel może w świetle przepisów rachunkowych skreślić należność jako nieściągalną, ale samo przedawnienie nie zwalnia dłużnika z obowiązku zapłaty w przypadku dobrowolnego spełnienia.
+
+**5. Przerwanie i zawieszenie biegu przedawnienia.**
+
+Bieg przedawnienia roszczenia o zapłatę ulega przerwaniu z chwilą:
+- wszczęcia postępowania sądowego lub arbitrażowego,
+- podjęcia przez wierzyciela czynności egzekucyjnej,
+- wezwania dłużnika do zapłaty, jeżeli nastąpiło w formie pisemnej z wezwaniem do zapłaty i dłużnik nie zaprzeczył roszczeniu w sposób wyraźny,
+- uznania długu przez dłużnika.
+
+Po przerwaniu bieg rozpoczyna się na nowo.
+
+Przedawnienie nie może zostać umówione na mocy art. 117 §3 k.c., jednak strony mogą w drodze czynności prawnej zrzec się zarzutu przedawnienia, jeżeli zarzut nie został jeszcze podniesiony.
+
+**IV. Wnioski**
+
+1. Przedawnienie roszczenia o zapłatę nie powoduje wygaśnięcia długu, lecz jedynie pozbawia wierzyciela możliwości skutecznego dochodzenia go na drodze sądowej.
+2. Dłużnik może skutecznie bronić się zarzutem przedawnienia, który podlega wyłącznie inicjatywie procesowej dłużnika. Sąd nie może go podnieść z urzędu.
+3. Po upływie terminu przedawnienia roszczenie ma charakter naturalny. Dłużnik może je dobrowolnie zaspokoić, a po spełnieniu świadczenia nie może żądać jego zwrotu.
+4. Przedawnienie nie wpływa na ważność stosunku podstawowego, nie stanowi podstawy do potrącenia z mocy prawa oraz nie rodzi po stronie dłużnika obowiązku zwrotu świadczeń spełnionych po terminie.
+
+Dla roszczeń z umów obowiązujących od 1.01.2023 r. termin przedawnienia wynosi 3 lata od końca roku kalendarzowego, w którym roszczenie stało się wymagalne. Dla pozostałych roszczeń majątkowych – 6 lat.
+
+*Opinia ma charakter ogólny i nie stanowi porady prawnej w konkretnej sprawie. W praktyce termin przedawnienia należy badać indywidualnie z uwzględnieniem daty powstania i wymagalności świadczenia, czynności przerywających bieg oraz ewentualnych wyłączeń wynikających z art. 117 k.c.*

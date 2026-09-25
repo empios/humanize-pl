@@ -1,0 +1,473 @@
+Poniżej znajdziesz **wzór regulaminu korzystania z platformy internetowej z kontami użytkowników**. Dokument ma charakter ogólny i powinien zostać dostosowany do konkretnego modelu biznesowego, rodzaju usług, sposobu rozliczeń, profilu użytkowników oraz wymagań prawnych właściwych dla danej działalności.
+
+---
+
+# REGULAMIN KORZYSTANIA Z PLATFORMY INTERNETOWEJ
+
+**Wersja:** 1.0  
+**Data wejścia w życie:** [data]  
+**Operator:** [pełna nazwa operatora / firmy]  
+**Adres siedziby:** [adres]  
+**Adres e-mail kontaktowy:** [adres e-mail]  
+**Adres do korespondencji:** [adres korespondencyjny]
+
+---
+
+## § 1. Postanowienia ogólne
+
+1. Niniejszy regulamin, zwany dalej **„Regulaminem”**, określa zasady korzystania z platformy internetowej dostępnej pod adresem [adres internetowy], zwanej dalej **„Platformą”**, oraz zasady zakładania i prowadzenia kont użytkowników.
+
+2. Platforma prowadzona jest przez [nazwa operatora], zwanego dalej **„Operatorem”**.
+
+3. Korzystanie z Platformy oraz założenie konta użytkownika oznacza akceptację postanowień niniejszego Regulaminu.
+
+4. W sprawach nieuregulowanych w Regulaminie zastosowanie mają właściwe przepisy prawa polskiego, w szczególności:
+   - ustawa z dnia 30 maja 2014 r. o prawach konsumenta,
+   - ustawa z dnia 18 lipca 2002 r. o świadczeniu usług drogą elektroniczną,
+   - ustawa z dnia 10 maja 2018 r. o ochronie danych osobowych,
+   - rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych oraz uchylenia dyrektywy 95/46/WE, zwane dalej **„RODO”**,
+   - ustawa z dnia 23 kwietnia 1964 r. Kodeks cywilny,
+   - inne właściwe przepisy prawa.
+
+5. Operator może prowadzić na Platformie różne rodzaje usług, w tym m.in. [np. sprzedaż produktów, świadczenie usług cyfrowych, udostępnianie treści, komunikację między użytkownikami, dostęp do aplikacji SaaS, marketplace, usługi edukacyjne, usługi informacyjne].
+
+---
+
+## § 2. Definicje
+
+1. **Platforma** – serwis internetowy dostępny pod adresem [adres internetowy], umożliwiający korzystanie z usług świadczonych przez Operatora.
+
+2. **Konto** – indywidualne, przypisane do danego Użytkownika zestaw danych i uprawnień, umożliwiający korzystanie z funkcji Platformy.
+
+3. **Użytkownik** – osoba fizyczna, osoba prawna lub jednostka organizacyjna nieposiadająca osobowości prawnej, która korzysta z Platformy, w tym założyła Konto.
+
+4. **Klient** – Użytkownik, który zawarł z Operatorem umowę o świadczenie usług lub zakup towarów za pośrednictwem Platformy.
+
+5. **Treści** – wszelkie informacje, materiały, pliki, dane, obrazy, teksty, multimedia, komentarze, opinie, posty, profile, materiały przesłane przez Użytkowników lub udostępnione na Platformie.
+
+6. **Dane osobowe** – dane w rozumieniu RODO.
+
+7. **Usługi** – usługi świadczone przez Operatora za pośrednictwem Platformy.
+
+8. **Hasło** – tajemniczy ciąg znaków znany wyłącznie Użytkownikowi, służący do logowania się na Konto.
+
+9. **Dane logowania** – adres e-mail lub login oraz Hasło, służące do uzyskania dostępu do Konta.
+
+---
+
+## § 3. Zakres i zasady świadczenia usług
+
+1. Operator świadczy za pośrednictwem Platformy usługi w zakresie [opis usług, np. sprzedaży towarów, dostępu do materiałów cyfrowych, prowadzenia konta, komunikacji, udostępniania aplikacji].
+
+2. Korzystanie z Platformy może być bezpłatne lub odpłatne, w zależności od rodzaju usługi.
+
+3. W przypadku usług odpłatnych Operator może wymagać:
+   - rejestracji i założenia Konta,
+   - podania danych niezbędnych do realizacji usługi,
+   - dokonania płatności,
+   - akceptacji dodatkowych warunków świadczenia danej usługi.
+
+4. Operator może udostępniać na Platformie treści i funkcje dostępne bez zakładania Konta, o ile nie jest to sprzeczne z charakterem danej usługi.
+
+5. Operator może wprowadzać nowe funkcje, usługi lub ograniczenia, o ile nie pogarszają one istotnie warunków korzystania z Platformy w stosunku do warunków przyjętych w chwili zawarcia umowy.
+
+6. W przypadku zmiany warunków korzystania z Platformy Operator poinformuje Użytkowników o takich zmianach w sposób uzasadniony charakterem zmiany, w szczególności za pośrednictwem wiadomości e-mail lub komunikatu na Platformie.
+
+---
+
+## § 4. Zakładanie i prowadzenie Konta
+
+1. Zakładanie Konta jest [obowiązkowe / dobrowolne] w celu korzystania z [opis funkcji].
+
+2. Do założenia Konta wymagane jest:
+   - podanie [np. imienia i nazwiska, adresu e-mail, numeru telefonu, nazwy firmy, NIP],
+   - wybranie Hasła,
+   - akceptacja Regulaminu,
+   - w przypadku osób prawnych – podanie danych identyfikujących podmiot.
+
+3. Użytkownik może założyć wyłącznie jedno Konto.
+
+4. Użytkownik jest zobowiązany do:
+   - podawania prawdziwych, aktualnych i kompletnych danych,
+   - aktualizacji danych w przypadku ich zmiany,
+   - zachowania w tajemnicy Hasła i danych logowania,
+   - niezwłocznego powiadomienia Operatora o podejrzeniu nieuprawnionego dostępu do Konta.
+
+5. Operator nie ponosi odpowiedzialności za szkody wynikłe z nieuprawnionego użycia Konta przez osoby trzecie, jeżeli Użytkownik nie dopełnił obowiązku zachowania poufności danych logowania lub nie powiadomił Operatora o naruszeniu bezpieczeństwa.
+
+6. Użytkownik może w każdym czasie zamknąć swoje Konto, korzystając z funkcji dostępnej w Panelu Użytkownika lub kontaktując się z Operatorem na adres [adres e-mail].
+
+7. Zamknięcie Konta nie pozbawia Użytkownika praw nabytych z tytułu wcześniej zawartych umów, w szczególności do otrzymania zamówionych towarów lub wykonanych usług, o ile nie zostały one jeszcze zrealizowane.
+
+---
+
+## § 5. Obowiązki Użytkownika
+
+1. Użytkownik zobowiązuje się do korzystania z Platformy zgodnie z:
+   - Regulaminem,
+   - obowiązującymi przepisami prawa,
+   - zasadami współżycia społecznego,
+   - dobrymi obyczajami,
+   - prawami osób trzecich.
+
+2. Użytkownik nie może:
+   - podawać fałszywych danych,
+   - udostępniać danych logowania osobom trzecim,
+   - próbować uzyskiwać dostęp do Konta innej osoby,
+   - wykorzystywać Platformy do działań niezgodnych z prawem,
+   - naruszać praw własności intelektualnej osób trzecich,
+   - publikować treści o charakterze obraźliwym, dyskryminującym, nienawistnym, pornograficznym, groźbom, mowie nienawiści lub treści sprzecznych z prawem,
+   - publikować treści reklamowych bez uprzedniej zgody Operatora,
+   - wykorzystywać Platformy do rozsyłania spamu, wirusów, złośliwego oprogramowania lub innych treści mogących zakłócić działanie Platformy,
+   - dokonywać działań mogących naruszyć bezpieczeństwo lub integralność Platformy,
+   - udostępniać treści bez wymaganych praw lub zgód,
+   - podszywać się pod inne osoby lub podmioty,
+   - wykorzystywać Platformy w sposób mogący wprowadzać w błąd innych Użytkowników.
+
+3. Użytkownik jest wyłącznie odpowiedzialny za treści, które publikuje, przesyła, udostępnia lub zamieszcza na Platformie.
+
+4. Użytkownik oświadcza, że posiada wszelkie wymagane prawa, zgody, licencje lub upoważnienia do publikacji i udostępniania treści na Platformie.
+
+---
+
+## § 6. Zakazane działania i odpowiedzialność Użytkownika
+
+1. Użytkownik ponosi wyłączną odpowiedzialność za:
+   - treści zamieszczone przez niego na Platformie,
+   - działania podjęte z wykorzystaniem jego Konta,
+   - naruszenie praw osób trzecich,
+   - działania niezgodne z Regulaminem lub prawem.
+
+2. W przypadku naruszenia przez Użytkownika Regulaminu lub przepisów prawa, Operator może:
+   - usunąć lub zablokować naruszające treści,
+   - ograniczyć dostęp do funkcji Platformy,
+   - zawiesić Konto,
+   - trwale zamknąć Konto,
+   - rozwiązać umowę o świadczenie usług,
+   - dochodzić roszczeń odszkodowawczych,
+   - przekazać sprawę właściwym organom.
+
+3. Operator nie ponosi odpowiedzialności za treści publikowane przez Użytkowników, chyba że:
+   - Operator miał wiedzę o bezprawnym charakterze treści i nie podjął działań w celu ich usunięcia lub zablokowania,
+   - Operator świadomie udostępniał lub promował takie treści,
+   - przepisy prawa nakładają na Operatora szczególną odpowiedzialność.
+
+4. W przypadku otrzymania wiarygodnego zawiadomienia o treści naruszającej prawo, prawa własności intelektualnej lub dobra osobiste, Operator podejmie działania w rozsądnym czasie, w szczególności zablokuje dostęp do treści lub usunie je, o ile nie zachodzą przesłanki prawnego obowiązku zachowania treści.
+
+---
+
+## § 7. Dane osobowe i ochrona prywatności
+
+1. Administratorem danych osobowych Użytkowników jest [nazwa operatora], z siedzibą w [adres].
+
+2. Dane osobowe przetwarzane są w celu:
+   - realizacji umowy o świadczenie usług,
+   - zakładania i prowadzenia Konta,
+   - obsługi zapytań i reklamacji,
+   - realizacji obowiązków prawnych,
+   - zapewnienia bezpieczeństwa Platformy,
+   - marketingu własnego, jeżeli Użytkownik wyrazi na to zgodę,
+   - innych celów, o których Użytkownik zostanie poinformowany.
+
+3. Podstawą prawną przetwarzania danych osobowych jest w szczególności:
+   - wykonanie umowy,
+   - obowiązek prawny,
+   - uzasadniony interes Operatora,
+   - zgoda Użytkownika, w zakresie wymagającym zgody.
+
+4. Użytkownik ma prawo do:
+   - dostępu do swoich danych osobowych,
+   - sprostowania danych,
+   - usunięcia danych,
+   - ograniczenia przetwarzania,
+   - przenoszenia danych,
+   - wycofania zgody w dowolnym momencie,
+   - wniesienia sprzeciwu wobec przetwarzania,
+   - wniesienia skargi do Prezesa Urzędu Ochrony Danych Osobowych.
+
+5. Szczegółowe informacje dotyczące przetwarzania danych osobowych znajdują się w [Polityce Prywatności / Polityce Cookies / Informacjach o ochronie danych osobowych], dostępnej pod adresem [adres].
+
+6. Operator może wykorzystywać pliki cookies oraz podobne technologie w celu:
+   - zapewnienia działania Platformy,
+   - analizy ruchu,
+   - personalizacji treści,
+   - celów marketingowych,
+   - bezpieczeństwa.
+
+7. Szczegółowe zasady stosowania cookies określa [Polityka Cookies].
+
+---
+
+## § 8. Płatności i rozliczenia
+
+1. W przypadku usług odpłatnych Użytkownik zobowiązany jest do dokonania płatności zgodnie z warunkami określonymi przez Operatora.
+
+2. Płatności mogą być dokonywane za pomocą [np. przelewu bankowego, karty płatniczej, BLIK, PayPal, przelewu online, faktury].
+
+3. Ceny usług podawane są w [waluta] i zawierają / nie zawierają podatku VAT [wybrać właściwe].
+
+4. W przypadku braku dokonania płatności w terminie, Operator może:
+   - wstrzymać świadczenie usługi,
+   - zawiesić dostęp do Konta,
+   - rozwiązać umowę,
+   - dochodzić odsetek ustawowych za opóźnienie.
+
+5. W przypadku zwrotu towaru lub odstąpienia od umowy, zwrot płatności następuje zgodnie z obowiązującymi przepisami prawa.
+
+6. Operator może pobierać opłaty dodatkowe, o ile zostaną one wyraźnie wskazane przed dokonaniem płatności.
+
+---
+
+## § 9. Reklamacje i postępowanie reklamacyjne
+
+1. Użytkownik może złożyć reklamację dotyczącą działania Platformy, jakości usług, realizacji zamówienia lub innych kwestii związanych z korzystaniem z Platformy.
+
+2. Reklamację należy złożyć:
+   - na adres e-mail: [adres e-mail],
+   - lub na adres korespondencyjny: [adres].
+
+3. Reklamacja powinna zawierać:
+   - dane Użytkownika,
+   - opis zaistniałego problemu,
+   - wskazanie oczekiwanego sposobu rozwiązania,
+   - w miarę możliwości – zrzuty ekranu, numery zamówień, daty zdarzeń.
+
+4. Operator rozpatrzy reklamację w terminie:
+   - [np. 14 dni / 30 dni] od dnia jej otrzymania,
+   - a w przypadku reklamacji konsumenckich – zgodnie z ustawą o prawach konsumenta.
+
+5. Odpowiedź na reklamację zostanie przekazana Użytkownikowi na wskazany adres e-mail lub w inny sposób wskazany przez Użytkownika.
+
+6. W przypadku nieuwzględnienia reklamacji Użytkownik może skorzystać z pozasądowych sposobów rozpatrywania reklamacji i dochodzenia roszczeń, w tym:
+   - złożyć wniosek o wszczęcie postępowania mediacyjnego przed wojewódzkim rzecznikiem konsumentów,
+   - złożyć wniosek do platformy ODR: [https://ec.europa.eu/consumers/odr/],
+   - skorzystać z innych dostępnych środków ochrony prawnej.
+
+---
+
+## § 10. Zawieszenie i zamknięcie Konta
+
+1. Operator może zawiesić dostęp do Konta, w szczególności w przypadku:
+   - podejrzenia naruszenia Regulaminu,
+   - podejrzenia naruszenia przepisów prawa,
+   - podejrzenia nieuprawnionego dostępu do Konta,
+   - zagrożenia bezpieczeństwa Platformy,
+   - zaległości w płatnościach,
+   - konieczności weryfikacji tożsamości Użytkownika.
+
+2. W przypadku zawieszenia Konta Operator poinformuje Użytkownika o przyczynie zawieszenia, o ile nie jest to sprzeczne z przepisami prawa lub interesem bezpieczeństwa.
+
+3. Operator może trwale zamknąć Konto, w szczególności w przypadku:
+   - rażącego lub powtarzającego się naruszenia Regulaminu,
+   - działań niezgodnych z prawem,
+   - naruszenia praw osób trzecich,
+   - podania fałszywych danych,
+   - działań zagrażających bezpieczeństwu Platformy lub innym Użytkownikom.
+
+4. Zamknięcie Konta nie pozbawia Użytkownika praw nabytych z tytułu wcześniej zawartych umów.
+
+5. W przypadku zamknięcia Konta Operator może usunąć dane Użytkownika, z zastrzeżeniem danych, których zachowanie jest wymagane przepisami prawa.
+
+---
+
+## § 11. Własność intelektualna
+
+1. Wszelkie prawa do Platformy, w tym do jej nazwy, logotypu, kodu źródłowego, układu, wyglądu, treści, materiałów graficznych, tekstów, bazy danych, aplikacji i innych elementów, przysługują Operatorowi lub podmiotom uprawnionym.
+
+2. Korzystanie z Platformy nie przenosi na Użytkownika żadnych praw własności intelektualnej do Platformy.
+
+3. Użytkownik nie może:
+   - kopiować, modyfikować, publikować, dystrybuować, odsprzedawać ani wykorzystywać komercyjnie elementów Platformy bez zgody Operatora,
+   - usuwać oznaczeń praw autorskich, znaków towarowych lub innych oznaczeń własności intelektualnej,
+   - wykorzystywać Platformy w sposób naruszający prawa własności intelektualnej.
+
+4. Treści publikowane przez Użytkowników pozostają własnością Użytkownika, o ile nie wynika inaczej z przepisów prawa lub umowy.
+
+5. Publikując treści na Platformie, Użytkownik udziela Operatorowi niewyłącznej, nieodpłatnej, ograniczonej terytorialnie i czasowo licencji do korzystania z takich treści w zakresie niezbędnym do świadczenia usług, w tym do ich przechowywania, wyświetlania, przetwarzania technicznego, archiwizacji i usuwania.
+
+6. Zakres licencji nie obejmuje wykorzystywania treści Użytkownika w celach marketingowych Operatora, chyba że Użytkownik wyrazi na to wyraźną zgodę.
+
+---
+
+## § 12. Odpowiedzialność Operatora
+
+1. Operator dołoży należytej staranności w celu zapewnienia ciągłości i bezpieczeństwa działania Platformy.
+
+2. Operator nie ponosi odpowiedzialności za:
+   - przerwy w działaniu Platformy wynikające z przyczyn niezależnych,
+   - awarie sieci telekomunikacyjnych,
+   - działania siły wyższej,
+   - niedostępność Platformy spowodowaną działaniem osób trzecich,
+   - szkody wynikłe z nieuprawnionego użycia Konta przez osoby trzecie, o ile Użytkownik nie dopełnił obowiązków określonych w Regulaminie.
+
+3. Odpowiedzialność Operatora z tytułu niewykonania lub nienależytego wykonania umowy jest ograniczona do wysokości wynagrodzenia zapłaconego przez Użytkownika z tytułu danej usługi, chyba że:
+   - Operator działał umyślnie lub rażąco niedbale,
+   - szkoda dotyczyła życia lub zdrowia,
+   - przepisy prawa wyłączają możliwość ograniczenia odpowiedzialności.
+
+4. W przypadku, gdy Platforma umożliwia publikację treści przez Użytkowników, Operator nie ponosi odpowiedzialności za takie treści, z zastrzeżeniem przepisów prawa.
+
+---
+
+## § 13. Zmiana Regulaminu
+
+1. Operator może zmieniać Regulamin w każdym czasie.
+
+2. Zmiany Regulaminu wchodzą w życie z dniem [np. 14 dni / 30 dni] od dnia ich ogłoszenia, chyba że Regulamin stanowi inaczej.
+
+3. O zmianach Regulaminu Operator poinformuje Użytkowników:
+   - za pośrednictwem wiadomości e-mail,
+   - lub komunikatem na Platformie,
+   - lub w inny sposób uzasadniony charakterem zmiany.
+
+4. Użytkownik, który nie akceptuje zmian Regulaminu, może zamknąć swoje Konto przed wejściem w życie zmian.
+
+5. W przypadku braku zamknięcia Konta przed wejściem w życie zmian, Użytkownik jest związany zmienionym Regulaminem.
+
+---
+
+## § 14. Postanowienia końcowe
+
+1. Regulamin wchodzi w życie z dniem [data].
+
+2. Wszelkie spory wynikające z Regulaminu lub korzystania z Platformy będą rozstrzygane przez sąd właściwy zgodnie z obowiązującymi przepisami prawa.
+
+3. W przypadku, gdy którekolwiek postanowienie Regulaminu okaże się nieważne lub bezskuteczne, pozostałe postanowienia pozostają w mocy.
+
+4. W sprawach nieuregulowanych w Regulaminie zastosowanie mają przepisy prawa polskiego.
+
+5. Językiem Regulaminu oraz językiem korespondencji między Operatorem a Użytkownikiem jest język polski.
+
+6. Operator może prowadzić na Platformie dodatkowe regulaminy, zasady lub warunki dotyczące konkretnych usług. W przypadku rozbieżności między Regulaminem a dodatkowymi warunkami, w zakresie danej usługi zastosowanie mają postanowienia bardziej szczegółowe, o ile nie naruszają one praw Użytkownika.
+
+---
+
+## § 15. Dane kontaktowe Operatora
+
+**Nazwa:** [nazwa operatora]  
+**Adres:** [adres]  
+**NIP:** [NIP]  
+**REGON:** [REGON]  
+**Adres e-mail:** [adres e-mail]  
+**Telefon:** [numer telefonu]  
+**Adres do reklamacji:** [adres e-mail lub adres korespondencyjny]
+
+---
+
+# Wersja skrócona – do włączenia na stronie
+
+Jeśli potrzebujesz krótszej wersji do publikacji na stronie, możesz użyć poniższego wariantu:
+
+---
+
+## Krótki regulamin korzystania z platformy
+
+1. Niniejszy regulamin określa zasady korzystania z platformy internetowej [adres], prowadzonej przez [nazwa operatora].
+
+2. Korzystanie z platformy oznacza akceptację regulaminu.
+
+3. Użytkownik może założyć konto, podając prawdziwe dane i akceptując regulamin.
+
+4. Użytkownik jest odpowiedzialny za zachowanie w tajemnicy danych logowania i za treści publikowane na platformie.
+
+5. Użytkownik nie może publikować treści niezgodnych z prawem, naruszających prawa osób trzecich, obraźliwych, dyskryminujących, spamu ani treści zagrażających bezpieczeństwu platformy.
+
+6. Operator może zawiesić lub zamknąć konto w przypadku naruszenia regulaminu lub przepisów prawa.
+
+7. Dane osobowe przetwarzane są zgodnie z RODO i polityką prywatności.
+
+8. W sprawach nieuregulowanych zastosowanie mają przepisy prawa polskiego.
+
+9. Kontakt: [adres e-mail].
+
+---
+
+# Ważne uwagi praktyczne
+
+Przed publikacją regulaminu warto doprecyzować:
+
+1. **Czy platforma jest B2C, B2B, czy B2B2C**  
+   Różne przepisy mogą dotyczyć konsumentów i przedsiębiorców.
+
+2. **Czy platforma sprzedaje towary**  
+   Jeśli tak, regulamin powinien zawierać:
+   - informację o prawie odstąpienia od umowy,
+   - wzór formularza odstąpienia,
+   - terminy dostawy,
+   - koszty dostawy,
+   - odpowiedzialność za wady,
+   - gwarancję i rękojmię.
+
+3. **Czy platforma świadczy usługi cyfrowe**  
+   Jeśli tak, warto dodać:
+   - warunki dostępu,
+   - licencję,
+   - ograniczenia terytorialne,
+   - zasady aktualizacji,
+   - odpowiedzialność za przerwy.
+
+4. **Czy platforma umożliwia publikację treści przez użytkowników**  
+   Wtedy warto dodać:
+   - zasady moderacji,
+   - zgłoszenia naruszeń,
+   - odpowiedzialność za treści,
+   - licencję na treści,
+   - procedurę usuwania treści.
+
+5. **Czy platforma wykorzystuje cookies i profilowanie**  
+   Należy powiązać regulamin z:
+   - polityką prywatności,
+   - polityką cookies,
+   - informacjami o profilowaniu,
+   - mechanizmem zgody.
+
+6. **Czy platforma obsługuje płatności**  
+   Warto dodać:
+   - metody płatności,
+   - terminy płatności,
+   - zwroty,
+   - opłaty dodatkowe,
+   - faktury.
+
+7. **Czy platforma jest dostępna dla niepełnoletnich**  
+   Jeśli tak, należy określić:
+   - minimalny wiek,
+   - zgodę rodzica/opiekuna,
+   - ograniczenia treści.
+
+8. **Czy platforma działa transgranicznie**  
+   Jeśli tak, trzeba rozważyć:
+   - prawo właściwe,
+   - języki,
+   - waluty,
+   - spory,
+   - wymogi lokalne.
+
+---
+
+# Rekomendacja
+
+Najlepiej, aby regulamin został przygotowany jako **dokument spójny z polityką prywatności, polityką cookies, regulaminem sprzedaży / świadczenia usług oraz ewentualnymi regulaminami konkursów, programów lojalnościowych lub marketplace**. Jeśli platforma ma charakter bardziej złożony, warto rozważyć podział na:
+
+1. **Regulamin platformy** – ogólne zasady korzystania, konta, bezpieczeństwo, treści.
+2. **Regulamin sprzedaży** – jeśli sprzedajesz towary.
+3. **Regulamin świadczenia usług cyfrowych** – jeśli sprzedajesz dostęp do aplikacji, kursów, SaaS.
+4. **Polityka prywatności** – RODO, cookies, dane osobowe.
+5. **Polityka cookies** – pliki cookies i technologie śledzące.
+6. **Regulamin reklamacji** – jeśli chcesz mieć odrębny, czytelny dokument reklamacyjny.
+
+Jeśli chcesz, mogę przygotować **pełną, gotową do publikacji wersję regulaminu** dopasowaną do Twojej platformy. W takim celu podaj:
+
+- nazwę firmy,
+- adres,
+- adres e-mail,
+- adres strony,
+- rodzaj platformy: sklep, marketplace, SaaS, social media, edukacyjna, informacyjna,
+- czy są płatności,
+- czy użytkownicy publikują treści,
+- czy platforma jest dla konsumentów, firm, czy obu,
+- czy są usługi cyfrowe,
+- czy są cookies i profilowanie,
+- czy platforma działa tylko w Polsce,
+- czy są dostawy towarów,
+- czy są programy lojalnościowe, konkursy, opinie, komentarze.

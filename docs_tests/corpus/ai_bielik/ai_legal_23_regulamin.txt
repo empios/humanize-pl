@@ -1,0 +1,84 @@
+Oto przykładowy regulamin serwisu z treściami cyfrowymi w modelu abonamentowym:
+
+Regulamin serwisu [Nazwa Serwisu]
+
+I. Postanowienia ogólne
+
+1. Niniejszy regulamin określa zasady korzystania z serwisu [Nazwa Serwisu], dostępnego pod adresem [Adres URL], oferującego dostęp do treści cyfrowych w modelu abonamentowym.
+
+2. Właścicielem serwisu jest [Nazwa Firmy], z siedzibą w [Adres], wpisaną do rejestru przedsiębiorców Krajowego Rejestru Sądowego pod numerem KRS [numer], NIP [numer], REGON [numer].
+
+3. Korzystanie z serwisu oznacza akceptację niniejszego regulaminu.
+
+II. Definicje
+
+Użyte w regulaminie określenia oznaczają:
+a) Serwis - platforma internetowa [Nazwa Serwisu], umożliwiająca dostęp do treści cyfrowych w modelu abonamentowym.
+
+b) Użytkownik - osoba fizyczna, osoba prawna lub jednostka organizacyjna nieposiadająca osobowości prawnej, która korzysta z Serwisu.
+
+c) Abonament - opłacona na określony czas usługa dostępu do treści cyfrowych oferowanych przez Serwis.
+
+d) Treści cyfrowe - materiały dostępne w Serwisie w formie cyfrowej, takie jak filmy, seriale, muzyka, e-booki itp.
+
+III. Warunki korzystania z serwisu
+
+1. Korzystanie z Serwisu wymaga posiadania urządzenia z dostępem do Internetu oraz przeglądarki internetowej obsługującej HTML5 i JavaScript.
+
+2. Użytkownik zobowiązuje się do korzystania z Serwisu zgodnie z obowiązującym prawem, niniejszym regulaminem oraz zasadami współżycia społecznego.
+
+3. Zabronione jest wykorzystywanie Serwisu do celów niezgodnych z jego przeznaczeniem, w szczególności do działań naruszających prawa autorskie lub prawa własności intelektualnej.
+
+IV. Zakup abonamentu
+
+1. Zakup abonamentu następuje poprzez wybór odpowiedniej opcji na stronie Serwisu i dokonanie płatności zgodnie z cennikiem.
+
+2. Płatności można dokonać za pośrednictwem [wymienić dostępne metody płatności, np. karta płatnicza, przelew bankowy, BLIK].
+
+3. Abonament jest aktywowany automatycznie po zaksięgowaniu płatności.
+
+4. Okres obowiązywania abonamentu jest określony w ofercie i wynosi [okres, np. miesiąc, 3 miesiące, rok].
+
+5. Po upływie okresu abonamentowego, aby kontynuować dostęp do treści, należy dokonać kolejnej płatności.
+
+V. Prawa i obowiązki stron
+
+1. Serwis zobowiązuje się do zapewnienia dostępu do treści cyfrowych w ramach wykupionego abonamentu.
+
+2. Użytkownik ma prawo do korzystania z treści cyfrowych wyłącznie na własny użytek zgodnie z ich przeznaczeniem.
+
+3. Zabronione jest udostępnianie danych logowania osobom trzecim oraz publiczne udostępnianie treści cyfrowych.
+
+4. Serwis zastrzega sobie prawo do czasowego zawieszenia dostępu do treści w przypadku prac konserwacyjnych lub modernizacyjnych.
+
+VI. Ochrona danych osobowych
+
+1. Administratorem danych osobowych jest [Nazwa Firmy].
+
+2. Dane osobowe są przetwarzane zgodnie z RODO i ustawą o ochronie danych osobowych.
+
+3. Użytkownik wyraża zgodę na przetwarzanie swoich danych osobowych w celu realizacji usługi abonamentowej.
+
+4. Użytkownik ma prawo dostępu do swoich danych, ich sprostowania, usunięcia oraz ograniczenia przetwarzania.
+
+VII. Reklamacje i zwroty
+
+1. Użytkownik ma prawo zgłosić reklamację dotyczącą funkcjonowania Serwisu lub jakości treści cyfrowych.
+
+2. Reklamacje należy składać na adres e-mail [adres e-mail] lub listownie na adres [adres].
+
+3. Serwis rozpatrzy reklamację w terminie 14 dni od jej otrzymania.
+
+4. W przypadku uznania reklamacji za zasadną, Serwis zwróci opłatę za abonament proporcjonalnie do niewykorzystanego okresu.
+
+VIII. Postanowienia końcowe
+
+1. Serwis zastrzega sobie prawo do zmiany regulaminu. Nowa wersja regulaminu obowiązuje od momentu jej opublikowania na stronie Serwisu.
+
+2. W sprawach nieuregulowanych niniejszym regulaminem mają zastosowanie przepisy Kodeksu cywilnego oraz inne właściwe przepisy prawa polskiego.
+
+3. Sądem właściwym do rozpatrywania sporów wynikających z niniejszego regulaminu jest sąd właściwy dla siedziby Serwisu.
+
+4. Regulamin wchodzi w życie z dniem [data].
+
+[Podpis osoby upoważnionej do reprezentacji Serwisu]

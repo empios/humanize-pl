@@ -1,12 +1,15 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 from difflib import SequenceMatcher
-from typing import Any, Iterable
+from typing import Any
 
 import regex as re
 
-from humanize_pl.nlp.morfeusz import MorfeuszAnalyzer, WHITELIST as MORF_WHITELIST
+from humanize_pl.nlp.morfeusz import WHITELIST as MORF_WHITELIST
+from humanize_pl.nlp.morfeusz import MorfeuszAnalyzer
+
 from .validators import GateCheck
 
 WORD_RE = re.compile(r"\p{L}+")
@@ -170,7 +173,7 @@ def _analyze(stanza_engine: Any, text: str, cache: dict[str, Any] | None):
         return cache[text]
     try:
         analysis = stanza_engine.analyze_sentence(text)
-    except Exception:
+    except Exception:  # noqa: BLE001 - third-party model raises arbitrary exceptions
         return None
     if cache is not None:
         cache[text] = analysis

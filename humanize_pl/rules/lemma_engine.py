@@ -22,6 +22,7 @@ import yaml
 
 from humanize_pl.config import Mode
 from humanize_pl.nlp.inflector import Inflector, load_default, parse_stanza_feats
+
 from .base import Candidate
 
 DEFAULT_RULES_PATH = Path(__file__).resolve().parent / "lemma_swaps.yaml"
@@ -43,6 +44,15 @@ class LemmaSwapRule:
     forbid_left_lemmas: frozenset[str]
     forbid_right_lemmas: frozenset[str]
     require_context_lemmas: frozenset[str]
+    # The token must be followed by one of these parts of speech.
+    #
+    # The other three guards compare lemmas, which cannot express the
+    # distinction that matters for a substantivised adjective: "powyższe
+    # wnioski" modifies a noun and swaps cleanly to "te wnioski", while
+    # "Mając powyższe na uwadze" stands alone as a noun and produces
+    # "Mając te na uwadze" - not Polish. Nothing about the neighbouring
+    # lemmas separates those two; only the presence of a head noun does.
+    require_right_upos: frozenset[str] = frozenset()
 
 
 def lemma_swap_candidates(
@@ -130,6 +140,15 @@ def _guards_pass(rule: LemmaSwapRule, tokens: list[Any], idx: int) -> bool:
         lemmas = {(tok.lemma or "").lower() for tok in window}
         if not (rule.require_context_lemmas & lemmas):
             return False
+    if rule.require_right_upos:
+        # Only the immediate next token: an adjective that modifies a noun
+        # stands directly before it in the phrases these rules target. A
+        # sentence that ends on the token has no head noun at all, so the
+        # swap is refused there too.
+        if idx + 1 >= len(tokens):
+            return False
+        if (tokens[idx + 1].upos or "").upper() not in rule.require_right_upos:
+            return False
     return True
 
 
@@ -185,7 +204,7 @@ def load_rules(path: Path | str | None) -> list[LemmaSwapRule]:
         return []
     try:
         raw = yaml.safe_load(path.read_text(encoding="utf-8")) or []
-    except Exception:
+    except (OSError, yaml.YAMLError):
         return []
     if not isinstance(raw, list):
         return []
@@ -201,8 +220,24 @@ def load_rules(path: Path | str | None) -> list[LemmaSwapRule]:
     return rules
 
 
+_KNOWN_GUARDS = frozenset(
+    {
+        "forbid_left_lemmas",
+        "forbid_right_lemmas",
+        "require_context_lemmas",
+        "require_right_upos",
+    }
+)
+
+
 def _coerce_rule(entry: dict[str, Any]) -> LemmaSwapRule:
     guards = entry.get("guards") or {}
+    # A guard is a safety measure, so a typo in its name must not disable it
+    # quietly. `load_rules` skips rules that raise, which loses the rule
+    # outright rather than running it unguarded - the safe direction.
+    unknown = sorted(set(guards) - _KNOWN_GUARDS)
+    if unknown:
+        raise ValueError(f"{entry.get('id')}: nieznany strażnik {unknown}")
     modes_value = entry.get("modes") or ["conservative", "standard", "strong"]
     return LemmaSwapRule(
         id=str(entry["id"]),
@@ -223,5 +258,8 @@ def _coerce_rule(entry: dict[str, Any]) -> LemmaSwapRule:
         ),
         require_context_lemmas=frozenset(
             str(x).lower() for x in (guards.get("require_context_lemmas") or [])
+        ),
+        require_right_upos=frozenset(
+            str(x).upper() for x in (guards.get("require_right_upos") or [])
         ),
     )

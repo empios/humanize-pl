@@ -1,0 +1,401 @@
+Poniżej znajduje się gotowy do adaptacji wzór **Polityki prywatności** dla platformy internetowej z kontami użytkowników i newsletterem. Dokument należy uzupełnić danymi firmy/platformy i dostosować do faktycznych funkcji, technologii oraz sposobu przetwarzania danych. Zalecam konsultację z prawnikiem, ponieważ szczegóły mogą wpływać na zgodność z RODO.
+
+---
+
+# Polityka prywatności
+
+**Ostatnia aktualizacja:** [data]  
+**Wersja dokumentu:** [nr wersji]  
+**Administrator danych osobowych:** [Pełna nazwa firmy / pełna nazwa platformy]  
+**Adres siedziby:** [adres]  
+**Dane kontaktowe:** [adres e-mail / telefon]  
+**Administrator ochrony danych osobowych (jeśli wyznaczony):** [nazwisko / e-mail]
+
+## 1. Informacje ogólne
+
+Niniejsza Polityka prywatności określa zasady przetwarzania danych osobowych użytkowników platformy **[nazwa platformy]**, w szczególności w związku z:
+
+1. zakładaniem i korzystaniem z konta użytkownika,
+2. subskrypcją newslettera,
+3. kontaktowaniem się z administratorem,
+4. korzystaniem z funkcji technicznych platformy,
+5. prowadzeniem statystyk i analiz aktywności,
+6. zabezpieczaniem platformy przed nadużyciami.
+
+Administratorem danych osobowych jest **[nazwa firmy]**, z siedzibą w **[adres]**, kontakt: **[e-mail]**.
+
+Nasze dane przetwarzamy zgodnie z:
+
+- Rozporządzeniem Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych oraz uchylenia dyrektywy 95/46/WE (RODO),
+- ustawą z dnia 10 maja 2018 r. o ochronie danych osobowych,
+- innymi właściwymi przepisami prawa.
+
+---
+
+## 2. Jaka Polityka prywatności obowiązuje?
+
+Polityka prywatności dotyczy:
+
+- danych osobowych przekazanych przy rejestracji konta,
+- danych aktualizowanych w profilu użytkownika,
+- danych związanych z logowaniem,
+- danych przetwarzanych w związku z newsletterem,
+- danych technicznych, takich jak adres IP, typ urządzenia, system operacyjny, cookies,
+- danych pochodzących z korespondencji i obsługi technicznej,
+- danych publikowanych przez użytkownika, jeśli platforma umożliwia publikację treści.
+
+---
+
+## 3. Jakie dane osobowe przetwarzamy?
+
+### 3.1. Dane przy rejestracji i prowadzeniu konta
+
+W celu założenia i korzystania z konta możemy przetwarzać:
+
+1. adres e-mail,
+2. nazwę użytkownika / login,
+3. hasło,
+4. imię i nazwisko, jeśli wymagane,
+5. firmę, jeśli dotyczy,
+6. dane profilu,
+7. preferencje,
+8. dane dotyczące logowań,
+9. dane techniczne,
+10. korespondencję i historię komunikacji.
+
+### 3.2. Dane w newsletterze
+
+Przy subskrypcji newslettera przetwarzamy:
+
+1. adres e-mail,
+2. imię, jeśli podane,
+3. dane techniczne wynikające z mechaniki newslettera, na przykład:
+   - czas zapisu,
+   - adres IP w momencie zapisu,
+   - informacje o otwarcia wiadomości, jeśli stosujemy piksele śledzące,
+   - kliknięcie linków, jeśli stosujemy takie mechanizmy.
+
+Przetwarzanie danych z otwarcia wiadomości i kliknięć linków jest możliwe wyłącznie, gdy korzystamy z narzędzia newsletterowego je umożliwiające, a użytkownik wyraził na to zgodę lub dane te są niezbędne do obsługi subskrypcji.
+
+### 3.3. Dane techniczne i logi
+
+Możemy przetwarzać dane techniczne, takie jak:
+
+- adres IP,
+- typ przeglądarki,
+- urządzenie,
+- system operacyjny,
+- czas wizyty,
+- odwiedzone podstrony,
+- logi serwera,
+- pliki cookies.
+
+---
+
+## 4. W jakim celu przetwarzamy dane osobowe?
+
+### 4.1. Obsługa konta użytkownika
+
+Przetwarzamy dane w celu:
+
+- założenia konta,
+- weryfikacji tożsamości,
+- autoryzacji dostępu,
+- obsługi technicznej,
+- zapewnienia bezpieczeństwa,
+- wykrywania nadużyć,
+- realizacji umów,
+- obsługi zgłoszeń.
+
+**Podstawa prawna:** art. 6 ust. 1 lit. b RODO – wykonanie umowy, oraz w odniesieniu do bezpieczeństwa i ochrony platformy – art. 6 ust. 1 lit. f RODO – prawnie uzasadniony interes administratora.
+
+### 4.2. Newsletter
+
+Przetwarzamy dane w celu:
+
+- wysyłki newslettera,
+- aktualizacji danych subskrybenta,
+- zarządzania subskrypcją,
+- odsubskrybowania,
+- obsługi zgłoszeń,
+- analizy skuteczności newslettera, jeśli użytkownik wyraził zgodę.
+
+**Podstawa prawna:** art. 6 ust. 1 lit. a RODO – zgoda użytkownika.
+
+Newsletter jest zawsze dobrowolny. Nie jesteśmy zobowiązani do dalszego przetwarzania danych, jeśli użytkownik odwoła zgodę.
+
+### 4.3. Statystyki i analizy
+
+Możemy przetwarzać dane w celu:
+
+- analizy sposobu korzystania z platformy,
+- poprawy funkcjonalności,
+- optymalizacji wydajności,
+- monitorowania stabilności,
+- analizy ruchu.
+
+**Podstawa prawna:** art. 6 ust. 1 lit. f RODO – prawnie uzasadniony interes administratora, chyba że zastosowane narzędzie wymaga zgody.
+
+### 4.4. Bezpieczeństwo i zapobieganie nadużyciom
+
+Przetwarzamy dane w celu:
+
+- ochrony przed włamaniami,
+- wykrywania botów,
+- zapobiegania nadużyciom,
+- prowadzenia logów,
+- identyfikacji awaryjnej użytkownika,
+- obsługi incydentów.
+
+**Podstawa prawna:** art. 6 ust. 1 lit. f RODO.
+
+### 4.5. Obowiązki prawne i podatkowe
+
+W określonych sytuacjach przetwarzamy dane w celu:
+
+- wypełnienia obowiązków prawnych,
+- ewidencji,
+- raportowania,
+- obrony przed roszczeniami,
+- przechowywania danych przez wymagany okres prawny.
+
+**Podstawa prawna:** art. 6 ust. 1 lit. c RODO.
+
+### 4.6. Rozpatrywanie roszczeń
+
+Możemy przetwarzać dane w celu obrony przed roszczeniami lub dochodzenia własnych roszczeń.
+
+**Podstawa prawna:** art. 6 ust. 1 lit. f RODO.
+
+---
+
+## 5. Podstawa prawna przetwarzania danych
+
+Administrator przetwarza dane na podstawie:
+
+1. **art. 6 ust. 1 lit. a RODO** – zgoda, w szczególności przy newsletterze,
+2. **art. 6 ust. 1 lit. b RODO** – wykonanie umowy lub działania na żądanie użytkownika,
+3. **art. 6 ust. 1 lit. c RODO** – obowiązek prawny,
+4. **art. 6 ust. 1 lit. f RODO** – prawnie uzasadniony interes administratora.
+
+W przypadku przetwarzania danych na podstawie uzasadnionego interesu, interesem administratora jest w szczególności:
+
+- prowadzenie platformy,
+- zapewnienie bezpieczeństwa,
+- usprawnienie działania,
+- ochrona przed nadużyciami,
+- analityka funkcjonalna.
+
+Jeżeli uzna Pan/Pani, że przetwarzanie danych na tej podstawie narusza Pana/Pani sytuację indywidualną, może Pan/Pani wnieść sprzeciw.
+
+---
+
+## 6. Newsletter i zgoda
+
+Subskrypcja newslettera odbywa się za zgodą użytkownika.
+
+Dopuszczamy następujące formy wyrażenia zgody:
+
+1. zaznaczenie pola wyboru / checkboxa,
+2. wysłanie wiadomości z prośbą o subskrypcję,
+3. potwierdzenie subskrypcji w systemie potwierdzenia dwuetapowego, jeśli takowe stosujemy.
+
+W wiadomości newsletterowej znajduje się zawsze link umożliwiający odsubskrybowanie. Odwołanie zgody jest równie łatwe jak jej wyrażenie.
+
+Po odwołaniu zgody:
+
+- zaprzestaniemy wysyłki newslettera,
+- dane osobowe nie będą przetwarzane w tym celu,
+- nie będziemy przetwarzać danych w celach marketingowych,
+- jeśli administrator prowadzi inny podstawowy cel, dane mogą być przetwarzane tylko w zakresie niezbędnym do jego realizacji.
+
+---
+
+## 7. Kto może otrzymać dane?
+
+Dane osobowe mogą być udostępniane podmiotom uprawnionym do ich otrzymania na mocy obowiązujących przepisów prawa, a także podmiotom, które realizują usługi na rzecz administratora, na przykład:
+
+- dostawcom usług hostingowych,
+- dostawcom systemu newsletterowego,
+- dostawcom infrastruktury IT,
+- firmom obsługującym wsparcie techniczne,
+- firmom księgowym i podatkowym,
+- firmom prawniczym,
+- organom władzy publicznej, jeśli wymaga tego prawo.
+
+Podmioty te przetwarzają dane wyłącznie na zlecenie administratora i w zakresie niezbędnym do realizacji usług.
+
+---
+
+## 8. Czy dane są przekazywane poza Europejski Obszar Gospodarczy?
+
+Jeśli administrator korzysta z dostawców usług znajdujących się poza Europejskim Obszarem Gospodarczym, przekazanie danych może nastąpić na podstawie:
+
+- odpowiednich mechanizmów prawnych, na przykład decyzji adekwatności,
+- standardowych klauzul umownych,
+- innych dopuszczalnych podstaw z RODO.
+
+W takim przypadku administrator zapewni odpowiedni poziom ochrony danych.
+
+Jeżeli platforma nie przekazuje danych poza EOG, można zastąpić niniejszy punkt zdaniem:
+
+> Dane osobowe nie są przekazywane do państw trzecich poza Europejski Obszar Gospodarczy.
+
+---
+
+## 9. Jak długo przechowujemy dane?
+
+Okres przetwarzania danych zależy od celu:
+
+### 9.1. Dane konta
+
+Dane konta są przechowywane przez okres trwania konta. Po zamknięciu konta administrator może usunąć dane, z wyjątkiem danych, które muszą być przechowywane z powodów prawnych, podatkowych, księgowych lub do obrony przed roszczeniami.
+
+Jeżeli konto jest nieaktywne przez dłuższy czas, administrator może wyciszyć konto, usunąć dane profilowe lub zamknąć konto, zgodnie z obowiązującą polityką.
+
+### 9.2. Newsletter
+
+Dane z newslettera są przetwarzane do czasu odwołania zgody. Po odwołaniu zgody dane nie są przetwarzane w celu marketingowym, chyba że administrator ma inną podstawę prawną.
+
+### 9.3. Logi i dane techniczne
+
+Logi serwerowe i dane techniczne przechowywane są przez okres niezbędny do bezpieczeństwa, zwykle **[6 miesięcy]** lub inny okres wskazany przez administratora.
+
+### 9.4. Korespondencja i zgłoszenia
+
+Dane z korespondencji i zgłoszeń są przechowywane przez okres niezbędny do rozwiązania sprawy, a następnie przez okres wynikający z przepisów o archiwizacji, przedawnieniu roszczeń lub obowiązku prawnym.
+
+### 9.5. Obowiązki prawne
+
+W przypadku obowiązku prawnego dane są przechowywane przez okres wskazany w przepisach, na przykład przez okres przedawnienia roszczeń podatkowych lub cywilnych.
+
+---
+
+## 10. Prawa użytkownika
+
+Użytkownik ma prawo:
+
+1. **dostępu do danych** – uzyskania informacji o przetwarzanych danych,
+2. **sprostowania danych** – poprawienia błędnych lub niekompletnych danych,
+3. **usunięcia danych** – tzw. prawo do bycia zapomnianym,
+4. **ograniczenia przetwarzania** – w określonych sytuacjach,
+5. **przenoszenia danych** – w przypadku podstawy w postaci umowy lub zgody i przetwarzania w sposób zautomatyzowany,
+6. **wniesienia sprzeciwu** – w szczególności wobec przetwarzania opartego na uzasadnionym interesie,
+7. **odwołania zgody** – jeśli dane przetwarzane są na podstawie zgody,
+8. **wniesienia skargi do organu nadzorczego**.
+
+W razie skargi użytkownik może zwrócić się do właściwego organu nadzorczego, w Polsce Prezesa Urzędu Ochrony Danych Osobowych.
+
+Prawa można realizować wysyłając wiadomość na adres: **[e-mail]**.
+
+Jeżeli żądanie realizacji praw dotyczy konta lub newslettera, administrator może poprosić o weryfikację tożsamości użytkownika, aby uniknąć udostępnienia danych osobie nieuprawnionej.
+
+---
+
+## 11. Czy podanie danych jest obowiązkowe?
+
+Podanie danych osobowych wymaganych przy rejestracji jest obowiązkowe w celu założenia i korzystania z konta. Bez podania adresu e-mail i hasła, w zakresie wymaganym przez platformę, nie można utworzyć konta.
+
+Podanie danych dla newslettera jest dobrowolne. Niepodanie danych uniemożliwia subskrypcję newslettera.
+
+Podanie danych profilowych, takich jak imię, nazwisko czy nazwa firmy, może być wymagane w zależności od funkcji platformy.
+
+---
+
+## 12. Cookies i technologie podobne
+
+Platforma może wykorzystywać pliki cookies oraz podobne technologie, na przykład:
+
+- ciasteczka sesyjne,
+- ciasteczka trwałe,
+- piksele śledzące,
+- lokalne pamięci przeglądarki.
+
+Cookies służą do:
+
+- utrzymania sesji,
+- zapamiętania wylogowania,
+- obsługi formularzy,
+- bezpieczeństwa,
+- statystyk,
+- personalizacji.
+
+Cookies techniczne są niezbędne do prawidłowego działania platformy. Cookies analityczne lub marketingowe mogą być stosowane po uzyskaniu zgody, chyba że są zdekryptyzowane i zgodne z prawem.
+
+Użytkownik może w każdym momencie zmienić ustawienia cookies w przeglądarce. Niektóre funkcje platformy mogą działać ograniczono, jeśli cookies zostaną wyłączone.
+
+Więcej informacji może znajdować się w **Polityce cookies**.
+
+---
+
+## 13. Bezpieczeństwo danych
+
+Administrator stosuje środki techniczne i organizacyjne zapewniające ochronę przetwarzanych danych osobowych, w szczególności:
+
+- szyfrowanie połączeń HTTPS/TLS,
+- haszowanie haseł,
+- ograniczenie dostępu do danych,
+- weryfikację upoważnień,
+- logowanie zdarzeń,
+- kopie zapasowe,
+- procedury reagowania na incydenty,
+- szkolenia pracowników.
+
+W przypadku podejrzenia naruszenia ochrony danych osobowych administrator podejmie działania przewidziane prawem, w tym, w razie potrzeby, powiadomi Prezesa UODO i osoby, których dane dotyczą.
+
+---
+
+## 14. Dane osób trzecich
+
+Użytkownik nie powinien podawać danych osobowych osób trzecich, chyba że jest to niezbędne do realizacji funkcji platformy. Jeśli użytkownik udostępnia dane osób trzecich, zobowiązany jest do uzyskania ich zgody na ich przekazanie.
+
+---
+
+## 15. Zmiana polityki prywatności
+
+Administrator może dokonywać zmian niniejszej Polityki prywatności, w szczególności w przypadku:
+
+- zmiany przepisów,
+- zmiany funkcji platformy,
+- zmiany sposobu przetwarzania danych,
+- konieczności dostosowania do wytycznych organów nadzorczych.
+
+O istotnych zmianach administrator poinformuje w uzasadniony sposób, na przykład:
+
+- publikując nową wersję Polityki,
+- wskazując datę ostatniej aktualizacji,
+- wysyłając informację do użytkowników, jeśli zmiana dotyczy istotnych zmian.
+
+---
+
+## 16. Kontakt w sprawie ochrony danych osobowych
+
+W sprawach związanych z przetwarzaniem danych osobowych użytkownik może skontaktować się:
+
+**Administrator:**  
+[nazwa firmy]  
+[adres]  
+e-mail: **[e-mail]**
+
+**Administrator ochrony danych osobowych, jeśli wyznaczony:**  
+[nazwisko / tytuł]  
+e-mail: **[e-mail DPO]**
+
+---
+
+## 17. Wskazówki do wdrożenia
+
+Przed publikacją należy uzupełnić i zweryfikować:
+
+1. dane administratora,
+2. adresy e-mail,
+3. zakres faktycznie przetwarzanych danych,
+4. narzędzia newsletterowe,
+5. narzędzia analityczne,
+6. okresy przechowywania,
+7. informacje o transferach poza EOG,
+8. ewentualną politykę cookies,
+9. ewentualną procedurę zamknięcia konta,
+10. możliwość dwuetapowego potwierdzania newslettera.
+
+Jeżeli platforma działa w Unii Europejskiej, dokument należy przygotować tak, by odpowiadał faktycznemu przetwarzaniu, a nie tylko ogólnym opisom.

@@ -162,6 +162,20 @@ def test_get_blueprint_choices():
     assert "umowa_uslug" in choices
 
 
+def test_main_form_blueprint_selects_structure_without_enabling_model(monkeypatch):
+    def unexpected_model(*args, **kwargs):
+        pytest.fail("Blueprint selection must not enable NLI by itself")
+
+    monkeypatch.setattr("humanize_pl.nli.LlmClauseJudge.from_environment", unexpected_model)
+    _, summary, _, gate = run_text(
+        "§ 1. Przedmiot umowy\nWykonawca przygotuje dokumentację zgodnie z załącznikiem.",
+        None, *DEFAULTS, "umowa_uslug", False, False,
+    )
+    assert "Struktura (" in gate
+    assert "Brakujące sekcje wymagane" in gate
+    assert "failed" in summary
+
+
 def test_run_text_success():
     sample = (
         "W ramach niniejszego przedsięwzięcia należy podkreślić, że dokonano analizy. "
@@ -193,6 +207,37 @@ def test_run_text_empty_raises_error():
 
     with pytest.raises(gr.Error):
         run_text("", None, *DEFAULTS, "(brak)", False)
+
+
+@pytest.mark.parametrize("after,direction", [(0.2, "spadł"), (0.6, "wzrósł"), (0.4, "bez zmian")])
+def test_text_ui_shows_actual_changes_warnings_and_score_direction(monkeypatch, after, direction):
+    from humanize_pl.flow import FlowResult
+
+    monkeypatch.setattr("humanize_pl.flow.humanize", lambda *a, **kw: FlowResult(
+        text="Ogród odpoczywa.", signal_before=0.4, signal_after=after,
+        readiness_status="ready_with_warnings", warnings=["Pomiar jest orientacyjny."],
+        changes_applied=1, applied_changes=[{
+            "before": "Warto zauważyć, że ogród odpoczywa.",
+            "after": "Ogród odpoczywa.", "issue": "discourse_frame",
+        }], blueprint={"checked": False},
+    ))
+    _, summary, changes, gate = run_text("Tekst.", None, *DEFAULTS)
+    assert direction in summary
+    assert "⚠️" in summary and "✅" not in summary
+    assert "Pomiar jest orientacyjny." in summary
+    assert "[discourse_frame]" in changes
+    assert "Warto zauważyć, że ogród odpoczywa." in changes
+    assert "Ogród odpoczywa." in changes
+    assert "Struktura kompletna" not in gate
+
+
+def test_short_general_text_ui_does_not_certify_quality():
+    values = list(DEFAULTS)
+    values[2] = "general"
+    _, summary, _, gate = run_text("Krótki opis produktu. Działa dobrze.", None, *values)
+    assert "Poniżej 150 słów" in summary
+    assert "⚠️" in summary
+    assert "Zatwierdzona" not in gate
 
 
 class DummyJudge:
@@ -228,7 +273,21 @@ def test_the_form_can_switch_drafting_off():
     settings = flow_settings(*DEFAULTS, "(brak)", False, False)
 
     assert settings.draft_missing is False
-    assert flow_settings(*DEFAULTS).draft_missing is True
+    assert flow_settings(*DEFAULTS).draft_missing is False
+    assert flow_settings(*DEFAULTS, "(brak)", False, True).draft_missing is True
+
+
+def test_completeness_control_disables_dependent_options_and_reopens_without_enabling():
+    from humanize_pl.ui.app import completeness_controls
+
+    for update in completeness_controls(False):
+        assert update["value"] is False
+        assert update["interactive"] is False
+    for update in completeness_controls(True):
+        assert update["interactive"] is True
+        assert "value" not in update
+    settings = flow_settings(*DEFAULTS, "(brak)", False, False, "legal", False)
+    assert settings.check_completeness is False
 
 
 def _ui_payload(**row):
@@ -277,6 +336,17 @@ def test_the_summary_reads_the_rows_the_flows_actually_write():
     text = summary_markdown(_ui_payload())
 
     assert f"({signal_word(0.1, True)})" in text
+
+
+def test_batch_warnings_do_not_appear_as_unconditional_readiness():
+    from humanize_pl.ui.app import item_line, summary_markdown
+
+    payload = _ui_payload(warnings=['Wymagana ocena odbiorcy.'])
+    payload['summary'].update(needs_review=0, ready_with_warnings=1)
+    text = summary_markdown(payload)
+    assert 'nic nie czeka' not in text
+    assert 'wymaga przeglądu' in text and 'Wymagana ocena odbiorcy.' in text
+    assert '✅' not in item_line(ItemOutcome(name='test', readiness_status='ready_with_warnings'))
 
 
 def test_a_document_not_ready_is_not_labelled_ok():

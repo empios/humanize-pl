@@ -49,6 +49,7 @@ coverage.xml
 Thumbs.db
 
 # Project artifacts
+outputs/
 docs_tests/results/
 # Raw reference corpora stay local; only derived profiles under
 # humanize_pl/data/reference_profiles/ are committed. The two model corpora

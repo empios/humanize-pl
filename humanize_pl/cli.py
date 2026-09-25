@@ -40,11 +40,13 @@ from humanize_pl.detect import DocumentDiagnosis, detect_document
 from humanize_pl.document import (
     DocumentType,
     FormatPolicy,
+    HumanizeTrack,
     RewriteBackend,
     build_style_profile,
+    resolve_track,
 )
 from humanize_pl.flow import humanize
-from humanize_pl.flows.base import FlowSettings, ItemOutcome, attach_pdf_report
+from humanize_pl.flows.base import FlowSettings, ItemOutcome, attach_pdf_report, execution_summary
 from humanize_pl.flows.docx_flow import run_docx_flow
 from humanize_pl.flows.replay import (
     REPORT_NAME,
@@ -55,7 +57,9 @@ from humanize_pl.flows.replay import (
 )
 from humanize_pl.flows.xlsx_flow import run_xlsx_flow
 from humanize_pl.gate import review_response
+from humanize_pl.general import EditIntensity, GeneralOptions, GeneralProfile
 from humanize_pl.io.docx_io import docx_text
+from humanize_pl.reports.operations import operation_lines
 from humanize_pl.reports.report import (
     build_detection_payload,
     write_json_payload,
@@ -162,11 +166,15 @@ def _settings(
     format_policy: FormatPolicy = FormatPolicy.preserve,
     require_llm: bool = False,
     require_renderer: bool = False,
-    blueprint: Path | None = None,
+    blueprint: str | Path | None = None,
     nli: bool = False,
-    draft_missing: bool = True,
+    draft_missing: bool = False,
+    track: HumanizeTrack | None = None,
+    check_completeness: bool = True,
+    general_options: GeneralOptions | None = None,
 ) -> FlowSettings:
     return FlowSettings(
+        track=track,
         mode=mode,
         engine=engine,
         rewrite=not no_rewrite,
@@ -184,10 +192,14 @@ def _settings(
         blueprint=blueprint,
         nli=nli,
         draft_missing=draft_missing,
+        check_completeness=check_completeness,
+        general_options=general_options or GeneralOptions(),
     )
 
 
 def _print_layers(layers: dict) -> None:
+    for line in execution_summary(layers):
+        print(line)
     detection = layers.get("detection", {})
     morfeusz_status = detection.get("morfeusz", "unavailable")
     stanza_status = detection.get("stanza", "not_used")
@@ -244,11 +256,13 @@ def _print_item(item: ItemOutcome) -> None:
     }.get(item.readiness_status, item.readiness_status)
     if item.readiness_status == "ready" and item.needs_review:
         flag = "[yellow]do przeglądu[/yellow]"
-    arrow = f"{item.signal_before:.2f} → {item.signal_after:.2f}"
+    arrow = f"{item.signal_before:.2f} → {item.signal_after:.2f}" if item.signal_interpretable else "niemiarodajny (krótki tekst)"
     print(
         f"{flag} {item.name}: sygnał {arrow}, zmian {item.changes_applied}, "
         f"zgodność {item.compliance:.0%}"
     )
+    for line in operation_lines([item.to_json()]):
+        print(f"  {line}")
 
 
 WARNINGS_SHOWN = 10
@@ -277,7 +291,7 @@ def _print_summary(summary: dict) -> None:
         before = summary.get("mean_signal_before")
         after = summary.get("mean_signal_after")
         delta = summary.get("mean_signal_delta")
-        if before is not None and after is not None:
+        if before is not None and after is not None and summary.get("signal_interpretable", True):
             delta_str = f"delta {delta:+.2f}" if delta is not None else ""
             print(f"  średni sygnał: {before:.2f} → {after:.2f} ({delta_str})")
         print(f"  zastosowane zmiany: {summary.get('changes_applied', summary.get('accepted_changes', 0))}")
@@ -453,8 +467,16 @@ def run_command(
     ),
     no_report: bool = typer.Option(False, "--no-report", help="Nie zapisuj raportu JSON"),
     document_type: DocumentType = typer.Option(
-        DocumentType.auto, "--document-type", help="auto, client_communication, contract, filing_official"
+        DocumentType.auto, "--document-type", help="auto (gatunek prawny), client_communication, contract, filing_official, general"
     ),
+    track: HumanizeTrack | None = typer.Option(None, "--track", help="Ścieżka: legal (dla prawników) lub general (ogólna)"),
+    general_profile: GeneralProfile = typer.Option(GeneralProfile.preserve, "--general-profile", help="preserve, email, article, product, information, prose"),
+    audience: str = typer.Option("", "--audience", help="Odbiorca tekstu ogólnego"),
+    tone: str = typer.Option("preserve", "--tone", help="preserve, neutral, warm, direct"),
+    formality: str = typer.Option("preserve", "--formality", help="preserve, casual, standard, formal"),
+    intensity: EditIntensity = typer.Option(EditIntensity.style, "--intensity", help="light, style, rewrite; tylko ścieżka general"),
+    max_shortening: int = typer.Option(30, "--max-shortening", min=0, max=50, help="Maksymalne skrócenie (%), nie cel"),
+    protected_term: list[str] = typer.Option([], "--protected-term", help="Termin bez zmian; opcję można powtarzać"),
     legal_review_profile: LegalReviewProfile = typer.Option(
         LegalReviewProfile.legal_ai_review,
         "--legal-review-profile",
@@ -466,16 +488,17 @@ def run_command(
     style_profile: Path | None = typer.Option(None, "--style-profile", help="Gotowy profil stylu kancelarii"),
     template: Path | None = typer.Option(None, "--template", help="Szablon kancelarii .docx lub .dotx"),
     format_policy: FormatPolicy = typer.Option(FormatPolicy.preserve, "--format-policy", help="preserve, audit, normalize"),
-    blueprint: Path | None = typer.Option(None, "--blueprint", "-b", help="Plik YAML ze szkieletem struktury"),
+    blueprint: str | None = typer.Option(None, "--blueprint", "-b", help="Identyfikator szkieletu lub ścieżka pliku YAML"),
     nli: bool = typer.Option(False, "--nli", help="Uruchom semantyczną weryfikację klauzul przez NLI"),
     column: str | None = typer.Option(None, "--column", "-c", help="Tylko .xlsx: kolumna źródłowa"),
     sheet: str | None = typer.Option(None, "--sheet", help="Tylko .xlsx: nazwa arkusza"),
     header_row: int = typer.Option(1, "--header-row", help="Tylko .xlsx: wiersz nagłówka"),
-    no_rewrite: bool = typer.Option(False, "--no-rewrite", help="Tylko diagnoza, bez redakcji"),
-    no_draft_missing: bool = typer.Option(
+    no_rewrite: bool = typer.Option(False, "--no-rewrite", help="Wyłącz redakcję istniejącego tekstu; dopisywanie ma osobną opcję"),
+    check_completeness: bool = typer.Option(True, "--check-completeness/--no-check-completeness", help="Sprawdzaj kompletność według szkieletu"),
+    draft_missing: bool = typer.Option(
         False,
-        "--no-draft-missing",
-        help="Nie dopisuj brakujących sekcji wymaganych przez szkielet (tylko je zgłoś)",
+        "--draft-missing/--no-draft-missing",
+        help="Dopisuj brakujące sekcje modelem; wymaga kontroli kompletności i przeglądu wyniku",
     ),
     detect_only: bool = typer.Option(False, "--detect-only", help="Tylko diagnoza (bez redakcji)"),
     gate: bool = typer.Option(False, "--gate", help="Oceń odpowiedź AI przez bramkę jakości"),
@@ -497,6 +520,8 @@ def run_command(
     """Uruchom kanoniczne flow humanizacji nad podanym wejściem."""
     del version
     path = Path(input_value)
+    if path.is_file() and path.suffix.lower() == ".xlsm":
+        raise typer.BadParameter("XLSM z makrami nie jest obsługiwany. Użyj kopii XLSX bez makr.")
     is_workbook = path.is_file() and path.suffix.lower() in {".xlsx", ".xlsm"}
     if is_workbook and not column:
         raise typer.BadParameter(
@@ -504,10 +529,14 @@ def run_command(
         )
 
     if gate:
+        if track is not None:
+            raise typer.BadParameter("--track dotyczy redakcji; dla analizy w wybranej ścieżce użyj --no-rewrite.")
         _run_gate(path, input_value, report=report)
         return
 
     if detect_only:
+        if track is not None:
+            raise typer.BadParameter("--track dotyczy redakcji; dla analizy w wybranej ścieżce użyj --no-rewrite.")
         _run_detect_only(path, input_value, report=report)
         return
 
@@ -527,6 +556,22 @@ def run_command(
             param_hint="input_value",
         )
 
+    resolved_doc_type = document_type
+    if (
+        resolved_doc_type == DocumentType.auto
+        and legal_review_profile != LegalReviewProfile.legal_ai_review
+    ):
+        try:
+            resolved_doc_type = DocumentType(legal_review_profile.value)
+        except ValueError:
+            pass
+    try:
+        resolved_track, resolved_doc_type = resolve_track(track, resolved_doc_type)
+    except ValueError as exc:
+        raise typer.BadParameter(str(exc), param_hint="--track") from exc
+
+    if profile_from and resolved_track == HumanizeTrack.general:
+        raise typer.BadParameter("--profile-from wymaga ścieżki dla prawników.")
     if profile_from and style_profile:
         raise typer.BadParameter("Podaj --profile-from albo --style-profile, nie oba.", param_hint="--profile-from")
 
@@ -537,7 +582,7 @@ def run_command(
                 source_directory=profile_from,
                 output_directory=profile_directory,
                 name=profile_from.name,
-                document_type=document_type,
+                document_type=resolved_doc_type,
             )
         except (OSError, ValueError) as exc:
             raise typer.BadParameter(str(exc), param_hint="--profile-from") from exc
@@ -551,17 +596,6 @@ def run_command(
             print(f"  [yellow]![/yellow] {warning}")
         print()
 
-    # Determine resolved document type
-    resolved_doc_type = document_type
-    if (
-        resolved_doc_type == DocumentType.auto
-        and legal_review_profile != LegalReviewProfile.legal_ai_review
-    ):
-        try:
-            resolved_doc_type = DocumentType(legal_review_profile.value)
-        except ValueError:
-            pass
-
     resolved_engine = Engine.hybrid if nlp else engine
     # An explicit --rewrite-backend wins; --llm remains the shorthand that
     # also makes the model mandatory.
@@ -573,6 +607,7 @@ def run_command(
     try:
         result = humanize(
             input_value,
+            track=resolved_track,
             output=output,
             mode=mode,
             engine=resolved_engine,
@@ -587,7 +622,9 @@ def run_command(
             sheet=sheet,
             header_row=header_row,
             no_rewrite=no_rewrite,
-            draft_missing=not no_draft_missing,
+            draft_missing=draft_missing,
+            check_completeness=check_completeness,
+                general_options=GeneralOptions(profile=general_profile, audience=audience, tone=tone, formality=formality, intensity=intensity, max_shortening=max_shortening, protected_terms=tuple(protected_term)),
             pdf=not no_pdf,
             report=None if no_report else report,
             require_anchor=require_anchor,
@@ -643,10 +680,18 @@ def run_command(
 @app.command("docx")
 def docx_command(
     folder: Path = typer.Argument(..., help="Folder z plikami .docx albo pojedynczy plik .docx"),
+    track: HumanizeTrack | None = typer.Option(None, "--track", help="Ścieżka: legal lub general"),
+    general_profile: GeneralProfile = typer.Option(GeneralProfile.preserve, "--general-profile", help="preserve, email, article, product, information, prose"),
+    audience: str = typer.Option("", "--audience", help="Odbiorca tekstu ogólnego"),
+    tone: str = typer.Option("preserve", "--tone", help="preserve, neutral, warm, direct"),
+    formality: str = typer.Option("preserve", "--formality", help="preserve, casual, standard, formal"),
+    intensity: EditIntensity = typer.Option(EditIntensity.style, "--intensity", help="light, style, rewrite; tylko ścieżka general"),
+    max_shortening: int = typer.Option(30, "--max-shortening", min=0, max=50, help="Maksymalne skrócenie (%), nie cel"),
+    protected_term: list[str] = typer.Option([], "--protected-term", help="Termin bez zmian; opcję można powtarzać"),
     output: Path = typer.Option(None, "--output", "-o", help="Folder wyjściowy (domyślnie <folder>_flow)"),
     mode: Mode = typer.Option(Mode.standard, help="conservative, standard, strong"),
     engine: Engine = typer.Option(Engine.basic, help="basic, nlp, hybrid"),
-    no_rewrite: bool = typer.Option(False, "--no-rewrite", help="Tylko diagnoza i bramka, bez redakcji"),
+    no_rewrite: bool = typer.Option(False, "--no-rewrite", help="Wyłącz redakcję istniejącego tekstu; dopisywanie ma osobną opcję"),
     require_anchor: bool = typer.Option(False, "--require-anchor", help="Wymagaj konkretnej kotwicy"),
     offline_models: bool = typer.Option(False, "--offline-models", help="Ładuj modele z lokalnego cache"),
     require_models: bool = typer.Option(False, "--require-models", help="Przerwij gdy brak modeli"),
@@ -657,10 +702,11 @@ def docx_command(
     format_policy: FormatPolicy = typer.Option(FormatPolicy.preserve, "--format-policy", help="preserve, audit, normalize"),
     require_llm: bool = typer.Option(False, "--require-llm", help="Przerwij gdy brak modelu"),
     require_renderer: bool = typer.Option(False, "--require-renderer", help="Wymagaj renderingu LibreOffice"),
-    no_draft_missing: bool = typer.Option(
+    check_completeness: bool = typer.Option(True, "--check-completeness/--no-check-completeness", help="Sprawdzaj kompletność według szkieletu"),
+    draft_missing: bool = typer.Option(
         False,
-        "--no-draft-missing",
-        help="Nie dopisuj brakujących sekcji wymaganych przez szkielet (tylko je zgłoś)",
+        "--draft-missing/--no-draft-missing",
+        help="Dopisuj brakujące sekcje modelem; wymaga przeglądu wyniku",
     ),
     no_pdf: bool = typer.Option(False, "--no-pdf", help="Pomiń raport PDF"),
     resume: bool = typer.Option(False, "--resume", help="Dokończ przerwany przebieg"),
@@ -685,7 +731,10 @@ def docx_command(
                 format_policy,
                 require_llm,
                 require_renderer,
-                draft_missing=not no_draft_missing,
+                draft_missing=draft_missing,
+                track=track,
+                check_completeness=check_completeness,
+                general_options=GeneralOptions(profile=general_profile, audience=audience, tone=tone, formality=formality, intensity=intensity, max_shortening=max_shortening, protected_terms=tuple(protected_term)),
             ),
             pdf=not no_pdf,
             resume=resume,
@@ -713,6 +762,14 @@ def docx_command(
 @app.command("xlsx")
 def xlsx_command(
     workbook: Path = typer.Argument(..., help="Plik .xlsx"),
+    track: HumanizeTrack | None = typer.Option(None, "--track", help="Ścieżka: legal lub general"),
+    general_profile: GeneralProfile = typer.Option(GeneralProfile.preserve, "--general-profile", help="preserve, email, article, product, information, prose"),
+    audience: str = typer.Option("", "--audience", help="Odbiorca tekstu ogólnego"),
+    tone: str = typer.Option("preserve", "--tone", help="preserve, neutral, warm, direct"),
+    formality: str = typer.Option("preserve", "--formality", help="preserve, casual, standard, formal"),
+    intensity: EditIntensity = typer.Option(EditIntensity.style, "--intensity", help="light, style, rewrite; tylko ścieżka general"),
+    max_shortening: int = typer.Option(30, "--max-shortening", min=0, max=50, help="Maksymalne skrócenie (%), nie cel"),
+    protected_term: list[str] = typer.Option([], "--protected-term", help="Termin bez zmian; opcję można powtarzać"),
     column: str = typer.Option(..., "--column", "-c", help="Kolumna z odpowiedziami AI"),
     output: Path = typer.Option(None, "--output", "-o", help="Plik wyjściowy"),
     sheet: str = typer.Option(None, "--sheet", help="Nazwa arkusza"),
@@ -724,7 +781,8 @@ def xlsx_command(
     mode: Mode = typer.Option(Mode.standard, help="conservative, standard, strong"),
     engine: Engine = typer.Option(Engine.basic, help="basic, nlp, hybrid"),
     no_rewrite: bool = typer.Option(False, "--no-rewrite", help="Tylko diagnoza i bramka"),
-    require_anchor: bool = typer.Option(True, "--require-anchor/--no-require-anchor", help="Wymagaj konkretnej kotwicy"),
+    check_completeness: bool = typer.Option(True, "--check-completeness/--no-check-completeness", help="Sprawdzaj kompletność według szkieletu"),
+    require_anchor: bool = typer.Option(False, "--require-anchor/--no-require-anchor", help="Wymagaj konkretnej kotwicy"),
     offline_models: bool = typer.Option(False, "--offline-models", help="Ładuj modele z cache"),
     require_models: bool = typer.Option(False, "--require-models", help="Przerwij gdy brak modeli"),
     document_type: DocumentType = typer.Option(DocumentType.auto, "--document-type", help="Rodzina dokumentu"),
@@ -756,6 +814,9 @@ def xlsx_command(
                 format_policy,
                 require_llm,
                 False,
+                track=track,
+                check_completeness=check_completeness,
+                general_options=GeneralOptions(profile=general_profile, audience=audience, tone=tone, formality=formality, intensity=intensity, max_shortening=max_shortening, protected_terms=tuple(protected_term)),
             ),
             sheet_name=sheet,
             header_row=header_row or None,
@@ -777,6 +838,43 @@ def xlsx_command(
     _print_pdf(payload)
     if payload["summary"]["failed"]:
         raise typer.Exit(1)
+
+
+@app.command("doctor")
+def doctor_command() -> None:
+    """Sprawdź lokalne zależności i konfigurację bez połączenia z modelem."""
+    from humanize_pl.diagnostics import diagnose
+
+    print(json.dumps(diagnose(), ensure_ascii=False, indent=2))
+
+
+@app.command("review")
+def review_command(
+    report: Path = typer.Argument(..., help="Raport JSON z propozycjami"),
+    output: Path = typer.Option(..., "--output", "-o", help="Wybrana wersja .txt/.docx/.xlsx"),
+    source: Path | None = typer.Option(None, "--source", help="Oryginalny plik (wymagany dla DOCX/XLSX)"),
+    item: int = typer.Option(1, "--item", min=1, help="Numer pozycji w raporcie"),
+    reject: list[str] = typer.Option([], "--reject", help="ID odrzucanej propozycji; można powtarzać"),
+    reject_all: bool = typer.Option(False, "--reject-all", help="Przywróć całe źródło"),
+) -> None:
+    """Zachowaj wybrane poprawki i przelicz raport bez wywoływania modelu."""
+    from humanize_pl.review import apply_review, load_reviews
+
+    try:
+        plans = load_reviews(report)
+        if item > len(plans):
+            raise ValueError("Nie ma takiej pozycji przeglądu.")
+        plan = plans[item - 1]
+        ids = [row["id"] for row in plan["proposals"]]
+        if not set(reject) <= set(ids):
+            raise ValueError("Nieznany identyfikator odrzucanej propozycji.")
+        result = apply_review(plan, [] if reject_all else [i for i in ids if i not in reject],
+                              source_file=source, output=output,
+                              report=output.with_suffix(".review.json"), pdf=output.with_suffix(".review.pdf"))
+    except (ValueError, OSError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    _print_summary(result.payload["summary"])
+    print(f"Zapisano wybraną wersję: {output}")
 
 
 @app.command("profile")
@@ -843,18 +941,18 @@ def blueprint_command(
 @app.command("nli")
 def nli_command(
     document: Path = typer.Argument(..., help="Dokument .docx do sprawdzenia"),
-    blueprint: Path = typer.Option(..., "--blueprint", "-b", help="Plik YAML ze szkieletem"),
+    blueprint: str = typer.Option(..., "--blueprint", "-b", help="Identyfikator szkieletu lub ścieżka pliku YAML"),
     env_file: Path = typer.Option(None, "--env-file", help="Plik .env z konfiguracją modelu"),
 ) -> None:
     """Sprawdź klauzula po klauzuli, czy dokument pokrywa treść ze szkieletu."""
-    from humanize_pl.blueprint import BlueprintError, _load
+    from humanize_pl.blueprint import BlueprintError, resolve_blueprint
     from humanize_pl.llm import LlmConfigurationError
     from humanize_pl.nli import LlmClauseJudge, check_document_against_blueprint
 
     if not document.is_file():
         raise typer.BadParameter(f"Nie ma takiego pliku: {document}", param_hint="document")
     try:
-        skeleton = _load(blueprint)
+        skeleton = resolve_blueprint(blueprint)
     except BlueprintError as exc:
         raise typer.BadParameter(str(exc), param_hint="--blueprint") from exc
     try:
@@ -866,7 +964,11 @@ def nli_command(
     except LlmConfigurationError as exc:
         raise typer.BadParameter(str(exc), param_hint="--env-file") from exc
 
-    report = check_document_against_blueprint(text, skeleton, judge=judge)
+    try:
+        report = check_document_against_blueprint(text, skeleton, judge=judge)
+    finally:
+        if isinstance(judge, LlmClauseJudge):
+            judge.close()
     typer.echo(json.dumps(report.to_json(), ensure_ascii=False, indent=2))
 
 

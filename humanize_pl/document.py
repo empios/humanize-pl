@@ -31,6 +31,28 @@ class DocumentType(str, Enum):
     general = "general"
 
 
+class HumanizeTrack(str, Enum):
+    legal = "legal"
+    general = "general"
+
+
+def resolve_track(
+    track: str | HumanizeTrack | None, document_type: str | DocumentType,
+) -> tuple[HumanizeTrack, DocumentType]:
+    """Keep legacy document-type calls, and reject conflicting explicit choices."""
+    kind = DocumentType(document_type)
+    selected = HumanizeTrack(track) if track is not None else (
+        HumanizeTrack.general if kind == DocumentType.general else HumanizeTrack.legal
+    )
+    if selected == HumanizeTrack.general:
+        if kind not in {DocumentType.auto, DocumentType.general}:
+            raise ValueError("Ścieżka ogólna nie przyjmuje prawnego rodzaju dokumentu.")
+        kind = DocumentType.general
+    elif kind == DocumentType.general:
+        raise ValueError("Ścieżka prawna nie przyjmuje rodzaju dokumentu general.")
+    return selected, kind
+
+
 class RewriteBackend(str, Enum):
     rules = "rules"
     hybrid = "hybrid"

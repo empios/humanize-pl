@@ -29,11 +29,17 @@ PROTECTED_PATTERNS = [
 # established protection set for compatibility, while the hosted-model path
 # additionally pseudonymises likely parties and direct identifiers.
 SENSITIVE_PATTERNS = [
+    # Address plus optional postcode/city, before names and bare numbers.
+    r"\b(?:ul\.|al\.|aleja|plac|pl\.|os\.)[ \t]+[^\n,;]{2,70}?\s+\d+[A-Za-z]?(?:\s*/\s*\d+[A-Za-z]?)?(?:,\s*(?:\d{2}-\d{3}\s+)?[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż-]+(?:\s+[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż-]+){0,2})?",
+    r"\b\d{2}-\d{3}\s+[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż-]+(?:\s+[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż-]+){0,2}",
+    r"\b(?:Pan|Pani|Panem|Panią|Panu|Pana|nazwisko[: ]+|Nazwisko[: ]+)\s*[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż-]+",
+    r"\b[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż-]*(?:ski|ska|skiego|skiej|skim|ską|scy|cki|cka|ckiego|ckiej|ckim|cką|wicz|wicza)\b",
     r"\b[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}\b",
     r"https?://[^\s<>()]+",
     r"\b(?:\+48\s*)?(?:\d[ -]?){9}\b",
     r"\b(?:PESEL|NIP|REGON|KRS)\s*[:#]?\s*[A-Z0-9 -]{6,20}\b",
     r"\bPL\d{26}\b",
+    r"\b(?:PL\s*)?\d{2}(?:\s+\d{4}){6}\b",
     r"\b[A-ZĄĆĘŁŃÓŚŹŻ]{2,}(?:[- ][A-ZĄĆĘŁŃÓŚŹŻ0-9]{2,})*\b",
     r"\b[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+(?:[- ][A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+)+\b",
 ]
@@ -47,7 +53,7 @@ class ProtectedText:
     mapping: dict[str, str]
 
     def restore(self, value: str) -> str:
-        for placeholder, original in self.mapping.items():
+        for placeholder, original in reversed(list(self.mapping.items())):
             value = value.replace(placeholder, original)
         return value
 
@@ -66,9 +72,9 @@ class ProtectedText:
         return result
 
 
-def protect_text(text: str, *, include_sensitive: bool = False) -> ProtectedText:
+def protect_text(text: str, *, include_sensitive: bool = False, start_index: int = 0) -> ProtectedText:
     mapping: dict[str, str] = {}
-    counter = 0
+    counter = start_index
 
     def repl(match: re.Match) -> str:
         nonlocal counter

@@ -196,4 +196,17 @@ def axis_rows(items: list[dict[str, Any]]) -> list[AxisRow]:
         if drafted:
             measure += f"; {drafted} dopisał model, zob. 1.2"
         rows.append(AxisRow("structure", "Struktura dokumentu", measure, before, after))
+    nli_items = [item for item in items if item.get("nli_after", {}).get("coverage")]
+    if nli_items:
+        coverage = {
+            key: sum(item["nli_after"]["coverage"].get(key, 0) for item in nli_items)
+            for key in ("total", "checked", "model_checked", "structural_checked")
+        }
+        unknown = _summed(nli_items, "nli", lambda row: row.get("coverage", {}).get("unknown", 0))
+        rows.append(AxisRow(
+            "nli", "Weryfikacja klauzul", (
+                f"niesprawdzone wymagania; sprawdzono {coverage['checked']}/{coverage['total']} "
+                f"(model: {coverage['model_checked']}, struktura: {coverage['structural_checked']})"
+            ), *unknown,
+        ))
     return rows

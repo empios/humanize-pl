@@ -100,6 +100,8 @@ def test_run_all_layers_keeps_all_changes_for_detailed_xlsx_report() -> None:
     ]
 
     class FakeSession:
+        nli = None
+
         def humanize(self, text):
             return SimpleNamespace(text=text, changes=changes)
 
@@ -146,6 +148,8 @@ def test_run_all_layers_omits_changes_without_a_visible_difference() -> None:
     ]
 
     class FakeSession:
+        nli = None
+
         def humanize(self, text):
             return SimpleNamespace(text="Sąd nie uwzględnił wniosku.", changes=changes)
 

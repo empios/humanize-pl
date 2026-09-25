@@ -52,13 +52,14 @@ def test_validator_rejects_deontic_drift():
     )
     assert not res.ok
     
-    # Valid rewrite (preserves modality)
+    # Same modality count is insufficient to approve a rewritten obligation.
     res = validate_candidate(
         "Strona zobowiązuje się do zapłaty.",
-        "Strona musi zapłacić.", # zobowiązuje się -> musi (oba to OBLIGATION)
+        "Strona musi zapłacić.",
         protected=protected, max_length_ratio=1.5
     )
-    assert res.ok
+    assert not res.ok
+    assert res.checks[-1].name == "legal_party_action_preserved"
 
     # Negated permission -> Prohibition drift
     res = validate_candidate(

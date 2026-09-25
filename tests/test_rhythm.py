@@ -161,14 +161,8 @@ def test_a_document_already_inside_the_band_is_left_alone() -> None:
 
 
 @requires_profile
-def test_a_uniform_document_moves_toward_the_human_band() -> None:
-    """Asserted on direction, not on a value: the target is a band, not a point.
-
-    Run on a real corpus document rather than a synthetic one. Synthetic
-    fixtures have no transition markers, so no split is available to them, and
-    the only merges under the length cap are the ones that lower CV - the
-    layer correctly declines and the test would prove nothing.
-    """
+def test_rhythm_does_not_change_legal_scope_to_reach_the_human_band() -> None:
+    """A stylistic metric must not override protected scope and punctuation."""
     from pathlib import Path
 
     text = (
@@ -179,10 +173,11 @@ def test_a_uniform_document_moves_toward_the_human_band() -> None:
 
     result = apply_rhythm_pass(text, profile=PROFILE, mode=Mode.standard)
 
-    assert result.changes, "warstwa nie znalazła żadnej dopuszczalnej operacji"
+    assert result.changes == []
+    assert result.text == text
     after = detect_document(result.text).metrics["sentence_length_cv"]
-    assert after > before
-    assert result.loss_after < result.loss_before
+    assert after == before
+    assert result.loss_after == result.loss_before
 
 
 @requires_profile

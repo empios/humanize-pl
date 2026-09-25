@@ -218,9 +218,11 @@ class BlueprintReport:
 def _load(path: Path) -> DocumentBlueprint:
     try:
         payload = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-    except OSError as exc:
+    except (OSError, yaml.YAMLError) as exc:
         raise BlueprintError(f"Nie można wczytać szablonu: {exc}") from exc
 
+    if not isinstance(payload, dict):
+        raise BlueprintError(f"Szablon {path.name} musi zawierać mapę YAML.")
     category = str(payload.get("category", "")).strip()
     if not category:
         raise BlueprintError(f"Szablon {path.name} nie wskazuje kategorii.")
@@ -231,6 +233,8 @@ def _load(path: Path) -> DocumentBlueprint:
     sections: list[Section] = []
     seen: set[str] = set()
     for row in rows:
+        if not isinstance(row, dict):
+            raise BlueprintError(f"Szablon {category} zawiera niepoprawną sekcję.")
         identifier = str(row.get("id", "")).strip()
         if not identifier:
             raise BlueprintError(f"Sekcja bez `id` w szablonie {category}.")
@@ -313,6 +317,17 @@ def blueprints() -> dict[str, DocumentBlueprint]:
 
 def blueprint_for(category: str) -> DocumentBlueprint | None:
     return blueprints().get(category)
+
+
+def resolve_blueprint(value: str | Path) -> DocumentBlueprint:
+    """A string may name a built-in blueprint; a Path always names a file."""
+    if isinstance(value, str):
+        name = value.strip()
+        builtin = blueprint_for(name)
+        if builtin is not None:
+            return builtin
+        value = Path(name)
+    return _load(value)
 
 
 def _heading_rank(line: str) -> int:

@@ -787,7 +787,7 @@ def test_new_lemmas_in_inflections_json():
 # --- require_right_upos: substantivised adjectives ---------------------------
 #
 # The regression these cover produced "Mając te na uwadze" from "Mając
-# powyższe na uwadze" and shipped in paper_evaluation/engine_results.md.
+# powyższe na uwadze" in an earlier evaluation run.
 
 
 def _powyzszy_rule(**guards) -> LemmaSwapRule:

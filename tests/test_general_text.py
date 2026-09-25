@@ -98,7 +98,7 @@ def test_the_model_is_told_it_edits_a_text_not_a_legal_document():
 
     rewriter = OpenAICompatibleRewriter(
         LlmSettings("https://model.test/v1", "pl", "token", 2),
-        client=httpx.Client(transport=httpx.MockTransport(handler)),
+        client=httpx.AsyncClient(transport=httpx.MockTransport(handler)),
     )
     assert rewriter.probe()
     rewriter.rewrite_fragment("Podsumowując, ogród jest ważny.", fragment_id="p-1", document_type=DocumentType.general)
@@ -131,9 +131,8 @@ def test_a_proposal_that_adds_an_ai_tic_is_turned_down():
     assert added_ai_signals(source, better) == []
 
 
-def test_only_assistant_tics_go_to_the_model_in_general_text():
-    """Nominalisation and enumeration are as much a writer's as a model's;
-    sending those sentences is where Bielik changed human text."""
+def test_general_model_receives_the_whole_paragraph_and_may_leave_it_alone():
+    """General editing now covers a paragraph without labelling its style as AI."""
     from dataclasses import replace
 
     from humanize_pl.document import RewriteBackend
@@ -154,7 +153,7 @@ def test_only_assistant_tics_go_to_the_model_in_general_text():
 
     rewriter = OpenAICompatibleRewriter(
         LlmSettings("https://model.test/v1", "pl", "token", 2),
-        client=httpx.Client(transport=httpx.MockTransport(handler)),
+        client=httpx.AsyncClient(transport=httpx.MockTransport(handler)),
     )
     assert rewriter.probe()
     text = " ".join(
@@ -164,7 +163,8 @@ def test_only_assistant_tics_go_to_the_model_in_general_text():
     settings = replace(GENERAL, rewrite_backend=RewriteBackend.hybrid)
     run_all_layers(text, name="t.txt", settings=settings, rewriter=rewriter, llm_prepared=True)
 
-    assert sent and all("Podsumowując" in fragment for fragment in sent)
+    assert len(sent) == 1
+    assert "Podsumowując" in sent[0] and "Realizacja zadania" in sent[0]
 
 
 def test_code_in_a_text_keeps_its_spacing():

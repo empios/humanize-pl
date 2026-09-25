@@ -16,7 +16,6 @@ from humanize_pl.benchmark import (
     write_summary_artifacts,
 )
 from humanize_pl.config import Engine, Mode
-from humanize_pl.results import HumanizeResult
 
 
 def test_manifest_loads_ai_legal_documents():
@@ -127,30 +126,15 @@ def test_long_docx_benchmark_records_timing_and_artifacts(monkeypatch, tmp_path)
         )
     doc.save(source)
 
-    def fake_process_docx(input_path, output_path, **kwargs):
-        input_doc = Document(str(input_path))
-        output_doc = Document()
-        for paragraph in input_doc.paragraphs:
-            output_doc.add_paragraph(
-                paragraph.text.replace("Warto wskazać, że", "Wskazano, że")
-            )
-        output_doc.save(str(output_path))
-        return (
-            HumanizeResult(
-                text=str(output_path),
-                changed=True,
-                engine_used="nlp",
-                model_status={
-                    "stanza": "ready",
-                    "semantic": "not_requested",
-                    "fluency": "not_requested",
-                    "morfeusz": "ready",
-                },
-            ),
-            {"processed": 60, "changed": 60, "empty": 0},
-        )
+    from humanize_pl.flow import humanize as canonical
 
-    monkeypatch.setattr(benchmark, "process_docx", fake_process_docx)
+    calls = []
+    def observed_flow(*args, **kwargs):
+        calls.append(kwargs)
+        kwargs.update(engine=Engine.basic, require_models=False)
+        return canonical(*args, **kwargs)
+
+    monkeypatch.setattr(benchmark, "humanize", observed_flow)
     output = tmp_path / "out"
     rows = run_benchmark(
         [BenchmarkDocument(id="long_docx", path=source, type="docx", source_kind="docx")],
@@ -165,6 +149,8 @@ def test_long_docx_benchmark_records_timing_and_artifacts(monkeypatch, tmp_path)
 
     assert len(rows) == 1
     assert rows[0].status == "ok"
+    assert calls and calls[0]["track"].value == "legal"
+    assert rows[0].evaluation["canonical_flow"]["passed"]
     assert rows[0].processing_seconds >= 0
     assert (output / "nlp" / "long_docx.docx").exists()
     assert (output / "nlp" / "long_docx.json").exists()
@@ -178,17 +164,15 @@ def test_fake_hybrid_records_model_metadata(monkeypatch, tmp_path):
     source.write_text("Pracownik wykonuje pracę.", encoding="utf-8")
     document = BenchmarkDocument(id="a", path=source, type="essay")
 
-    def fake_humanize_text(*args, **kwargs):
-        return HumanizeResult(
-            text="Pracownik wykonuje pracę.",
-            changed=False,
-            engine_used="hybrid",
-            model_status={"stanza": "ready", "semantic": "ready", "fluency": "ready"},
-            semantic_model="fake-semantic",
-            fluency_model="fake-fluency",
-        )
+    from humanize_pl.flow import humanize as canonical
 
-    monkeypatch.setattr(benchmark, "humanize_text", fake_humanize_text)
+    def observed_flow(*args, **kwargs):
+        kwargs.update(engine=Engine.basic, require_models=False)
+        result = canonical(*args, **kwargs)
+        result.payload['layers']['rewrite'].update(semantic='ready', semantic_model='fake-semantic')
+        return result
+
+    monkeypatch.setattr(benchmark, "humanize", observed_flow)
     rows = run_benchmark(
         [document],
         output_dir=tmp_path / "out",
@@ -248,3 +232,28 @@ def test_benchmark_cli_fail_on_status_exits_nonzero(monkeypatch, tmp_path):
 
     assert result.exit_code == 1
     assert "Statusy wymagające uwagi" in result.stdout
+
+
+def test_general_benchmark_uses_general_flow_and_requires_pdf(monkeypatch, tmp_path):
+    source = tmp_path / 'general.txt'
+    source.write_text('Ogród odpoczywa.', encoding='utf-8')
+    manifest = tmp_path / 'manifest.json'
+    manifest.write_text(json.dumps([{'id': 'general', 'file': source.name, 'track': 'general'}]), encoding='utf-8')
+    documents = load_manifest(manifest)
+    options = {'engines': [Engine.basic], 'mode': Mode.standard, 'offline_models': True,
+               'require_models': False, 'allow_fallback': True}
+    rows = run_benchmark(documents, output_dir=tmp_path / 'good', **options)
+    assert rows[0].track == 'general' and rows[0].status == 'ok'
+    assert not rows[0].evaluation['canonical_flow']['operations']['completeness']['requested']
+    canonical = benchmark.humanize
+
+    def without_pdf(*args, **kwargs):
+        result = canonical(*args, **kwargs)
+        result.pdf_report = None
+        result.payload['pdf_error'] = 'report failure'
+        return result
+
+    monkeypatch.setattr(benchmark, 'humanize', without_pdf)
+    rows = run_benchmark(documents, output_dir=tmp_path / 'bad', **options)
+    assert rows[0].status == 'failed_quality'
+    assert not rows[0].evaluation['canonical_flow']['passed']

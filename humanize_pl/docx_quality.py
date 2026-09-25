@@ -13,7 +13,7 @@ from typing import Any
 from zipfile import ZIP_DEFLATED, ZipFile
 
 from humanize_pl.document import DocumentType, FormatPolicy
-from humanize_pl.io.docx_structure import DocxInventory, inventory_docx
+from humanize_pl.io.docx_structure import DocxInventory, inventory_docx, iter_text_units
 
 
 @dataclass
@@ -23,6 +23,8 @@ class FormattingReport:
     warnings: list[str] = field(default_factory=list)
     fixes: list[str] = field(default_factory=list)
     protected_elements: dict[str, int] = field(default_factory=dict)
+    skipped_units: list[dict[str, Any]] = field(default_factory=list)
+    excluded_parts: list[str] = field(default_factory=list)
     inventory_preserved: bool = True
     inventory_differences: list[str] = field(default_factory=list)
     renderer_available: bool = False
@@ -87,6 +89,8 @@ def _inventory_warnings(inventory: DocxInventory) -> tuple[list[str], dict[str, 
         "fields": inventory.fields,
         "content_controls": inventory.content_controls,
         "text_boxes": inventory.text_boxes,
+        "hyperlinks": inventory.hyperlinks,
+        "bookmarks": inventory.bookmarks,
         "footnotes_or_endnotes": len(inventory.notes_text),
     }
     warnings: list[str] = []
@@ -96,6 +100,8 @@ def _inventory_warnings(inventory: DocxInventory) -> tuple[list[str], dict[str, 
         "fields": "pola dokumentu",
         "content_controls": "kontrolki treści",
         "text_boxes": "pola tekstowe",
+        "hyperlinks": "hiperłącza",
+        "bookmarks": "zakładki i cele odesłań",
         "footnotes_or_endnotes": "przypisy lub komentarze OOXML",
     }
     for key, count in counts.items():
@@ -115,6 +121,20 @@ def audit_document(document: Any, source_path: str | Path, *, policy: FormatPoli
     warnings, protected = _inventory_warnings(inventory)
     report.warnings.extend(warnings)
     report.protected_elements = protected
+    report.skipped_units = [
+        {"location": unit.location, "reasons": unit.protection_reasons}
+        for unit in iter_text_units(document) if unit.protected
+    ]
+    report.excluded_parts = [name for name in inventory.parts if name.startswith(
+        ("word/header", "word/footer", "word/footnotes", "word/endnotes", "word/comments")
+    ) and name.endswith(".xml")]
+    if report.skipped_units:
+        report.warnings.append(
+            f"Bez redakcji pozostawiono {len(report.skipped_units)} chronionych akapitów; "
+            "ich lokalizacje i przyczyny są w szczegółowym raporcie."
+        )
+    if report.excluded_parts:
+        report.warnings.append("Pomiar tekstu i redakcja nie obejmują nagłówków, stopek, przypisów ani treści komentarzy.")
 
     a4_width = Mm(210)
     a4_height = Mm(297)
@@ -162,7 +182,7 @@ def audit_document(document: Any, source_path: str | Path, *, policy: FormatPoli
     breaks = root.xpath(".//w:br[@w:type='page'] | .//w:lastRenderedPageBreak")
     if len(breaks) > 1:
         report.warnings.append(
-            "Dokument zawiera wiele jawnych podziałów strony; wynik sprawdzono w renderze."
+            "Dokument zawiera wiele jawnych podziałów strony; układ wymaga sprawdzenia w renderze."
         )
     return report
 
@@ -281,9 +301,11 @@ def compare_inventories(
     report: FormattingReport,
     *,
     expected_paragraph_delta: int = 0,
+    allow_formatting_changes: bool = False,
 ) -> None:
     differences = before.structural_differences(
-        inventory_docx(after_path), expected_paragraph_delta=expected_paragraph_delta
+        inventory_docx(after_path), expected_paragraph_delta=expected_paragraph_delta,
+        allow_formatting_changes=allow_formatting_changes,
     )
     report.inventory_differences = differences
     report.inventory_preserved = not differences

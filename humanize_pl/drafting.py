@@ -214,8 +214,12 @@ def section_presence(
         answer = client.complete_json(messages, max_tokens=400)
     except (LlmEndpointError, OSError, ValueError) as exc:
         return SectionPresence("unclear", reason=_safe_error(exc))
+    if not isinstance(answer, dict):
+        return SectionPresence("unclear", reason="odpowiedź modelu nie jest obiektem JSON")
     present = answer.get("obecna")
     if present is False:
+        if answer.get("cytat") not in (None, ""):
+            return SectionPresence("unclear", reason="model jednocześnie wskazał brak sekcji i cytat")
         return SectionPresence("absent")
     if present is not True:
         return SectionPresence("unclear", reason="odpowiedź modelu bez rozstrzygnięcia")

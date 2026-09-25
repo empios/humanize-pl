@@ -7,7 +7,7 @@ from typer.testing import CliRunner
 
 from humanize_pl import core
 from humanize_pl.cli import app
-from humanize_pl.config import Engine, HumanizeConfig, Mode
+from humanize_pl.config import Engine, HumanizeConfig, LegalReviewProfile, Mode
 from humanize_pl.core import humanize_text
 from humanize_pl.io.docx_io import process_docx
 from humanize_pl.nlp.stanza_engine import SentenceAnalysis, TokenInfo
@@ -112,7 +112,8 @@ def test_stanza_gate_rejects_split_without_finite_verb():
     original = "Pracownik wykonuje pracę i sam wymóg organizuje ocenę."
     protected = protect_text(original)
     pipeline = LegalPipeline(
-        config=HumanizeConfig(mode=Mode.standard, engine=Engine.nlp),
+        # Exercise the syntax gate independently of the earlier legal scope guard.
+        config=HumanizeConfig(mode=Mode.standard, engine=Engine.nlp, legal_review_profile=LegalReviewProfile.general),
         protected=protected,
         rule_engine=SplitOnlyRuleEngine(mode=Mode.standard),
         stanza_engine=FakeStanzaEngine(),
@@ -147,7 +148,9 @@ def test_transformer_similarity_blocks_semantic_drift():
     original = "Pracownik wykonuje pracę pod kierownictwem pracodawcy."
     protected = protect_text(original)
     pipeline = LegalPipeline(
-        config=HumanizeConfig(mode=Mode.standard, engine=Engine.hybrid, semantic_threshold=0.90),
+        # Exercise the embedding gate independently of legal assertion preservation.
+        config=HumanizeConfig(mode=Mode.standard, engine=Engine.hybrid, semantic_threshold=0.90,
+                             legal_review_profile=LegalReviewProfile.general),
         protected=protected,
         rule_engine=OneCandidateRuleEngine(
             Candidate(
@@ -384,16 +387,17 @@ def test_cli_exposes_version():
     assert "humanize-pl 0.2.2" in result.stdout
 
 
-def test_intra_sentence_redundancy_reduction_is_safe():
+def test_intra_sentence_redundancy_keeps_explicit_legal_actors():
     text = (
         "Pracownik wykonuje pracę pod kierownictwem, "
         "oraz pracownik pozostaje w dyspozycji pracodawcy."
     )
     result = humanize_text(text, mode="standard", include_candidates=True)
-    assert "oraz pozostaje w dyspozycji pracodawcy" in result.text
+    assert result.text == text
     assert any(
         trace.rule == "redundancy:drop_repeated_subject_in_sentence"
-        and trace.status == "accepted"
+        and trace.status == "rejected"
+        and any(g["name"] == "legal_party_roles_preserved" and not g["ok"] for g in trace.gate_results)
         for trace in result.all_candidates
     )
 

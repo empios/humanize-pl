@@ -87,6 +87,7 @@ def apply_rhythm_pass(
     mode: Mode,
     scope: RhythmScope = RhythmScope.sentences_only,
     protected_paragraph_indices: set[int] | None = None,
+    nli: Any = None,
 ) -> RhythmResult:
     """Move a document's rhythm toward the human band, or decline and say why."""
     lines, indices, paragraphs = _paragraphs_of(text)
@@ -166,7 +167,7 @@ def apply_rhythm_pass(
             )
             if uses_semicolon and semicolons >= semicolon_budget:
                 continue
-            if not _accepts(operation):
+            if not _accepts(operation, nli=nli):
                 continue
             applied = (gain, preview, operation)
             break
@@ -267,7 +268,7 @@ def _collect(
     return out
 
 
-def _accepts(operation: RhythmOperation) -> bool:
+def _accepts(operation: RhythmOperation, *, nli: Any = None) -> bool:
     """Every gate the engine already owns, plus the one it cannot express."""
     if not token_multiset_preserved(operation.original, operation.candidate):
         return False
@@ -284,6 +285,7 @@ def _accepts(operation: RhythmOperation) -> bool:
         max_length_ratio=1.60,
         rule=operation.rule,
         operation_type=operation.kind,
+        nli=nli,
     )
     return validation.ok
 

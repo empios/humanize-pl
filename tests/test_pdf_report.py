@@ -57,6 +57,10 @@ def test_docx_flow_writes_the_pdf_next_to_the_json_report(tmp_path) -> None:
     assert "Podstawa i ograniczenia analizy" in text
     assert "Co się zmieniło w tekście" not in text
     assert "Jak to sprawdzaliśmy" not in text
+    normalized = " ".join(text.split())
+    assert "Redakcja językowa: wykonana" in normalized
+    assert "Kontrola kompletności:" in normalized
+    assert "Dopisywanie sekcji: wyłączone" in normalized
 
 
 def test_pdf_can_be_turned_off(tmp_path) -> None:

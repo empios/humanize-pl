@@ -118,6 +118,35 @@ def test_unified_humanize_xlsx(tmp_path):
     assert out_xlsx.is_file()
 
 
+@pytest.mark.parametrize("kind", ["folder", "xlsx"])
+@pytest.mark.parametrize("readiness,processing", [
+    ("ready", "ok"), ("ready_with_warnings", "ok"), ("failed", "ok"), ("failed", "failed"),
+])
+def test_batch_api_uses_all_readiness_states(tmp_path, monkeypatch, kind, readiness, processing):
+    from humanize_pl.flows.base import ItemOutcome, summarise
+
+    outcome = ItemOutcome(
+        name="pozycja", status=processing, readiness_status=readiness,
+        warnings=["Ostrzeżenie pozycji."] if readiness == "ready_with_warnings" else [],
+    )
+    summary = summarise([outcome])
+    payload = {"summary": summary, "documents" if kind == "folder" else "rows": [outcome.to_json()]}
+    source = tmp_path / ("input" if kind == "folder" else "input.xlsx")
+    if kind == "folder":
+        source.mkdir()
+    else:
+        source.touch()
+    monkeypatch.setattr(
+        "humanize_pl.flow.run_docx_flow" if kind == "folder" else "humanize_pl.flow.run_xlsx_flow",
+        lambda *a, **kw: payload,
+    )
+    result = humanize(source, column="A", pdf=False)
+    assert result.status == processing
+    assert result.readiness_status == readiness == summary["readiness_status"]
+    if outcome.warnings:
+        assert result.warnings == ["pozycja: Ostrzeżenie pozycji."]
+
+
 def test_unified_humanize_with_nli_integration(tmp_path, monkeypatch):
     from humanize_pl.nli import ClauseCheck, NliReport, SectionCheck
 
@@ -164,6 +193,48 @@ def test_unified_humanize_with_nli_integration(tmp_path, monkeypatch):
 
     assert result.nli.get("category") == "umowa_o_prace"
     assert result.nli.get("verdict") == "entailed"
+
+
+@pytest.mark.parametrize("kind", ["text", "docx"])
+def test_builtin_blueprint_from_main_form_works_in_both_flows(tmp_path, monkeypatch, kind):
+    from humanize_pl.flows.base import FlowSettings
+    from humanize_pl.nli import NliReport
+
+    selected = []
+
+    def check(text, blueprint, *, judge):
+        selected.append(blueprint.category)
+        return NliReport(category=blueprint.category)
+
+    monkeypatch.setattr("humanize_pl.nli.check_document_against_blueprint", check)
+    monkeypatch.setattr("humanize_pl.nli.LlmClauseJudge.from_environment", lambda *a: object())
+    text = "§ 1. Przedmiot umowy\nWykonawca przygotuje dokumentację zgodnie z załącznikiem."
+    source = text
+    if kind == "docx":
+        source = tmp_path / "umowa.docx"
+        _create_docx(source, *text.splitlines())
+    settings = FlowSettings(blueprint="umowa_uslug", nli=True, draft_missing=False, rewrite=False)
+    result = humanize(source, settings=settings, pdf=False)
+    assert result.ok
+    assert result.blueprint["category"] == "umowa_uslug"
+    assert result.blueprint["checked"]
+    assert result.nli["category"] == "umowa_uslug"
+    assert selected == ["umowa_uslug"]
+
+
+def test_invalid_blueprint_reports_an_error_without_certifying_structure():
+    result = humanize("Zwykły tekst.", blueprint="nieistniejacy-szkielet", no_rewrite=True, pdf=False)
+    assert result.ok
+    assert not result.blueprint["checked"]
+    assert any("Nie udało się załadować szkieletu" in warning for warning in result.warnings)
+    assert result.readiness_status != "ready"
+
+
+def test_cli_accepts_builtin_blueprint_id():
+    result = CliRunner().invoke(app, ["Tekst.", "--blueprint", "umowa_uslug", "--no-rewrite", "--no-pdf"])
+    assert result.exit_code == 0, result.output
+    assert "Nie udało się załadować" not in result.output
+    assert "brak wymaganej sekcji" in result.output
 
 
 def test_unified_cli_default_run_with_text():

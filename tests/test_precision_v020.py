@@ -1,5 +1,7 @@
 import json
 
+import pytest
+
 from humanize_pl.config import HumanizeConfig, Mode
 from humanize_pl.core import humanize_text
 from humanize_pl.reports.report import write_json_report
@@ -38,7 +40,9 @@ def test_bad_split_rejected_reported():
 
 def test_legal_style_boundaries():
     result = humanize_text("Podporządkowanie pracownika nie jest jednak nieograniczone.", mode="standard")
-    assert result.text == "Podporządkowanie pracownika ma jednak swoje granice."
+    # The shared logical guard conservatively declines changes to negation,
+    # including this idiomatic double negative, instead of guessing its scope.
+    assert result.text == "Podporządkowanie pracownika nie jest jednak nieograniczone."
 
 
 def test_formal_legal_candidates_are_precise():
@@ -398,27 +402,20 @@ def test_validator_rejects_stranded_relative_clause_after_infinitive():
     assert valid.ok
 
 
-def test_safe_nlp_nominalizations_still_work():
-    assert (
-        humanize_text(
-            "Administrator powinien udzielić odpowiedzi bez zbędnej zwłoki, "
-            "nie później niż w terminie 30 dni.",
-            mode="standard",
-            engine="nlp",
-        ).text
-        == (
-            "Administrator powinien odpowiedzieć bez zbędnej zwłoki, "
-            "nie później niż w terminie 30 dni."
+def test_legal_deadlines_remain_explicit_during_nlp_editing():
+    for source in (
+        ("Administrator powinien udzielić odpowiedzi bez zbędnej zwłoki, "
+         "nie później niż w terminie 30 dni."),
+        "Brak zapłaty w powyższym terminie może skutkować skierowaniem sprawy do sądu.",
+    ):
+        result = humanize_text(source, mode="standard", engine="nlp", include_candidates=True, offline_models=True)
+        assert result.text == source
+        if result.engine_used != "nlp":
+            pytest.skip("Test integracyjny kandydatów NLP wymaga lokalnych wag Stanza.")
+        assert any(
+            gate["name"] == "legal_scope_preserved" and not gate["ok"]
+            for trace in result.all_candidates for gate in trace.gate_results
         )
-    )
-    assert (
-        humanize_text(
-            "Brak zapłaty w powyższym terminie może skutkować skierowaniem sprawy do sądu.",
-            mode="standard",
-            engine="nlp",
-        ).text
-        == "Brak zapłaty w tym terminie może skutkować skierowaniem sprawy do sądu."
-    )
 
 
 def test_mode_to_intensity_mapping_is_stable():
@@ -513,16 +510,17 @@ def test_same_rule_is_not_applied_twice_in_sequence():
     assert len(rules) == len(set(rules))
 
 
-def test_redundancy_reduction_drops_repeated_opening_in_standard():
+def test_redundancy_reduction_keeps_an_explicit_legal_party():
     result = humanize_text(
         "Podporządkowanie pracownika jest cechą stosunku pracy. "
         "Podporządkowanie pracownika wynika z art. 22 Kodeksu pracy.",
         mode="standard",
         include_candidates=True,
     )
-    assert "Wynika z art. 22 Kodeksu pracy." in result.text
+    assert "Podporządkowanie pracownika wynika z art. 22 Kodeksu pracy." in result.text
     assert any(
-        trace.operation_type == "redundancy_reduction" and trace.status == "accepted"
+        trace.operation_type == "redundancy_reduction" and trace.status == "rejected"
+        and any(g["name"] == "legal_party_roles_preserved" and not g["ok"] for g in trace.gate_results)
         for trace in result.all_candidates
     )
 

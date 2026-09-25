@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 import os
+import threading
 from contextlib import contextmanager
 from dataclasses import dataclass
 from functools import lru_cache
@@ -22,20 +23,36 @@ class TransformerValidationResult:
 
 
 class NLIValidator:
-    """NLI cross-encoder used to prevent hallucinations (contradictions)."""
+    """One-way entailment; callers must check both directions for equivalence."""
 
     def __init__(self, model_name: str | None = None, *, offline: bool = False) -> None:
         self.model_name = model_name or DEFAULT_NLI_MODEL
         self.offline = offline
         self._pipeline = _get_nli_pipeline(self.model_name, offline)
+        self._lock = threading.Lock()
 
     def check_entailment(self, premise: str, hypothesis: str) -> bool:
-        """Returns True if hypothesis does not contradict the premise."""
-        # pipeline output for single pair: {'label': 'entailment'/'neutral'/'contradiction', 'score': ...}
-        # mDeBERTa-v3-base-mnli-xnli labels might be: 'entailment', 'neutral', 'contradiction'
-        result = self._pipeline({"text": premise, "text_pair": hypothesis})
-        label = result["label"].lower()
-        return "contradiction" not in label
+        """Neutral, unknown, low-confidence and failed checks are not entailment.
+
+        Never truncate: ignoring the tail could conceal a lost condition.
+        Oversized inputs fail closed through the common meaning gate.
+        """
+        with self._lock:
+            result = self._pipeline(
+                {"text": premise, "text_pair": hypothesis}, truncation=False
+            )
+        if isinstance(result, list) and len(result) == 1:
+            result = result[0]
+        if not isinstance(result, dict):
+            return False
+        label = str(result.get("label", "")).casefold()
+        score = result.get("score")
+        return (
+            label == "entailment"
+            and isinstance(score, (int, float))
+            and math.isfinite(score)
+            and 0.80 <= score <= 1.0
+        )
 
 
 class EmbeddingSimilarityValidator:

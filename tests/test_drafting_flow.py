@@ -17,11 +17,12 @@ import pytest
 from humanize_pl.config import Engine, Mode
 from humanize_pl.document import ReadinessStatus
 from humanize_pl.flows import FlowSettings, run_all_layers, run_docx_flow
+from humanize_pl.llm import LlmSettings
 
 pytest.importorskip("docx")
 
 FIXTURE = Path("docs_tests/ai_generated/ai_legal_01_umowa_uslug.txt")
-SETTINGS = FlowSettings(mode=Mode.standard, engine=Engine.basic)
+SETTINGS = FlowSettings(mode=Mode.standard, engine=Engine.basic, draft_missing=True)
 
 # One clause per section the fixture lacks, written the way the prompt asks:
 # a blank where a fact belongs, and the words the skeleton recognises.
@@ -42,6 +43,7 @@ class FakeModel:
     """Answers each drafting request by the section it names."""
 
     def __init__(self, answers: dict[str, str] = ANSWERS, presence: dict[str, dict] | None = None) -> None:
+        self.settings = LlmSettings("https://model.test/v1", "fake")
         self.answers = answers
         # What the model says when asked whether a section is already there;
         # by default every section the fixture lacks really is missing.
@@ -99,7 +101,8 @@ def test_drafted_clauses_do_not_trip_the_rewrite_inventory_check():
     assert outcome.legal_sensitive_check["passed"] is True
 
 
-def test_without_a_model_the_gap_is_reported_not_silently_left():
+def test_without_a_model_the_gap_is_reported_not_silently_left(monkeypatch):
+    monkeypatch.setattr("humanize_pl.flows.base.prepare_llm", lambda settings: (None, []))
     text = FIXTURE.read_text(encoding="utf-8")
 
     outcome, _verdict = run_all_layers(text, name="umowa.txt", settings=SETTINGS)
@@ -205,6 +208,9 @@ def test_a_withdrawn_docx_save_reports_the_drafts_as_proposals(tmp_path, monkeyp
         (tmp_path / "out" / "details" / "umowa.json").read_text(encoding="utf-8")
     )
     assert detail["drafted_sections"][0]["inserted"] is False
+    assert row["operations"]["drafting"]["status"] == "not_saved"
+    assert row["operations"]["drafting"]["sections_added"] == 0
+    assert row["operations"]["drafting"]["requires_review"] is True
 
 
 def test_the_docx_command_can_leave_missing_sections_unwritten(monkeypatch, tmp_path):
@@ -224,6 +230,8 @@ def test_the_docx_command_can_leave_missing_sections_unwritten(monkeypatch, tmp_
     CliRunner().invoke(cli.app, ["docx", str(tmp_path), "--no-draft-missing", "--no-pdf"])
     assert seen["draft_missing"] is False
     CliRunner().invoke(cli.app, ["docx", str(tmp_path), "--no-pdf"])
+    assert seen["draft_missing"] is False
+    CliRunner().invoke(cli.app, ["docx", str(tmp_path), "--draft-missing", "--no-pdf"])
     assert seen["draft_missing"] is True
 
 
@@ -264,3 +272,83 @@ def test_an_answer_without_a_verdict_drafts_nothing():
 
     assert outcome.drafted_sections == []
     assert outcome.text_out.count("Kodeksu cywilnego") == text.count("Kodeksu cywilnego")
+
+
+def test_drafting_is_opt_in_even_with_an_available_model():
+    class NoCalls(FakeModel):
+        def complete_json(self, *_args, **_kwargs):
+            pytest.fail("Default settings must not ask a model about missing sections")
+
+        def complete_text(self, *_args, **_kwargs):
+            pytest.fail("Default settings must not draft")
+
+    outcome, _ = run_all_layers(
+        FIXTURE.read_text(encoding="utf-8"), name="umowa", settings=FlowSettings(), rewriter=NoCalls(),
+    )
+    assert outcome.drafted_sections == []
+    assert outcome.operation_results()["drafting"]["status"] == "disabled"
+
+
+def test_draft_only_preserves_existing_prose_and_has_separate_results(monkeypatch):
+    from humanize_pl.flow import humanize
+
+    monkeypatch.setattr("humanize_pl.flow.prepare_llm", lambda settings: (FakeModel(), []))
+    source = FIXTURE.read_text(encoding="utf-8")
+    result = humanize(source, no_rewrite=True, draft_missing=True)
+
+    assert result.changed
+    assert result.changes_applied == 0
+    assert result.applied_changes == []
+    assert result.operations["editing"]["status"] == "disabled"
+    assert result.operations["completeness"]["status"] == "completed"
+    assert result.operations["drafting"] == {
+        "requested": True, "status": "added", "sections_added": 3, "requires_review": True,
+    }
+    assert [r["text"] for r in result.drafted_sections] == list(ANSWERS.values())
+    # Existing paragraphs remain verbatim and in their original order.
+    old_lines = source.splitlines()
+    assert [line for line in result.text.splitlines() if line in old_lines] == old_lines
+
+
+def test_draft_only_docx_is_saved_and_resume_checks_its_fingerprint(tmp_path, monkeypatch):
+    from dataclasses import replace
+
+    from docx import Document
+
+    from humanize_pl.flows import docx_flow
+
+    source = tmp_path / "umowa.docx"
+    original = _write_fixture_docx(source)
+    before = source.read_bytes()
+    target = tmp_path / "out" / "umowa_humanized.docx"
+    monkeypatch.setattr(docx_flow, "prepare_llm", lambda settings: (FakeModel(), []))
+    settings = replace(SETTINGS, rewrite=False)
+    payload = run_docx_flow(source, target, settings=settings, pdf=False)
+    paragraphs = [p.text for p in Document(target).paragraphs]
+    assert source.read_bytes() == before
+    assert [p for p in paragraphs if p in original] == original
+    assert all(answer in paragraphs for answer in ANSWERS.values())
+    assert payload["documents"][0]["changes_applied"] == 0
+    assert payload["documents"][0]["operations"]["drafting"]["sections_added"] == 3
+
+    # A modified output must be regenerated, even with editing disabled.
+    target.write_bytes(b"interrupted output")
+    resumed = run_docx_flow(source, target, settings=settings, pdf=False, resume=True)
+    assert resumed["summary"]["failed"] == 0
+    assert all(answer in [p.text for p in Document(target).paragraphs] for answer in ANSWERS.values())
+
+
+def test_text_ui_shows_full_drafts_and_scope(monkeypatch):
+    from humanize_pl.ui.app import run_text
+
+    monkeypatch.setattr("humanize_pl.flow.prepare_llm", lambda settings: (FakeModel(), []))
+    _text, summary, changes, _gate = run_text(
+        FIXTURE.read_text(encoding="utf-8"), None,
+        "standard", "basic", "auto", "rules", "preserve", False,
+        False, False, False, False, False, None, None, "(brak)", False, True, "legal", True,
+    )
+    assert "Redakcja językowa: wyłączona" in summary
+    assert "Kontrola kompletności: wykonana" in summary
+    assert "Sekcje dodane: 3" in summary
+    assert "wymaga przeglądu prawnika" in changes
+    assert all(answer in changes for answer in ANSWERS.values())

@@ -25,7 +25,9 @@ from humanize_pl.drafting import (
     drafts_from_payload,
     inserted_line_indices,
 )
+from humanize_pl.io.atomic import atomic_output, ensure_distinct_paths, write_text_atomic
 from humanize_pl.io.docx_structure import (
+    document_text,
     inventory_docx,
     iter_text_units,
     load_document,
@@ -34,6 +36,7 @@ from humanize_pl.io.docx_structure import (
     save_with_inventory_guard,
 )
 from humanize_pl.rhythm import RhythmScope
+from humanize_pl.runtime import RunControl, checkpoint, controlled
 
 from .base import (
     FlowSettings,
@@ -44,6 +47,7 @@ from .base import (
     run_all_layers,
     summarise,
 )
+from .resume import SCHEMA, file_digest, processing_digest, read_completed
 
 
 def docx_files(directory: Path) -> list[Path]:
@@ -54,11 +58,13 @@ def docx_files(directory: Path) -> list[Path]:
             if path.is_file()
             and path.suffix.lower() == ".docx"
             and not path.name.startswith("~$")
+            and not path.name.startswith(".humanize-")
         ),
         key=lambda path: (path.name.casefold(), path.name),
     )
 
 
+@controlled
 def run_docx_flow(
     input_directory: Path,
     output_directory: Path,
@@ -68,17 +74,16 @@ def run_docx_flow(
     resume: bool = False,
     on_item=None,
     on_layers=None,
+    control: RunControl | None = None,
 ) -> dict[str, Any]:
     """Diagnose, rewrite and gate every .docx in `input_directory` (or single file).
 
     One humanizer session is reused across documents so optional NLP models
     load once rather than per file.
 
-    With `resume=True`, documents whose detail JSON (and, when the flow
-    writes rewritten documents, the output file) already exist are skipped
-    and their previous outcomes are replayed into the report. A killed batch
-    can therefore continue where it stopped instead of re-running finished
-    documents.
+    With `resume=True`, completed items are reused only if source, processing
+    configuration and saved output still match the hashes in the detail JSON.
+    Legacy, incomplete or invalid records are recomputed.
     """
     # DOCX cannot take a paragraph-count change: `structural_differences`
     # compares that count, and a mismatch makes this flow restore the source
@@ -112,8 +117,18 @@ def run_docx_flow(
     else:
         raise FileNotFoundError(f"No such file or directory: {input_path}")
 
-    actual_output_dir.mkdir(parents=True, exist_ok=True)
     details_directory = actual_output_dir / "details"
+    targets = [single_target_file or actual_output_dir / f"{path.stem}_humanized.docx" for path in files]
+    detail_paths = [details_directory / f"{path.stem}.json" for path in files]
+    pdf_target = actual_output_dir / (f"{input_path.stem}_raport.pdf" if is_single_file else "raport.pdf")
+    report_json_path = actual_output_dir / (f"{input_path.stem}_flow-report.json" if is_single_file else "flow-report.json")
+    outputs = targets + detail_paths + [report_json_path]
+    if pdf:
+        outputs.append(pdf_target)
+    if not is_single_file:
+        outputs.append(actual_output_dir / "summary.csv")
+    ensure_distinct_paths(files, outputs)
+    actual_output_dir.mkdir(parents=True, exist_ok=True)
     details_directory.mkdir(parents=True, exist_ok=True)
 
     session = settings.session() if settings.rewrite else None
@@ -121,6 +136,7 @@ def run_docx_flow(
     rewriter, llm_warnings = prepare_llm(settings)
     layers = layer_status(
         session,
+        settings=settings,
         office_profile=style_profile is not None,
         rewriter=rewriter,
         llm_warnings=llm_warnings,
@@ -128,44 +144,25 @@ def run_docx_flow(
     if on_layers is not None:
         on_layers(layers)
     outcomes: list[ItemOutcome] = []
+    processing = processing_digest(settings, layers, rewriter=rewriter)
 
     for path in files:
+        checkpoint("dokumenty", len(outcomes), len(files))
         target = single_target_file if is_single_file and single_target_file else actual_output_dir / f"{path.stem}_humanized.docx"
         detail_path = details_directory / f"{path.stem}.json"
-        # The detail JSON is written last, so it is the completion marker.
-        # When the flow writes a rewritten document too, that file must be
-        # there as well; in diagnose-only runs the detail file is enough.
-        writes_target = settings.rewrite or settings.format_policy == FormatPolicy.normalize
-        if resume and detail_path.is_file() and (not writes_target or target.is_file()):
-            try:
-                payload = json.loads(detail_path.read_text(encoding="utf-8"))
-                outcome = ItemOutcome.from_json(payload)
-                if "applied_changes" in payload:
-                    outcome.applied_changes = payload["applied_changes"]
-                else:
-                    # Detail file written before the change register was
-                    # persisted. All the numbers a resumed report needs are
-                    # still there (signals, counts, findings); only the
-                    # per-change register is gone. Replaying is far cheaper
-                    # than re-running the document, and the report must not
-                    # pretend the register exists.
-                    outcome.applied_changes = []
-                    outcome.warnings.append(
-                        "Rejestr zmian niedostępny (starszy plik szczegółów); "
-                        "liczby pomiarów są zachowane."
-                    )
-                outcome.unresolved_findings = payload.get("unresolved_findings", [])
-            except Exception as exc:  # noqa: BLE001 - one bad document must not stop the batch
-                outcome = ItemOutcome(
-                    name=path.name,
-                    status="failed",
-                    error=f"resume: uszkodzony zapis szczegółów: {type(exc).__name__}: {exc}",
-                )
-            outcomes.append(outcome)
-            if on_item is not None:
-                on_item(outcome)
-            continue
+        writes_target = settings.rewrite or settings.draft_missing or settings.format_policy == FormatPolicy.normalize
         try:
+            identity = {"schema": SCHEMA, "source_sha256": file_digest(path), "processing_sha256": processing}
+            payload = read_completed(detail_path, identity, target=target if writes_target else None) if resume else None
+            if payload is not None:
+                outcome = ItemOutcome.from_json(payload)
+                outcome.applied_changes = payload["applied_changes"]
+                outcome.unresolved_findings = payload.get("unresolved_findings", [])
+                outcome.notes.append("Wznowiono z wyniku o zgodnych odciskach źródła, konfiguracji i pliku wynikowego.")
+                outcomes.append(outcome)
+                if on_item is not None:
+                    on_item(outcome)
+                continue
             document = load_document(path)
             units = list(iter_text_units(document))
             text = "\n".join(unit.text for unit in units)
@@ -181,7 +178,8 @@ def run_docx_flow(
                 llm_prepared=True,
                 llm_initialization_warnings=llm_warnings,
             )
-            if settings.rewrite or settings.format_policy == FormatPolicy.normalize:
+            if writes_target:
+                checkpoint("zapis DOCX", len(outcomes), len(files))
                 formatting = _write_docx(
                     path,
                     target,
@@ -194,20 +192,22 @@ def run_docx_flow(
                 formatting = audit_document(document, path, policy=settings.format_policy)
                 if settings.format_policy == FormatPolicy.audit or settings.require_renderer:
                     render_and_audit(path, formatting, require_renderer=settings.require_renderer)
+            if not formatting.inventory_preserved:
+                outcome, verdict = _measure_restored_source(text, outcome, settings, style_profile)
+                # Formatting fixes describe the discarded candidate, not the saved copy.
+                source_audit = audit_document(document, path, policy=settings.format_policy)
+                source_audit.inventory_preserved = False
+                source_audit.inventory_differences = formatting.inventory_differences
+                source_audit.issues.extend(formatting.issues)
+                source_audit.warnings.append("Zapis odrzucono; plik wynikowy jest kopią źródła. Wprowadzone formatowanie także wycofano.")
+                if settings.format_policy in {FormatPolicy.audit, FormatPolicy.normalize} or settings.require_renderer:
+                    render_and_audit(target, source_audit, require_renderer=settings.require_renderer)
+                formatting = source_audit
             outcome.formatting = formatting.to_json()
             if coercion_warning:
                 outcome.warnings.append(coercion_warning)
             outcome.warnings.extend(formatting.warnings)
             outcome.warnings.extend(formatting.issues)
-            if not formatting.inventory_preserved:
-                outcome.text_out = text
-                outcome.applied_changes = []
-                outcome.changes_applied = 0
-                outcome.examples = []
-                # The file written is the source copy, markdown and all.
-                outcome.artifacts_after = outcome.artifacts_before
-                if outcome.drafted_sections:
-                    _drafts_not_inserted(outcome)
             # Formatting warnings raise the status to "with warnings"; they
             # must not lower one that is already worse. This line used to
             # overwrite `failed` unconditionally, so a document missing a
@@ -216,10 +216,23 @@ def run_docx_flow(
             # one call after it was made.
             if outcome.warnings and outcome.readiness_status == ReadinessStatus.ready.value:
                 outcome.readiness_status = ReadinessStatus.ready_with_warnings.value
-            _write_detail(details_directory / f"{path.stem}.json", text, outcome, verdict)
+            if file_digest(path) != identity["source_sha256"]:
+                raise OSError("Źródło zmieniło się podczas przetwarzania; wynik wymaga ponownego przeliczenia.")
+            if writes_target:
+                identity["output_sha256"] = file_digest(target)
+            identity["reusable"] = (
+                formatting.inventory_preserved
+                and outcome.llm.get("status") not in {"unavailable", "ready_with_errors"}
+                and (
+                    not settings.nli or outcome.document_type == DocumentType.general.value
+                    or (bool(outcome.nli) and outcome.nli.get("coverage", {}).get("unknown") == 0)
+                )
+            )
+            _write_detail(detail_path, text, outcome, verdict, identity=identity)
         except Exception as exc:  # noqa: BLE001 - one bad document must not stop the batch
             outcome = ItemOutcome(
-                name=path.name, status="failed", error=f"{type(exc).__name__}: {exc}"
+                name=path.name, status="failed", error=f"{type(exc).__name__}: {exc}",
+                requested_operations=settings.requested_operations(),
             )
         outcomes.append(outcome)
         if on_item is not None:
@@ -235,15 +248,21 @@ def run_docx_flow(
         row = item.to_json()
         row["applied_changes"] = item.applied_changes
         row["unresolved_findings"] = item.unresolved_findings
+        row["text_out"] = item.text_out
         documents.append(row)
     payload = {
         "flow": "docx",
         "input_directory": str(input_directory),
         "output_directory": str(output_directory),
         "settings": {
+            "track": settings.track.value,
+            "general_options": settings.general_options.to_json(),
             "mode": settings.mode.value,
             "engine": settings.engine.value,
             "rewrite": settings.rewrite,
+            "check_completeness": settings.check_completeness,
+            "draft_missing": settings.draft_missing,
+            "nli": settings.nli,
             "require_anchor": settings.require_anchor,
             "document_type": settings.document_type.value,
             "rewrite_backend": settings.rewrite_backend.value,
@@ -257,45 +276,47 @@ def run_docx_flow(
         "summary": summary,
         "documents": documents,
     }
-    pdf_target = (
-        actual_output_dir / f"{input_path.stem}_raport.pdf"
-        if is_single_file and single_target_file
-        else actual_output_dir / "raport.pdf"
-    )
     if pdf:
         attach_pdf_report(payload, pdf_target)
-    report_json_path = (
-        actual_output_dir / f"{input_path.stem}_flow-report.json"
-        if is_single_file and single_target_file
-        else actual_output_dir / "flow-report.json"
-    )
-    report_json_path.write_text(
-        json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
-    )
     payload["report_path"] = str(report_json_path)
     if is_single_file:
-        payload["target_docx"] = str(single_target_file or target)
+        payload["target_docx"] = str(single_target_file or target) if writes_target and outcomes[0].status != "failed" else None
+    write_text_atomic(
+        report_json_path, json.dumps(payload, ensure_ascii=False, indent=2) + "\n", sources=files
+    )
     if not is_single_file:
         _write_csv(actual_output_dir / "summary.csv", outcomes)
     return payload
 
 
-def _drafts_not_inserted(outcome: ItemOutcome) -> None:
-    """The saved file is the source copy, so the drafted clauses are not in it.
-
-    Kept in the report as proposals - the text is still worth a lawyer's
-    time - but nothing may claim they are in the document, and the structure
-    reported is the structure of the file that was actually written.
-    """
+def _measure_restored_source(text, previous, settings, style_profile):
+    """Recompute all output measurements on the saved source, without model calls."""
+    outcome, verdict = run_all_layers(
+        text, name=previous.name,
+        settings=replace(settings, rewrite=False, draft_missing=False, nli=False),
+        style_profile=style_profile, llm_prepared=True,
+    )
+    outcome.requested_operations = previous.requested_operations
+    outcome.llm = previous.llm
+    outcome.drafting_status = previous.drafting_status
+    outcome.drafted_sections = previous.drafted_sections
     for row in outcome.drafted_sections:
         row["inserted"] = False
-    outcome.warnings.append(
-        "Zapis DOCX wycofano, więc dopisane sekcje nie weszły do pliku; "
-        "ich treść jest w raporcie jako propozycja."
-    )
-    outcome.blueprint_after = outcome.blueprint_before
-    if outcome.blueprint_before.get("blocking"):
-        outcome.readiness_status = ReadinessStatus.failed.value
+    if outcome.drafted_sections:
+        outcome.warnings.append("Zapis DOCX wycofano; dopiski są wyłącznie propozycjami w raporcie, nie ma ich w pliku.")
+    outcome.nli_before = previous.nli_before
+    outcome.nli_after = previous.nli_before
+    if settings.nli:
+        if outcome.nli_after:
+            outcome.warnings.extend(outcome.nli_after.get("warnings", []))
+            outcome.warnings.extend(f"NLI: {issue}" for issue in outcome.nli_after.get("issues", []))
+        else:
+            outcome.warnings.append("Po wycofaniu zapisu brak oceny NLI źródła; oceny odrzuconej wersji nie użyto.")
+    outcome.needs_review = True
+    if outcome.readiness_status == ReadinessStatus.ready.value:
+        outcome.readiness_status = ReadinessStatus.ready_with_warnings.value
+    outcome.notes = previous.notes + ["Zapis wycofano; pomiary i bramkę przeliczono dla faktycznie zapisanej kopii źródła."]
+    return outcome, verdict
 
 
 def _insert_drafted_paragraphs(units: list[Any], drafts: list[DraftedSection]) -> int:
@@ -355,11 +376,34 @@ def _write_docx(
     document_type: DocumentType,
     drafts: list[DraftedSection] | None = None,
 ) -> FormattingReport:
+    with atomic_output(target, sources=[source]) as staged:
+        return _write_docx_candidate(
+            source, staged, text, settings=settings, document_type=document_type, drafts=drafts,
+        )
+
+
+def _write_docx_candidate(
+    source: Path, target: Path, text: str, *, settings: FlowSettings,
+    document_type: DocumentType, drafts: list[DraftedSection] | None = None,
+) -> FormattingReport:
     """Apply text at run level, normalize optionally, and verify the package."""
     document = load_document(source)
     units = list(iter_text_units(document))
     lines = text.split("\n")
     drafts = drafts or []
+    from docx.oxml.ns import qn
+
+    # A section belongs to the document body. Inserting it into a table cell,
+    # revision or open comment range changes its scope even if counts match.
+    for draft in drafts:
+        anchor = units[max(draft.after_line, 0)] if units else None
+        if anchor is None or anchor.protected or anchor.paragraph._p.getparent().tag != qn("w:body"):
+            shutil.copyfile(source, target)
+            return FormattingReport(
+                policy=settings.format_policy, inventory_preserved=False,
+                inventory_differences=["miejsce dopisania sekcji jest chronione lub poza głównym tekstem"],
+                issues=["Nie można bezpiecznie wstawić sekcji w wybranym miejscu DOCX; zapisano kopię źródła."],
+            )
     # The drafted lines have no paragraph yet; what is left maps one to one
     # onto the paragraphs that exist.
     added = set(inserted_line_indices(drafts))
@@ -368,7 +412,7 @@ def _write_docx(
     report = FormattingReport(policy=settings.format_policy)
     if len(lines) != len(units):
         target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(source, target)
+        shutil.copyfile(source, target)
         report.inventory_preserved = False
         report.inventory_differences.append("liczba fragmentów tekstowych")
         report.issues.append(
@@ -392,10 +436,13 @@ def _write_docx(
     report.issues.extend(audited.issues)
     report.warnings.extend(audited.warnings)
     report.protected_elements = audited.protected_elements
+    report.skipped_units = audited.skipped_units
+    report.excluded_parts = audited.excluded_parts
 
     before = inventory_docx(source)
     differences = save_with_inventory_guard(
-        document, source, target, expected_paragraph_delta=paragraphs_added
+        document, source, target, expected_paragraph_delta=paragraphs_added,
+        allow_formatting_changes=settings.format_policy == FormatPolicy.normalize,
     )
     if differences:
         report.inventory_preserved = False
@@ -419,26 +466,39 @@ def _write_docx(
             apply_template_style_parts(target, template)
             report.fixes.append("Zastosowano style i motyw z szablonu kancelarii.")
             compare_inventories(
-                before, target, report, expected_paragraph_delta=paragraphs_added
+                before, target, report, expected_paragraph_delta=paragraphs_added,
+                allow_formatting_changes=True,
             )
             if not report.inventory_preserved:
-                shutil.copy2(source, target)
+                shutil.copyfile(source, target)
                 report.issues.append(
                     "Szablon naruszył inwentarz OOXML; zapisano kopię źródła."
                 )
                 return report
+
+    saved_text = document_text(load_document(target))
+    expected_text = "\n".join(line for line in text.split("\n") if line.strip())
+    if saved_text != expected_text:
+        shutil.copyfile(source, target)
+        report.inventory_preserved = False
+        report.inventory_differences.append("tekst zapisanego pliku nie odpowiada zatwierdzonej redakcji")
+        report.issues.append("Niezgodność tekstu po zapisie; przywrócono kopię źródła.")
+        return report
 
     if settings.format_policy in {FormatPolicy.audit, FormatPolicy.normalize} or settings.require_renderer:
         render_and_audit(target, report, require_renderer=settings.require_renderer)
     return report
 
 
-def _write_detail(path: Path, text: str, outcome: ItemOutcome, verdict) -> None:
+def _write_detail(path: Path, text: str, outcome: ItemOutcome, verdict, *, identity: dict[str, Any]) -> None:
     diagnosis = detect_document(text)
-    path.write_text(
+    write_text_atomic(
+        path,
         json.dumps(
             {
                 **outcome.to_json(),
+                "text_out": outcome.text_out,
+                "resume": identity,
                 # `to_json` keeps the report compact and omits the full change
                 # register; the detail file is the one place that must be
                 # self-contained, because a resumed batch replays finished
@@ -463,12 +523,11 @@ def _write_detail(path: Path, text: str, outcome: ItemOutcome, verdict) -> None:
             indent=2,
         )
         + "\n",
-        encoding="utf-8",
     )
 
 
 def _write_csv(path: Path, outcomes: list[ItemOutcome]) -> None:
-    with path.open("w", encoding="utf-8", newline="") as handle:
+    with atomic_output(path) as staged, staged.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.writer(handle)
         writer.writerow(
             [

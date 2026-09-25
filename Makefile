@@ -21,7 +21,8 @@ benchmark-optional:
 build:
 	python -m build --wheel --no-isolation
 
-release-check: test audit-rules lint benchmark-basic build
+release-check:
+	humanize-pl-release-check
 
 release-check-python:
 	humanize-pl-release-check

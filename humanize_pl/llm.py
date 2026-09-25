@@ -6,13 +6,16 @@ and raw responses intentionally have no report/log serialization path here.
 
 from __future__ import annotations
 
+import asyncio
 import json
 import os
 import re
 import threading
 import time
 from collections.abc import Mapping
+from concurrent.futures import TimeoutError as FutureTimeoutError
 from dataclasses import dataclass, field
+from functools import wraps
 from pathlib import Path
 from typing import Any, TypeVar
 
@@ -20,6 +23,9 @@ import httpx
 import regex
 
 from humanize_pl.document import GENRE_PROFILES, DocumentType, StyleProfile
+from humanize_pl.privacy import RequestMask, processing_location
+from humanize_pl.runtime import current_control
+from humanize_pl.safety.meaning import check_equivalence
 from humanize_pl.safety.protectors import protect_text
 from humanize_pl.safety.validators import validate_candidate
 
@@ -30,6 +36,27 @@ class LlmConfigurationError(RuntimeError):
 
 class LlmEndpointError(RuntimeError):
     pass
+
+
+_http_loop: asyncio.AbstractEventLoop | None = None
+_http_loop_lock = threading.Lock()
+
+
+def _http_event_loop() -> asyncio.AbstractEventLoop:
+    """One I/O loop for synchronous callers, including concurrent batch workers.
+
+    Async HTTP lets cancellation interrupt headers/body reads and close the
+    connection, rather than leaving a blocking request running in a worker.
+    Clients and their connection pools stay on this loop for their lifetime.
+    """
+    global _http_loop
+    with _http_loop_lock:
+        if _http_loop is None:
+            _http_loop = asyncio.new_event_loop()
+            threading.Thread(
+                target=_http_loop.run_forever, name="humanize-http", daemon=True,
+            ).start()
+        return _http_loop
 
 
 def normalize_chat_completions_url(value: str) -> str:
@@ -175,6 +202,7 @@ class LlmBatchMetadata:
     rejected: int = 0
     warnings: list[str] = field(default_factory=list)
     decision_reasons: dict[str, int] = field(default_factory=dict)
+    processing_location: str = "unknown"
     # Fragments are rewritten concurrently, so every counter below is touched
     # from several threads. Without this the tallies in the report silently
     # drift, and a report nobody can trust is worse than no report.
@@ -195,6 +223,8 @@ class LlmBatchMetadata:
                 "rejected": self.rejected,
                 "warnings": list(self.warnings),
                 "decision_reasons": dict(self.decision_reasons),
+                "processing_location": self.processing_location,
+                "masking": "patterns_all_message_fields_not_full_anonymisation",
             }
 
     def record_decision(self, reason: str) -> None:
@@ -258,26 +288,48 @@ _RESPONSE_FORMATS: dict[str, dict[str, Any]] = {
 }
 
 
-class OpenAICompatibleRewriter:
-    """One reusable client and capability decision per batch."""
+def _report_errors(function):
+    @wraps(function)
+    def wrapped(self, *args, **kwargs):
+        try:
+            return function(self, *args, **kwargs)
+        except Exception as exc:
+            self.metadata.note_endpoint_error(_safe_error(exc))
+            raise
+    return wrapped
 
-    def __init__(self, settings: LlmSettings, *, client: httpx.Client | None = None):
+
+class OpenAICompatibleRewriter:
+    """One reusable client and capability decision per batch.
+
+    Methods remain synchronous. An injected HTTP client must be an unused
+    AsyncClient so cancellable I/O and pooled connections share our event loop.
+    The caller retains ownership of an injected client.
+    """
+
+    def __init__(self, settings: LlmSettings, *, client: httpx.AsyncClient | None = None):
+        if client is not None and not isinstance(client, httpx.AsyncClient):
+            raise TypeError("Wstrzyknięty klient HTTP musi być typu httpx.AsyncClient.")
         self.settings = settings
         headers = {"Content-Type": "application/json"}
         if settings.api_key:
             headers["Authorization"] = f"Bearer {settings.api_key}"
         self._headers = headers
-        self._client = client or httpx.Client(
+        self._client = client or httpx.AsyncClient(
             timeout=settings.timeout_seconds,
             headers=headers,
         )
         self._owns_client = client is None
         self.metadata = LlmBatchMetadata(model=settings.model)
+        self.metadata.processing_location = processing_location(settings.endpoint)
         self._probed = False
+        self.control = current_control()
+        if self.control is not None:
+            self.control.cleanup(self.close)
 
     def close(self) -> None:
-        if self._owns_client:
-            self._client.close()
+        if self._owns_client and not self._client.is_closed:
+            asyncio.run_coroutine_threadsafe(self._client.aclose(), _http_event_loop()).result()
 
     def __enter__(self: _Rewriter) -> _Rewriter:  # noqa: PYI019 - Self needs 3.11
         return self
@@ -339,6 +391,9 @@ class OpenAICompatibleRewriter:
         outline: str = "",
         issues: list[str] | None = None,
         section_context: str = "",
+        nli: Any = None,
+        general_options: Any = None,
+        original_source: str | None = None,
     ) -> LlmRewriteResult:
         if not self._probed and not self.probe():
             return LlmRewriteResult(source, False, "model_unavailable")
@@ -346,8 +401,14 @@ class OpenAICompatibleRewriter:
             return LlmRewriteResult(source, False, "model_unavailable")
 
         protected = protect_text(source, include_sensitive=True)
-        previous_protected = protect_text(previous, include_sensitive=True).text if previous else ""
-        following_protected = protect_text(following, include_sensitive=True).text if following else ""
+        context_index = len(protected.mapping)
+        def protect_context(value: str) -> str:
+            nonlocal context_index
+            masked = protect_text(protected.re_protect(value), include_sensitive=True, start_index=context_index)
+            context_index += len(masked.mapping)
+            return masked.text
+        previous_protected = protect_context(previous)
+        following_protected = protect_context(following)
         genre = GENRE_PROFILES[document_type]
         if style_profile:
             profile_text = style_profile.prompt_text()
@@ -365,6 +426,7 @@ class OpenAICompatibleRewriter:
             + genre.prompt_text()
             + " "
             + profile_text
+            + (" " + general_options.prompt_text() if general_options is not None and document_type == DocumentType.general else "")
             # Only the section this fragment sits in, never the whole
             # skeleton. Shown every section a document owes, a model reads a
             # missing one as an invitation to write it - and this path exists
@@ -382,7 +444,7 @@ class OpenAICompatibleRewriter:
         # and all - instead of producing the answer shape. Measured: every one
         # of nine fragments came back as a copy of the input.
         outline_text = (
-            protect_text(outline, include_sensitive=True).text[:1200] if outline else ""
+            protect_context(outline)[:1200] if outline else ""
         )
         user = "\n".join(
             [
@@ -418,6 +480,7 @@ class OpenAICompatibleRewriter:
                 max_length_ratio=1.60,
                 rule="llm:legal_style",
                 operation_type="llm_rewrite",
+                legal=document_type != DocumentType.general,
             )
             checks = [
                 {"name": check.name, "ok": check.ok, "reason": check.reason}
@@ -465,6 +528,13 @@ class OpenAICompatibleRewriter:
                     validation_checks=checks,
                 )
             restored = protected.restore(proposal.proposal)
+            if general_options is not None and document_type == DocumentType.general:
+                reason = general_options.rejection(
+                    original_source if original_source is not None else source, restored,
+                )
+                if reason or "\n" in restored:
+                    self.metadata.note_rejected("rejected:general_edit_limits")
+                    return LlmRewriteResult(source, False, reason or "Zmieniono podział akapitów.", validation_checks=checks)
             if restored == source:
                 self.metadata.note_rejected("rejected:no_visible_change")
                 return LlmRewriteResult(
@@ -473,6 +543,17 @@ class OpenAICompatibleRewriter:
                     "no_visible_change",
                     rationale=proposal.rationale,
                     validation_checks=checks,
+                )
+            meaning = check_equivalence(source, restored, nli=nli)
+            checks.append({
+                "name": "semantic_equivalence", "ok": meaning.ok,
+                "reason": meaning.reason, "method": meaning.method,
+            })
+            if not meaning.ok:
+                self.metadata.note_rejected(f"rejected:meaning_{meaning.method}")
+                return LlmRewriteResult(
+                    source, False, f"meaning_not_preserved: {meaning.reason}",
+                    rationale=proposal.rationale, validation_checks=checks,
                 )
             self.metadata.note_accepted("accepted:local_validators_passed")
             return LlmRewriteResult(
@@ -488,6 +569,7 @@ class OpenAICompatibleRewriter:
         finally:
             self.metadata.note_duration(int((time.monotonic() - started) * 1000))
 
+    @_report_errors
     def complete_json(
         self,
         messages: list[dict[str, str]],
@@ -510,6 +592,7 @@ class OpenAICompatibleRewriter:
             raise LlmEndpointError("Model nie zwrócił poprawnego JSON-u.")
         return payload
 
+    @_report_errors
     def complete_text(
         self,
         messages: list[dict[str, str]],
@@ -588,26 +671,28 @@ class OpenAICompatibleRewriter:
         max_tokens: int | None = None,
         temperature: float | None = None,
     ) -> tuple[dict[str, Any], bool]:
+        mask = RequestMask()
+        deadline = time.monotonic() + self.settings.timeout_seconds
         payload: dict[str, Any] = {
             "model": self.settings.model,
             # Zero everywhere except corpus generation: a rewrite that varies
             # between runs cannot be reviewed, and a verdict that varies
             # cannot be trusted.
             "temperature": 0 if temperature is None else temperature,
-            "messages": messages,
+            "messages": mask.messages(messages),
         }
         if max_tokens is not None:
             payload["max_tokens"] = max_tokens
         if self.settings.disable_thinking:
             payload["chat_template_kwargs"] = {"enable_thinking": False}
         if not use_response_format:
-            return self._post_with_retries(payload), False
+            return mask.response(self._post_with_retries(payload, deadline=deadline)), False
 
         known = self.metadata.response_format_kind
         for kind in [known] if known else list(_RESPONSE_FORMATS):
             payload["response_format"] = _RESPONSE_FORMATS[kind]
             try:
-                response = self._post_with_retries(payload)
+                response = self._post_with_retries(payload, deadline=deadline)
             except LlmEndpointError as exc:
                 # Some compatible servers reject a response_format shape while
                 # supporting the rest of Chat Completions: try the next one.
@@ -615,18 +700,26 @@ class OpenAICompatibleRewriter:
                     continue
                 raise
             self.metadata.response_format_kind = kind
-            return response, True
+            return mask.response(response), True
         # None taken: the strict prompt alone.
         payload.pop("response_format", None)
-        return self._post_with_retries(payload), False
+        return mask.response(self._post_with_retries(payload, deadline=deadline)), False
 
-    def _post_with_retries(self, payload: dict[str, Any]) -> dict[str, Any]:
+    def _post_with_retries(self, payload: dict[str, Any], *, deadline: float | None = None) -> dict[str, Any]:
+        deadline = deadline if deadline is not None else time.monotonic() + self.settings.timeout_seconds
         last_error: Exception | None = None
         for attempt in range(3):
+            if self.control:
+                self.control.check()
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise LlmEndpointError("Przekroczono łączny limit czasu zapytania do modelu.")
             try:
-                response = self._client.post(
-                    self.settings.endpoint, json=payload, headers=self._headers
-                )
+                response = self._post_before_deadline(payload, deadline)
+                if self.control:
+                    self.control.check()
+                if time.monotonic() > deadline:
+                    raise LlmEndpointError("Przekroczono łączny limit czasu zapytania do modelu.")
                 if response.status_code >= 400:
                     error = LlmEndpointError(
                         f"Endpoint modelu zwrócił HTTP {response.status_code}."
@@ -635,7 +728,7 @@ class OpenAICompatibleRewriter:
                     if response.status_code == 429 or response.status_code >= 500:
                         last_error = error
                         if attempt < 2:
-                            time.sleep(0.25 * (2**attempt))
+                            self._wait_retry(min(0.25 * (2**attempt), max(0, deadline - time.monotonic())))
                             continue
                     raise error
                 body = response.json()
@@ -645,10 +738,55 @@ class OpenAICompatibleRewriter:
             except (httpx.TimeoutException, httpx.TransportError) as exc:
                 last_error = exc
                 if attempt < 2:
-                    time.sleep(0.25 * (2**attempt))
+                    self._wait_retry(min(0.25 * (2**attempt), max(0, deadline - time.monotonic())))
                     continue
                 raise LlmEndpointError(f"Błąd połączenia z modelem: {type(exc).__name__}.") from exc
         raise LlmEndpointError(_safe_error(last_error or RuntimeError("unknown")))
+
+    def _post_before_deadline(self, payload: dict[str, Any], deadline: float) -> httpx.Response:
+        finished = threading.Event()
+
+        async def request():
+            try:
+                remaining = max(0, deadline - time.monotonic())
+                return await asyncio.wait_for(
+                    self._client.post(
+                        self.settings.endpoint, json=payload, headers=self._headers, timeout=remaining,
+                    ),
+                    timeout=remaining,
+                )
+            except asyncio.TimeoutError as exc:
+                raise LlmEndpointError("Przekroczono łączny limit czasu zapytania do modelu.") from exc
+            finally:
+                finished.set()
+
+        future = asyncio.run_coroutine_threadsafe(request(), _http_event_loop())
+        try:
+            while True:
+                if self.control:
+                    self.control.check()
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    raise LlmEndpointError("Przekroczono łączny limit czasu zapytania do modelu.")
+                try:
+                    return future.result(timeout=min(0.05, remaining))
+                except FutureTimeoutError:
+                    # A transport can itself raise TimeoutError. Do not mistake
+                    # a completed request's exception for a polling timeout.
+                    if future.done():
+                        raise
+        finally:
+            if not future.done():
+                future.cancel()
+                # Let HTTPX finish cancellation/connection cleanup before an
+                # enclosing RunControl closes the reusable client.
+                finished.wait(timeout=1)
+
+    def _wait_retry(self, seconds: float) -> None:
+        if self.control:
+            self.control.wait(seconds)
+        else:
+            time.sleep(seconds)
 
     @staticmethod
     def _message_content(response: dict[str, Any]) -> str:

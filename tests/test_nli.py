@@ -19,9 +19,11 @@ from humanize_pl.nli import (
     ENTAILED,
     MISSING,
     PARTIAL,
+    UNKNOWN,
     LlmClauseJudge,
     check_document_against_blueprint,
     locate_sections,
+    read_verdicts,
     split_clauses,
 )
 
@@ -97,7 +99,7 @@ def _reply(payload: dict) -> httpx.Response:
 def _judge(handler, **kwargs) -> LlmClauseJudge:
     client = OpenAICompatibleRewriter(
         LlmSettings(base_url="https://model.test/v1", model="legal-pl"),
-        client=httpx.Client(transport=httpx.MockTransport(handler)),
+        client=httpx.AsyncClient(transport=httpx.MockTransport(handler)),
     )
     return LlmClauseJudge(client, **kwargs)
 
@@ -222,12 +224,8 @@ def test_a_section_without_a_heading_in_the_document_is_absent() -> None:
     assert "brak sekcji: poufnosc" in report.issues
 
 
-def test_an_unsure_model_is_read_as_entailed() -> None:
-    """Reguła ostrożności: „nie wiem” znaczy `entailed`, nigdy `missing`.
-
-    Narzędzie, które podnosi alarm nad poprawną polszczyzną, zostaje wyłączone.
-    Przeoczony brak kosztuje jedno znalezisko, fałszywy alarm — całe narzędzie.
-    """
+def test_an_unsure_model_is_read_as_unknown() -> None:
+    """Uncertainty is neither proof of coverage nor proof of a missing clause."""
     judge = FakeJudge(
         {
             "Przedmiot umowy": ["nie jestem pewien"],
@@ -236,17 +234,18 @@ def test_an_unsure_model_is_read_as_entailed() -> None:
     )
     report = check_document_against_blueprint(CONTRACT, UMOWA, judge=judge)
 
-    assert _verdicts(report)["przedmiot"] == ENTAILED
-    assert [row.verdict for row in report.sections[1].clauses] == [ENTAILED, ENTAILED]
+    assert _verdicts(report)["przedmiot"] == UNKNOWN
+    assert [row.verdict for row in report.sections[1].clauses] == [UNKNOWN, UNKNOWN]
+    assert report.coverage == {"total": 4, "checked": 1, "model_checked": 0, "structural_checked": 1, "unknown": 3}
 
 
-def test_a_short_answer_is_padded_leniently() -> None:
+def test_a_short_answer_leaves_the_unanswered_clause_unknown() -> None:
     """Model odpowiedział o jednej klauzuli z dwóch — druga nie jest brakiem."""
     judge = FakeJudge({"Wynagrodzenie": [MISSING]})
     report = check_document_against_blueprint(CONTRACT, UMOWA, judge=judge)
 
     wynagrodzenie = next(row for row in report.sections if row.section == "wynagrodzenie")
-    assert [row.verdict for row in wynagrodzenie.clauses] == [MISSING, ENTAILED]
+    assert [row.verdict for row in wynagrodzenie.clauses] == [MISSING, UNKNOWN]
 
 
 def test_the_worst_clause_verdict_decides_the_section() -> None:
@@ -293,7 +292,9 @@ def test_the_report_serializes_to_json() -> None:
     ]
     first = payload["sections"][0]
     assert set(first) == {"section", "heading", "verdict", "clauses"}
-    assert set(first["clauses"][0]) == {"clause", "verdict"}
+    assert set(first["clauses"][0]) == {"clause", "verdict", "assessment"}
+    assert payload["coverage"]["model_checked"] == 3
+    assert payload["coverage"]["structural_checked"] == 1
 
 
 # --- rozmowa z modelem -----------------------------------------------------
@@ -343,7 +344,7 @@ def test_only_redacted_text_reaches_the_endpoint() -> None:
     assert "__PROTECTED_" in body
 
 
-def test_a_reply_that_is_not_json_is_read_as_entailed() -> None:
+def test_a_reply_that_is_not_json_is_read_as_unknown() -> None:
     def handler(_request: httpx.Request) -> httpx.Response:
         return httpx.Response(
             200, json={"choices": [{"message": {"content": "Trudno powiedzieć."}}]}
@@ -352,14 +353,12 @@ def test_a_reply_that_is_not_json_is_read_as_entailed() -> None:
     report = check_document_against_blueprint(CONTRACT, UMOWA, judge=_judge(handler))
 
     assert report.verdict == ABSENT  # tylko z powodu brakującej sekcji „poufność”
-    assert _verdicts(report)["wynagrodzenie"] == ENTAILED
-    # Łagodna ocena musi mieć ślad, inaczej „nie sprawdzono” wygląda w raporcie
-    # dokładnie tak samo jak „sprawdzono i jest dobrze”.
+    assert _verdicts(report)["wynagrodzenie"] == UNKNOWN
     assert len(report.warnings) == 2
     assert all("JSON" in row for row in report.warnings)
 
 
-def test_an_endpoint_failure_stays_lenient_but_says_so(monkeypatch) -> None:
+def test_an_endpoint_failure_leaves_the_assessment_unknown(monkeypatch) -> None:
     """Milczenie modelu nie jest dowodem braku klauzuli — ale musi być widoczne."""
     monkeypatch.setattr("humanize_pl.llm.time.sleep", lambda _seconds: None)
 
@@ -368,8 +367,8 @@ def test_an_endpoint_failure_stays_lenient_but_says_so(monkeypatch) -> None:
 
     report = check_document_against_blueprint(CONTRACT, UMOWA, judge=_judge(handler))
 
-    assert _verdicts(report)["przedmiot"] == ENTAILED
-    assert _verdicts(report)["wynagrodzenie"] == ENTAILED
+    assert _verdicts(report)["przedmiot"] == UNKNOWN
+    assert _verdicts(report)["wynagrodzenie"] == UNKNOWN
     assert len(report.warnings) == 2
     assert all("503" in row for row in report.warnings)
 
@@ -400,7 +399,49 @@ def test_more_clauses_than_the_batch_go_in_several_calls() -> None:
     )
 
     assert len(calls) == 3  # 2 + 2 + 1
-    assert [row.verdict for row in report.sections[0].clauses] == [ENTAILED] * 5
+    assert [row.verdict for row in report.sections[0].clauses] == [UNKNOWN] * 5
+
+
+@pytest.mark.parametrize("payload,expected", [
+    ({}, [UNKNOWN, UNKNOWN]),
+    ({"oceny": "entailed"}, [UNKNOWN, UNKNOWN]),
+    ({"oceny": [{"nr": 2, "ocena": "entailed"}]}, [UNKNOWN, ENTAILED]),
+    ({"oceny": [{"ocena": "entailed"}]}, [UNKNOWN, UNKNOWN]),
+    ({"oceny": [{"nr": True, "ocena": "entailed"}]}, [UNKNOWN, UNKNOWN]),
+    ({"oceny": [{"nr": 1.5, "ocena": "entailed"}]}, [UNKNOWN, UNKNOWN]),
+    ({"oceny": [{"nr": 1, "ocena": "maybe"}]}, [UNKNOWN, UNKNOWN]),
+    ({"oceny": [{"nr": 1, "ocena": "missing"}, {"nr": 1, "ocena": "entailed"}]}, [UNKNOWN, UNKNOWN]),
+])
+def test_malformed_or_incomplete_responses_do_not_confirm_coverage(payload, expected):
+    assert read_verdicts(payload, 2) == expected
+
+
+def test_empty_object_from_endpoint_produces_zero_model_coverage():
+    report = check_document_against_blueprint(CONTRACT, UMOWA, judge=_judge(lambda request: _reply({})))
+    assert report.coverage["model_checked"] == 0
+    assert report.coverage["unknown"] == 3
+    assert any("nie zweryfikowano" in issue for issue in report.issues)
+
+
+def test_oversized_section_is_not_judged_on_a_truncated_premise():
+    judge = FakeJudge()
+    text = "§ 1. Przedmiot umowy\n" + "Wykonawca dostarczy dokumentację. " * 41
+    report = check_document_against_blueprint(text, UMOWA, judge=judge)
+    assert judge.calls == []
+    assert report.sections[0].verdict == UNKNOWN
+    assert report.coverage["model_checked"] == 0
+    assert any("limit" in warning for warning in report.warnings)
+
+
+def test_unknown_coverage_is_visible_in_shared_pdf_xlsx_axes():
+    from humanize_pl.reports.axes import axis_rows
+
+    report = check_document_against_blueprint(CONTRACT, UMOWA, judge=_judge(lambda request: _reply({})))
+    axes = axis_rows([{"nli_before": report.to_json(), "nli_after": report.to_json()}])
+    axis = next(row for row in axes if row.key == "nli")
+    assert axis.before == axis.after == 3
+    assert "sprawdzono 1/4" in axis.measure
+    assert "model: 0" in axis.measure
 
 
 # --- CLI -------------------------------------------------------------------

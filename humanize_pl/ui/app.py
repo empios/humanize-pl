@@ -18,6 +18,7 @@ the UI cannot drift into a second, quieter engine with different defaults.
 
 from __future__ import annotations
 
+import os
 import queue
 import shutil
 import tempfile
@@ -26,6 +27,7 @@ from collections.abc import Callable, Iterator
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+from uuid import uuid4
 
 import gradio as gr
 
@@ -35,18 +37,23 @@ from humanize_pl.detect.calibration import threshold_for_family
 from humanize_pl.document import (
     DocumentType,
     FormatPolicy,
+    HumanizeTrack,
+    ReadinessStatus,
     RewriteBackend,
     build_style_profile,
 )
-from humanize_pl.flows.base import FlowSettings, ItemOutcome
+from humanize_pl.flows.base import FlowSettings, ItemOutcome, execution_summary
 from humanize_pl.flows.docx_flow import run_docx_flow
 from humanize_pl.flows.xlsx_flow import run_xlsx_flow
+from humanize_pl.reports.operations import operation_lines
+from humanize_pl.runtime import RunCancelled, RunControl
 from humanize_pl.version import __version__
 
-# Runs land outside the user's project so a browser session never writes into
-# the folder the documents came from. Gradio is told about this root
+# Runs land in the dedicated, git-ignored output folder. Gradio gets this root
 # explicitly (`allowed_paths`), otherwise it refuses to serve the results.
-RUNS_ROOT = Path(tempfile.gettempdir()) / "humanize-pl-ui"
+RUNS_ROOT = Path.cwd() / "outputs" / "ui"
+_UI_CONTROLS: dict[str, RunControl] = {}
+_UI_CONTROL_LOCK = threading.Lock()
 
 # The flow deliberately does not calibrate against the SAOS reference profile
 # (`calibrate_against_default=False`): that profile is court reasoning, and a
@@ -99,11 +106,15 @@ MODE_LABELS = {
     "strong": "mocny — więcej poprawek, więcej do sprawdzenia",
 }
 DOCUMENT_TYPE_LABELS = {
-    "auto": "rozpoznaj automatycznie",
+    "auto": "rozpoznaj gatunek prawny automatycznie",
     "client_communication": "pismo do klienta",
     "contract": "umowa",
     "filing_official": "pismo procesowe / urzędowe",
     "general": "tekst ogólny (nie prawniczy)",
+}
+TRACK_LABELS = {
+    "legal": "Dla prawników — ostrożna redakcja",
+    "general": "Ogólna — redakcja językowa",
 }
 
 CSS = """
@@ -121,14 +132,13 @@ CSS = """
 INTRO = f"""
 # humanize-pl <span style="opacity:.5;font-size:.6em">{__version__}</span>
 
-Sprawdza, czy tekst brzmi jak napisany przez AI, poprawia to, co da się
-poprawić deterministycznie, i pokazuje, **co dokładnie zmienił**.
-Nic nie jest zmyślane: niepewne fragmenty zostają nietknięte i trafiają
-na listę do przeglądu.
+Redaguje polskie teksty i pokazuje **co dokładnie zmienił**.
+Wybierz ścieżkę dla prawników albo ogólną. Wskaźnik stylu jest miarą
+pomocniczą; nie potwierdza autorstwa ani poprawności tekstu.
 
 <div class="steps">
-  <div class="step"><b>krok 1</b>Wklej tekst lub wgraj pliki</div>
-  <div class="step"><b>krok 2</b>Kliknij „Sprawdź i popraw”</div>
+  <div class="step"><b>krok 1</b>Wybierz ścieżkę redakcji</div>
+  <div class="step"><b>krok 2</b>Wklej tekst lub wgraj pliki i uruchom redakcję</div>
   <div class="step"><b>krok 3</b>Zobacz zmiany i pobierz raport</div>
 </div>
 """
@@ -140,8 +150,10 @@ W `wyniki.zip` (dla Word/Excel) znajdziesz poprawione pliki, `raport.pdf` dla kl
 | ustawienie | kiedy ruszać |
 |---|---|
 | **Backend redakcji** | `hybrid` dokłada twój model; `rules` to same reguły i jest natychmiastowe |
-| **Szkielet (Blueprint)** | wymusza kontrolę obowiązkowych sekcji (np. `umowa_uslug`, `pozew`, `regulamin`) |
+| **Kontrola kompletności** | osobny przełącznik sprawdzania wymaganych sekcji; nie potwierdza poprawności prawnej |
+| **Szkielet (Blueprint)** | wzorzec dla włączonej kontroli (np. `umowa_uslug`, `pozew`, `regulamin`) |
 | **Weryfikacja NLI** | semantyczne sprawdzanie czy klauzule są pokryte i niesprzeczne (wymaga `.env`) |
+| **Dopisuj brakujące sekcje** | domyślnie wyłączone; tekst/DOCX, także bez redakcji istniejących zdań; wymaga modelu i przeglądu dopisków |
 | **Rodzaj dokumentu** | ustaw ręcznie przy profilu — przy `auto` bywa pomijany |
 | **Tryb** | `conservative`, gdy wolisz mniej zmian |
 """
@@ -202,7 +214,16 @@ def flow_settings(
     template: str | None,
     blueprint: str | None = None,
     nli: bool = False,
-    draft_missing: bool = True,
+    draft_missing: bool = False,
+    track: str | None = None,
+    check_completeness: bool = True,
+    general_profile: str = "preserve",
+    general_audience: str = "",
+    general_tone: str = "preserve",
+    general_formality: str = "preserve",
+    general_intensity: str = "style",
+    max_shortening: int = 30,
+    protected_terms: str = "",
 ) -> FlowSettings:
     """Build the same `FlowSettings` the CLI builds, from form values.
 
@@ -210,10 +231,21 @@ def flow_settings(
     `humanize_pl.flows.cli`; keeping the coupling here means a UI run and a CLI
     run with the same boxes ticked fail on the same missing dependency.
     """
+    from humanize_pl.general import GeneralOptions
+
+    selected_track = HumanizeTrack(_value(track, TRACK_LABELS)) if track is not None else None
+    if selected_track == HumanizeTrack.general:
+        # Hidden legal controls may retain prior selections. They cannot leak
+        # into a general run when the user switches paths in the same form.
+        document_type = DocumentType.general.value
+        blueprint, style_profile, template = None, None, None
+        nli, draft_missing, require_anchor = False, False, False
+        mode = Mode.standard.value
     bp = None
     if blueprint and blueprint not in {"(brak)", "", "brak"}:
         bp = blueprint.strip()
     return FlowSettings(
+        track=selected_track,
         mode=Mode(_value(mode, MODE_LABELS)),
         engine=Engine(engine),
         rewrite=rewrite,
@@ -231,6 +263,13 @@ def flow_settings(
         blueprint=bp,
         nli=bool(nli),
         draft_missing=bool(draft_missing),
+        check_completeness=bool(check_completeness),
+        general_options=GeneralOptions(
+            profile=general_profile, audience=general_audience, tone=general_tone,
+            formality=general_formality, intensity=general_intensity,
+            max_shortening=int(max_shortening),
+            protected_terms=tuple(t.strip() for t in protected_terms.split("\n") if t.strip()),
+        ) if selected_track == HumanizeTrack.general else GeneralOptions(),
     )
 
 
@@ -254,9 +293,14 @@ def _value(choice: str, labels: dict[str, str]) -> str:
 
 
 def new_workspace(kind: str) -> Path:
+    from humanize_pl.retention import expire_runs, register_run
+
     RUNS_ROOT.mkdir(parents=True, exist_ok=True)
+    expire_runs(RUNS_ROOT)
     stamp = datetime.now().astimezone().strftime("%Y%m%d-%H%M%S")
-    return Path(tempfile.mkdtemp(prefix=f"{kind}-{stamp}-", dir=RUNS_ROOT))
+    workspace = Path(tempfile.mkdtemp(prefix=f"{kind}-{stamp}-", dir=RUNS_ROOT))
+    register_run(workspace)
+    return workspace
 
 
 def stage_uploads(paths: list[str], destination: Path, suffix: str) -> list[Path]:
@@ -292,7 +336,12 @@ def package(directory: Path) -> list[str]:
     archive = shutil.make_archive(
         str(directory.parent / directory.name), "zip", root_dir=directory
     )
-    loose = [str(path) for path in sorted(directory.iterdir()) if path.is_file()]
+    from humanize_pl.retention import MARKER, finish_run
+
+    for parent in (directory, directory.parent):
+        if (parent / MARKER).is_file():
+            finish_run(parent)
+    loose = [str(path) for path in sorted(directory.iterdir()) if path.is_file() and path.name != MARKER]
     return [archive, *loose]
 
 
@@ -346,7 +395,7 @@ def describe_layers(layers: dict[str, Any]) -> list[str]:
     neural stack silently degraded to `basic` looks identical to a healthy one
     unless somebody prints this.
     """
-    lines: list[str] = []
+    lines: list[str] = execution_summary(layers)
     detection = layers.get("detection", {})
     lines.append(
         f"detekcja: morfeusz={detection.get('morfeusz')} "
@@ -377,6 +426,8 @@ def describe_layers(layers: dict[str, Any]) -> list[str]:
 def describe_item(item: ItemOutcome) -> str:
     if item.status == "failed":
         return f"BŁĄD  {item.name}: {item.error}"
+    if not item.signal_interpretable:
+        return f"{item.name}: {item.changes_applied} poprawek; wskaźnik niemiarodajny dla krótkiego tekstu."
     flag = {
         "ready": "gotowy",
         "ready_with_warnings": "do przeglądu",
@@ -400,9 +451,12 @@ def item_line(item: ItemOutcome) -> str:
     """
     if item.status == "failed":
         return f"- ❌ **{item.name}** — nie udało się przetworzyć: {item.error}"
-    icon = "⚠️" if item.needs_review else "✅"
+    if not item.signal_interpretable:
+        return f"- **{item.name}** — poprawek: {item.changes_applied}; wskaźnik niemiarodajny dla krótkiego tekstu. Status: {item.readiness_status}."
+    attention = item.needs_review or item.readiness_status != "ready"
+    icon = "❌" if item.readiness_status == "failed" else "⚠️" if attention else "✅"
     arrow = f"{item.signal_before:.2f} → {item.signal_after:.2f}"
-    tail = " — **do przeglądu**" if item.needs_review else ""
+    tail = " — **do przeglądu**" if attention else ""
     drafted = sum(1 for row in item.drafted_sections if row.get("inserted", True))
     if drafted:
         tail += f" — **dopisane sekcje: {drafted}**"
@@ -464,6 +518,8 @@ def nli_label(item: ItemOutcome) -> str:
         return "zgodne"
     if verdict == "partial":
         return "częściowo"
+    if verdict == "unknown":
+        return "nie zweryfikowano"
     if verdict in {"missing", "absent"}:
         issues = row.get("issues") or []
         return f"braki ({len(issues)})"
@@ -496,9 +552,9 @@ def item_row(item: ItemOutcome) -> list[Any]:
         structure_label(item),
         nli_label(item),
         tone_label(item),
-        round(item.signal_before, 3),
-        round(item.signal_after, 3),
-        round(item.signal_after - item.signal_before, 3),
+        round(item.signal_before, 3) if item.signal_interpretable else None,
+        round(item.signal_after, 3) if item.signal_interpretable else None,
+        round(item.signal_after - item.signal_before, 3) if item.signal_interpretable else None,
         item.changes_applied,
         item.findings_before,
         item.findings_after,
@@ -523,7 +579,7 @@ def summary_markdown(payload: dict[str, Any]) -> str:
             "Szczegóły przy pozycjach poniżej."
         )
 
-    review = summary["needs_review"]
+    review = max(summary["needs_review"], summary.get("ready_with_warnings", 0) + summary.get("not_ready", 0))
     if review:
         headline = (
             f"### ⚠️ Gotowe — {review} z {summary['ok']} pozycji wymaga przeglądu"
@@ -532,7 +588,7 @@ def summary_markdown(payload: dict[str, Any]) -> str:
         headline = f"### ✅ Gotowe — {summary['ok']} pozycji, nic nie czeka na przegląd"
 
     before, after = summary["mean_signal_before"], summary["mean_signal_after"]
-    direction = "spadł" if after < before else "nie spadł"
+    direction = "spadł" if after < before else "wzrósł" if after > before else "pozostał bez zmian"
     # A calibrated score and a raw one are different scales, and their mean is
     # not a number about anything. The plain-language word is only attached
     # when every item in the run was measured the same way.
@@ -566,6 +622,8 @@ def summary_markdown(payload: dict[str, Any]) -> str:
             "pisania, a część nie — średnia miesza dwie skale. Wyniki "
             "poszczególnych pozycji są niżej._"
         )
+    if any(not row.get("signal_interpretable", True) for row in done):
+        lines[2] = f"Zastosowano **{summary['changes_applied']}** poprawek. Partia obejmuje krótkie teksty; średni wskaźnik nie jest miarodajną oceną."
     # Said here, not only in the PDF: the drafted clauses enter the document
     # unmarked, and a reader who never opens the report must still learn
     # that it contains text a model wrote.
@@ -586,6 +644,13 @@ def summary_markdown(payload: dict[str, Any]) -> str:
     if summary["failed"]:
         lines.append(f"Nie udało się przetworzyć: **{summary['failed']}**.")
     lines.append("")
+    lines.extend(execution_summary(payload.get("layers", {})))
+    lines.extend(f"\n{line}\n" for line in operation_lines(payload.get("documents", payload.get("rows", []))))
+    warnings = list(dict.fromkeys(warning for row in done for warning in row.get("warnings", [])))
+    if warnings:
+        lines.append("\nOstrzeżenia:\n" + "\n".join(f"- {warning}" for warning in warnings[:10]))
+        if len(warnings) > 10:
+            lines.append(f"Pozostałe ostrzeżenia ({len(warnings) - 10}) są w raporcie.")
     if payload.get("pdf_report"):
         lines.append("📄 Raport opisowy dla odbiorcy: **raport.pdf** — na liście poniżej.")
     elif payload.get("pdf_error"):
@@ -600,6 +665,7 @@ def summary_markdown(payload: dict[str, Any]) -> str:
 
 def stream_run(
     work: Callable[[Callable[[str], None], Callable[[ItemOutcome], None]], dict[str, Any]],
+    *, workspace: Path | None = None,
 ) -> Iterator[tuple[list[str], list[ItemOutcome], dict[str, Any] | None]]:
     """Run a flow on a worker thread and report progress as it happens.
 
@@ -621,6 +687,10 @@ def stream_run(
         except BaseException as exc:  # noqa: BLE001 - surfaced to the browser below
             box["error"] = exc
         finally:
+            if workspace is not None:
+                from humanize_pl.retention import finish_run
+
+                finish_run(workspace)
             events.put(finished)
 
     thread = threading.Thread(target=worker, daemon=True)
@@ -706,6 +776,8 @@ def run_text(
     input_text: str | None,
     input_file: str | None,
     *settings_values: Any,
+    review_capture: dict | None = None,
+    run_control: RunControl | None = None,
 ) -> tuple[str, str, str, str]:
     source = ""
     if input_file:
@@ -719,55 +791,89 @@ def run_text(
     if not source:
         raise gr.Error("Wklej tekst do pola lub wybierz plik .txt.")
 
-    settings = flow_settings(*settings_values)
-
     try:
         from humanize_pl.flow import humanize
 
-        result = humanize(source, settings=settings)
+        settings = flow_settings(*settings_values)
+        result = humanize(source, settings=settings, **({"control": run_control} if run_control else {}))
+        if review_capture is not None:
+            review_capture.update(result.payload.get("documents", [{}])[0].get("review", {}))
     except Exception as exc:
         raise gr.Error(f"Błąd przetwarzania: {exc}") from exc
 
     out_text = result.text or source
 
-    status_icon = "⚠️" if result.needs_review else "✅"
-    direction = "spadł" if result.signal_after < result.signal_before else "bez zmian"
+    status_icon = (
+        "❌" if result.readiness_status == ReadinessStatus.failed.value
+        else "⚠️" if result.needs_review or result.warnings or result.readiness_status != "ready"
+        else "✅"
+    )
+    if result.signal_after < result.signal_before:
+        direction = "spadł"
+    elif result.signal_after > result.signal_before:
+        direction = "wzrósł"
+    else:
+        direction = "pozostał bez zmian"
     summary_lines = [
-        (f"### {status_icon} Gotowe — sygnał AI {direction} z **{result.signal_before:.2f}** "
-        f"do **{result.signal_after:.2f}** ({signal_word(result.signal_after, False)})."),
+        f"### {status_icon} Gotowe — zakończono przetwarzanie.",
+        (f"Wskaźnik stylu {direction}: **{result.signal_before:.2f}** → "
+         f"**{result.signal_after:.2f}**. To miara pomocnicza, nie ocena jakości tekstu."),
         f"Zastosowano **{result.changes_applied}** poprawek. Gotowość: **{result.readiness_status}**.",
     ]
+    documents = result.payload.get("documents", [])
+    interpretable = all(row.get("signal_interpretable", True) for row in documents)
+    if not interpretable:
+        summary_lines[1] = "**Krótki tekst:** wskaźnik stylu jest niemiarodajny. Oceniaj treść i konkretne poprawki."
+    for row in documents:
+        if row.get("general_options"):
+            summary_lines.append(f"Uwagi redakcyjne: {len(row.get('editorial_before', []))} → {len(row.get('editorial_after', []))}. To wskazówki do przeglądu, nie ocena autorstwa.")
+            summary_lines.extend(f"- Akapit {issue['paragraph_index'] + 1}: {issue['detail']}" for issue in row.get("editorial_after", []))
+            summary_lines.extend(row.get("notes", []))
+    summary_lines.extend(execution_summary(result.payload.get("layers", {})))
+    summary_lines.extend(f"\n{line}\n" for line in operation_lines(result.payload.get("documents", [])))
     if result.needs_review:
         summary_lines.append(
             "\n> **Uwaga:** Dokument wymaga weryfikacji człowieka — część niepewnych zwrotów "
             "pozostawiono bez zmian."
         )
+    if result.warnings:
+        summary_lines.append("\n**Ostrzeżenia:**")
+        summary_lines.extend(f"- {warning}" for warning in result.warnings)
     summary_md = "\n".join(summary_lines)
 
     if result.applied_changes:
         change_items = []
         for c in result.applied_changes:
-            orig = c.get("original", "")
-            rewr = c.get("rewritten", "")
-            rule = c.get("rule", "reguła")
+            orig = c.get("before", "")
+            rewr = c.get("after", "")
+            rule = c.get("issue", "reguła")
             change_items.append(f"- **[{rule}]** „{orig}” → **„{rewr}”**")
         changes_md = "\n".join(change_items)
     else:
-        changes_md = "_Brak wprowadzonych zmian. Tekst nie zawierał jednoznacznych problemów do poprawy._"
+        changes_md = "_Nie wprowadzono poprawek do istniejącego tekstu._"
+
+    for draft in result.drafted_sections:
+        state = "dodano do wyniku" if draft.get("inserted", True) else "propozycja — nie zapisano w dokumencie"
+        changes_md += (
+            f"\n\n### Dopisana sekcja: {draft['label_pl']} ({state})\n\n"
+            "**Treść modelu — wymaga przeglądu prawnika.**\n\n"
+            f"{draft.get('heading', '')}\n\n{draft['text']}"
+        )
 
     gate_lines: list[str] = []
-    if result.verdict:
+    if result.verdict and interpretable:
         v = result.verdict
-        gate_status = "❌ Wymaga poprawy" if v.needs_revision else "✅ Zatwierdzona"
+        gate_status = "Wymaga przeglądu stylistycznego" if v.needs_revision else "Brak przekroczenia progów stylistycznych"
         gate_lines.append(
-            f"**Bramka jakości:** {gate_status} (wynik: {v.score:.2f}, próg: {v.threshold:.2f})"
+            f"**Bramka stylistyczna:** {gate_status} (wynik: {v.score:.2f}, próg: {v.threshold:.2f}). "
+            "Nie potwierdza poprawności ani zachowania znaczenia."
         )
         if v.violations:
             gate_lines.append("\n**Wykryte zastrzeżenia stylistyczne:**")
             for viol in v.violations:
                 gate_lines.append(f"- {viol.family}: {viol.constraint}")
 
-    if result.blueprint:
+    if result.blueprint.get("checked"):
         bp = result.blueprint
         gate_lines.append(f"\n**Struktura ({bp.get('blueprint', 'szablon')}):**")
         if bp.get("missing_required"):
@@ -781,11 +887,13 @@ def run_text(
         if bp.get("empty_sections"):
             gate_lines.append(f"- ⚠️ Sekcje bez treści: {', '.join(bp['empty_sections'])}")
         if not bp.get("missing_required") and not bp.get("empty_sections"):
-            gate_lines.append("- ✅ Struktura kompletna.")
+            gate_lines.append("- Nie wykryto braków wymaganych przez wybrany szkielet. To nie jest ocena poprawności prawnej.")
 
     if result.nli:
         n = result.nli
         gate_lines.append(f"\n**Weryfikacja klauzul NLI:** werdykt = `{n.get('verdict')}`")
+        if n.get("coverage"):
+            gate_lines.append(_coverage_text(n["coverage"]))
         if n.get("issues"):
             for issue in n["issues"]:
                 gate_lines.append(f"- ⚠️ {issue}")
@@ -800,6 +908,60 @@ def run_text(
     )
 
     return out_text, summary_md, changes_md, gate_md
+
+
+def _review_controls(plan: dict):
+    from humanize_pl.review import review_markdown
+
+    ids = [row["id"] for row in plan.get("proposals", [])]
+    return plan, gr.update(choices=ids, value=ids), review_markdown(plan)
+
+
+def run_text_with_review(input_text, input_file, *settings_values, run_control=None):
+    plan: dict = {}
+    result = run_text(input_text, input_file, *settings_values, review_capture=plan, run_control=run_control)
+    return (*result, *_review_controls(plan))
+
+
+def load_review_ui(report_file, item_number):
+    from humanize_pl.review import load_reviews
+
+    try:
+        plans = load_reviews(Path(report_file))
+        index = int(item_number) - 1
+        if not 0 <= index < len(plans):
+            raise ValueError("Nie ma takiej pozycji przeglądu.")
+        return _review_controls(plans[index])
+    except (ValueError, OSError, TypeError) as exc:
+        raise gr.Error(str(exc)) from exc
+
+
+def apply_review_ui(plan, accepted, source_file):
+    from humanize_pl.review import apply_review
+
+    if not plan or not plan.get("available"):
+        raise gr.Error("Najpierw przetwórz tekst albo wczytaj raport z propozycjami.")
+    workspace = new_workspace("review")
+    source = Path(source_file) if source_file else None
+    suffix = source.suffix.lower() if source and source.suffix.lower() in {".docx", ".xlsx"} else ".txt"
+    try:
+        result = apply_review(plan, accepted or [], source_file=source,
+                              output=workspace / f"wybrana-wersja{suffix}",
+                              report=workspace / "review.json", pdf=workspace / "review.pdf")
+    except (ValueError, OSError) as exc:
+        from humanize_pl.retention import finish_run
+
+        finish_run(workspace)
+        raise gr.Error(str(exc)) from exc
+    return result.text, summary_markdown(result.payload), package(workspace)
+
+
+def _coverage_text(coverage: dict[str, int]) -> str:
+    return (
+        f"Sprawdzono {coverage['checked']}/{coverage['total']} wymagań "
+        f"(model: {coverage['model_checked']}, struktura: {coverage['structural_checked']}); "
+        f"nie zweryfikowano: {coverage['unknown']}."
+    )
 
 
 def run_nli_blueprint(text: str, category: str, *, judge: Any = None) -> str:
@@ -839,24 +1001,24 @@ def run_nli_blueprint(text: str, category: str, *, judge: Any = None) -> str:
 
     lines.append("\n### 2. Semantyczna weryfikacja klauzul (NLI)")
     try:
-        from humanize_pl.nli import LlmClauseJudge, check_document_against_blueprint
+        from humanize_pl.nli import check_document_against_blueprint
 
-        clause_judge = judge if judge is not None else LlmClauseJudge.from_environment()
-        nli_report = check_document_against_blueprint(text, bp, judge=clause_judge)
+        nli_report = check_document_against_blueprint(text, bp, judge=judge)
         verdict_icon = "✅" if nli_report.verdict == "entailed" else "⚠️"
         lines.append(f"**Werdykt całościowy NLI:** {verdict_icon} `{nli_report.verdict}`\n")
+        lines.append(_coverage_text(nli_report.coverage))
         for s in nli_report.sections:
             s_icon = (
                 "✅"
                 if s.verdict == "entailed"
-                else ("⚠️" if s.verdict == "partial" else "❌")
+                else ("⚠️" if s.verdict in {"partial", "unknown"} else "❌")
             )
             lines.append(f"#### {s_icon} Sekcja `{s.section}`: {s.verdict}")
             for c in s.clauses:
                 c_icon = (
                     "✅"
                     if c.verdict == "entailed"
-                    else ("⚠️" if c.verdict == "partial" else "❌")
+                    else ("⚠️" if c.verdict in {"partial", "unknown"} else "❌")
                 )
                 lines.append(f"  - {c_icon} [{c.verdict}] {c.clause}")
         if nli_report.warnings:
@@ -876,21 +1038,26 @@ def run_nli_pair(premise: str, hypothesis: str, *, judge: Any = None) -> str:
     if not premise or not premise.strip() or not hypothesis or not hypothesis.strip():
         raise gr.Error("Wprowadź zarówno premisę, jak i hipotezę.")
     try:
-        from humanize_pl.nli import LlmClauseJudge
+        from humanize_pl.nli import LlmClauseJudge, normalise_verdict
 
         clause_judge = judge if judge is not None else LlmClauseJudge.from_environment()
-        verdicts = clause_judge.judge_section(
-            heading="Analiza logiczna",
-            document_clauses=[premise.strip()],
-            expected_clauses=[hypothesis.strip()],
-        )
-        verdict = verdicts[0] if verdicts else "nieokreślony"
-        icon = "✅" if verdict == "entailed" else ("⚠️" if verdict == "partial" else "❌")
+        try:
+            verdicts = clause_judge.judge_section(
+                heading="Analiza logiczna",
+                document_clauses=[premise.strip()],
+                expected_clauses=[hypothesis.strip()],
+            )
+        finally:
+            if judge is None:
+                clause_judge.close()
+        verdict = normalise_verdict(verdicts[0] if verdicts else None)
+        icon = "✅" if verdict == "entailed" else ("⚠️" if verdict in {"partial", "unknown"} else "❌")
         desc = {
             "entailed": "Hipoteza wynika logicznie z podanej premisy (zgodność).",
             "partial": "Hipoteza jest pokryta tylko częściowo przez premisę.",
             "missing": "Treść hipotezy nie wynika z premisy lub brakuje kluczowych elementów.",
             "absent": "Całkowity brak pokrycia logicznego.",
+            "unknown": "Nie uzyskano wiarygodnej oceny. Nie potwierdzono ani pokrycia, ani braku treści.",
         }.get(verdict, "Wynik nietypowy.")
         return f"### Wynik weryfikacji NLI: {icon} `{verdict}`\n\n**Opis:** {desc}"
     except Exception as exc:  # noqa: BLE001 - surfaced to the user in the interface
@@ -901,13 +1068,16 @@ def run_nli_pair(premise: str, hypothesis: str, *, judge: Any = None) -> str:
         )
 
 
-def run_docx(files: list[str] | None, pdf: bool, *settings_values: Any):
+def run_docx(files: list[str] | None, pdf: bool, *settings_values: Any, run_control=None):
     if not files:
         raise gr.Error("Dodaj przynajmniej jeden plik .docx.")
     settings = flow_settings(*settings_values)
     workspace = new_workspace("docx")
     staged = stage_uploads(files, workspace / "input", ".docx")
     if not staged:
+        from humanize_pl.retention import finish_run
+
+        finish_run(workspace)
         raise gr.Error("Żaden z przesłanych plików nie jest plikiem .docx.")
     output_directory = workspace / "wyniki"
 
@@ -919,9 +1089,10 @@ def run_docx(files: list[str] | None, pdf: bool, *settings_values: Any):
             pdf=pdf,
             on_item=emit_item,
             on_layers=lambda layers: [emit_log(line) for line in describe_layers(layers)],
+            control=run_control,
         )
 
-    for log, outcomes, payload in stream_run(work):
+    for log, outcomes, payload in stream_run(work, workspace=workspace):
         yield _render(
             log,
             outcomes,
@@ -939,6 +1110,7 @@ def run_xlsx(
     header_row: float,
     pdf: bool,
     *settings_values: Any,
+    run_control=None,
 ):
     if not workbook:
         raise gr.Error("Wskaż plik .xlsx.")
@@ -948,6 +1120,9 @@ def run_xlsx(
     workspace = new_workspace("xlsx")
     staged = stage_uploads([workbook], workspace / "input", ".xlsx")
     if not staged:
+        from humanize_pl.retention import finish_run
+
+        finish_run(workspace)
         raise gr.Error("Przesłany plik nie jest plikiem .xlsx.")
     output_directory = workspace / "wyniki"
     output_directory.mkdir(parents=True, exist_ok=True)
@@ -965,9 +1140,10 @@ def run_xlsx(
             pdf=pdf,
             on_item=emit_item,
             on_layers=lambda layers: [emit_log(line) for line in describe_layers(layers)],
+            control=run_control,
         )
 
-    for log, outcomes, payload in stream_run(work):
+    for log, outcomes, payload in stream_run(work, workspace=workspace):
         extra = (
             ""
             if payload is None
@@ -1000,6 +1176,9 @@ def run_profile(
     workspace = new_workspace("profile")
     staged = stage_uploads(files, workspace / "input", ".docx")
     if not staged:
+        from humanize_pl.retention import finish_run
+
+        finish_run(workspace)
         raise gr.Error("Żaden z przesłanych plików nie jest plikiem .docx.")
     output_directory = workspace / "profil"
     try:
@@ -1012,6 +1191,9 @@ def run_profile(
             template=Path(template) if template else None,
         )
     except (OSError, ValueError) as exc:
+        from humanize_pl.retention import finish_run
+
+        finish_run(workspace)
         raise gr.Error(str(exc)) from exc
     guide_note = (
         ""
@@ -1057,9 +1239,102 @@ def _results_block(noun: str):
     return status, results, table, log, files, table_pane, log_pane
 
 
+def track_visibility(track: str) -> dict[str, Any]:
+    return gr.update(visible=HumanizeTrack(track) == HumanizeTrack.legal)
+
+
+def completeness_controls(enabled: bool) -> tuple[dict[str, Any], dict[str, Any]]:
+    update = gr.update(interactive=True) if enabled else gr.update(value=False, interactive=False)
+    return update, dict(update)
+
+
+def begin_ui_run(run_id):
+    with _UI_CONTROL_LOCK:
+        if run_id in _UI_CONTROLS:
+            raise gr.Error("W tej sesji przebieg już trwa.")
+        control = RunControl()
+        _UI_CONTROLS[run_id] = control
+        return control
+
+
+def cancel_ui_run(run_id):
+    with _UI_CONTROL_LOCK:
+        control = _UI_CONTROLS.get(run_id)
+        if control:
+            control.cancel()
+    return "Zlecono anulowanie. Trwające zapytanie do modelu może potrwać do limitu czasu; jego odpowiedź nie zostanie zapisana." if control else "Brak aktywnego przebiegu."
+
+
+def ui_run_progress(run_id):
+    control = _UI_CONTROLS.get(run_id)
+    if not control:
+        return "Brak aktywnego przebiegu."
+    event = control.last_progress
+    count = f" ({event['completed']}/{event['total']})" if event['total'] is not None else ""
+    return f"Etap: {event['stage']}{count}"
+
+
+def run_text_controlled(run_id, *args):
+    control = begin_ui_run(run_id)
+    try:
+        return run_text_with_review(*args, run_control=control)
+    except RunCancelled as exc:
+        raise gr.Error(str(exc)) from exc
+    finally:
+        _UI_CONTROLS.pop(run_id, None)
+
+
+def run_docx_controlled(run_id, *args):
+    control = begin_ui_run(run_id)
+    try:
+        yield from run_docx(*args, run_control=control)
+    finally:
+        _UI_CONTROLS.pop(run_id, None)
+
+
+def run_xlsx_controlled(run_id, *args):
+    control = begin_ui_run(run_id)
+    try:
+        yield from run_xlsx(*args, run_control=control)
+    finally:
+        _UI_CONTROLS.pop(run_id, None)
+
+
+def retention_choices():
+    from humanize_pl.retention import runs
+
+    return gr.update(choices=[path.name for path in runs(RUNS_ROOT)], value=None)
+
+
+def delete_run_ui(name):
+    from humanize_pl.retention import delete_run
+
+    try:
+        if not name:
+            raise ValueError("Wybierz zakończony przebieg do usunięcia.")
+        delete_run(RUNS_ROOT, name)
+    except (ValueError, OSError) as exc:
+        raise gr.Error(str(exc)) from exc
+    return retention_choices(), "Usunięto pliki wybranego przebiegu i jego archiwum."
+
+
 def build_ui() -> gr.Blocks:
-    with gr.Blocks(title=f"humanize-pl {__version__}") as demo:
+    with gr.Blocks(title=f"humanize-pl {__version__}", delete_cache=(3600, 86400)) as demo:
+        run_id = gr.State(value=lambda: uuid4().hex)
+        run_status = gr.Markdown()
+        cancel_button = gr.Button("Anuluj bieżący przebieg", variant="stop")
+        cancel_button.click(cancel_ui_run, inputs=run_id, outputs=run_status, queue=False)
+        gr.Timer(1).tick(ui_run_progress, inputs=run_id, outputs=run_status, queue=False, show_progress="hidden")
         gr.Markdown(INTRO, elem_id="intro")
+
+        track = gr.Radio(
+            choices=[(label, value) for value, label in TRACK_LABELS.items()],
+            value=HumanizeTrack.legal.value, label="Ścieżka redakcji",
+        )
+        rewrite_backend = gr.Dropdown(
+            REWRITE_BACKENDS, value=RewriteBackend.rules.value, label="Backend redakcji",
+            info="rules: lokalne reguły; hybrid: reguły i skonfigurowany model. Aktywny backend zobaczysz w wyniku.",
+        )
 
         with gr.Accordion("Jak zacząć", open=True):
             gr.Markdown(ONBOARDING)
@@ -1070,7 +1345,7 @@ def build_ui() -> gr.Blocks:
                     with gr.Column(scale=1):
                         text_input = gr.Textbox(
                             label="Wklej tekst do sprawdzenia i poprawy",
-                            placeholder="Wklej tutaj tekst umowy, pisma, opinii prawnej lub odpowiedzi...",
+                            placeholder="Wklej tekst do redakcji...",
                             lines=10,
                         )
                         text_file = gr.File(
@@ -1125,159 +1400,169 @@ def build_ui() -> gr.Blocks:
                 xlsx_button = gr.Button("Sprawdź i popraw", variant="primary", size="lg")
                 xlsx_out = _results_block("Wiersze")
 
-            with gr.Tab("Weryfikator NLI / Klauzul"):
-                gr.Markdown(
-                    "Semantyczna weryfikacja logiczna klauzul prawnych. "
-                    "Sprawdza pokrycie szkieletu struktury (Blueprint) lub relację "
-                    "między dwoma zdaniami (brak sprzeczności / wynikanie)."
-                )
-                with gr.Tabs():
-                    with gr.Tab("Sprawdź dokument ze szkieletem (Blueprint)"):
-                        with gr.Row():
-                            nli_doc_text = gr.Textbox(
-                                label="Treść dokumentu",
-                                placeholder="Wklej treść umowy lub pisma...",
-                                lines=10,
-                            )
-                            with gr.Column():
-                                bp_choices = get_blueprint_choices()
-                                available_bps = [c for c in bp_choices if c != "(brak)"]
-                                nli_bp_choice = gr.Dropdown(
-                                    label="Wybierz szkielet (Blueprint)",
-                                    choices=available_bps,
-                                    value="umowa_uslug" if "umowa_uslug" in available_bps else (available_bps[0] if available_bps else None),
-                                )
-                                nli_bp_button = gr.Button("Sprawdź pokrycie klauzul", variant="primary", size="lg")
-                        nli_bp_result = gr.Markdown()
-                    with gr.Tab("Para zdań (Premisa → Hipoteza)"):
-                        with gr.Row():
-                            nli_premise = gr.Textbox(
-                                label="Premisa (zdanie źródłowe / klauzula pierwotna)",
-                                placeholder="np. Wykonawca zobowiązuje się zachować w tajemnicy wszelkie informacje poufne przez okres 3 lat od zawarcia umowy.",
-                                lines=3,
-                            )
-                            nli_hypothesis = gr.Textbox(
-                                label="Hipoteza (zdanie sprawdzane / zmienione)",
-                                placeholder="np. Obowiązek poufności wygasa natychmiast po rozwiązaniu umowy.",
-                                lines=3,
-                            )
-                        nli_pair_button = gr.Button("Sprawdź relację logiczną", variant="primary", size="lg")
-                        nli_pair_result = gr.Markdown()
+        with gr.Accordion("Przegląd i cofanie zmian", open=False):
+            gr.Markdown("Po przetworzeniu tekstu propozycje pojawią się tutaj. Dla plików wczytaj raport JSON i oryginalny DOCX lub XLSX. Przegląd XLSX zapisuje jedną wybraną komórkę w nowej kolumnie kopii źródła. Decyzje można zmieniać wielokrotnie.")
+            review_state = gr.State({})
+            with gr.Row():
+                review_report = gr.File(label="Raport JSON (opcjonalny dla tekstu)", file_types=[".json"], type="filepath")
+                review_number = gr.Number(value=1, precision=0, minimum=1, label="Numer pozycji w raporcie")
+                review_load = gr.Button("Wczytaj propozycje")
+            review_context = gr.Markdown()
+            review_selected = gr.CheckboxGroup(choices=[], label="Propozycje do zachowania")
+            review_source = gr.File(label="Oryginalny DOCX, XLSX lub TXT", file_types=[".docx", ".xlsx", ".txt"], type="filepath")
+            review_apply = gr.Button("Zastosuj wybór i przelicz raport")
+            review_text = gr.Textbox(label="Wybrana wersja", lines=8)
+            review_summary = gr.Markdown()
+            review_files = gr.File(label="Pliki po przeglądzie", file_count="multiple")
+            review_load.click(load_review_ui, inputs=[review_report, review_number], outputs=[review_state, review_selected, review_context])
+            review_apply.click(apply_review_ui, inputs=[review_state, review_selected, review_source], outputs=[review_text, review_summary, review_files])
 
-            with gr.Tab("Profil kancelarii"):
-                gr.Markdown(
-                    "Opcjonalne. Z **zatwierdzonych** dokumentów (min. 5) buduje "
-                    "zanonimizowany opis stylu kancelarii. Nie kalibruje "
-                    "detektora i nie kopiuje treści dokumentów.\n\n"
-                    "**Co profil realnie robi:** (1) sprawdza gotowy tekst pod "
-                    "kątem zakazanych zwrotów i preferowanych terminów — te "
-                    "listy pochodzą z **instrukcji YAML**, nie z przykładowych "
-                    "plików; (2) trafia do promptu hostowanego modelu, ale "
-                    "tylko przy *backendzie redakcji = hybrid*. Silnik "
-                    "regułowy niczego pod profil nie przepisuje."
-                )
-                profile_files = gr.File(
-                    label="Zatwierdzone pliki .docx (min. 5, im więcej tym lepiej)",
-                    file_count="multiple",
-                    file_types=[".docx"],
-                    type="filepath",
-                )
-                profile_name = gr.Textbox(
-                    label="Nazwa profilu",
-                    placeholder="np. Kancelaria Kowalski",
-                    info=(
-                        "Rodzaj dokumentów rozpoznajemy sami. Wgraj dokumenty "
-                        "jednego rodzaju — dziesięć umów mówi więcej niż dwadzieścia "
-                        "różnych pism."
-                    ),
-                )
-                # Nested on purpose: the indentation is the layout.
-                with gr.Accordion("Dodatkowe pliki (opcjonalne)", open=False):  # noqa: SIM117
-                    with gr.Row():
-                        profile_guide = gr.File(
-                            label="Instrukcja stylu (YAML)",
-                            file_types=[".yaml", ".yml"],
-                            type="filepath",
-                            height=110,
-                        )
-                        profile_template = gr.File(
-                            label="Szablon (.docx/.dotx)",
-                            file_types=[".docx", ".dotx"],
-                            type="filepath",
-                            height=110,
-                        )
-                profile_button = gr.Button("Zbuduj profil", variant="primary", size="lg")
-                profile_summary = gr.Markdown()
-                profile_output = gr.File(
-                    label="Pliki profilu", file_count="multiple", visible=False
-                )
+        with gr.Accordion("Ustawienia i narzędzia dla prawników", open=False) as legal_tools:
+            completeness_checkbox = gr.Checkbox(
+                True, label="Sprawdzaj kompletność według szkieletu",
+                info="osobna kontrola sekcji; wynik nie potwierdza poprawności prawnej",
+            )
+            document_type = gr.Dropdown(
+                [label for value, label in DOCUMENT_TYPE_LABELS.items() if value != "general"],
+                value=DOCUMENT_TYPE_LABELS["auto"], label="Rodzaj dokumentu prawnego",
+            )
+            blueprint_choice = gr.Dropdown(
+                get_blueprint_choices(), value="(brak)", label="Szkielet struktury (Blueprint)",
+                info="wybór wzorca dla włączonej kontroli kompletności",
+            )
+            nli_checkbox = gr.Checkbox(
+                False, label="Weryfikacja klauzul NLI",
+                info="kontrola pokrycia wymagań szkieletu przez model (wymaga .env)",
+            )
+            draft_checkbox = gr.Checkbox(
+                False, label="Dopisuj brakujące sekcje",
+                info="tylko tekst i DOCX; dopiski wymagają przeglądu prawnika, w dokumencie bez oznaczenia, w raporcie w całości (wymaga modelu)",
+            )
+            require_anchor = gr.Checkbox(False, label="Wymagaj kotwicy")
+            style_profile = gr.File(
+                label="Profil stylu kancelarii (JSON) — opcjonalny",
+                file_types=[".json"], type="filepath", height=110,
+            )
+            template = gr.File(
+                label="Szablon (.docx/.dotx)",
+                file_types=[".docx", ".dotx"], type="filepath", height=110,
+            )
+            with gr.Tabs():
+                with gr.Tab("Weryfikator NLI / Klauzul"):
+                    gr.Markdown(
+                        "Semantyczna weryfikacja logiczna klauzul prawnych. "
+                        "Sprawdza pokrycie szkieletu struktury (Blueprint) lub relację "
+                        "między dwoma zdaniami (brak sprzeczności / wynikanie)."
+                    )
+                    with gr.Tabs():
+                        with gr.Tab("Sprawdź dokument ze szkieletem (Blueprint)"):
+                            with gr.Row():
+                                nli_doc_text = gr.Textbox(
+                                    label="Treść dokumentu",
+                                    placeholder="Wklej treść umowy lub pisma...",
+                                    lines=10,
+                                )
+                                with gr.Column():
+                                    bp_choices = get_blueprint_choices()
+                                    available_bps = [c for c in bp_choices if c != "(brak)"]
+                                    nli_bp_choice = gr.Dropdown(
+                                        label="Wybierz szkielet (Blueprint)",
+                                        choices=available_bps,
+                                        value="umowa_uslug" if "umowa_uslug" in available_bps else (available_bps[0] if available_bps else None),
+                                    )
+                                    nli_bp_button = gr.Button("Sprawdź pokrycie klauzul", variant="primary", size="lg")
+                            nli_bp_result = gr.Markdown()
+                        with gr.Tab("Para zdań (Premisa → Hipoteza)"):
+                            with gr.Row():
+                                nli_premise = gr.Textbox(
+                                    label="Premisa (zdanie źródłowe / klauzula pierwotna)",
+                                    placeholder="np. Wykonawca zobowiązuje się zachować w tajemnicy wszelkie informacje poufne przez okres 3 lat od zawarcia umowy.",
+                                    lines=3,
+                                )
+                                nli_hypothesis = gr.Textbox(
+                                    label="Hipoteza (zdanie sprawdzane / zmienione)",
+                                    placeholder="np. Obowiązek poufności wygasa natychmiast po rozwiązaniu umowy.",
+                                    lines=3,
+                                )
+                            nli_pair_button = gr.Button("Sprawdź relację logiczną", variant="primary", size="lg")
+                            nli_pair_result = gr.Markdown()
+
+                with gr.Tab("Profil kancelarii"):
+                    gr.Markdown(
+                        "Opcjonalne. Z **zatwierdzonych** dokumentów (min. 5) buduje "
+                        "zanonimizowany opis stylu kancelarii. Nie kalibruje "
+                        "detektora i nie kopiuje treści dokumentów.\n\n"
+                        "**Co profil realnie robi:** (1) sprawdza gotowy tekst pod "
+                        "kątem zakazanych zwrotów i preferowanych terminów — te "
+                        "listy pochodzą z **instrukcji YAML**, nie z przykładowych "
+                        "plików; (2) trafia do promptu hostowanego modelu, ale "
+                        "tylko przy *backendzie redakcji = hybrid*. Silnik "
+                        "regułowy niczego pod profil nie przepisuje."
+                    )
+                    profile_files = gr.File(
+                        label="Zatwierdzone pliki .docx (min. 5, im więcej tym lepiej)",
+                        file_count="multiple",
+                        file_types=[".docx"],
+                        type="filepath",
+                    )
+                    profile_name = gr.Textbox(
+                        label="Nazwa profilu",
+                        placeholder="np. Kancelaria Kowalski",
+                        info=(
+                            "Rodzaj dokumentów rozpoznajemy sami. Wgraj dokumenty "
+                            "jednego rodzaju — dziesięć umów mówi więcej niż dwadzieścia "
+                            "różnych pism."
+                        ),
+                    )
+                    # Nested on purpose: the indentation is the layout.
+                    with gr.Accordion("Dodatkowe pliki (opcjonalne)", open=False):  # noqa: SIM117
+                        with gr.Row():
+                            profile_guide = gr.File(
+                                label="Instrukcja stylu (YAML)",
+                                file_types=[".yaml", ".yml"],
+                                type="filepath",
+                                height=110,
+                            )
+                            profile_template = gr.File(
+                                label="Szablon (.docx/.dotx)",
+                                file_types=[".docx", ".dotx"],
+                                type="filepath",
+                                height=110,
+                            )
+                    profile_button = gr.Button("Zbuduj profil", variant="primary", size="lg")
+                    profile_summary = gr.Markdown()
+                    profile_output = gr.File(
+                        label="Pliki profilu", file_count="multiple", visible=False
+                    )
 
         with gr.Accordion("Jak czytać wyniki?", open=False):
             gr.Markdown(LEGEND)
 
         with gr.Accordion("Ustawienia (domyślne są dobre)", open=False):
-            with gr.Row():
+            with gr.Row() as legal_intensity:
                 mode = gr.Dropdown(
                     list(MODE_LABELS.values()),
                     value=MODE_LABELS["standard"],
                     label="Jak odważnie poprawiać",
                 )
-                document_type = gr.Dropdown(
-                    list(DOCUMENT_TYPE_LABELS.values()),
-                    value=DOCUMENT_TYPE_LABELS["auto"],
-                    label="Rodzaj dokumentu",
-                )
-            with gr.Row():
-                blueprint_choice = gr.Dropdown(
-                    get_blueprint_choices(),
-                    value="(brak)",
-                    label="Szkielet struktury (Blueprint)",
-                    info="wymusza sprawdzanie obowiązkowych sekcji dokumentu",
-                )
-                nli_checkbox = gr.Checkbox(
-                    False,
-                    label="Weryfikacja klauzul NLI",
-                    info="głęboka kontrola logiczna w bramce jakości (wymaga .env)",
-                )
-                draft_checkbox = gr.Checkbox(
-                    True,
-                    label="Dopisuj brakujące sekcje",
-                    info=(
-                        "model pisze sekcje wymagane przez szkielet dokumentu; "
-                        "w tekście bez oznaczenia, w raporcie w całości (wymaga modelu)"
-                    ),
-                )
             with gr.Row():
                 rewrite = gr.Checkbox(
                     True,
                     label="Poprawiaj tekst",
-                    info="odznacz, żeby tylko zdiagnozować, bez zmian",
+                    info="redakcja istniejących zdań; kontrola kompletności i dopisywanie mają osobne opcje",
                 )
                 pdf = gr.Checkbox(
                     True, label="Raport PDF", info="opis dla odbiorcy nietechnicznego"
                 )
-            style_profile = gr.File(
-                label="Profil stylu kancelarii (JSON) — opcjonalny",
-                file_types=[".json"],
-                type="filepath",
-                height=110,
-            )
-
             with gr.Accordion("Zaawansowane — modele i formatowanie", open=False):
                 gr.Markdown(
                     "Do ruszania tylko wtedy, gdy wiesz, po co. `nlp`/`hybrid` "
                     "wymagają dodatków `[nlp]`/`[transformers]`; bez nich silnik "
-                    "cicho zejdzie do `basic` — i powie o tym w logu."
+                    "może przejść do `basic`. Wynik pokaże aktywne warstwy i ograniczenia."
                 )
                 with gr.Row():
                     engine = gr.Dropdown(
                         ENGINES, value=Engine.basic.value, label="Silnik walidacji"
-                    )
-                    rewrite_backend = gr.Dropdown(
-                        REWRITE_BACKENDS,
-                        value=RewriteBackend.rules.value,
-                        label="Backend redakcji",
-                        info="hybrid = reguły + hostowany model z .env",
                     )
                     format_policy = gr.Dropdown(
                         FORMAT_POLICIES,
@@ -1291,18 +1576,23 @@ def build_ui() -> gr.Blocks:
                         info="przerwij zamiast degradować silnik",
                     )
                     offline_models = gr.Checkbox(False, label="Nie pobieraj modeli")
-                    require_anchor = gr.Checkbox(False, label="Wymagaj kotwicy")
                 with gr.Row():
                     require_llm = gr.Checkbox(False, label="Wymagaj modelu hostowanego")
                     require_renderer = gr.Checkbox(
                         False, label="Wymagaj renderera (DOCX)"
                     )
-                template = gr.File(
-                    label="Szablon (.docx/.dotx)",
-                    file_types=[".docx", ".dotx"],
-                    type="filepath",
-                    height=110,
-                )
+
+        with gr.Accordion("Redakcja ogólna", open=True, visible=False) as general_tools:
+            gr.Markdown("Domyślnie zachowujemy rejestr i głos autora. Skrócenie jest limitem, nie celem. Ton i odbiorca kierują pracą modelu; wszystkie zmiany przechodzą kontrolę treści.")
+            with gr.Row():
+                general_profile = gr.Dropdown([("Zachowaj gatunek", "preserve"), ("Mail", "email"), ("Artykuł", "article"), ("Opis produktu", "product"), ("Informacja", "information"), ("Proza", "prose")], value="preserve", label="Zastosowanie")
+                general_intensity = gr.Dropdown([("Lekka korekta", "light"), ("Redakcja stylistyczna", "style"), ("Przepisanie", "rewrite")], value="style", label="Poziom ingerencji")
+            general_audience = gr.Textbox(label="Odbiorca (opcjonalnie)")
+            with gr.Row():
+                general_tone = gr.Dropdown([("Zachowaj", "preserve"), ("Neutralny", "neutral"), ("Ciepły", "warm"), ("Bezpośredni", "direct")], value="preserve", label="Ton")
+                general_formality = gr.Dropdown([("Zachowaj", "preserve"), ("Potoczny", "casual"), ("Standardowy", "standard"), ("Formalny", "formal")], value="preserve", label="Formalność")
+            max_shortening = gr.Slider(0, 50, value=30, step=1, label="Maksymalne skrócenie (%)")
+            protected_terms = gr.Textbox(label="Chronione terminy — jeden w wierszu", lines=2)
 
         settings_inputs = [
             mode,
@@ -1321,21 +1611,38 @@ def build_ui() -> gr.Blocks:
             blueprint_choice,
             nli_checkbox,
             draft_checkbox,
+            track,
+            completeness_checkbox,
+            general_profile, general_audience, general_tone, general_formality,
+            general_intensity, max_shortening, protected_terms,
         ]
 
+        track.change(
+            track_visibility,
+            inputs=track, outputs=legal_tools, queue=False, show_progress="hidden",
+        )
+        track.change(track_visibility, inputs=track, outputs=legal_intensity, queue=False, show_progress="hidden")
+        track.change(lambda value: gr.update(visible=value == "general"), inputs=track, outputs=general_tools, queue=False, show_progress="hidden")
+        completeness_checkbox.change(
+            completeness_controls,
+            inputs=completeness_checkbox, outputs=[nli_checkbox, draft_checkbox],
+            queue=False, show_progress="hidden",
+        )
+
         text_button.click(
-            run_text,
-            inputs=[text_input, text_file, *settings_inputs],
-            outputs=[text_output, text_summary, text_changes, text_gate],
+            run_text_controlled,
+            inputs=[run_id, text_input, text_file, *settings_inputs],
+            outputs=[text_output, text_summary, text_changes, text_gate, review_state, review_selected, review_context],
         )
         docx_button.click(
-            run_docx,
-            inputs=[docx_files, pdf, *settings_inputs],
+            run_docx_controlled,
+            inputs=[run_id, docx_files, pdf, *settings_inputs],
             outputs=list(docx_out),
         )
         xlsx_button.click(
-            run_xlsx,
+            run_xlsx_controlled,
             inputs=[
+                run_id,
                 xlsx_file,
                 xlsx_column,
                 xlsx_sheet,
@@ -1367,10 +1674,19 @@ def build_ui() -> gr.Blocks:
         )
 
         gr.Markdown(
-            "<sub>Wszystko liczy się lokalnie. Hostowany model "
-            "(<i>backend redakcji = hybrid</i>) czyta konfigurację z pliku "
-            "<code>.env</code> — kluczy API nie wpisuje się w przeglądarce.</sub>"
+            "<sub>Reguły działają lokalnie. Redakcja modelem i weryfikacja klauzul "
+            "wysyłają fragmenty do endpointu z <code>.env</code>, który może być lokalny "
+            "lub zewnętrzny. Wzorce maskują dane we wszystkich polach zapytań, lecz nie gwarantują pełnej anonimizacji. "
+            "Kluczy API nie wpisuje się w przeglądarce.</sub>"
         )
+        with gr.Accordion("Pliki przebiegów i usuwanie danych", open=False):
+            gr.Markdown("Pliki aplikacji trafiają do outputs/ui. Zakończone przebiegi starsze niż 7 dni są usuwane przy rozpoczęciu kolejnego. Raporty zawierają tekst źródłowy i propozycje. Usunięcie lokalnego przebiegu nie usuwa danych zachowanych przez dostawcę modelu ani pobranych kopii.")
+            retained_run = gr.Dropdown(choices=[], label="Zakończony przebieg")
+            refresh_runs = gr.Button("Odśwież listę przebiegów")
+            delete_run_button = gr.Button("Usuń pliki wybranego przebiegu", variant="stop")
+            deletion_status = gr.Markdown()
+            refresh_runs.click(retention_choices, outputs=retained_run, queue=False)
+            delete_run_button.click(delete_run_ui, inputs=retained_run, outputs=[retained_run, deletion_status], queue=False)
 
     return demo
 
@@ -1390,6 +1706,7 @@ def main() -> None:
     args = parser.parse_args()
 
     RUNS_ROOT.mkdir(parents=True, exist_ok=True)
+    os.environ.setdefault("GRADIO_TEMP_DIR", str(RUNS_ROOT / "cache"))
     build_ui().launch(
         server_name=args.host,
         server_port=args.port,

@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field, replace
 from typing import Any
 
-from humanize_pl.config import HumanizeConfig, Mode
+from humanize_pl.config import HumanizeConfig, LegalReviewProfile, Mode
 from humanize_pl.results import CandidateRejection, CandidateTrace, SentenceChange, SentenceSkip
 from humanize_pl.rules.base import Candidate
 from humanize_pl.rules.engine import RuleEngine
@@ -349,6 +349,7 @@ class LegalPipeline:
                 rule=cand.rule,
                 operation_type=cand.operation_type,
                 nli=self.nli,
+                legal=self.config.legal_review_profile != LegalReviewProfile.general,
             )
             features_after = analyze_sentence_features(cand.text)
             if not validation.ok:
@@ -432,6 +433,15 @@ class LegalPipeline:
                 if effective_cand_text != restored_cand:
                     # NP agreement was auto-repaired — update cand to the repaired text.
                     cand = replace(cand, text=self.protected.re_protect(effective_cand_text))
+                    # Repair may change a party's grammatical case. Validate
+                    # what we will actually save, not only the earlier proposal.
+                    repaired_validation = validate_candidate(
+                        original, cand.text, protected=self.protected,
+                        max_length_ratio=self.config.length_ratio(), rule=cand.rule,
+                        operation_type=cand.operation_type, nli=self.nli,
+                        legal=self.config.legal_review_profile != LegalReviewProfile.general,
+                    )
+                    agreement_checks.extend(repaired_validation.checks)
                 failed_agreement = next(
                     (check for check in agreement_checks if not check.ok), None
                 )

@@ -116,7 +116,12 @@ def token_multiset_preserved(original: str, candidate: str) -> bool:
     missing = _counter_diff(before, after)
     added = _counter_diff(after, before)
     allowed = {"natomiast", "jednak", "przy", "czym", "a", "także", "z", "kolei", "ponadto"}
-    return all(word in allowed for word in missing) and all(word in allowed for word in added)
+    return (
+        all(word in allowed for word in missing)
+        and all(word in allowed for word in added)
+        and [word for word in before if word not in allowed]
+        == [word for word in after if word not in allowed]
+    )
 
 
 def _counter_diff(left: list[str], right: list[str]) -> list[str]:

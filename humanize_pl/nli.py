@@ -10,14 +10,9 @@ Ten moduł zadaje pytanie o poziom niżej: czy dla każdej klauzuli, którą szk
 zapowiada, w odnalezionej sekcji naprawdę stoi zdanie, które ją wyraża albo z
 którego ona wynika. Odpowiada model, bo to pytanie o znaczenie, a nie o wzorzec.
 
-**Ostrożność jest tu regułą, nie ustawieniem.** Model, który waha się między
-„entailed” a „partial”, zwraca „entailed” — i tak samo rozstrzyga każda linia
-tego kodu: nieznany werdykt, brakujący wpis w odpowiedzi, uszkodzony JSON, błąd
-endpointu. Powód jest praktyczny, nie estetyczny. Narzędzie, które podnosi alarm
-nad poprawną polszczyzną, zostaje wyłączone po trzecim takim alarmie i nie
-złapie już nigdy niczego. Przeoczony brak kosztuje jedno znalezisko; fałszywy
-alarm kosztuje całe narzędzie. Dlatego raport z tego modułu czyta się jako
-„to na pewno warto sprawdzić”, nigdy jako „reszta jest w porządku”.
+Brak odpowiedzi, nieznany werdykt i błąd modelu oznaczają `unknown`:
+nie potwierdzają ani pokrycia, ani braku klauzuli. Raport pokazuje zakres
+sprawdzenia i rozdziela ocenę modelu od obserwacji strukturalnych.
 
 Jedno wywołanie modelu na sekcję, nie na klauzulę: klauzule jednej sekcji dzielą
 ten sam kontekst, a sto osobnych rozmów o jednej umowie to sto szans na to, że
@@ -51,14 +46,15 @@ ENTAILED = "entailed"
 PARTIAL = "partial"
 MISSING = "missing"
 ABSENT = "absent"
+UNKNOWN = "unknown"
 
 # Kolejność ciężaru. Werdykt sekcji to najgorszy werdykt jej klauzul, a werdykt
 # dokumentu — najgorszy werdykt jego sekcji; brak całej sekcji bije wszystko.
-_RANK = {ENTAILED: 0, PARTIAL: 1, MISSING: 2, ABSENT: 3}
+_RANK = {ENTAILED: 0, PARTIAL: 1, UNKNOWN: 2, MISSING: 3, ABSENT: 4}
 
 # Model odpowiada po polsku albo po angielsku, zależnie od tego, co akurat
 # przeważyło w jego treningu. Cokolwiek spoza tej tabeli znaczy „nie wiem”, a
-# „nie wiem” znaczy `entailed` — tak samo jak brak odpowiedzi.
+# „nie wiem” znaczy `unknown` — tak samo jak brak odpowiedzi.
 _ALIASES = {
     "entailed": ENTAILED,
     "entails": ENTAILED,
@@ -89,10 +85,7 @@ _ALIASES = {
 MAX_COMPLETION_TOKENS = 1000
 MAX_EXPECTED_CLAUSES = 12
 
-# Bezpiecznik rozmiaru zapytania, nie kryterium oceny. Obcięcie przesłanki może
-# tylko zabrać modelowi dowód pokrycia, czyli pchnąć werdykt w stronę ostrą,
-# więc progi są wysokie: sekcja dłuższa niż czterdzieści klauzul praktycznie nie
-# istnieje, a klauzula dłuższa niż czterysta znaków to już cały akapit.
+# Above the request budget, report unknown rather than judge a truncated premise.
 MAX_DOCUMENT_CLAUSES = 40
 MAX_CLAUSE_CHARS = 400
 
@@ -124,6 +117,7 @@ class ClauseCheck:
 
     clause: str
     verdict: str
+    assessment: str = "model"
 
 
 @dataclass(frozen=True)
@@ -150,18 +144,27 @@ class NliReport:
     category: str
     blueprint: str | None = None
     sections: list[SectionCheck] = field(default_factory=list)
-    # Model, który nie odpowiedział, zostawia sekcję ocenioną łagodnie — i ślad
-    # tutaj. Bez tego raport bez zastrzeżeń wygląda identycznie, niezależnie od
-    # tego, czy model potwierdził pokrycie, czy w ogóle się nie odezwał.
+    # Failures and incomplete responses never count as confirmed coverage.
     warnings: list[str] = field(default_factory=list)
 
     @property
     def verdict(self) -> str:
         return max(
             (row.verdict for row in self.sections),
-            key=lambda value: _RANK.get(value, 0),
-            default=ENTAILED,
+            key=lambda value: _RANK.get(value, _RANK[UNKNOWN]),
+            default=UNKNOWN,
         )
+
+    @property
+    def coverage(self) -> dict[str, int]:
+        clauses = [clause for section in self.sections for clause in section.clauses]
+        checked = [clause for clause in clauses if clause.verdict in {ENTAILED, PARTIAL, MISSING}]
+        return {
+            "total": len(clauses), "checked": len(checked),
+            "model_checked": sum(clause.assessment == "model" for clause in checked),
+            "structural_checked": sum(clause.assessment == "structure" for clause in checked),
+            "unknown": len(clauses) - len(checked),
+        }
 
     @property
     def issues(self) -> list[str]:
@@ -176,6 +179,8 @@ class NliReport:
                     rows.append(f"{section.section}: brak treści „{clause.clause}”")
                 elif clause.verdict == PARTIAL:
                     rows.append(f"{section.section}: treść „{clause.clause}” pokryta częściowo")
+                elif clause.verdict == UNKNOWN:
+                    rows.append(f"{section.section}: nie zweryfikowano treści „{clause.clause}”")
         return rows
 
     def to_json(self) -> dict[str, Any]:
@@ -184,13 +189,15 @@ class NliReport:
             "blueprint": self.blueprint,
             "verdict": self.verdict,
             "warnings": list(self.warnings),
+            "issues": self.issues,
+            "coverage": self.coverage,
             "sections": [
                 {
                     "section": row.section,
                     "heading": row.heading,
                     "verdict": row.verdict,
                     "clauses": [
-                        {"clause": item.clause, "verdict": item.verdict}
+                        {"clause": item.clause, "verdict": item.verdict, "assessment": item.assessment}
                         for item in row.clauses
                     ],
                 }
@@ -400,10 +407,10 @@ def locate_sections(
 
 
 def normalise_verdict(value: Any) -> str:
-    """Każde „nie wiem” — cudze i własne — kończy się na `entailed`."""
+    """Brak rozpoznanej oceny nie jest potwierdzeniem pokrycia."""
     if not isinstance(value, str):
-        return ENTAILED
-    return _ALIASES.get(value.strip().casefold(), ENTAILED)
+        return UNKNOWN
+    return _ALIASES.get(value.strip().casefold(), UNKNOWN)
 
 
 _SYSTEM_PROMPT = (
@@ -413,10 +420,9 @@ _SYSTEM_PROMPT = (
     "Dla każdej wymaganej treści zwróć jedną ocenę:\n"
     '  "entailed" — sekcja wyraża ją wprost albo ona z sekcji wynika,\n'
     '  "partial" — sekcja dotyka tematu, ale pomija jego istotny element,\n'
-    '  "missing" — w sekcji nie ma nic na ten temat.\n'
-    "Rozstrzyganie wątpliwości: jeśli wahasz się między dwiema ocenami, wybierz "
-    'łagodniejszą; jeśli nie masz pewności, zwróć "entailed". Lepiej przeoczyć '
-    "brak niż zgłosić poprawny zapis jako wadliwy.\n"
+    '  "missing" — w sekcji nie ma nic na ten temat,\n'
+    '  "unknown" — nie masz wystarczających podstaw do rozstrzygnięcia.\n'
+    'Jeśli nie masz pewności, zwróć "unknown". Nie zgaduj pokrycia ani braku.\n'
     "Ciągi postaci __PROTECTED_0000__ to usunięte dane (kwoty, daty, nazwy, "
     "numery). Traktuj je jako obecne i poprawne.\n"
     'Zwróć wyłącznie obiekt JSON postaci {"oceny": [{"nr": 1, "ocena": '
@@ -451,21 +457,20 @@ def build_messages(
 def read_verdicts(payload: dict[str, Any], count: int) -> list[str]:
     """Przeczytaj odpowiedź modelu.
 
-    Czego w niej nie ma albo czego nie da się przeczytać — `entailed`.
+    Czego w niej nie ma albo czego nie da się przypisać — `unknown`.
     """
-    verdicts = [ENTAILED] * count
-    rows = payload.get("oceny")
+    verdicts = [UNKNOWN] * count
+    rows = payload.get("oceny") if isinstance(payload, dict) else None
     if not isinstance(rows, list):
         return verdicts
-    for position, row in enumerate(rows, 1):
+    seen = set()
+    for row in rows:
         if not isinstance(row, dict):
             continue
-        try:
-            number = int(row.get("nr", position))
-        except (TypeError, ValueError):
-            continue
-        if 1 <= number <= count:
-            verdicts[number - 1] = normalise_verdict(row.get("ocena"))
+        number = row.get("nr")
+        if type(number) is int and 1 <= number <= count:
+            verdicts[number - 1] = UNKNOWN if number in seen else normalise_verdict(row.get("ocena"))
+            seen.add(number)
     return verdicts
 
 
@@ -473,7 +478,7 @@ class ClauseJudge(Protocol):
     """Kto odpowiada na pytanie o pokrycie jednej sekcji.
 
     Zwraca po jednym werdykcie na każdą wymaganą treść, w tej samej kolejności.
-    Krótsza lista jest dopuszczalna — brakujące pozycje czyta się łagodnie.
+    Krótsza lista oznacza `unknown` dla brakujących pozycji.
     Opcjonalne pole `warnings` trafia do raportu.
     """
 
@@ -517,16 +522,19 @@ class LlmClauseJudge:
                 messages, max_tokens=self._max_completion_tokens
             )
         except LlmEndpointError as exc:
-            # Milczenie endpointu nie jest dowodem braku klauzuli. Sekcja
-            # dostaje ocenę łagodną, a raport — zdanie o tym, że jej nie
-            # sprawdzono.
             self.warnings.append(f"sekcja „{heading}”: {_safe_error(exc)}")
-            return [ENTAILED] * len(expected)
-        return read_verdicts(payload, len(expected))
+            return [UNKNOWN] * len(expected)
+        verdicts = read_verdicts(payload, len(expected))
+        if UNKNOWN in verdicts:
+            self.warnings.append(f"sekcja „{heading}”: brak jednoznacznej oceny {verdicts.count(UNKNOWN)}/{len(expected)} klauzul")
+        return verdicts
+
+    def close(self) -> None:
+        self._client.close()
 
 
 def _prompt_clauses(body: str) -> list[str]:
-    """Klauzule sekcji gotowe do wysłania: zredagowane i przycięte do budżetu.
+    """Klauzule sekcji z zamaskowanymi danymi; limit sprawdza wywołujący.
 
     `protect_text` jest tu z tego samego powodu, dla którego jest w ścieżce
     redakcyjnej: poza kancelarię wychodzi tekst bez nazwisk, numerów i kwot.
@@ -535,11 +543,7 @@ def _prompt_clauses(body: str) -> list[str]:
     `__PROTECTED_0000__` znaczyłby w jednym zdaniu datę, a w następnym nazwisko.
     """
     protected = protect_text(body, include_sensitive=True)
-    clauses = split_clauses(protected.text)[:MAX_DOCUMENT_CLAUSES]
-    return [
-        clause if len(clause) <= MAX_CLAUSE_CHARS else f"{clause[:MAX_CLAUSE_CHARS]}…"
-        for clause in clauses
-    ]
+    return split_clauses(protected.text)
 
 
 def check_document_against_blueprint(
@@ -553,9 +557,17 @@ def check_document_against_blueprint(
     Bez `judge` klient modelu powstaje z konfiguracji (`.env`) tak samo jak w
     całej reszcie narzędzia; w testach i w trybie offline podaje się własnego.
     """
-    if judge is None:
-        judge = LlmClauseJudge.from_environment()
+    owned = judge is None
+    judge = judge if judge is not None else LlmClauseJudge.from_environment()
+    try:
+        return _check_document(doc_text, blueprint, judge=judge)
+    finally:
+        if owned and isinstance(judge, LlmClauseJudge):
+            judge.close()
 
+
+def _check_document(doc_text: str, blueprint: DocumentBlueprint, *, judge: ClauseJudge) -> NliReport:
+    warning_start = len(getattr(judge, "warnings", []) or [])
     report = NliReport(category=blueprint.category, blueprint=blueprint.label_pl)
     for section, part in locate_sections(doc_text, blueprint):
         expected = expected_clauses(section)
@@ -569,14 +581,14 @@ def check_document_against_blueprint(
                     section=section.id,
                     heading=None,
                     verdict=ABSENT,
-                    clauses=tuple(ClauseCheck(clause, MISSING) for clause in expected),
+                    clauses=tuple(ClauseCheck(clause, MISSING, "structure") for clause in expected),
                 )
             )
             continue
 
         document_clauses = _prompt_clauses(part.body)
         if not expected:
-            report.sections.append(SectionCheck(section.id, part.heading, ENTAILED, ()))
+            report.sections.append(SectionCheck(section.id, part.heading, UNKNOWN, ()))
             continue
         if not document_clauses:
             # Nagłówek, pod którym nie ma ani jednego zdania. Modelu nie ma tu
@@ -589,22 +601,32 @@ def check_document_against_blueprint(
                     section=section.id,
                     heading=part.heading,
                     verdict=MISSING,
-                    clauses=tuple(ClauseCheck(clause, MISSING) for clause in expected),
+                    clauses=tuple(ClauseCheck(clause, MISSING, "structure") for clause in expected),
                 )
             )
             continue
 
-        verdicts = judge.judge_section(
-            heading=part.heading,
-            document_clauses=document_clauses,
-            expected_clauses=list(expected),
-        )
+        if len(document_clauses) > MAX_DOCUMENT_CLAUSES or any(len(c) > MAX_CLAUSE_CHARS for c in document_clauses):
+            report.warnings.append(f"sekcja „{part.heading}”: przekroczony limit treści; nie wykonano oceny na uciętym tekście")
+            verdicts = []
+        else:
+            try:
+                verdicts = judge.judge_section(
+                    heading=part.heading,
+                    document_clauses=document_clauses,
+                    expected_clauses=list(expected),
+                )
+            except Exception as exc:  # noqa: BLE001 - uncertainty is reported per section
+                report.warnings.append(f"sekcja „{part.heading}”: błąd oceny ({type(exc).__name__})")
+                verdicts = []
+        if not isinstance(verdicts, (list, tuple)):
+            verdicts = []
         clauses = tuple(
             ClauseCheck(
                 clause,
                 normalise_verdict(verdicts[position])
                 if position < len(verdicts)
-                else ENTAILED,
+                else UNKNOWN,
             )
             for position, clause in enumerate(expected)
         )
@@ -615,11 +637,11 @@ def check_document_against_blueprint(
                 verdict=max(
                     (row.verdict for row in clauses),
                     key=lambda value: _RANK.get(value, 0),
-                    default=ENTAILED,
+                    default=UNKNOWN,
                 ),
                 clauses=clauses,
             )
         )
 
-    report.warnings.extend(getattr(judge, "warnings", []) or [])
+    report.warnings.extend((getattr(judge, "warnings", []) or [])[warning_start:])
     return report

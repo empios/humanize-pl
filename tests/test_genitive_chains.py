@@ -7,7 +7,11 @@ from humanize_pl.rules.genitive_chains import genitive_chain_candidates
 
 @pytest.fixture(scope="module")
 def engine():
-    return StanzaEngine()
+    pytest.importorskip("stanza", reason="Test integracyjny wymaga opcjonalnego Stanza.")
+    try:
+        return StanzaEngine(offline=True)
+    except (OSError, RuntimeError) as exc:
+        pytest.skip(f"Brak lokalnych wag Stanza: {type(exc).__name__}")
 
 def test_genitive_chains_are_simplified(engine):
     sentence = "W związku z tym powód wskazał cel zapewnienia możliwości realizacji projektu."

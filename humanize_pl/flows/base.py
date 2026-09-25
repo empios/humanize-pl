@@ -19,7 +19,13 @@ from pathlib import Path
 from typing import Any
 
 from humanize_pl.artifacts import find_artifacts, strip_markup
-from humanize_pl.blueprint import blueprint_for, check_category
+from humanize_pl.blueprint import (
+    BlueprintError,
+    BlueprintReport,
+    blueprint_for,
+    check,
+    resolve_blueprint,
+)
 from humanize_pl.categories import UNSPECIFIED, CategoryGuess, classify_category
 from humanize_pl.categories import get as get_category
 from humanize_pl.config import Engine, LegalReviewProfile, Mode
@@ -29,16 +35,21 @@ from humanize_pl.detect.calibration import threshold_for_family
 from humanize_pl.document import (
     GENRE_PROFILES,
     DocumentType,
+    DocumentTypeGuess,
     FormatPolicy,
+    HumanizeTrack,
     ReadinessStatus,
     RewriteBackend,
     StyleProfile,
     classify_document,
+    resolve_track,
 )
 from humanize_pl.gate import GateVerdict, review_response
+from humanize_pl.general import GeneralOptions, editorial_findings, protected_lines
 from humanize_pl.llm import LlmConfigurationError, LlmSettings, OpenAICompatibleRewriter
 from humanize_pl.nlp.morfeusz import try_load_morfeusz
 from humanize_pl.rhythm import RhythmScope, apply_rhythm_pass
+from humanize_pl.runtime import checkpoint, controlled, current_control
 from humanize_pl.sentence_splitter import split_sentences
 from humanize_pl.tone import compare_tone
 
@@ -207,18 +218,32 @@ class FlowSettings:
     # caller who knows nothing must not be able to trigger that.
     rhythm: bool = True
     rhythm_scope: RhythmScope = RhythmScope.sentences_only
-    # Write the sections a document owes its category when they are
-    # missing. Needs the hosted model; without one nothing is drafted and
-    # the gap is reported as before.
-    draft_missing: bool = True
+    # Explicit opt-in, independent of editing existing prose. Needs a model.
+    draft_missing: bool = False
     style_profile: Path | None = None
     template: Path | None = None
     format_policy: FormatPolicy = FormatPolicy.preserve
     require_llm: bool = False
     require_renderer: bool = False
     llm_env_file: Path | None = None
-    blueprint: Path | None = None
+    blueprint: str | Path | None = None
     nli: bool = False
+    track: HumanizeTrack | str | None = None
+    check_completeness: bool = True
+    general_options: GeneralOptions = field(default_factory=GeneralOptions)
+
+    def __post_init__(self) -> None:
+        track, document_type = resolve_track(self.track, self.document_type)
+        object.__setattr__(self, "track", track)
+        object.__setattr__(self, "document_type", document_type)
+        if isinstance(self.general_options, dict):
+            object.__setattr__(self, "general_options", GeneralOptions(**self.general_options))
+        if track != HumanizeTrack.general and self.general_options != GeneralOptions():
+            raise ValueError("Ustawienia redakcji ogólnej wymagają ścieżki general.")
+        if track == HumanizeTrack.general:
+            object.__setattr__(self, "check_completeness", False)
+        elif not self.check_completeness and (self.draft_missing or self.nli):
+            raise ValueError("Dopisywanie i NLI wymagają włączonej kontroli kompletności.")
 
     def session(self) -> HumanizerSession:
         profile = self.legal_review_profile
@@ -243,12 +268,24 @@ class FlowSettings:
     def load_style_profile(self) -> StyleProfile | None:
         return StyleProfile.load(self.style_profile) if self.style_profile else None
 
+    def requested_operations(self) -> dict[str, bool]:
+        legal = self.track == HumanizeTrack.legal
+        return {
+            "editing": self.rewrite,
+            "completeness": self.check_completeness and legal,
+            "nli": self.nli and legal,
+            "drafting": self.draft_missing and legal,
+        }
+
 
 def prepare_llm(
     settings: FlowSettings,
 ) -> tuple[OpenAICompatibleRewriter | None, list[str]]:
     """Create and probe one hosted-model client for the entire batch."""
-    if not settings.rewrite or settings.rewrite_backend != RewriteBackend.hybrid:
+    needs_model = (
+        settings.rewrite and settings.rewrite_backend == RewriteBackend.hybrid
+    ) or (settings.draft_missing and settings.track == HumanizeTrack.legal)
+    if not needs_model:
         return None, []
     try:
         llm_settings = LlmSettings.from_environment(settings.llm_env_file)
@@ -272,6 +309,7 @@ def layer_status(
     office_profile: bool = False,
     rewriter: OpenAICompatibleRewriter | None = None,
     llm_warnings: list[str] | None = None,
+    settings: FlowSettings | None = None,
 ) -> dict[str, Any]:
     """What actually loaded, per layer.
 
@@ -313,7 +351,48 @@ def layer_status(
     )
     if llm_warnings:
         status.setdefault("warnings", []).extend(llm_warnings)
+    if settings is not None:
+        status["track"] = settings.track.value
+        status["backend_requested"] = settings.rewrite_backend.value
     return status
+
+
+def execution_summary(layers: dict[str, Any]) -> list[str]:
+    """Shared plain-language description of the backend and its limits."""
+    lines = []
+    location = layers.get("hosted_model", {}).get("processing_location")
+    if location in {"local_loopback", "external_or_network"}:
+        target = "lokalny endpoint tego komputera" if location == "local_loopback" else "endpoint zewnętrzny lub sieciowy"
+        lines.append(f"Przetwarzanie modelem: {target}. Maskowanie wzorcami obejmuje pola zapytań, lecz nie gwarantuje pełnej anonimizacji.")
+    if layers.get("track"):
+        label = "dla prawników — ostrożna redakcja" if layers["track"] == "legal" else "ogólna — redakcja językowa"
+        lines.append(f"Ścieżka: {label}.")
+    if layers.get("review_selection"):
+        lines.append("Zastosowano wybór użytkownika i przeliczono pomiary lokalnie; modelu nie wywoływano ponownie.")
+        return lines
+    rewrite = layers.get("rewrite", {})
+    if rewrite.get("skipped"):
+        lines.append("Redakcja językowa wyłączona. Kontrola kompletności i dopisywanie mają osobne ustawienia.")
+        return lines
+    if layers.get("track") == "legal":
+        lines.append("Ostrożna redakcja zachowuje rozpoznane role stron oraz treść obowiązków, warunków i terminów; część poprawnych parafraz może zostać odrzucona.")
+    requested = layers.get("backend_requested")
+    hosted = layers.get("hosted_model", {})
+    if requested == "rules":
+        lines.append("Backend redakcji: lokalne reguły. Zakres obejmuje rozpoznane reguły językowe.")
+    elif requested == "hybrid":
+        if hosted.get("status") in {"ready", "ready_with_errors"}:
+            lines.append(f"Backend redakcji: reguły i skonfigurowany model ({hosted.get('model') or 'bez nazwy'}).")
+            if hosted.get("status") == "ready_with_errors":
+                lines.append("Część zapytań do modelu zakończyła się błędem; odpowiednie fragmenty zachowano.")
+        else:
+            lines.append("Backend redakcji: lokalne reguły — model niedostępny, nastąpił powrót do reguł.")
+        if rewrite.get("nli") != "ready":
+            lines.append("Brak aktywnej kontroli znaczenia NLI: swobodne parafrazy modelu są odrzucane; dopuszczone są tylko wąskie zmiany zachowujące treść.")
+    used, wanted = rewrite.get("engine_used"), rewrite.get("engine_requested")
+    if used and wanted and used != wanted:
+        lines.append(f"Degradacja silnika walidacji: żądano {wanted}, aktywny {used}.")
+    return lines
 
 
 @dataclass
@@ -408,6 +487,48 @@ class ItemOutcome:
     # Share of sentences in the output with no unresolved finding; what
     # readiness reads instead of the findings themselves.
     compliance: float = 1.0
+    requested_operations: dict[str, bool] = field(default_factory=dict)
+    drafting_status: str = "disabled"
+    general_options: dict[str, Any] = field(default_factory=dict)
+    editorial_before: list[dict[str, Any]] = field(default_factory=list)
+    editorial_after: list[dict[str, Any]] = field(default_factory=list)
+    style_protection: list[dict[str, Any]] = field(default_factory=list)
+    signal_interpretable: bool = True
+    review: dict[str, Any] = field(default_factory=dict, repr=False)
+
+    def operation_results(self) -> dict[str, Any]:
+        """Scope and outcome, independent of overall document readiness."""
+        if not self.requested_operations:
+            return {}
+        requests = self.requested_operations
+        editing = "completed" if requests.get("editing") else "disabled"
+        if requests.get("editing") and self.formatting and not self.formatting.get("inventory_preserved", True):
+            editing = "not_saved"
+        completeness = "disabled"
+        if requests.get("completeness"):
+            completeness = "completed" if self.blueprint.get("checked") else "unavailable"
+            if requests.get("nli") and (
+                not self.nli or self.nli.get("verdict") == "unknown"
+                or self.nli.get("coverage", {}).get("unknown", 0)
+            ):
+                completeness = "incomplete"
+        drafted = [row for row in self.drafted_sections if row.get("inserted", True)]
+        drafting = self.drafting_status
+        if self.drafted_sections:
+            drafting = "added" if drafted else "not_saved"
+        if self.status == "failed":
+            editing = "failed" if requests.get("editing") else "disabled"
+            completeness = "failed" if requests.get("completeness") else "disabled"
+            drafting = "failed" if requests.get("drafting") else "disabled"
+        return {
+            "editing": {"requested": requests.get("editing", False), "status": editing,
+                        "changes": self.changes_applied},
+            "completeness": {"requested": requests.get("completeness", False), "status": completeness,
+                             "nli_requested": requests.get("nli", False),
+                             "missing_sections": len(self.blueprint.get("missing_required", []))},
+            "drafting": {"requested": requests.get("drafting", False), "status": drafting,
+                         "sections_added": len(drafted), "requires_review": bool(self.drafted_sections)},
+        }
 
     # The unsuffixed names are what the PDF report, the replay path and the UI
     # already read, and they mean "the state the document left in".
@@ -493,6 +614,15 @@ class ItemOutcome:
             "artifacts_after": self.artifacts_after,
             "notes": self.notes,
             "compliance": self.compliance,
+            "requested_operations": self.requested_operations,
+            "drafting_status": self.drafting_status,
+            "operations": self.operation_results(),
+            "general_options": self.general_options,
+            "editorial_before": self.editorial_before,
+            "editorial_after": self.editorial_after,
+            "style_protection": self.style_protection,
+            "signal_interpretable": self.signal_interpretable,
+            "review": self.review,
         }
 
     @classmethod
@@ -523,6 +653,7 @@ def _score(diagnosis) -> float:
     return calibration.calibrated_score if calibration else diagnosis.ai_signal_score
 
 
+@controlled
 def run_all_layers(
     text: str,
     *,
@@ -536,14 +667,17 @@ def run_all_layers(
     llm_initialization_warnings: list[str] | None = None,
 ) -> tuple[ItemOutcome, GateVerdict]:
     """Detect, optionally rewrite, re-detect, then gate."""
-    guess = classify_document(text)
-    category = classify_category(text)
+    checkpoint("analiza źródła")
     general = settings.document_type == DocumentType.general
     if general:
         # Not a legal document, so no legal category: no skeleton to check,
         # nothing to draft, no clause to verify. A text that only mentions
         # "czynsz" must not become a lease with sections missing.
         category = CategoryGuess(get_category(UNSPECIFIED), 0.0)
+        guess = DocumentTypeGuess(DocumentType.general, 1.0, ("wybrano ścieżkę ogólną",))
+    else:
+        guess = classify_document(text)
+        category = classify_category(text)
     # The family sets the threshold, the human baseline and the formatting
     # norms, so it is taken from the better of the two classifiers. Measured
     # on the 32-document model corpus: the family classifier alone was right
@@ -568,6 +702,15 @@ def run_all_layers(
     # can supply that baseline. One that describes a different kind of document
     # is dropped here rather than half-used later.
     profile_warnings: list[str] = []
+    skeleton = None
+    if general:
+        if settings.blueprint is not None or settings.nli:
+            profile_warnings.append("Szkielety prawne i weryfikacja klauzul nie dotyczą ścieżki ogólnej; pominięto je.")
+    elif settings.check_completeness:
+        try:
+            skeleton = resolve_blueprint(settings.blueprint) if settings.blueprint is not None else blueprint_for(category.category.id)
+        except (BlueprintError, OSError, ValueError) as exc:
+            profile_warnings.append(f"Nie udało się załadować szkieletu: {exc}")
     if style_profile and style_profile.document_type != resolved_type:
         profile_warnings.append(
             "Profil kancelarii dotyczy innego rodzaju dokumentu; nie użyto go do redakcji."
@@ -605,6 +748,7 @@ def run_all_layers(
         document_type_confidence=guess.confidence,
         document_type_evidence=list(guess.evidence),
         legal_category=category.to_json(),
+        requested_operations=settings.requested_operations(),
         calibration_status=(
             f"calibrated:{reference.name}" if reference else
             f"uncalibrated:{resolved_type.value}"
@@ -620,7 +764,15 @@ def run_all_layers(
     # weighed against whether anything actually changed.
     outcome.style_compliance_before = _style_compliance(text, resolved_type, style_profile)
     outcome.tone_before = compare_tone(dict(before.metrics), style_profile).to_json()
-    outcome.blueprint_before = check_category(text, category.category.id).to_json()
+    structure_note = (
+        "Kontrola kompletności wyłączona." if not settings.check_completeness
+        else "Nie sprawdzono struktury: brak dostępnego szkieletu."
+    )
+    outcome.blueprint_before = (
+        check(text, skeleton) if skeleton else BlueprintReport(
+            category=category.category.id, note=structure_note,
+        )
+    ).to_json()
     outcome.artifacts_before = find_artifacts(text).to_json()
 
     outcome.warnings.extend(profile_warnings)
@@ -645,14 +797,30 @@ def run_all_layers(
         )
     text_out = text
     protected_paragraph_indices = protected_paragraph_indices or set()
+    if general:
+        protected_style = protected_lines(text)
+        protected_paragraph_indices = protected_paragraph_indices | set(protected_style)
+        outcome.general_options = settings.general_options.to_json()
+        outcome.style_protection = [{"paragraph_index": i, "reason": reason} for i, reason in protected_style.items()]
+        outcome.editorial_before = editorial_findings(text, protected=protected_paragraph_indices)
+        outcome.signal_interpretable = before.word_count >= GENERAL_MIN_WORDS
+        if settings.rewrite_backend == RewriteBackend.rules and settings.rewrite:
+            outcome.notes.append("Profile tonu i odbiorcy kierują redakcją modelu. Backend regułowy wykonuje tylko dostępne korekty lokalne, z zachowaniem limitów ingerencji.")
     if settings.rewrite:
+        checkpoint("redakcja regułowa")
         session = session or settings.session()
         # Markdown off first, so the rules read "§ 1. Przedmiot umowy" rather
         # than "**§ 1. Przedmiot umowy**". Line for line, so every index that
         # follows - protected paragraphs, DOCX units - still holds.
-        unmarked, markup_changes = strip_markup(text, protected=protected_paragraph_indices)
+        unmarked, markup_changes = (text, []) if general else strip_markup(text, protected=protected_paragraph_indices)
         result = session.humanize(unmarked)
         text_out = result.text
+        # The rules number nonempty paragraphs; the general-text flow uses
+        # absolute lines for protection, limits and model edits. Translate here.
+        rule_lines = [i for i, line in enumerate(unmarked.split("\n")) if line.strip()]
+        rule_line_indices = {
+            index: line if general else index for index, line in enumerate(rule_lines)
+        }
         if protected_paragraph_indices:
             source_lines = text.split("\n")
             output_lines = text_out.split("\n")
@@ -674,15 +842,32 @@ def run_all_layers(
                 "risk": change.risk,
                 "semantic_similarity": change.semantic_similarity,
                 "gate_results": change.gate_results,
-                "paragraph_index": getattr(change, "paragraph_index", None),
+                "paragraph_index": rule_line_indices.get(getattr(change, "paragraph_index", None)),
                 "sentence_index": getattr(change, "sentence_index", None),
             }
             for change in result.changes
-            if getattr(change, "paragraph_index", None) not in protected_paragraph_indices
+            if rule_line_indices.get(getattr(change, "paragraph_index", None)) not in protected_paragraph_indices
         ]
         outcome.applied_changes = collapse_visible_changes(raw_changes)
         outcome.changes_applied = len(outcome.applied_changes)
         outcome.examples = outcome.applied_changes[:EXAMPLES_PER_ITEM]
+        if general:
+            source_lines, edited_lines = text.split("\n"), text_out.split("\n")
+            denied = set()
+            if len(source_lines) != len(edited_lines):
+                text_out = text
+                denied = set(range(len(source_lines)))
+            else:
+                for i, (old, new) in enumerate(zip(source_lines, edited_lines)):
+                    if settings.general_options.rejection(old, new):
+                        edited_lines[i] = old
+                        denied.add(i)
+                text_out = "\n".join(edited_lines)
+            if denied:
+                outcome.applied_changes = [c for c in outcome.applied_changes if c.get("paragraph_index") not in denied]
+                outcome.changes_applied = len(outcome.applied_changes)
+                outcome.examples = outcome.applied_changes[:EXAMPLES_PER_ITEM]
+                outcome.notes.append(f"Limity ingerencji zachowały źródło w {len(denied)} akapitach.")
 
         # Rhythm runs on text the rules have already cleaned, and before the
         # hosted model sees it: the model then reads the shape we intend
@@ -696,6 +881,7 @@ def run_all_layers(
                 mode=settings.mode,
                 scope=settings.rhythm_scope,
                 protected_paragraph_indices=protected_paragraph_indices,
+                nli=session.nli,
             )
             outcome.warnings.extend(rhythm.warnings)
             outcome.notes.extend(rhythm.notes)
@@ -708,11 +894,13 @@ def run_all_layers(
                 outcome.examples = outcome.applied_changes[:EXAMPLES_PER_ITEM]
 
     owned_rewriter = False
+    needs_rewriter = (settings.rewrite and settings.rewrite_backend == RewriteBackend.hybrid) or (settings.draft_missing and not general)
+    if needs_rewriter and rewriter is None and not llm_prepared:
+        rewriter, llm_warnings = prepare_llm(settings)
+        owned_rewriter = rewriter is not None
+        outcome.warnings.extend(llm_warnings)
     if settings.rewrite and settings.rewrite_backend == RewriteBackend.hybrid:
-        if rewriter is None and not llm_prepared:
-            rewriter, llm_warnings = prepare_llm(settings)
-            owned_rewriter = rewriter is not None
-            outcome.warnings.extend(llm_warnings)
+        checkpoint("redakcja modelem")
         if rewriter is not None:
             counters_before = (
                 rewriter.metadata.proposals,
@@ -731,7 +919,10 @@ def run_all_layers(
                 document_type=resolved_type,
                 style_profile=style_profile,
                 protected_paragraph_indices=protected_paragraph_indices,
-                blueprint=blueprint_for(category.category.id) if category.specified else None,
+                blueprint=skeleton,
+                nli=session.nli if session is not None else None,
+                general_options=settings.general_options if general else None,
+                original_text=text,
             )
             outcome.applied_changes = collapse_visible_changes(
                 outcome.applied_changes + llm_changes
@@ -776,12 +967,30 @@ def run_all_layers(
     # the drafted clauses: they are text a model wrote and can carry the very
     # signal this engine exists to report. Drafting after measurement would
     # ship model prose that no check had looked at.
-    if settings.draft_missing and settings.rewrite:
-        text_out = _supply_missing_sections(
-            text_out, category, rewriter=rewriter, outcome=outcome
-        )
+    if settings.draft_missing and not general:
+        if skeleton is None:
+            outcome.drafting_status = "unavailable"
+            outcome.warnings.append("Nie dopisano sekcji: brak dostępnego szkieletu.")
+        else:
+            text_out = _supply_missing_sections(
+                text_out, category, rewriter=rewriter, outcome=outcome, blueprint=skeleton,
+            )
+        # Draft-only runs also need to record model failures for resume and diagnostics.
+        if rewriter is not None:
+            metadata = rewriter.metadata.to_report()
+            if not outcome.llm:
+                outcome.llm = {key: metadata[key] for key in ("backend", "model", "status") if key in metadata}
+            elif "status" in metadata:
+                outcome.llm["status"] = metadata["status"]
+        elif skeleton is not None and outcome.drafting_status == "unavailable":
+            outcome.llm = {"backend": "not_used", "status": "unavailable"}
 
     outcome.text_out = text_out
+    checkpoint("weryfikacja wyniku")
+    if settings.require_llm and rewriter is not None and rewriter.metadata.status != "ready":
+        raise RuntimeError("Wymagany model zgłosił błąd podczas pracy; wynik nie zostanie zatwierdzony.")
+    if general:
+        outcome.editorial_after = editorial_findings(text_out, protected=protected_paragraph_indices)
     after = (
         detect_document(text_out, profile=reference, calibrate_against_default=False)
         if text_out != text
@@ -882,30 +1091,16 @@ def run_all_layers(
 
     # Checked on the text that leaves the flow, not on the input: a rewrite
     # must not be able to drop a required section quietly.
-    structure = check_category(text_out, category.category.id)
+    structure = check(text_out, skeleton) if skeleton else BlueprintReport(
+        category=category.category.id, note=structure_note,
+    )
     outcome.blueprint_after = structure.to_json()
     if structure.checked:
         outcome.warnings.extend(structure.issues)
 
-    if settings.nli or settings.blueprint is not None:
-        from humanize_pl.blueprint import BlueprintError, _load
-        from humanize_pl.blueprint import blueprint_for as get_blueprint
+    if settings.nli and settings.check_completeness and not general:
         from humanize_pl.llm import LlmConfigurationError
         from humanize_pl.nli import LlmClauseJudge, check_document_against_blueprint
-
-        skeleton = None
-        if settings.blueprint:
-            try:
-                skeleton = _load(settings.blueprint)
-            except (BlueprintError, OSError, ValueError) as exc:
-                outcome.warnings.append(f"Nie udało się załadować szkieletu NLI: {exc}")
-        elif category.specified:
-            try:
-                skeleton = get_blueprint(category.category.id)
-            except (BlueprintError, OSError, ValueError) as exc:
-                # Said, not swallowed: a broken shipped skeleton used to turn
-                # clause verification off without a word.
-                outcome.warnings.append(f"Nie udało się załadować szkieletu NLI: {exc}")
 
         if skeleton is not None:
             try:
@@ -934,15 +1129,24 @@ def run_all_layers(
                     for issue in nli_report.issues:
                         outcome.warnings.append(f"NLI: {issue}")
                     outcome.warnings.extend(nli_report.warnings)
-                    if any(
-                        clause.verdict in {"missing", "absent"}
-                        for sec in nli_report.sections
-                        for clause in sec.clauses
-                    ):
+                    if nli_report.verdict != "entailed":
                         outcome.needs_review = True
-            except Exception as exc:  # noqa: BLE001 - reported as a warning; NLI must not fail the item
+            except Exception as exc:
+                if settings.require_llm:
+                    raise RuntimeError("Wymagana weryfikacja modelem nie została ukończona.") from exc
                 outcome.warnings.append(f"Błąd weryfikacji NLI: {type(exc).__name__}: {exc}")
+            finally:
+                if isinstance(judge, LlmClauseJudge):
+                    judge.close()
+        else:
+            outcome.warnings.append("Weryfikacja NLI pominięta: nie wybrano dostępnego szkieletu.")
 
+    if settings.require_llm and settings.nli and not general and settings.check_completeness and (
+        not outcome.nli or outcome.nli.get("coverage", {}).get("unknown", 0)
+    ):
+        raise RuntimeError("Wymagana weryfikacja NLI nie uzyskała pełnego wyniku.")
+    if rewriter is not None and rewriter.metadata.to_report().get("status") == "ready_with_errors":
+        outcome.warnings.append("Część zapytań do modelu zakończyła się błędem; odpowiednie fragmenty zachowano.")
     if held_back(outcome):
         outcome.readiness_status = ReadinessStatus.ready_with_warnings.value
     # A document missing a section its category owes is not ready to send,
@@ -965,6 +1169,9 @@ def run_all_layers(
         outcome.readiness_status = ReadinessStatus.failed.value
     if owned_rewriter and rewriter is not None:
         rewriter.close()
+    from humanize_pl.review import create_review
+
+    outcome.review = create_review(text, outcome, settings=settings)
     return outcome, verdict
 
 
@@ -990,6 +1197,7 @@ def _supply_missing_sections(
     *,
     rewriter: OpenAICompatibleRewriter | None,
     outcome: ItemOutcome,
+    blueprint: Any = None,
 ) -> str:
     """Draft the required sections the document lacks and put them in place.
 
@@ -1005,26 +1213,28 @@ def _supply_missing_sections(
         section_presence,
     )
 
-    if not category.specified:
-        return text
-    blueprint = blueprint_for(category.category.id)
+    if blueprint is None and category.specified:
+        blueprint = blueprint_for(category.category.id)
     if blueprint is None:
         return text
-    structure = check_category(text, category.category.id)
+    structure = check(text, blueprint)
     if not structure.checked or not structure.missing_required:
+        outcome.drafting_status = "not_needed"
         return text
     if rewriter is None:
+        outcome.drafting_status = "unavailable"
         # Said, because the structure check below will report the same gaps
         # and a reader would otherwise assume the tool tried and failed.
         outcome.warnings.append(
             "Brakujących sekcji nie dopisano: wymaga to modelu hostowanego "
-            "(--rewrite-backend hybrid)."
+            "z poprawną konfiguracją w .env."
         )
         return text
 
     # Asked before written: the patterns look for phrases, and a section put
     # in other words reads as missing. Only a confirmed absence is drafted.
     by_label = {section.label_pl: section for section in blueprint.sections}
+    outcome.drafting_status = "not_added"
     absent: list[str] = []
     for label in structure.missing_required:
         presence = section_presence(text, by_label[label], client=rewriter)
@@ -1112,6 +1322,9 @@ def _rewrite_remaining_with_llm(
     style_profile: StyleProfile | None,
     protected_paragraph_indices: set[int],
     blueprint: Any = None,
+    nli: Any = None,
+    general_options: GeneralOptions | None = None,
+    original_text: str | None = None,
 ) -> tuple[str, list[dict[str, Any]], int]:
     """Second and final pass: only the sentences that still have findings.
 
@@ -1125,6 +1338,11 @@ def _rewrite_remaining_with_llm(
     The detector already knows which sentence carries the finding, so the
     narrower unit costs nothing to locate.
     """
+    if document_type == DocumentType.general:
+        return _rewrite_general_paragraphs(
+            text, rewriter=rewriter, options=general_options or GeneralOptions(),
+            protected=protected_paragraph_indices, nli=nli, original_text=original_text,
+        )
     lines = text.split("\n")
     nonempty = [index for index, value in enumerate(lines) if value.strip()]
     genre = GENRE_PROFILES.get(document_type)
@@ -1182,8 +1400,11 @@ def _rewrite_remaining_with_llm(
         return "\n".join(lines), changes, rejected
 
     section_contexts = _section_contexts(text, blueprint)
+    control = current_control()
 
     def rewrite(job: dict[str, Any]):
+        if control:
+            control.check()
         return rewriter.rewrite_fragment(
             job["source"],
             fragment_id=f"p{job['paragraph_index'] + 1}s{job['sentence_index'] + 1}",
@@ -1194,6 +1415,7 @@ def _rewrite_remaining_with_llm(
             outline=outline,
             issues=findings_by_sentence[(job["paragraph_index"], job["sentence_index"])],
             section_context=section_contexts.get(job["line_index"], ""),
+            **({"nli": nli} if nli is not None else {}),
         )
 
     workers = max(1, min(rewriter.settings.concurrency, len(jobs)))
@@ -1239,6 +1461,49 @@ def _rewrite_remaining_with_llm(
     return "\n".join(lines), changes, rejected
 
 
+def _rewrite_general_paragraphs(
+    text: str, *, rewriter: OpenAICompatibleRewriter, options: GeneralOptions,
+    protected: set[int], nli: Any = None, original_text: str | None = None,
+) -> tuple[str, list[dict[str, Any]], int]:
+    """One paragraph per proposal, immutable document context and unchanged safety gates."""
+    lines = text.split("\n")
+    original_lines = (original_text if original_text is not None else text).split("\n")
+    if len(original_lines) != len(lines):
+        raise ValueError("Redakcja ogólna zmieniła podział akapitów źródła.")
+    observations = editorial_findings(text, protected=protected)
+    changes, rejected = [], 0
+    outline = " | ".join(line[:180] for i, line in enumerate(lines) if i not in protected and line.strip())[:1200]
+    output = list(lines)
+    for index, source in enumerate(lines):
+        checkpoint("redakcja akapitów", index, len(lines))
+        if index in protected or not source.strip():
+            continue
+        # Never truncate a proposal's source. A long paragraph remains untouched.
+        if len(source) > 4000:
+            rejected += 1
+            continue
+        result = rewriter.rewrite_fragment(
+            source, fragment_id=f"p{index + 1}", document_type=DocumentType.general,
+            previous="\n".join(lines[max(0, index - 2):index])[-1200:],
+            following="\n".join(lines[index + 1:index + 3])[:1200], outline=outline,
+            issues=[row["detail"] for row in observations if row["paragraph_index"] == index]
+            or ["Oceń płynność, przejścia i jasność odniesień. Poprawny akapit pozostaw bez zmian."],
+            general_options=options, **({"nli": nli} if nli is not None else {}),
+            original_source=original_lines[index],
+        )
+        if not result.accepted or "\n" in result.text or options.rejection(original_lines[index], result.text):
+            rejected += 1
+            continue
+        output[index] = result.text
+        changes.append({
+            "before": source, "after": result.text, "issue": "general_paragraph_edit",
+            "risk": .45, "paragraph_index": index, "sentence_index": None,
+            "gate_results": result.validation_checks, "model_decision": "accepted_by_local_validators",
+            "model_rationale": _short_rationale(result.rationale),
+        })
+    return "\n".join(output), changes, rejected
+
+
 def _style_compliance(
     text: str, document_type: DocumentType, profile: StyleProfile | None
 ) -> dict[str, Any]:
@@ -1275,6 +1540,7 @@ def attach_pdf_report(payload: dict[str, Any], path) -> dict[str, Any]:
     but it is reported, because a silently absent report is worse than a
     refused one.
     """
+    from humanize_pl.io.atomic import atomic_output
     from humanize_pl.reports.pdf_pl import PdfDependencyError, pdf_available, write_flow_pdf
 
     if not pdf_available():
@@ -1284,14 +1550,24 @@ def attach_pdf_report(payload: dict[str, Any], path) -> dict[str, Any]:
         )
         return payload
     try:
-        written = write_flow_pdf(payload, path)
+        with atomic_output(path) as staged:
+            write_flow_pdf(payload, staged)
     except PdfDependencyError as exc:
         payload["pdf_report"] = None
         payload["pdf_error"] = str(exc)
         return payload
-    payload["pdf_report"] = str(written)
+    payload["pdf_report"] = str(path)
     payload["pdf_error"] = None
     return payload
+
+
+def batch_readiness(summary: dict[str, Any]) -> str:
+    """The worst item wins; successful processing does not certify readiness."""
+    if summary.get("failed", 0) or summary.get("not_ready", 0) or not summary.get("items", 0):
+        return ReadinessStatus.failed.value
+    if summary.get("ready_with_warnings", 0) or summary.get("needs_review", 0):
+        return ReadinessStatus.ready_with_warnings.value
+    return ReadinessStatus.ready.value
 
 
 def summarise(outcomes: list[ItemOutcome]) -> dict[str, Any]:
@@ -1305,8 +1581,9 @@ def summarise(outcomes: list[ItemOutcome]) -> dict[str, Any]:
             "ready": 0,
             "ready_with_warnings": 0,
             "not_ready": 0,
+            "readiness_status": ReadinessStatus.failed.value,
         }
-    return {
+    summary = {
         "items": len(outcomes),
         "ok": len(done),
         "failed": len(outcomes) - len(done),
@@ -1331,12 +1608,15 @@ def summarise(outcomes: list[ItemOutcome]) -> dict[str, Any]:
         "findings_before": sum(item.findings_before for item in done),
         "findings_after": sum(item.findings_after for item in done),
         "mean_signal_before": round(sum(i.signal_before for i in done) / len(done), 4),
+        "signal_interpretable": all(i.signal_interpretable for i in done),
         "mean_signal_after": round(sum(i.signal_after for i in done) / len(done), 4),
         "mean_signal_delta": round(sum(i.signal_delta for i in done) / len(done), 4),
         # The report's "Co się zmieniło" table, as numbers, so a batch can be
         # aggregated without the PDF. Same rows the PDF prints.
         "what_changed": what_changed([item.to_json() for item in done]),
     }
+    summary["readiness_status"] = batch_readiness(summary)
+    return summary
 
 
 def what_changed(items: list[dict[str, Any]]) -> list[dict[str, Any]]:

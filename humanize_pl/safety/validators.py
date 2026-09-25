@@ -13,6 +13,8 @@ from humanize_pl.rules.legal_features import (
 
 from .anchors import content_anchor_retention, content_anchor_tokens
 from .deontic import DeonticModality, extract_deontic_profile
+from .legal_meaning import legal_meaning_changes
+from .meaning import changed_operators, check_equivalence
 from .protectors import ProtectedText
 
 BANNED_WORDS = {
@@ -174,6 +176,7 @@ def validate_candidate(
     rule: str | None = None,
     operation_type: str | None = None,
     nli=None,
+    legal: bool = True,
 ) -> ValidationResult:
     checks: list[GateCheck] = []
     if not candidate.strip():
@@ -224,6 +227,10 @@ def validate_candidate(
 
     restored_original = protected.restore(original)
     restored_candidate = protected.restore(candidate)
+    changed = changed_operators(restored_original, restored_candidate)
+    if changed:
+        return _failed("logical_operators_preserved", "changed: " + ", ".join(changed), checks)
+    _passed("logical_operators_preserved", checks)
     if "__PROTECTED_" in restored_candidate:
         return _failed("placeholder_restore", "unrestored placeholder leak", checks)
     _passed("placeholder_restore", checks)
@@ -308,9 +315,17 @@ def validate_candidate(
             return _failed("protected_fragments", "protected fragment removed", checks)
     _passed("protected_fragments", checks)
 
+    if legal:
+        changed_legal = legal_meaning_changes(restored_original, restored_candidate)
+        if changed_legal:
+            return _failed(changed_legal[0], "legal meaning scope changed; review required", checks)
+        for name in ("legal_party_roles_preserved", "legal_party_action_preserved", "legal_reference_scope_preserved", "legal_scope_preserved"):
+            _passed(name, checks)
+
     if nli is not None:
-        if not nli.check_entailment(restored_original, restored_candidate):
-            return _failed("semantic_contradiction", "candidate contradicts original text", checks)
+        meaning = check_equivalence(restored_original, restored_candidate, nli=nli)
+        if not meaning.ok:
+            return _failed("semantic_contradiction", meaning.reason, checks)
         _passed("semantic_contradiction", checks)
 
     return ValidationResult(True, checks=checks)

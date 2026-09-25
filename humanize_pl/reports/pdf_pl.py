@@ -48,6 +48,7 @@ from humanize_pl.flows.base import (
     describe_visible_change,
 )
 from humanize_pl.gate import FAMILY_CONSTRAINTS
+from humanize_pl.reports.operations import operation_lines
 
 # --- Fonts ------------------------------------------------------------------
 # reportlab's built-in fonts and its bundled Vera face both lack ą, ę, ś, ż and
@@ -947,6 +948,12 @@ class _Report:
     def headline(self) -> list:
         from reportlab.platypus import Spacer
 
+        if any(not item.get("signal_interpretable", True) for item in self.items):
+            return [
+                self.para("1. Wynik redakcji", "h1"),
+                self.para(f"Zastosowano {self.changes} poprawek. Zestaw obejmuje krótkie teksty; wskaźnik stylu i jego średnia nie są miarodajną oceną jakości.", "body"),
+                *[self.para(escape(line), "body") for line in operation_lines(self.items)],
+            ]
         count = len(self.items)
         changes_cell = (
             f"<b>{self.changes}</b>"
@@ -983,6 +990,7 @@ class _Report:
                 self.before, self.after, self.width, list(self.thresholds.values())
             ),
             self.para(self.headline_sentence(), "lead"),
+            *[self.para(escape(line), "body") for line in operation_lines(self.items)],
         ]
         return story
 
@@ -1522,7 +1530,7 @@ class _Report:
             )
             formatting = item.get("formatting")
             if formatting:
-                rendered = "render poprawny" if formatting.get("rendered") else "bez renderu"
+                rendered = "render wykonany" if formatting.get("rendered") else "bez renderu"
                 issue_count = len(formatting.get("issues") or [])
                 format_text = f"{rendered}; problemy: {issue_count}"
             else:
@@ -1654,9 +1662,9 @@ class _Report:
             [
                 self.cell("<b>2. Poprawki</b>"),
                 self.cell(
-                    "Zmieniamy tylko to, co da się zmienić jednoznacznie. Narzędzie nie "
-                    "parafrazuje i nie pisze tekstu od nowa. Jeśli poprawka mogłaby ruszyć "
-                    "sens, jest odrzucana."
+                    "Redagujemy istniejący tekst w zakresie włączonych reguł i modelu. "
+                    "Propozycje przechodzą kontrole zachowania treści. Dopisywanie sekcji "
+                    "wymaga osobnego włączenia i przeglądu prawnika."
                 ),
                 self.cell(
                     f"{self.changes} "
@@ -1685,11 +1693,12 @@ class _Report:
         return [
             self.para("3. Jak to sprawdzaliśmy", "h1"),
             self.para(
-                "Każdy tekst przechodzi przez cztery kroki. Mierzymy dwa razy, przed "
-                "poprawkami i po nich, bo dopiero różnica pokazuje efekt pracy.",
+                "Poniżej opis pomiarów i redakcji oraz zakres włączonych czynności. "
+                "Status przebiegu nie potwierdza poprawności prawnej dokumentu.",
                 "body",
             ),
             self.table(rows, [28 * self.mm, self.width - 28 * self.mm - 40 * self.mm, 40 * self.mm]),
+            *[self.para(escape(line), "body") for line in operation_lines(self.items)],
         ]
 
     def metrics(self) -> list:
@@ -2015,7 +2024,7 @@ class _Report:
                         self.cell(
                             f"{_fmt(float(item.get('signal_before', 0.0)))} → "
                             f"<font color='{_verdict_colour(item_after, self._threshold_for(item))}'><b>"
-                            f"{_fmt(item_after)}</b></font>"
+                            f"{_fmt(item_after)}</b></font>" if item.get("signal_interpretable", True) else "Niemiarodajny: krótki tekst"
                         ),
                         self.cell(
                             str(item.get("changes_applied", 0)) if self.changes_known else "nie wiadomo"
@@ -2133,7 +2142,7 @@ class _Report:
                         f"wskaźnik {_fmt(float(item.get('signal_before', 0.0)))} → "
                         f"<font color='{_verdict_colour(after, self._threshold_for(item))}'><b>"
                         f"{_fmt(after)}</b></font>"
-                        f" · {status}"
+                        f" · {status}" if item.get("signal_interpretable", True) else f"Krótki tekst: bez oceny wskaźnikiem · {status}"
                     ),
                 ]
             ],

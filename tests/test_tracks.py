@@ -3,6 +3,7 @@
 from dataclasses import asdict
 
 import pytest
+from rich.text import Text
 from typer.testing import CliRunner
 
 from humanize_pl import DocumentType, FlowSettings, HumanizeTrack, humanize
@@ -94,5 +95,5 @@ def test_general_cli_cannot_build_a_legal_profile(monkeypatch, tmp_path):
     result = CliRunner().invoke(app, [
         "Tekst.", "--track", "general", "--profile-from", str(tmp_path), "--no-pdf",
     ])
-    assert result.exit_code != 0
-    assert "--profile-from wymaga ścieżki dla prawników" in result.output
+    assert result.exit_code == 2
+    assert "--profile-from wymaga ścieżki dla prawników" in Text.from_ansi(result.output).plain

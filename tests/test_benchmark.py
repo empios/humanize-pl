@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from rich.text import Text
 from typer.testing import CliRunner
 
 from humanize_pl import benchmark
@@ -190,9 +191,11 @@ def test_benchmark_cli_help_exposes_options():
     runner = CliRunner()
     result = runner.invoke(benchmark.app, ["--help"])
     assert result.exit_code == 0
-    assert "--engines" in result.stdout
-    assert "--allow-fallback" in result.stdout
-    assert "--fail-on-status" in result.stdout
+    # Typer forces ANSI styling on GitHub Actions, even under CliRunner.
+    output = Text.from_ansi(result.stdout).plain
+    assert "--engines" in output
+    assert "--allow-fallback" in output
+    assert "--fail-on-status" in output
 
 
 def test_benchmark_cli_fail_on_status_exits_nonzero(monkeypatch, tmp_path):

@@ -790,6 +790,8 @@ def test_a_draft_that_did_not_reach_the_file_is_reported_as_a_proposal(tmp_path)
 
     report = pdf_pl.write_flow_pdf(_drafted_payload(inserted=False), tmp_path / "r.pdf")
     text = "\n".join(page.extract_text() or "" for page in PdfReader(report).pages)
+    # System font metrics change line wrapping between Linux and Windows.
+    text = " ".join(text.split())
 
     assert "nie wstawiono" in text
     assert "wyłącznie jako propozycja" in text

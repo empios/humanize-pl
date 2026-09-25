@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import ClassVar
 
 import pytest
+from rich.text import Text
 from typer.testing import CliRunner
 
 from humanize_pl import core
@@ -377,14 +378,14 @@ def test_cli_exposes_offline_models_flag():
     runner = CliRunner()
     result = runner.invoke(app, ["--help"])
     assert result.exit_code == 0
-    assert "--offline-models" in result.stdout
+    assert "--offline-models" in Text.from_ansi(result.stdout).plain
 
 
 def test_cli_exposes_version():
     runner = CliRunner()
     result = runner.invoke(app, ["--version"])
     assert result.exit_code == 0
-    assert "humanize-pl 0.2.2" in result.stdout
+    assert "humanize-pl 0.2.2" in Text.from_ansi(result.stdout).plain
 
 
 def test_intra_sentence_redundancy_keeps_explicit_legal_actors():

@@ -1,0 +1,36 @@
+# Szkielet struktury: umowa o dzieło.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: umowa_o_dzielo
+label_pl: umowa o dzieło
+numbering: paragraph
+sections:
+- id: komparycja
+  label_pl: komparycja (zamawiający, wykonawca)
+  severity: required
+  matches: [zawarta, pomiędzy, zamawiaj, wykonawc]
+- id: dzieło
+  label_pl: opis dzieła
+  severity: required
+  matches: [dzieło, opis dzieła, wykonanie dzieła, przedmiot]
+- id: termin
+  label_pl: termin wykonania
+  severity: required
+  matches: [termin, okres, do dnia, od dnia]
+- id: wynagrodzenie
+  label_pl: wynagrodzenie
+  severity: required
+  matches: [wynagrodzenie, cena, kwota]
+- id: odbiór
+  label_pl: odbiór dzieła
+  severity: expected
+  matches: [odbiór, odbioru, przyjęcie dzieła]
+- id: prawa_autorskie
+  label_pl: prawa autorskie
+  severity: expected
+  matches: [prawa autorskie, przeniesienie praw, własność intelektualn]
+- id: postanowienia_koncowe
+  label_pl: postanowienia końcowe
+  severity: required
+  matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
+      formy pisemnej, wymagają zachowania formy pisemnej]

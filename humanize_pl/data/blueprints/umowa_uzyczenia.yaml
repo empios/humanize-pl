@@ -1,0 +1,32 @@
+# Szkielet struktury: umowa użyczenia.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: umowa_uzyczenia
+label_pl: umowa użyczenia
+numbering: paragraph
+sections:
+- id: komparycja
+  label_pl: komparycja
+  severity: required
+  matches: [zawarta, pomiędzy, użyczaj]
+- id: przedmiot
+  label_pl: przedmiot użyczenia
+  severity: required
+  matches: [użycza, przedmiot, lokal, samochod, rzecz, użyczenie]
+- id: czas
+  label_pl: czas użyczenia
+  severity: required
+  matches: [czas, okres, od dnia, do dnia]
+- id: zwrot
+  label_pl: zwrot przedmiotu
+  severity: required
+  matches: [zwrot, zwróci, oddanie, użyczone]
+- id: koszty
+  label_pl: koszty utrzymania
+  severity: expected
+  matches: [koszt, utrzymanie, napraw]
+- id: postanowienia_koncowe
+  label_pl: postanowienia końcowe
+  severity: required
+  matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
+      formy pisemnej, wymagają zachowania formy pisemnej]

@@ -1,0 +1,32 @@
+# Szkielet struktury: umowa powierzenia przetwarzania danych.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: powierzenie_przetwarzania
+label_pl: umowa powierzenia przetwarzania danych
+numbering: paragraph
+sections:
+- id: komparycja
+  label_pl: komparycja
+  severity: required
+  matches: [zawarta, pomiędzy, administrator, podmiotem przetwarzającym]
+- id: podstawa
+  label_pl: podstawa (art. 28 RODO)
+  severity: required
+  matches: [art. 28, rodo, rozporządzenia, powierzenie]
+- id: zakres
+  label_pl: zakres przetwarzania
+  severity: required
+  matches: [zakres, przetwarzanie, dane osobowe, cele]
+- id: obowiazki
+  label_pl: obowiązki podmiotu przetwarzającego
+  severity: required
+  matches: [zobowiąz, obowiązki, podmiot przetwarzający]
+- id: subpodmiot
+  label_pl: subpodmioty
+  severity: expected
+  matches: [subpodmiot, podwykonawc, zgody]
+- id: postanowienia_koncowe
+  label_pl: postanowienia końcowe
+  severity: required
+  matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
+      formy pisemnej, wymagają zachowania formy pisemnej]

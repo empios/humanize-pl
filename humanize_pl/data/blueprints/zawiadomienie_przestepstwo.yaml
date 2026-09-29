@@ -1,0 +1,35 @@
+# Szkielet struktury: zawiadomienie o przestępstwie.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: zawiadomienie_przestepstwo
+label_pl: zawiadomienie o przestępstwie
+check_order: false
+sections:
+- id: data_miejsce
+  label_pl: miejscowość i data
+  severity: required
+  matches: [dnia, ' r.', miejscowość, (data]
+- id: zawiadamiajacy
+  label_pl: zawiadamiający
+  severity: required
+  matches: [dane zawiadamiającego, imię i nazwisko, adres]
+- id: adresat
+  label_pl: organ
+  severity: required
+  matches: [prokuratur, policj, jednostki]
+- id: podstawa
+  label_pl: podstawa (art. 304 k.p.k.)
+  severity: required
+  matches: [art. 304, kodeksu postępowania karnego, na podstawie]
+- id: przestepstwo
+  label_pl: opis przestępstwa
+  severity: required
+  matches: [przestępstwa, polegającego na, 'osoby, która popełniła']
+- id: uzasadnienie
+  label_pl: uzasadnienie
+  severity: required
+  matches: [uzasadnienie, uzasadnieniem]
+- id: podpis
+  label_pl: podpis
+  severity: required
+  matches: [podpis, własnoręczny]

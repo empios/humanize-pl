@@ -1,0 +1,35 @@
+# Szkielet struktury: uchwała spółki.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: uchwala_spolki
+label_pl: uchwała spółki
+numbering: paragraph
+sections:
+- id: data_miejsce
+  label_pl: miejscowość i data
+  severity: required
+  matches: [dnia, ' r.', miejscowość, (data]
+- id: nr
+  label_pl: numer uchwały
+  severity: required
+  matches: [uchwała nr, uchwał]
+- id: spolka
+  label_pl: oznaczenie spółki
+  severity: required
+  matches: [spółki, wspólników, spółka, wspólnik]
+- id: przedmiot
+  label_pl: przedmiot uchwały
+  severity: required
+  matches: [postanawia, uchwala, w sprawie, postanowienie, uchwał]
+- id: glosowanie
+  label_pl: wynik głosowania
+  severity: expected
+  matches: [głosów za, głosów przeciw, jednogłośnie, głosowaniu]
+- id: wscie
+  label_pl: wejście w życie
+  severity: required
+  matches: [wchodzi w życie, z dniem jej podjęcia]
+- id: podpisy
+  label_pl: podpisy wspólników
+  severity: required
+  matches: [podpisy wspólników, podpis]

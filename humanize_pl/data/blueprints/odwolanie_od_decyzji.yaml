@@ -1,0 +1,35 @@
+# Szkielet struktury: odwołanie od decyzji.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: odwolanie_od_decyzji
+label_pl: odwołanie od decyzji
+check_order: false
+sections:
+- id: data_miejsce
+  label_pl: miejscowość i data
+  severity: required
+  matches: [dnia, ' r.', miejscowość, (data]
+- id: adresat
+  label_pl: oznaczenie organu
+  severity: required
+  matches: [organ, sąd, urząd, prezys, dyrektor, naczelnik, zakład ubezpieczeń, ubezpieczyciel]
+- id: wnoszący
+  label_pl: oznaczenie wnoszącego
+  severity: required
+  matches: [dane, imię i nazwisko, adres, zam., ubezpieczon]
+- id: decyzja
+  label_pl: oznaczenie zaskarżonej decyzji
+  severity: required
+  matches: [decyzji, decyzję, postanowienie, od decyzji]
+- id: zadanie
+  label_pl: żądanie
+  severity: required
+  matches: [wnoszę o, odwołuję, zaskarżam, uchylenie, zmianę, odwołanie]
+- id: uzasadnienie
+  label_pl: uzasadnienie
+  severity: required
+  matches: [uzasadnienie, uzasadnieniem, powody, w związku z, powo]
+- id: podpis
+  label_pl: podpis
+  severity: required
+  matches: [podpis, z poważaniem]

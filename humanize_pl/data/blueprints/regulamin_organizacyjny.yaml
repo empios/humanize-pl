@@ -1,0 +1,35 @@
+# Szkielet struktury: regulamin organizacyjny.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: regulamin_organizacyjny
+label_pl: regulamin organizacyjny
+numbering: paragraph
+sections:
+- id: podmiot
+  label_pl: podmiot
+  severity: required
+  matches: [podmiot leczniczy, podmiot, firmą, działającym na podstawie]
+- id: cele
+  label_pl: cele i zadania
+  severity: required
+  matches: [cele, cel, zadania, zadaniami]
+- id: zakres
+  label_pl: zakres świadczeń
+  severity: required
+  matches: [zakres, świadczenia zdrowotne, działalność leczniczą]
+- id: struktura
+  label_pl: struktura organizacyjna
+  severity: required
+  matches: [komórki organizacyjne, struktura, jednostki, zakłady]
+- id: kierowanie
+  label_pl: kierowanie
+  severity: required
+  matches: [kierownik, kierowania, decyzje podejmuje]
+- id: dokumentacja
+  label_pl: dokumentacja
+  severity: expected
+  matches: [dokumentacja, dokumentacji]
+- id: koncowe
+  label_pl: postanowienia końcowe
+  severity: required
+  matches: [zatwierdzony, zmiany mogą nastąpić, postanowienia końcowe]

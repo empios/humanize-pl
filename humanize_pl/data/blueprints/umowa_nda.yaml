@@ -1,0 +1,33 @@
+# Szkielet struktury: umowa o zachowaniu poufności.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: umowa_nda
+label_pl: umowa o zachowaniu poufności
+numbering: paragraph
+sections:
+- id: komparycja
+  label_pl: komparycja (strony)
+  severity: required
+  matches: [zawarta, pomiędzy, strona a, strona b, licencj, wizerunek, prawa autorskie]
+- id: zakres
+  label_pl: zakres (poufności / praw)
+  severity: required
+  matches: [informacje poufne, poufnoś, tajemnic, w tajemnicy, prawa autorskie, wizerunek, licencj, przeniesienie
+      praw]
+- id: obowiazki
+  label_pl: obowiązki stron
+  severity: required
+  matches: [zobowiąz, obowiązek, nie może ujawnia, nie ujawnia, ma prawo, przysługuje, powstrzyma się]
+- id: czas
+  label_pl: okres obowiązywania
+  severity: required
+  matches: [okres, czas trwania, obowiązuje, po rozwiązaniu, czas, w okresie]
+- id: wynagrodzenie
+  label_pl: wynagrodzenie / opłata
+  severity: expected
+  matches: [wynagrodzenie, opłata, zwrot kosztów, kwota, licencj, kara umowna]
+- id: postanowienia_koncowe
+  label_pl: postanowienia końcowe
+  severity: required
+  matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
+      formy pisemnej, wymagają zachowania formy pisemnej]

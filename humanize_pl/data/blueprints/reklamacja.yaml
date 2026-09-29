@@ -1,0 +1,39 @@
+# Szkielet struktury: reklamacja.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: reklamacja
+label_pl: reklamacja
+check_order: false
+sections:
+- id: data_miejsce
+  label_pl: miejscowość i data
+  severity: required
+  matches: [dnia, ' r.', miejscowość, (data]
+- id: reklamujacy
+  label_pl: dane reklamującego
+  severity: required
+  matches: [reklamuj, dane klienta, imię i nazwisko, adres, zam., nabywc, klient]
+- id: adresat
+  label_pl: dane sprzedawcy / odbiorcy
+  severity: required
+  matches: [sprzedawc, sklep, sieć, 'do:', adres, składam reklamację]
+- id: przedmiot
+  label_pl: przedmiot reklamacji
+  severity: required
+  matches: [przedmiot, towar, niezgodn, reklamacj, produkt, towaru]
+- id: podstawa
+  label_pl: podstawa (rękojmia)
+  severity: expected
+  matches: [rękojmi, niezgodność towaru, kodeks cywilny, art. 556, na podstawie]
+- id: zadanie
+  label_pl: żądanie
+  severity: required
+  matches: [wnoszę o, żąd, wymag, napraw, wymian, obniżen, odstąpien, zwrócenie]
+- id: termin
+  label_pl: termin odpowiedzi
+  severity: expected
+  matches: [termin, w terminie, dni]
+- id: podpis
+  label_pl: podpis
+  severity: required
+  matches: [podpis, z poważaniem]

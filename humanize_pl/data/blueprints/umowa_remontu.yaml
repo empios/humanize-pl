@@ -1,0 +1,32 @@
+# Szkielet struktury: umowa o wykonanie prac remontowych.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: umowa_remontu
+label_pl: umowa o wykonanie prac remontowych
+numbering: paragraph
+sections:
+- id: komparycja
+  label_pl: komparycja
+  severity: required
+  matches: [zawarta, pomiędzy, zamawiaj, wykonawc]
+- id: przedmiot
+  label_pl: przedmiot (zakres remontu)
+  severity: required
+  matches: [remont, zleca, przyjmuje do wykonania, zakres]
+- id: termin
+  label_pl: termin wykonania
+  severity: required
+  matches: [okres od, do dnia, termin, w okresie]
+- id: wynagrodzenie
+  label_pl: wynagrodzenie
+  severity: required
+  matches: [wynagrodzenie, cena, kwota, zapłat]
+- id: materiały
+  label_pl: materiały
+  severity: expected
+  matches: [materiał, z własnych, dostarcz]
+- id: postanowienia_koncowe
+  label_pl: postanowienia końcowe
+  severity: required
+  matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
+      formy pisemnej, wymagają zachowania formy pisemnej]

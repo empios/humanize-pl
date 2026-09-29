@@ -1,0 +1,32 @@
+# Szkielet struktury: umowa o praktykę.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: umowa_praktyki
+label_pl: umowa o praktykę
+numbering: paragraph
+sections:
+- id: komparycja
+  label_pl: komparycja
+  severity: required
+  matches: [zawarta, pomiędzy, praktykant, przyjmujący]
+- id: oświadczenie
+  label_pl: oświadczenie praktykanta
+  severity: required
+  matches: [praktykant oświadcza, ukończył, szkoła]
+- id: warunki
+  label_pl: warunki odbywania praktyki
+  severity: required
+  matches: [warunki odbywania, praktyki, zakres, miejsce]
+- id: czas
+  label_pl: czas trwania
+  severity: required
+  matches: [czas, okres, od dnia, do dnia, termin]
+- id: stypendium
+  label_pl: stypendium / koszty
+  severity: expected
+  matches: [stypendium, wynagrodzenie, koszt, zł]
+- id: postanowienia_koncowe
+  label_pl: postanowienia końcowe
+  severity: required
+  matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
+      formy pisemnej, wymagają zachowania formy pisemnej]

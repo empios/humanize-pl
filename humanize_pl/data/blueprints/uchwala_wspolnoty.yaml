@@ -1,0 +1,31 @@
+# Szkielet struktury: uchwała wspólnoty mieszkaniowej.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: uchwala_wspolnoty
+label_pl: uchwała wspólnoty mieszkaniowej
+numbering: paragraph
+sections:
+- id: nr
+  label_pl: numer uchwały
+  severity: required
+  matches: [uchwała nr, uchwał]
+- id: wspolnota
+  label_pl: oznaczenie wspólnoty
+  severity: required
+  matches: [wspólnoty mieszkaniowej, wspólnota, właściciele lokali]
+- id: podstawa
+  label_pl: podstawa (art. 23 u.w.l.)
+  severity: required
+  matches: [na podstawie art, art. 23, własności lokali]
+- id: przedmiot
+  label_pl: przedmiot uchwały
+  severity: required
+  matches: [w przedmiocie, uchwalają, postanawia, co następuje]
+- id: wscie
+  label_pl: wejście w życie
+  severity: required
+  matches: [wchodzi w życie, z dniem]
+- id: glosy
+  label_pl: głosy (za/przeciw)
+  severity: expected
+  matches: ['za:', przeciw, udziałów, głos]

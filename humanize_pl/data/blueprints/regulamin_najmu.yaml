@@ -1,0 +1,27 @@
+# Szkielet struktury: regulamin najmu.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: regulamin_najmu
+label_pl: regulamin najmu
+numbering: paragraph
+sections:
+- id: przedmiot
+  label_pl: przedmiot regulaminu
+  severity: required
+  matches: [przedmiotem regulaminu, regulamin najmu, najem, lokal]
+- id: warunki
+  label_pl: warunki pobytu
+  severity: required
+  matches: [doba, przyjazd, godzin, pobyt]
+- id: obowiazki
+  label_pl: obowiązki stron
+  severity: required
+  matches: [obowiązki, zobowiązany, zobowiązana]
+- id: sankcje
+  label_pl: sankcje
+  severity: expected
+  matches: [kara umowna, kary, odpowiedzialnoś]
+- id: koncowe
+  label_pl: postanowienia końcowe
+  severity: required
+  matches: [w sprawach nieuregulowanych, postanowienia końcowe, przepisy ustawy]

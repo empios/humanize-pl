@@ -1,0 +1,33 @@
+# Szkielet struktury: umowa zlecenia.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: umowa_zlecenia
+label_pl: umowa zlecenia
+numbering: paragraph
+sections:
+- id: komparycja
+  label_pl: komparycja (zleceniodawca, zleceniobiorca)
+  severity: required
+  matches: [zleceniodawc, zleceniobiorc, zawarta, konkurencj, ugoda, strona 1, strona 2]
+- id: przedmiot
+  label_pl: zakres czynności
+  severity: required
+  matches: [zleca, czynności, zakres, zobowiązuje się do wykonywania, konkurencj, mediów, porozumienie,
+    uregulowanie]
+- id: czas
+  label_pl: czas trwania
+  severity: required
+  matches: [czas, okres, od dnia, do dnia, w okresie]
+- id: wynagrodzenie
+  label_pl: wynagrodzenie
+  severity: expected
+  matches: [wynagrodzenie, odszkodowanie, koszty, kwota, zapłat, kara umowna, zł]
+- id: rozwiazanie
+  label_pl: rozwiązanie / wypowiedzenie
+  severity: expected
+  matches: [rozwiązanie, rozwiązać, wypowiedzenie, wypowiedzenia, odstąpienie]
+- id: postanowienia_koncowe
+  label_pl: postanowienia końcowe
+  severity: required
+  matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
+      formy pisemnej, wymagają zachowania formy pisemnej]

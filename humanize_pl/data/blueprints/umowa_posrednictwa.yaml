@@ -1,0 +1,32 @@
+# Szkielet struktury: umowa pośrednictwa.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: umowa_posrednictwa
+label_pl: umowa pośrednictwa
+numbering: paragraph
+sections:
+- id: komparycja
+  label_pl: komparycja
+  severity: required
+  matches: [zawarta, pomiędzy, pośrednik, zamawiaj]
+- id: przedmiot
+  label_pl: przedmiot (czynności pośrednicze)
+  severity: required
+  matches: [przedmiot, pośrednictw, czynności, pośrednik]
+- id: wynagrodzenie
+  label_pl: wynagrodzenie / prowizja
+  severity: required
+  matches: [wynagrodzenie, prowizj, odpłatn, kwota]
+- id: obowiazki
+  label_pl: obowiązki stron
+  severity: required
+  matches: [zobowiąz, obowiązek, obowiązki]
+- id: wylaczność
+  label_pl: klauzula wyłączności
+  severity: expected
+  matches: [wyłączności, wyłączn, wyłącznym]
+- id: postanowienia_koncowe
+  label_pl: postanowienia końcowe
+  severity: required
+  matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
+      formy pisemnej, wymagają zachowania formy pisemnej]

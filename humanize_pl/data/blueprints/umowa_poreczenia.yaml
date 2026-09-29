@@ -1,0 +1,32 @@
+# Szkielet struktury: umowa poręczenia.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: umowa_poreczenia
+label_pl: umowa poręczenia
+numbering: paragraph
+sections:
+- id: komparycja
+  label_pl: komparycja
+  severity: required
+  matches: [zawarta, pomiędzy, poręczyciel, wierzyciel]
+- id: zobowiazanie
+  label_pl: zobowiązanie główne
+  severity: required
+  matches: [zobowiązanie, dłużnik, kwota, pożyczk, najmu, należnoś]
+- id: poręczenie
+  label_pl: objęcie poręczeniem
+  severity: required
+  matches: [poręcza, poręczenie, objęte poręczeniem, zobowiązuje się, poręczyciel]
+- id: zakres
+  label_pl: zakres i wysokość
+  severity: required
+  matches: [zakres, kwota, do kwoty, do wysokości, odsetki, poręczenia jest]
+- id: wypowiedzenie
+  label_pl: wypowiedzenie
+  severity: expected
+  matches: [wypowiedzenie, rozwiązanie, okres]
+- id: postanowienia_koncowe
+  label_pl: postanowienia końcowe
+  severity: required
+  matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
+      formy pisemnej, wymagają zachowania formy pisemnej]

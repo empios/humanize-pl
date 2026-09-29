@@ -1,0 +1,33 @@
+# Szkielet struktury: umowa sprzedaży.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: umowa_sprzedazy
+label_pl: umowa sprzedaży
+numbering: paragraph
+sections:
+- id: komparycja
+  label_pl: komparycja (strony)
+  severity: required
+  matches: [zawarta, pomiędzy, sprzedawc, kupując, w dniu]
+- id: przedmiot
+  label_pl: przedmiot sprzedaży
+  severity: required
+  matches: [przedmiot, przedsiębiorstw, nieruchom, serwis, przenosi własność, sprzedaż, apteki, praktyki,
+    umowy]
+- id: cena
+  label_pl: cena / wynagrodzenie
+  severity: required
+  matches: [cena, ceny, kwota, wynagrodzenie, zapłat, zł]
+- id: wladacze
+  label_pl: oświadczenie o stanie prawnym
+  severity: expected
+  matches: [oświadcza, własność, obciążen, wad prawnych]
+- id: przeniesienie
+  label_pl: przeniesienie własności / rozliczenia
+  severity: required
+  matches: [przeniesienie, rozliczeni, akt notarialny, wydanie, własność, nabywa]
+- id: postanowienia_koncowe
+  label_pl: postanowienia końcowe
+  severity: required
+  matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
+      formy pisemnej, wymagają zachowania formy pisemnej]

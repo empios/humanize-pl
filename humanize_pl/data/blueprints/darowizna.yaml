@@ -1,0 +1,28 @@
+# Szkielet struktury: umowa darowizny.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: darowizna
+label_pl: umowa darowizny
+numbering: paragraph
+sections:
+- id: komparycja
+  label_pl: komparycja
+  severity: required
+  matches: [zawarta, pomiędzy, darczyńc, obdarowan]
+- id: przedmiot
+  label_pl: przedmiot darowizny
+  severity: required
+  matches: [przedmiot, darowizny, rzecz, własność, wartość]
+- id: oświadczenie
+  label_pl: oświadczenie o własności
+  severity: required
+  matches: [oświadcza, jest właściciel, wolna jest od praw]
+- id: przyjecie
+  label_pl: przekazanie i przyjęcie
+  severity: required
+  matches: [przekazuje, przyjmuje, wydanie, darowiznę]
+- id: postanowienia_koncowe
+  label_pl: postanowienia końcowe
+  severity: required
+  matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
+      formy pisemnej, wymagają zachowania formy pisemnej]

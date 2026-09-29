@@ -1,0 +1,28 @@
+# Szkielet struktury: umowa zamiany.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: zamiana
+label_pl: umowa zamiany
+numbering: paragraph
+sections:
+- id: komparycja
+  label_pl: komparycja
+  severity: required
+  matches: [zawarta, pomiędzy, stron, zamieniaj]
+- id: przedmiot
+  label_pl: przedmiot zamiany
+  severity: required
+  matches: [zamien, rzecz, przedmiot, własność]
+- id: wartosc
+  label_pl: wartość
+  severity: required
+  matches: [wartość, wartości, równowarto, dopłat, kwota, o wartości]
+- id: przeniesienie
+  label_pl: przeniesienie własności
+  severity: required
+  matches: [przeniesienie, własność, wydanie, przenosi, przenieść]
+- id: postanowienia_koncowe
+  label_pl: postanowienia końcowe
+  severity: required
+  matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
+      formy pisemnej, wymagają zachowania formy pisemnej]

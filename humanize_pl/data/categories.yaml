@@ -209,6 +209,180 @@ categories:
     signals_strong: ["w doktrynie", "w piśmiennictwie"]
     signals: ["rozważania", "przedmiotem niniejszego", "konkludując", "de lege ferenda"]
 
+  # --------------------------------------------------- umowy (dopisane 28.09) ---
+
+  - id: umowa_pozyczki
+    label_pl: umowa pożyczki
+    family: contract
+    signals_strong: ["umowa pożyczki", "pożyczkodawca", "pożyczkobiorca"]
+    signals: ["zwrot", "odsetki", "spłata", "kwota pożyczki"]
+    requires_any: ["pożyczk", "pożyczkodawc", "pożyczkobiorc"]
+
+  - id: umowa_poreczenia
+    label_pl: umowa poręczenia
+    family: contract
+    signals_strong: ["umowa poręczenia", "poręczyciel"]
+    signals: ["dłużnik", "wierzyciel", "zobowiązanie", "do kwoty"]
+    requires_any: ["poręczenie", "poręczyciel", "poręczam"]
+
+  - id: umowa_przedwstepna
+    label_pl: umowa przedwstępna
+    family: contract
+    signals_strong: ["umowa przedwstępna", "umowa przyrzeczonej"]
+    signals: ["przyrzeczona", "księga wieczysta", "akt notarialny", "umowa właściwa"]
+    requires_any: ["przedwstępna", "przyrzeczona"]
+
+  - id: umowa_uzyczenia
+    label_pl: umowa użyczenia
+    family: contract
+    signals_strong: ["umowa użyczenia", "użyczający"]
+    signals: ["zwrot", "użytkowanie", "użyczone"]
+    requires_any: ["użyczenie", "użyczaj"]
+
+  - id: darowizna
+    label_pl: umowa darowizny
+    family: contract
+    signals_strong: ["umowa darowizny", "darczyńca"]
+    signals: ["darowiznę", "przekazuje", "przyjmuje", "obdarowany"]
+    requires_any: ["darowizn", "darczyńc", "obdarowan"]
+
+  - id: zamiana
+    label_pl: umowa zamiany
+    family: contract
+    signals_strong: ["umowa zamiany"]
+    signals: ["równowartość", "dopłata", "w zamian", "przenosi własność"]
+    requires_any: ["zamian", "zamien"]
+
+  - id: umowa_posrednictwa
+    label_pl: umowa pośrednictwa
+    family: contract
+    signals_strong: ["umowa pośrednictwa", "umowa o pośrednictwo"]
+    signals: ["prowizja", "wyłączność", "zamawiający", "czynności pośrednicze"]
+    requires_any: ["pośrednictw", "pośrednik"]
+
+  - id: umowa_praktyki
+    label_pl: umowa o praktykę
+    family: contract
+    signals_strong: ["umowa o praktykę", "praktyki absolwenckie"]
+    signals: ["praktykant", "stypendium", "ukończył", "przyjmujący na praktykę"]
+    requires_any: ["praktykant", "praktyki", "przyjmujący na praktykę"]
+
+  - id: umowa_remontu
+    label_pl: umowa o wykonanie prac remontowych
+    family: contract
+    signals_strong: ["umowa o wykonanie prac remontowych"]
+    signals: ["zamawiający", "wykonawca", "zakres remontu", "projekt"]
+    requires_any: ["remont", "prac remontowych"]
+
+  - id: umowa_serwisu
+    label_pl: umowa o stworzenie i prowadzenie serwisu
+    family: contract
+    signals_strong: ["stworzenie i prowadzenie serwisu"]
+    signals: ["prawa autorskie", "marketingu", "zamawiający", "serwis internetowy"]
+    requires_any: ["serwisu internetowego", "prowadzenie serwisu"]
+
+  - id: umowa_przechowywania_dokumentacji
+    label_pl: umowa o przechowywanie dokumentacji medycznej
+    family: contract
+    signals_strong: ["przechowywanie dokumentacji medycznej"]
+    signals: ["art. 30a", "praw pacjenta", "dokumentację medyczną", "przechowawca"]
+    requires_any: ["przechowywanie dokumentacji", "przechowawc"]
+
+  - id: powierzenie_przetwarzania
+    label_pl: umowa powierzenia przetwarzania danych
+    family: contract
+    signals_strong: ["powierzenie przetwarzania danych", "podmiotem przetwarzającym"]
+    signals: ["art. 28", "administrator", "subpodmiot", "dane osobowe"]
+    requires_any: ["powierzenia przetwarzania", "podmiotem przetwarzającym"]
+
+  - id: regulamin_najmu
+    label_pl: regulamin najmu
+    family: contract
+    signals_strong: ["regulamin najmu"]
+    signals: ["właściciel obiektu", "doba", "klucze do lokalu", "najem krótkoterminowy"]
+    requires_any: ["regulamin najmu", "najem krótkoterminowy"]
+
+  - id: regulamin_organizacyjny
+    label_pl: regulamin organizacyjny
+    family: contract
+    signals_strong: ["regulamin organizacyjny"]
+    signals: ["podmiot leczniczy", "świadczenia zdrowotne", "komórki organizacyjne", "kierownik"]
+    requires_any: ["regulamin organizacyjny"]
+
+  - id: statut
+    label_pl: statut
+    family: contract
+    signals_strong: ["statut"]
+    signals: ["fundacj", "stowarzyszenie", "członków", "osobowość prawną"]
+    requires_any: ["statut"]
+
+  - id: uchwala_spolki
+    label_pl: uchwała spółki
+    family: contract
+    signals_strong: ["uchwała nr"]
+    signals: ["wspólników", "zarząd", "wchodzi w życie", "głosów za"]
+    requires_any: ["uchwała nr", "wspólników spółki"]
+
+  - id: uchwala_wspolnoty
+    label_pl: uchwała wspólnoty mieszkaniowej
+    family: contract
+    signals_strong: ["uchwała wspólnoty"]
+    signals: ["wspólnoty mieszkaniowej", "właściciele lokali", "art. 23"]
+    requires_any: ["wspólnoty mieszkaniowej"]
+
+  - id: wypowiedzenie
+    label_pl: wypowiedzenie umowy
+    family: contract
+    signals_strong: ["wypowiedzenie umowy"]
+    signals: ["okres wypowiedzenia", "ze skutkiem", "z winą", "bez winy"]
+    requires_any: ["wypowiedzenie umowy", "wypowiadam"]
+
+  # ---------------------------------------- pisma (dopisane 28.09) ---
+
+  - id: czynny_zal
+    label_pl: czynny żal
+    family: filing_official
+    signals_strong: ["czynny żal"]
+    signals: ["kodeks karny skarbowy", "art. 16", "przyznanie się", "czyn zabroniony"]
+    requires_any: ["czynny żal", "czyn zabroniony", "zawiadamiam o popełnieniu"]
+
+  - id: zawiadomienie_przestepstwo
+    label_pl: zawiadomienie o przestępstwie
+    family: filing_official
+    signals_strong: ["zawiadomienie o podejrzeniu"]
+    signals: ["art. 304", "prokuratur", "policj", "przestępstwa"]
+    requires_any: ["zawiadomienie o podejrzeniu", "popełnienia przestępstwa"]
+
+  - id: kara_porzadkowa
+    label_pl: kara porządkowa
+    family: filing_official
+    signals_strong: ["kara porządkowa"]
+    signals: ["art. 108", "kodeks pracy", "przewinienie", "wysłuchaniu"]
+    requires_any: ["kara porządkow", "karę porządkową", "upomnienie", "nagany"]
+
+  - id: pelnomocnictwo
+    label_pl: pełnomocnictwo
+    family: filing_official
+    signals_strong: ["pełnomocnictwo"]
+    signals: ["pełnomocnik", "mocodawca", "reprezentowania", "odwołuję"]
+    requires_any: ["pełnomocnictwo", "pełnomocnictwa"]
+
+  # ------------------------------------------------- klient (dopisane 28.09) ---
+
+  - id: zgoda_rodo
+    label_pl: zgoda na przetwarzanie danych
+    family: client_communication
+    signals_strong: ["wyrażam zgodę"]
+    signals: ["rodo", "dane osobowe", "administrator", "dobrowoln", "wizerunek"]
+    requires_any: ["wyrażam zgodę"]
+
+  - id: reklamacja
+    label_pl: reklamacja
+    family: client_communication
+    signals_strong: ["reklamacja"]
+    signals: ["rękojmi", "prawach konsumenta", "niezgodność towaru", "wady"]
+    requires_any: ["rękojmi", "składam reklamację"]
+
   # ------------------------------------------------------------ bez decyzji ---
 
   # Zamyka listę i jest jedyną kategorią bez sygnałów: dostaje ją dokument,

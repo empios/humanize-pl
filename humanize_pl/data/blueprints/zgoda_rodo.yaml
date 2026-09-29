@@ -1,0 +1,35 @@
+# Szkielet struktury: zgoda na przetwarzanie danych.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: zgoda_rodo
+label_pl: zgoda na przetwarzanie danych
+check_order: false
+sections:
+- id: data_miejsce
+  label_pl: miejscowość i data
+  severity: required
+  matches: [dnia, ' r.', miejscowość, (data]
+- id: podstawa
+  label_pl: podstawa prawna (RODO)
+  severity: expected
+  matches: [art. 6, rodo, rozporządzenia, podstawie, art. 9]
+- id: zgodę
+  label_pl: wyrażenie zgody
+  severity: required
+  matches: [wyrażam zgodę, zgoda, zgodę na]
+- id: administrator
+  label_pl: administrator / cel
+  severity: required
+  matches: [administrator, z siedzibą w, przetwarzanie, wizerunek, zabieg, cel, poinformowan]
+- id: dobrowolnosc
+  label_pl: dobrowolność i cofnięcie
+  severity: expected
+  matches: [dobrowoln, cofnię, wycofan, cofnąć, w każdej chwili]
+- id: prawa
+  label_pl: informacja o prawach
+  severity: expected
+  matches: [prawo do, prawo żądania, dostępu, sprostowania]
+- id: podpis
+  label_pl: podpis
+  severity: required
+  matches: [podpis, niżej podpisana, niżej podpisany, własnoręczny]

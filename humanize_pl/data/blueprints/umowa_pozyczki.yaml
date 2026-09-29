@@ -1,0 +1,32 @@
+# Szkielet struktury: umowa pożyczki.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: umowa_pozyczki
+label_pl: umowa pożyczki
+numbering: paragraph
+sections:
+- id: komparycja
+  label_pl: komparycja
+  severity: required
+  matches: [zawarta, pomiędzy, pożyczkodawc, pożyczkobiorc]
+- id: kwota
+  label_pl: kwota pożyczki
+  severity: required
+  matches: [kwota, pożyczki, zł, słownie]
+- id: przekazanie
+  label_pl: sposób przekazania
+  severity: required
+  matches: [przekaz, przelew, rachunek, do rąk]
+- id: spłata
+  label_pl: termin i spłata
+  severity: required
+  matches: [spłata, zwrot, do dnia, termin]
+- id: odsetki
+  label_pl: odsetki
+  severity: expected
+  matches: [odsetki, odsetkowe, bez odsetek]
+- id: postanowienia_koncowe
+  label_pl: postanowienia końcowe
+  severity: required
+  matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
+      formy pisemnej, wymagają zachowania formy pisemnej]

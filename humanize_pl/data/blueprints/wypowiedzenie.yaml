@@ -1,0 +1,31 @@
+# Szkielet struktury: wypowiedzenie umowy.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: wypowiedzenie
+label_pl: wypowiedzenie umowy
+check_order: false
+sections:
+- id: data_miejsce
+  label_pl: miejscowość i data
+  severity: required
+  matches: [dnia, ' r.', miejscowość, (data]
+- id: strony
+  label_pl: oznaczenie stron
+  severity: required
+  matches: [pracodawc, pracownik, zleceniodawc, zleceniobiorc]
+- id: podstawa
+  label_pl: podstawa wypowiedzenia
+  severity: required
+  matches: [na podstawie, wypowiadam, wypowiedzenie, wypowiedzenia]
+- id: termin
+  label_pl: termin / okres
+  severity: required
+  matches: [okres wypowiedzenia, ze skutkiem, na dzień, z zachowaniem, bez zachowania]
+- id: uzasadnienie
+  label_pl: uzasadnienie
+  severity: required
+  matches: [uzasadnienie, w związku z, z powodu, win, przyczyn, wypowiedzenie]
+- id: podpis
+  label_pl: podpis
+  severity: required
+  matches: [podpis, z poważaniem]

@@ -1,0 +1,37 @@
+# Szkielet struktury: umowa najmu / dzierżawy.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: umowa_najmu
+label_pl: umowa najmu / dzierżawy
+numbering: paragraph
+sections:
+- id: komparycja
+  label_pl: komparycja (strony)
+  severity: required
+  matches: [zawarta, pomiędzy, najemc, wynajmujący, dzierżawc, wydzierżawiaj, właściciel obiektu, oświadczenie]
+- id: przedmiot
+  label_pl: przedmiot najmu / dzierżawy
+  severity: required
+  matches: [przedmiot najmu, oddaje, lokal, nieruchom, rzecz, miejsc, powierzchni, budki, pokoj, grunty,
+    dzierżaw, najmu, egzekucj, zastępcz]
+- id: czynsz
+  label_pl: czynsz / opłata
+  severity: expected
+  matches: [czynsz, opłata, wynagrodzenie, zł, odpłatn]
+- id: kaucja
+  label_pl: kaucja / zabezpieczenie
+  severity: expected
+  matches: [kaucja, zabezpieczenie, zwrócenie]
+- id: czas
+  label_pl: czas trwania
+  severity: expected
+  matches: [czas trwania, na czas, okres, od dnia, termin najmu, do dnia, zawarta na]
+- id: wypowiedzenie
+  label_pl: wypowiedzenie / rozwiązanie
+  severity: expected
+  matches: [wypowiedzenie, wypowiedzenia, rozwiązanie, rozwiązać, okres wypowiedzenia]
+- id: koncowe
+  label_pl: postanowienia końcowe
+  severity: expected
+  matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
+      formy]

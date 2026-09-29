@@ -1,0 +1,39 @@
+# Szkielet struktury: kara porządkowa.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: kara_porzadkowa
+label_pl: kara porządkowa
+check_order: false
+sections:
+- id: data_miejsce
+  label_pl: miejscowość i data
+  severity: required
+  matches: [dnia, ' r.', miejscowość, (data]
+- id: pracodawca
+  label_pl: pracodawca
+  severity: required
+  matches: [dane pracodawcy, pracodawc, firma]
+- id: pracownik
+  label_pl: pracownik
+  severity: required
+  matches: [dane pracownika, pracownik, pan/pani]
+- id: podstawa
+  label_pl: podstawa (art. 108 k.p.)
+  severity: required
+  matches: [art. 108, kodeks pracy, na podstawie]
+- id: przewinienie
+  label_pl: opis przewinienia
+  severity: required
+  matches: [przewinienie, nieprzestrzeganiem, polegającym na, ustalonej organizacji]
+- id: kara
+  label_pl: rodzaj kary
+  severity: required
+  matches: [upomnienie, nagan, karę porządkową, kara porządkow]
+- id: odwolanie
+  label_pl: prawo odwołania
+  severity: expected
+  matches: [odwołanie, odwołania, sąd pracy]
+- id: podpis
+  label_pl: podpis
+  severity: required
+  matches: [podpis, z poważaniem]

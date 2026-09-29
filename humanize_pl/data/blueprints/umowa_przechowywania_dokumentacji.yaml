@@ -1,0 +1,32 @@
+# Szkielet struktury: umowa o przechowywanie dokumentacji.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: umowa_przechowywania_dokumentacji
+label_pl: umowa o przechowywanie dokumentacji
+numbering: paragraph
+sections:
+- id: komparycja
+  label_pl: komparycja
+  severity: required
+  matches: [zawarta, pomiędzy, przechowawc, składaj]
+- id: podstawa
+  label_pl: podstawa (art. 30a u.p.p.)
+  severity: required
+  matches: [art. 30a, praw pacjenta, na podstawie, przechowywanie]
+- id: przedmiot
+  label_pl: przedmiot (dokumentacja medyczna)
+  severity: required
+  matches: [dokumentację medyczną, dokumentacja, przechow]
+- id: miejsce
+  label_pl: miejsce przechowywania
+  severity: required
+  matches: [miejsce przechowywania, budynek, przy ul]
+- id: czas
+  label_pl: okres przechowywania
+  severity: required
+  matches: [okres, czas, art. 29, termin]
+- id: postanowienia_koncowe
+  label_pl: postanowienia końcowe
+  severity: required
+  matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
+      formy pisemnej, wymagają zachowania formy pisemnej]

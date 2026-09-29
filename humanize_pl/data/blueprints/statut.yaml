@@ -1,0 +1,35 @@
+# Szkielet struktury: statut.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: statut
+label_pl: statut
+numbering: paragraph
+sections:
+- id: nazwa
+  label_pl: nazwa podmiotu
+  severity: required
+  matches: [fundacj, stowarzyszenie, nazwa]
+- id: siedziba
+  label_pl: siedziba
+  severity: required
+  matches: [siedzib, siedziba]
+- id: cele
+  label_pl: cele działalności
+  severity: required
+  matches: [celów statutowych, cele, cel, działalność, celami]
+- id: czlonkowie
+  label_pl: członkowie / fundatorzy
+  severity: required
+  matches: [członków, członkowie, fundator, członkostwo]
+- id: organy
+  label_pl: organy i kompetencje
+  severity: required
+  matches: [organy, zarząd, walne, kompetencje]
+- id: srodki
+  label_pl: środki / majątek
+  severity: expected
+  matches: [środki, majątek, fundusz, kapitał]
+- id: zmiany
+  label_pl: zmiana i rozwiązanie
+  severity: expected
+  matches: [zmian, rozwiązanie, likwidacj, przekształcenie]

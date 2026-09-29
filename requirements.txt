@@ -8,7 +8,7 @@
 # Same command from pyproject.toml:
 #   python -m pip install -e ".[all]"
 
--e ".[all]"
+-e .[all]
 
 # Core
 regex>=2024.0.0

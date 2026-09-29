@@ -1,0 +1,31 @@
+# Szkielet struktury: pełnomocnictwo.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: pelnomocnictwo
+label_pl: pełnomocnictwo
+check_order: false
+sections:
+- id: data
+  label_pl: miejscowość i data
+  severity: required
+  matches: [dnia, ' r.', (data]
+- id: mocodawca
+  label_pl: mocodawca
+  severity: required
+  matches: [udzielam, imię i nazwisko, pesel, odwołuję]
+- id: pelnomocnik
+  label_pl: pełnomocnik
+  severity: required
+  matches: [pełnomocnik, pełnomocnictwa do, reprezentowania, pełnomocnictwo, pełnomocnictw]
+- id: zakres
+  label_pl: zakres umocowania
+  severity: required
+  matches: [zakres, obejmuje, w sprawie, postępowaniu, sprawie, do reprezentowania, udzielone, z dniem]
+- id: dalejsze
+  label_pl: dalsze pełnomocnictwa
+  severity: expected
+  matches: [dalszych pełnomocnictw, substytucj, udzielania dalszych]
+- id: podpis
+  label_pl: podpis mocodawcy
+  severity: required
+  matches: [podpis, własnoręczny]

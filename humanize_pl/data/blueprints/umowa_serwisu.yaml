@@ -1,0 +1,32 @@
+# Szkielet struktury: umowa o stworzenie i prowadzenie serwisu.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: umowa_serwisu
+label_pl: umowa o stworzenie i prowadzenie serwisu
+numbering: paragraph
+sections:
+- id: komparycja
+  label_pl: komparycja
+  severity: required
+  matches: [zawarta, pomiędzy, zamawiaj, wykonawc]
+- id: oświadczenia
+  label_pl: oświadczenia i zapewnienia
+  severity: required
+  matches: [oświadczenia i zapewnienia, oświadcza, działalność gospodarczą]
+- id: przedmiot
+  label_pl: przedmiot (serwis)
+  severity: required
+  matches: [serwis, przeniesienie praw, własność, prawa autorskie, przedmiot]
+- id: wynagrodzenie
+  label_pl: wynagrodzenie
+  severity: required
+  matches: [wynagrodzenie, cena, kwota, etap]
+- id: wady
+  label_pl: odpowiedzialność za wady
+  severity: expected
+  matches: [wady, odpowiedzialnoś, gwarancj, rękojmi]
+- id: postanowienia_koncowe
+  label_pl: postanowienia końcowe
+  severity: required
+  matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
+      formy pisemnej, wymagają zachowania formy pisemnej]

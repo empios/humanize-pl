@@ -1,0 +1,28 @@
+# Szkielet struktury: ugoda.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: ugoda
+label_pl: ugoda
+numbering: paragraph
+sections:
+- id: komparycja
+  label_pl: komparycja (strony)
+  severity: required
+  matches: [zawarta, pomiędzy, strona 1, strona 2]
+- id: przedmiot
+  label_pl: przedmiot ugody
+  severity: required
+  matches: [przedmiot, uregulowanie, wzajemn, porozumienie]
+- id: zrzeczenie
+  label_pl: zrzeczenie się roszczeń
+  severity: required
+  matches: [zrzeka, zrzeczenie, roszczeń, roszczenia, rezygnuje]
+- id: wykonanie
+  label_pl: sposób wykonania
+  severity: required
+  matches: [wykonanie, zapłata, termin, obowiązuje, kwot]
+- id: postanowienia_koncowe
+  label_pl: postanowienia końcowe
+  severity: required
+  matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
+      formy pisemnej, wymagają zachowania formy pisemnej]

@@ -1,0 +1,35 @@
+# Szkielet struktury: czynny żal.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: czynny_zal
+label_pl: czynny żal
+check_order: false
+sections:
+- id: data_miejsce
+  label_pl: miejscowość i data
+  severity: required
+  matches: [dnia, ' r.', miejscowość, (data]
+- id: wnoszący
+  label_pl: oznaczenie wnoszącego
+  severity: required
+  matches: [dane wnoszącego, imię i nazwisko, adres]
+- id: adresat
+  label_pl: organ
+  severity: required
+  matches: [naczelnik, urząd skarbowy, organ]
+- id: podstawa
+  label_pl: podstawa (art. 16 k.k.s.)
+  severity: required
+  matches: [art. 16, kodeks karny skarbowy, na podstawie]
+- id: czyn
+  label_pl: opis czynu zabronionego
+  severity: required
+  matches: [czyn zabroniony, polegającego na, zawiadamiam o popełnieniu]
+- id: uzasadnienie
+  label_pl: uzasadnienie
+  severity: required
+  matches: [uzasadnienie, uzasadnieniem]
+- id: podpis
+  label_pl: podpis
+  severity: required
+  matches: [podpis, własnoręczny]

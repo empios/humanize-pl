@@ -1,0 +1,34 @@
+# Szkielet struktury: umowa o pracę.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: umowa_o_prace
+label_pl: umowa o pracę
+numbering: paragraph
+sections:
+- id: komparycja
+  label_pl: komparycja (pracodawca, pracownik)
+  severity: required
+  matches: [pracodawc, pracownik, zawarta, porozumienie]
+- id: stanowisko
+  label_pl: rodzaj pracy / warunki zatrudnienia
+  severity: expected
+  matches: [rodzaj umówionej pracy, stanowisko, miejsce wykonywania pracy, zakres obowiązków, warunki
+      zatrudnienia, warunki odbywania, kwalifikacj, konkurencyjn, zakaz]
+- id: wynagrodzenie
+  label_pl: wynagrodzenie
+  severity: expected
+  matches: [wynagrodzenie, stypendium, kwota, zwrot kosztów, koszt, odprawa, kara umowna]
+- id: czas
+  label_pl: czas trwania / wymiar czasu
+  severity: required
+  matches: [czas trwania, czas nieokreślony, czas określony, wymiar czasu pracy, okres, na czas, od dnia,
+    do dnia]
+- id: urlop
+  label_pl: urlop
+  severity: expected
+  matches: [urlop, urlopie]
+- id: koncowe
+  label_pl: postanowienia końcowe / rozwiązanie
+  severity: required
+  matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, porozumienie, za porozumieniem,
+    w przedmiocie rozwiązania, formę pisemną, wymagają formy]

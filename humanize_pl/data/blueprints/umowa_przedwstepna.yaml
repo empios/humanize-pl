@@ -1,0 +1,36 @@
+# Szkielet struktury: umowa przedwstępna.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: umowa_przedwstepna
+label_pl: umowa przedwstępna
+numbering: paragraph
+sections:
+- id: komparycja
+  label_pl: komparycja
+  severity: required
+  matches: [zawarta, pomiędzy, sprzedawc, kupując]
+- id: przedmiot
+  label_pl: przedmiot (rzecz/nieruchomość)
+  severity: required
+  matches: [nieruchom, lokal, księga wieczysta, działka, przedmiot, samochod, właścicielem]
+- id: obowiazek
+  label_pl: obowiązek zawarcia umowy właściwej
+  severity: required
+  matches: [umowa właściwa, przyrzeczona, zawarcie umowy, akt notarialny, przedwstępna, zobowiązanie się]
+- id: cena
+  label_pl: cena
+  severity: expected
+  matches: [cena, ceny, kwota, wynagrodzenie, zapłat, za cenę, słownie]
+- id: termin
+  label_pl: termin zawarcia
+  severity: required
+  matches: [termin, do dnia, w terminie]
+- id: kara
+  label_pl: kara umowna / odstąpienie
+  severity: expected
+  matches: [kara umowna, kary umowne, odstąpienie]
+- id: postanowienia_koncowe
+  label_pl: postanowienia końcowe
+  severity: required
+  matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
+      formy pisemnej, wymagają zachowania formy pisemnej]

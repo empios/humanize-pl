@@ -142,14 +142,16 @@ def test_nominalization_dokonac():
 
     cases = [
         # perfective infinitive
-        ("Należy dokonać analizy dokumentów.", "przeanalizować", Mode.standard),
+        ("Należy niezwłocznie dokonać analizy.", "przeanalizować", Mode.standard),
         ("Należy dokonać wyboru spośród kandydatów.", "wybrać", Mode.standard),
         # impersonal past
-        ("Dokonano ustalenia stanu faktycznego.", "ustalono", Mode.standard),
+        ("Dokonano ustalenia w toku postępowania.", "ustalono", Mode.standard),
         ("Dokonano zmiany w umowie.", "zmieniono", Mode.standard),
         # imperfective infinitive
-        ("Organ może dokonywać analizy akt.", "analizować", Mode.standard),
+        ("Organ może dokonywać analizy w każdym czasie.", "analizować", Mode.standard),
     ]
+    # The deleted noun's genitive would stay behind: "przeanalizować dokumentów"
+    assert not nominalization_candidates("Należy dokonać analizy dokumentów.", mode=Mode.standard)
     for sentence, expected_frag, mode in cases:
         cands = nominalization_candidates(sentence, mode=mode)
         assert cands, f"No candidate for: {sentence!r}"
@@ -163,11 +165,13 @@ def test_nominalization_przeprowadzic():
     from humanize_pl.config import Mode
 
     cases = [
-        ("Należy przeprowadzić analizę ryzyka.", "przeanalizować", Mode.standard),
-        ("Przeprowadzono kontrolę dokumentów.", "skontrolowano", Mode.standard),
-        ("Należy przeprowadzić badanie sprawy.", "zbadać", Mode.standard),
-        ("Organ może przeprowadzać ocenę ofert.", "oceniać", Mode.standard),
+        ("Należy przeprowadzić analizę w terminie 7 dni.", "przeanalizować", Mode.standard),
+        ("Przeprowadzono kontrolę w siedzibie spółki.", "skontrolowano", Mode.standard),
+        ("Należy przeprowadzić badanie.", "zbadać", Mode.standard),
+        ("Organ może przeprowadzać ocenę corocznie.", "oceniać", Mode.standard),
     ]
+    # The deleted noun's genitive would stay behind: "skontrolowano dokumentów"
+    assert not nominalization_candidates("Przeprowadzono kontrolę dokumentów.", mode=Mode.standard)
     for sentence, expected_frag, mode in cases:
         cands = nominalization_candidates(sentence, mode=mode)
         assert cands, f"No candidate for: {sentence!r}"
@@ -255,15 +259,26 @@ def test_ger_to_infinitive():
 
 
 def test_w_celu_ger_candidates():
+    """'w celu GER' → ', aby INF' only where the result is correct Polish."""
     from humanize_pl.rules.nominalization import nominalization_candidates
     from humanize_pl.config import Mode
 
-    cands = nominalization_candidates(
-        "W celu przeprowadzenia kontroli należy złożyć wniosek.", mode=Mode.standard
-    )
-    w_celu = [c for c in cands if "w_celu" in c.rule]
-    assert w_celu, "No w_celu_ger candidate generated"
-    assert any("aby przeprowadzić" in c.text.lower() for c in w_celu)
+    def w_celu(sentence: str) -> list[str]:
+        cands = nominalization_candidates(sentence, mode=Mode.standard)
+        return [c.text for c in cands if c.rule == "nominalizacja:w_celu_ger"]
+
+    expected = "Strona składa wniosek, aby skorzystać z ulgi."
+    assert w_celu("Strona składa wniosek w celu skorzystania z ulgi.") == [expected]
+    assert w_celu("Strona składa wniosek, w celu skorzystania z ulgi.") == [expected]
+    for sentence in [
+        # The object would stay genitive: "aby przeprowadzić kontroli"
+        "Należy złożyć wniosek w celu przeprowadzenia kontroli.",
+        # No main clause before it, so "Aby ..." would need a closing comma
+        "W celu skorzystania z ulgi strona składa wniosek.",
+        # An infinitive takes no agent: "aby usunąć przez Wynajmującego"
+        "Najemca zgłasza usterkę w celu usunięcia przez Wynajmującego.",
+    ]:
+        assert w_celu(sentence) == [], sentence
 
 
 def test_lix_in_sentence_features():
@@ -391,6 +406,75 @@ def test_w_oparciu_o_takes_the_genitive():
     ]:
         texts = [c.text for c in kancelaryzm_candidates(sentence, mode=Mode.standard)]
         assert not any("na podstawie" in text for text in texts), texts
+
+
+def test_light_verb_reduction_keeps_genitive_chains_without_stanza():
+    """"dokonać oceny ryzyka" → "ocenić ryzyka" would strand the genitive; with
+    no Stanza analysis Morfeusz decides."""
+    from humanize_pl.rules.kancelaryzmy import kancelaryzm_candidates
+    from humanize_pl.config import Mode
+
+    texts = [
+        c.text
+        for c in kancelaryzm_candidates("Zespół musi dokonać oceny ryzyka w ciągu tygodnia.", mode=Mode.standard)
+    ]
+    assert not any("ocenić ryzyka" in text for text in texts), texts
+    texts = [
+        c.text
+        for c in kancelaryzm_candidates("Zespół musi dokonać oceny w ciągu tygodnia.", mode=Mode.standard)
+    ]
+    assert any("musi ocenić w ciągu tygodnia" in text for text in texts), texts
+
+
+def test_light_verb_reductions_keep_the_deleted_nouns_dependents():
+    """Deleting the complement noun must not strand its dependents: a genitive,
+    an adjective or a "nad" phrase, with or without a Stanza parse."""
+    from humanize_pl.config import Mode
+    from humanize_pl.nlp.stanza_engine import SentenceAnalysis, TokenInfo
+    from humanize_pl.rules.kancelaryzmy import kancelaryzm_candidates
+    from humanize_pl.rules.nominalization import nominalization_candidates
+
+    def texts(sentence: str, analysis=None) -> list[str]:
+        cands = nominalization_candidates(sentence, mode=Mode.standard, analysis=analysis)
+        cands += kancelaryzm_candidates(sentence, mode=Mode.standard, analysis=analysis)
+        return [c.text for c in cands]
+
+    for sentence, stranded in [
+        ("Zarząd musi dokonać zmiany umowy w terminie.", "zmienić umowy"),
+        ("Należy przeprowadzić analizę prawną sprawy.", "przeanalizować prawną"),
+        ("Rada sprawuje nadzór nad spółką.", "nadzoruje nad"),
+    ]:
+        assert not any(stranded in text for text in texts(sentence)), sentence
+    assert "Należy zmienić w terminie 7 dni." in texts("Należy dokonać zmiany w terminie 7 dni.")
+    # "bez" is also a noun (lilac), but here it opens a prepositional phrase
+    assert "Organ może oceniać bez zbędnej zwłoki." in texts(
+        "Organ może przeprowadzać ocenę bez zbędnej zwłoki."
+    )
+
+    def parsed(words: list[tuple[str, str, str, int, str, str]]) -> SentenceAnalysis:
+        tokens, start = [], 0
+        for index, (text, lemma, upos, head, deprel, feats) in enumerate(words, start=1):
+            tokens.append(TokenInfo(text, lemma, upos, feats, head, deprel, index, start, start + len(text)))
+            start += len(text) + 1
+        return SentenceAnalysis(tokens=tokens)
+
+    # Stanza attaches the adjective to the noun the reduction deletes
+    sentence = "Należy dokonać oceny prawnej"
+    analysis = parsed([
+        ("Należy", "należy", "VERB", 0, "root", ""),
+        ("dokonać", "dokonać", "VERB", 1, "xcomp", ""),
+        ("oceny", "ocena", "NOUN", 2, "obj", "Case=Gen"),
+        ("prawnej", "prawny", "ADJ", 3, "amod", "Case=Gen"),
+    ])
+    assert not any("ocenić prawnej" in text for text in texts(sentence, analysis))
+    sentence = "Należy przeprowadzić analizę prawną"
+    analysis = parsed([
+        ("Należy", "należy", "VERB", 0, "root", ""),
+        ("przeprowadzić", "przeprowadzić", "VERB", 1, "xcomp", ""),
+        ("analizę", "analiza", "NOUN", 2, "obj", "Case=Acc"),
+        ("prawną", "prawny", "ADJ", 3, "amod", "Case=Acc"),
+    ])
+    assert not any("przeanalizować prawną" in text for text in texts(sentence, analysis))
 
 
 def test_cleanup_spacing_keeps_layout_and_numbers():

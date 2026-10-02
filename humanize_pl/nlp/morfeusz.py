@@ -414,6 +414,20 @@ def accusative_form_for_noun(word: str) -> str:
     return word
 
 
+# Declinable parts of speech: the words a noun phrase is made of.
+NOMINAL_TAGS = {"subst", "ger", "depr", "adj", "pact", "ppas", "num", "ppron3"}
+
+
+def has_genitive_reading(morfeusz: MorfeuszAnalyzer, word: str) -> bool:
+    """True if *word* can be a genitive noun, adjective, participle, numeral or
+    pronoun ("ryzyka", "właściwego", "ich")."""
+    for analysis in morfeusz.analyses(word):
+        parts = analysis.tag.split(":")
+        if len(parts) > 2 and parts[0] in NOMINAL_TAGS and "gen" in parts[2].split("."):
+            return True
+    return False
+
+
 def _genitive_forms(
     morfeusz: MorfeuszAnalyzer,
     word: str,

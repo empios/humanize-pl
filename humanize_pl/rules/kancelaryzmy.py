@@ -4,7 +4,7 @@ import regex as re
 
 from humanize_pl.config import Mode
 from humanize_pl.nlp.morfeusz import genitive_noun_phrase
-from .base import COORDINATION_RE, Candidate
+from .base import COORDINATION_RE, Candidate, dependents_follow
 
 # `niniejszy → ten` lives in lemma_swaps.yaml + lemma_engine.py and is the
 # preferred path whenever Stanza is available. The regex entries below are a
@@ -113,10 +113,11 @@ _LIGHT_VERB_COMPLEMENTS: dict[str, str] = {
 
 def _complement_dangles(analysis, match_start: int, match_end: int, complement: str) -> bool:
     """True if the complement noun (surface form *complement* within
-    [match_start, match_end]) heads a genitive chain in *analysis*.
+    [match_start, match_end]) has dependents in *analysis*: a genitive chain
+    ("oceny ryzyka"), an adjective ("oceny prawnej") or a prepositional phrase.
 
-    Used to skip a light-verb reduction that would otherwise leave the
-    complement's genitive dependents dangling in the wrong case.
+    Used to skip a light-verb reduction, which deletes the noun and would
+    leave its dependents dangling ("ocenić ryzyka", "ocenić prawnej").
     """
     if analysis is None:
         return False
@@ -130,28 +131,28 @@ def _complement_dangles(analysis, match_start: int, match_end: int, complement: 
         if (tok.text or "").lower() != complement.lower():
             continue
         return any(
-            d.upos == "NOUN" and "Case=Gen" in (d.feats or "")
-            for d in analysis.tokens
-            if getattr(d, "head", None) == tok.id
+            d.upos != "PUNCT" for d in analysis.tokens if getattr(d, "head", None) == tok.id
         )
     return False
 
 
 def _should_skip_light_verb(pattern: str, sentence: str, analysis) -> bool:
-    """True if *pattern* is a light-verb reduction whose complement noun would
-    be left dangling in the genitive case.
+    """True if *pattern* is a light-verb reduction that would leave its
+    complement noun's dependents dangling.
 
     Evaluated against the *original* sentence (the analysis's offsets refer to
     it), so the result is stable regardless of how many earlier edits have been
     applied to a running text.
     """
     complement = _LIGHT_VERB_COMPLEMENTS.get(pattern)
-    if complement is None or analysis is None:
+    if complement is None:
         return False
     match = re.compile(pattern, re.IGNORECASE).search(sentence)
     if not match:
         return False
-    return _complement_dangles(analysis, match.start(), match.end(), complement)
+    if analysis is not None:
+        return _complement_dangles(analysis, match.start(), match.end(), complement)
+    return dependents_follow(sentence[match.end() :])
 
 
 def kancelaryzm_candidates(

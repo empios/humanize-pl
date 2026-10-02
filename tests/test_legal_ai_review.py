@@ -99,6 +99,26 @@ def test_validator_rejects_changed_code_abbreviation():
     assert validation.reason == "legally sensitive inventory changed: legal_references"
 
 
+def test_party_names_ignore_a_capitalised_common_word_at_sentence_start():
+    inventory = legal_sensitive_inventory(
+        "Niniejsza Umowa wiąże obie strony.\nPonadto Strona zapłaci karę."
+    )
+    assert not inventory["party_names"]
+    inventory = legal_sensitive_inventory(
+        "Jan Kowalski zapłaci karę. Kancelaria Prawna Nowak reprezentuje go w sporze."
+    )
+    assert set(inventory["party_names"]) == {"jan kowalski", "prawna nowak"}
+
+    original = "Niniejsza Umowa wchodzi w życie z dniem jej podpisania przez obie strony."
+    validation = validate_candidate(
+        original,
+        "Ta Umowa wchodzi w życie z dniem jej podpisania przez obie strony.",
+        protected=protect_text(original),
+        max_length_ratio=2.0,
+    )
+    assert validation.ok, validation.reason
+
+
 def test_inventory_tracks_percent_section_and_journal_reference():
     inventory = legal_sensitive_inventory(
         "Zgodnie z § 5 kara wynosi 10% kwoty (Dz. U. z 2023 r. poz. 1610)."

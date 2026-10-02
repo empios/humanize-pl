@@ -7,6 +7,7 @@ import regex as re
 from .anchors import content_anchor_retention, content_anchor_tokens
 from .protectors import ProtectedText
 from .deontic import extract_deontic_profile, DeonticModality
+from humanize_pl.nlp.morfeusz import try_load_morfeusz
 from humanize_pl.rules.finite_verbs import has_finite_verb
 from humanize_pl.rules.legal_features import (
     legal_anchor_retention,
@@ -113,10 +114,34 @@ def legal_sensitive_inventory(text: str) -> dict[str, Counter[str]]:
     for category, patterns in SENSITIVE_INVENTORY_PATTERNS.items():
         values: list[str] = []
         for pattern in patterns:
-            flags = 0 if category == "party_names" else re.IGNORECASE
-            values.extend(match.group(0) for match in re.finditer(pattern, text, flags))
+            if category == "party_names":
+                values.extend(_party_names(text, pattern))
+            else:
+                values.extend(m.group(0) for m in re.finditer(pattern, text, re.IGNORECASE))
         inventory[category] = Counter(value.casefold() for value in values)
     return inventory
+
+
+def _party_names(text: str, pattern: str) -> list[str]:
+    """Runs of capitalised words ("Jan Kowalski"). A sentence starts with a capital
+    anyway, so there a first word Morfeusz knows only as a common word is dropped:
+    "Niniejsza Umowa" and "Ponadto Strona" are not names."""
+    morfeusz = try_load_morfeusz()
+    names: list[str] = []
+    for match in re.finditer(pattern, text):
+        name = match.group(0)
+        before = match.start() - 1
+        while before >= 0 and text[before] in " \t ":
+            before -= 1
+        if morfeusz is not None and (before < 0 or text[before] in ".!?:;(\n"):
+            first, rest = re.split(r"[- ]", name, maxsplit=1)
+            lemmas = {analysis.lemma for analysis in morfeusz.analyses(first)}
+            if lemmas and all(lemma[:1].islower() for lemma in lemmas):
+                if not re.fullmatch(pattern, rest):
+                    continue
+                name = rest
+        names.append(name)
+    return names
 
 
 def _without_transition(sentence: str) -> str:

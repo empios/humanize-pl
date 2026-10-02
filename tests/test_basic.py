@@ -516,6 +516,21 @@ def test_split_przy_czym_long_sentence():
     assert ". Przy czym" in cands[0].text
 
 
+def test_split_keeps_coordinated_objects_together():
+    """", a także o ..." joins two objects of one verb. Split off, the second
+    half is a fragment whose only verb sits in a relative clause."""
+    from humanize_pl.rules.sentence_flow import sentence_flow_candidates
+    from humanize_pl.config import Mode
+
+    sentence = (
+        "Podmiot przetwarzający niezwłocznie informuje Administratora o każdym naruszeniu "
+        "ochrony danych osobowych w swojej organizacji, a także o wszelkich planowanych "
+        "zmianach w sposobie przetwarzania, które mogą wpłynąć na bezpieczeństwo "
+        "przetwarzania danych osobowych przez Podmiot."
+    )
+    assert sentence_flow_candidates(sentence, mode=Mode.strong) == []
+
+
 def test_no_split_przy_czym_short_sentence():
     from humanize_pl.rules.sentence_flow import sentence_flow_candidates
     from humanize_pl.config import Mode

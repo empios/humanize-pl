@@ -49,7 +49,10 @@ def _safe_split_candidate(
 
     if len(left.split()) < min_left or len(right.split()) < min_right:
         return None
-    if not has_finite_verb(left) or not has_finite_verb(right):
+    # The new sentence needs its own predicate before its first comma: in
+    # ", a także o zmianach, które mogą ..." the only verb is in a relative
+    # clause and the split leaves a fragment.
+    if not has_finite_verb(left) or not has_finite_verb(right.split(",", 1)[0]):
         return None
     # Do not split list complements starting with a bare preposition.
     if right.lower().startswith(("za ", "w ", "na ", "do ", "od ", "przy ", "bez ", "pod ")):

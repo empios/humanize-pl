@@ -147,6 +147,28 @@ def test_signature_block_survives_processing(tmp_path) -> None:
     assert load_document(target) is not None
 
 
+def test_whitespace_between_sentences_is_kept() -> None:
+    from humanize_pl.core import humanize_text
+
+    for text in ("§ 2.\t ZOBOWIĄZANIA STRON", "Umowa obowiązuje od dziś.\vStrony ją podpisały."):
+        result = humanize_text(text, mode="standard")
+        assert result.text == text
+        assert not result.changed
+
+
+def test_edit_lands_in_a_paragraph_with_a_line_break_between_sentences(tmp_path) -> None:
+    source, target = tmp_path / "input.docx", tmp_path / "output.docx"
+    document = Document()
+    paragraph = document.add_paragraph()
+    paragraph.add_run("Umowa obowiązuje od dziś.").add_break()
+    paragraph.add_run("Warto wskazać, że niniejsza umowa jest ważna.")
+    document.save(source)
+    result, stats = process_docx(source, target, mode="standard")
+    xml = Document(target).paragraphs[0]._p.xml
+    assert stats["changed"] == 1, result.warnings
+    assert "<w:br/>" in xml and "Warto wskazać" not in xml
+
+
 def test_docx_text_includes_tables_but_not_headers(tmp_path) -> None:
     source = tmp_path / "input.docx"
     _complex_docx(source)

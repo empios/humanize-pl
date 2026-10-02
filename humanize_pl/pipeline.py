@@ -20,7 +20,7 @@ from humanize_pl.safety.agreement import agreement_gate
 from humanize_pl.safety.protectors import ProtectedText
 from humanize_pl.safety.syntax import stanza_finite_verb_gate
 from humanize_pl.safety.validators import GateCheck, validate_candidate
-from humanize_pl.sentence_splitter import split_sentences
+from humanize_pl.sentence_splitter import sentence_separators, split_sentences
 
 
 # A masked-LM fluency scorer is structurally biased against AI-artifact removal:
@@ -74,6 +74,20 @@ class ParagraphPipelineResult:
     rejected: list[CandidateRejection] = field(default_factory=list)
     skipped: list[SentenceSkip] = field(default_factory=list)
     traces: list[CandidateTrace] = field(default_factory=list)
+
+
+def _join_sentences(sentences: list[str], separators: list[str]) -> str:
+    """Rejoin sentences with the whitespace that separated them in the source:
+    a tab or a line break between two sentences is not a rule's to change."""
+    out = ""
+    for index, sentence in enumerate(sentences):
+        sentence = sentence.strip()
+        if not sentence:
+            continue
+        if out:
+            out += separators[index - 1] if index - 1 < len(separators) else " "
+        out += sentence
+    return out
 
 
 @dataclass
@@ -149,7 +163,7 @@ class LegalPipeline:
                 )
 
         return ParagraphPipelineResult(
-            text=" ".join(s.strip() for s in output_sentences if s.strip()),
+            text=_join_sentences(output_sentences, sentence_separators(body)),
             changes=changes,
             rejected=rejected,
             skipped=skipped,

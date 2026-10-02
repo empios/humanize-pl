@@ -380,6 +380,43 @@ def test_the_prompt_never_hands_the_model_an_object_shaped_like_the_answer() -> 
     assert system.rstrip().endswith("Bez komentarza i bez bloku kodu.")
 
 
+def test_context_placeholders_never_reuse_the_fragments_numbers() -> None:
+    """Each text was protected on its own, so "__PROTECTED_0000__" in the
+    previous paragraph and in the fragment named different values."""
+    seen: list[str] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        content = json.loads(request.content)["messages"][1]["content"]
+        seen.append(content)
+        user = _fields(content)
+        source = user["source"] or "To jest test połączenia."
+        return _response(
+            {"fragment_id": user["fragment_id"] or "capability-test", "source": source,
+             "proposal": source, "rationale": "bez zmian"}
+        )
+
+    settings = LlmSettings("https://model.test/v1", "legal-pl", "", 5)
+    rewriter = OpenAICompatibleRewriter(
+        settings, client=httpx.Client(transport=httpx.MockTransport(handler))
+    )
+    assert rewriter.probe()
+    rewriter.rewrite_fragment(
+        "Jan Kowalski zapłaci 5000 zł.",
+        fragment_id="paragraph-2",
+        document_type=DocumentType.contract,
+        previous="Anna Nowak wynajmuje lokal od 1 maja 2024 r.",
+        following="Kaucja wynosi 2000 zł.",
+        outline="Umowa najmu zawarta z Anną Nowak.",
+    )
+    content = seen[-1]
+    fragment = set(re.findall(r"__PROTECTED_\d+__", _fields(content)["source"]))
+    context = content.split("Zauważone problemy:", 1)[1]
+    others = re.findall(r"__PROTECTED_\d+__", context)
+    assert fragment and others
+    assert not fragment & set(others)
+    assert len(others) == len(set(others))
+
+
 def test_a_reply_wrapped_in_prose_and_fences_is_still_read() -> None:
     """Endpoints without structured output answer in the model's own voice."""
     from humanize_pl.llm import _extract_json_object

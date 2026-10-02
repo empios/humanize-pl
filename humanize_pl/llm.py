@@ -318,8 +318,11 @@ class OpenAICompatibleRewriter:
             return LlmRewriteResult(source, False, "model_unavailable")
 
         protected = protect_text(source, include_sensitive=True)
-        previous_protected = protect_text(previous, include_sensitive=True).text if previous else ""
-        following_protected = protect_text(following, include_sensitive=True).text if following else ""
+        # Context placeholders continue the fragment's numbering, so a number
+        # names one value across the whole prompt.
+        previous_protected, next_number = _protect_context(previous, len(protected.mapping))
+        following_protected, next_number = _protect_context(following, next_number)
+        outline_text, _ = _protect_context(outline, next_number)
         genre = GENRE_PROFILES[document_type]
         profile_text = style_profile.prompt_text() if style_profile else "Brak profilu kancelarii."
         issue_text = "; ".join(issues or []) or "pozostałe cechy schematycznego stylu AI"
@@ -343,9 +346,6 @@ class OpenAICompatibleRewriter:
         # without a grammar to hold it echoes the object it was given - keys
         # and all - instead of producing the answer shape. Measured: every one
         # of nine fragments came back as a copy of the input.
-        outline_text = (
-            protect_text(outline, include_sensitive=True).text[:1200] if outline else ""
-        )
         user = "\n".join(
             [
                 f"fragment_id: {fragment_id}",
@@ -353,7 +353,7 @@ class OpenAICompatibleRewriter:
                 f"Zauważone problemy: {issue_text}",
                 f"Poprzedni akapit: {previous_protected[:1200] or '(brak)'}",
                 f"Następny akapit: {following_protected[:1200] or '(brak)'}",
-                f"Zarys dokumentu: {outline_text or '(brak)'}",
+                f"Zarys dokumentu: {outline_text[:1200] or '(brak)'}",
             ]
         )
         started = time.monotonic()
@@ -496,6 +496,20 @@ class OpenAICompatibleRewriter:
         if any(not isinstance(payload.get(key), str) for key in required):
             raise LlmEndpointError("W odpowiedzi modelu brakuje wymaganych pól tekstowych.")
         return LlmProposal(**{key: payload[key] for key in required})
+
+
+def _protect_context(text: str, first_number: int) -> tuple[str, int]:
+    """Protect a context passage with placeholders numbered from *first_number*;
+    return the text and the number after its last placeholder."""
+    if not text:
+        return "", first_number
+    context = protect_text(text, include_sensitive=True)
+    renumbered = re.sub(
+        r"__PROTECTED_(\d+)__",
+        lambda match: f"__PROTECTED_{int(match.group(1)) + first_number:04d}__",
+        context.text,
+    )
+    return renumbered, first_number + len(context.mapping)
 
 
 def _extract_json_object(content: str) -> dict[str, Any] | None:

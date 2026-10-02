@@ -100,7 +100,7 @@ def _split_punct(text: str) -> tuple[str, str]:
     text = text.strip()
     if text and text[-1] in ".!?":
         return text[:-1], text[-1]
-    return text, "."
+    return text, ""
 
 
 def _cap(text: str) -> str:

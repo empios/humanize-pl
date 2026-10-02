@@ -73,6 +73,9 @@ def test_passive_np_adj_agreement():
         ("Raport został sporządzony zgodnie z umową.", "Raport sporządzono zgodnie z umową."),
         ("Towar odebrano, co zostało potwierdzone protokołem.",
          "Towar odebrano, co potwierdzono protokołem."),
+        # Final punctuation is kept as it was, never added
+        ("Została zawarta umowa najmu:", "Zawarto umowę najmu:"),
+        ("(miejscowość, gdzie została podpisana umowa)", "(miejscowość, gdzie podpisano umowę)"),
         # neuter: nom == acc for both noun and adj — must stay unchanged
         ("Zostało wydane orzeczenie administracyjne.", "Wydano orzeczenie administracyjne."),
         ("Zostało wdrożone nowe rozwiązanie techniczne.", "Wdrożono nowe rozwiązanie techniczne."),

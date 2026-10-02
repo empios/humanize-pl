@@ -130,3 +130,30 @@ def test_validator_counts_brak_as_negation():
     assert res.ok
     assert any(check.name == "negation_preserved" for check in res.checks)
 
+
+
+def test_inflected_modals_are_detected():
+    profile = extract_deontic_profile("Najemca mógł wypowiedzieć umowę, a Wynajmujący musiał ją przyjąć.")
+    assert sum(profile[DeonticModality.PERMISSION].values()) == 1
+    assert sum(profile[DeonticModality.OBLIGATION].values()) == 1
+    profile = extract_deontic_profile("Przyjmujący zamówienie jest obowiązany do noszenia odzieży.")
+    assert sum(profile[DeonticModality.OBLIGATION].values()) == 1
+    profile = extract_deontic_profile("Najemca nie ma obowiązku zapłaty kary.")
+    assert sum(profile[DeonticModality.PERMISSION].values()) == 1
+    assert sum(profile[DeonticModality.OBLIGATION].values()) == 0
+    # Not modals: in force, belongs to, perhaps, debts
+    profile = extract_deontic_profile(
+        "Umowa obowiązuje od dziś. Lokal należy do Wynajmującego. Być może zobowiązania wygasły."
+    )
+    assert not any(profile.values())
+
+
+def test_validator_rejects_a_past_tense_modal_flip():
+    protected = ProtectedText(text="", mapping={})
+    res = validate_candidate(
+        "Najemca mógł wypowiedzieć umowę w każdym czasie.",
+        "Najemca musiał wypowiedzieć umowę w każdym czasie.",
+        protected=protected, max_length_ratio=1.5,
+    )
+    assert not res.ok
+    assert res.reason.startswith("deontic drift")

@@ -30,10 +30,143 @@ sections:
   severity: required
   matches: [upomnienie, nagan, karę porządkową, kara porządkow]
 - id: odwolanie
-  label_pl: prawo odwołania
+  label_pl: prawo sprzeciwu lub odwołania
   severity: expected
-  matches: [odwołanie, odwołania, sąd pracy]
+  matches: [sprzeciw, odwołanie, odwołania, sąd pracy]
 - id: podpis
   label_pl: podpis
   severity: required
   matches: [podpis, z poważaniem]
+
+# Dokument ogólny: realny wzór tej kategorii. Przy użyciu wypełnia się wyłącznie
+# pola (`slots`); treść, kolejność i układ zostają jak we wzorze.
+document:
+  template: Pismo pracodawcy o wymierzeniu pracownikowi kary porządkowej.docx
+  label_pl: Pismo pracodawcy o wymierzeniu pracownikowi kary porządkowej
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+  blocks:
+  - p: 0
+    role: body
+    layout: {align: right, indent: {first: 708}, size: 10.0, spans: [{start: 9, end: 22, italic: true}, {start: 37, end: 43, italic: true}]}
+    text: …………………… (miejscowość), dnia …………….. (data)
+    slots:
+    - {id: miejscowosc, span: [0, 8], type: place, hint: miejscowość}
+    - {id: data, span: [29, 36], type: date, hint: data}
+    inline_hints:
+    - {span: [9, 22], text: miejscowość}
+    - {span: [37, 43], text: data}
+  - {p: 1, role: spacer}
+  - p: 2
+    role: blank_line
+    layout: {size: 10.0}
+    text: '………………………………………
+
+      ………………………………………
+
+      ………………………………………'
+    slots:
+    - {id: dane_pracodawcy_imie_i_nazwisko_adres_lub_okresl, span: [0, 15], type: text, hint: 'dane Pracodawcy, imię i nazwisko, adres lub określenie
+        firmy, adresu siedziby, NIP-u'}
+    - {id: dane_pracodawcy_imie_i_nazwisko_adres_lub_okresl_2, span: [16, 31], type: text, hint: 'dane Pracodawcy, imię i nazwisko, adres lub określenie
+        firmy, adresu siedziby, NIP-u'}
+    - {id: dane_pracodawcy_imie_i_nazwisko_adres_lub_okresl_3, span: [32, 47], type: text, hint: 'dane Pracodawcy, imię i nazwisko, adres lub określenie
+        firmy, adresu siedziby, NIP-u'}
+  - p: 3
+    role: hint
+    layout: {size: 10.0, italic: true}
+    text: (dane Pracodawcy, imię i nazwisko, adres lub 
+    hint_for: 2
+    hint_kind: instruction
+  - p: 4
+    role: hint
+    layout: {size: 10.0, italic: true}
+    text: określenie firmy, adresu siedziby, NIP-u)
+    hint_for: 2
+    hint_kind: instruction
+  - {p: 5, role: spacer}
+  - p: 6
+    role: blank_line
+    layout: {align: right, indent: {first: 708}, size: 10.0}
+    text: '.......................................................'
+    slots:
+    - {id: p6_1, span: [0, 55], type: text, context: ▢}
+  - p: 7
+    role: blank_line
+    layout: {align: right, indent: {first: 708}, size: 10.0}
+    text: '.......................................................'
+    slots:
+    - {id: p7_1, span: [0, 55], type: text, context: ▢}
+  - p: 8
+    role: blank_line
+    layout: {align: right, indent: {first: 708}, size: 10.0}
+    text: '.......................................................'
+    slots:
+    - {id: dane_pracownika_imie_i_nazwisko_adres, span: [0, 55], type: address, hint: 'dane Pracownika, imię i nazwisko, adres'}
+  - p: 9
+    role: hint
+    layout: {align: right, indent: {first: 708}, size: 10.0, italic: true}
+    text: (dane Pracownika, imię i nazwisko, adres)
+    hint_for: 8
+    hint_kind: label
+  - {p: 10, role: spacer}
+  - p: 11
+    role: body
+    layout: {align: center, size: 14.0, bold: true}
+    text: 'Zawiadomienie o zastosowaniu kary porządkowej
+
+      '
+  - p: 12
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 142, end: 148, italic: true}, {start: 198, end: 216, italic: true}, {start: 295, end: 330,
+          italic: true}, {start: 353, end: 371, italic: true}, {start: 405, end: 424, italic: true}]}
+    text: 'Na podstawie art. 108 ustawy z dnia 26 czerwca 1974 r. – Kodeks pracy (dalej jako k.p.), po uprzednim wysłuchaniu pracownika w dniu ………………………
+      (data), w związku z nieprzestrzeganiem przez Pana/Panią (wybrać właściwe) ustalonej organizacji i porządku w procesie pracy, polegającym na
+      ……………………………. (wskazać przewinienie pracownika), nakładam na Pana/Panią (wybrać właściwe) karę porządkową upomnienia/nagany (wybrać właściwe). '
+    slots:
+    - {id: data_2, span: [132, 141], type: date, hint: data}
+    - {id: wskazac_przewinienie_pracownika, span: [282, 294], type: text, hint: wskazać przewinienie pracownika}
+    inline_hints:
+    - {span: [142, 148], text: data}
+    - {span: [295, 328], text: wskazać przewinienie pracownika}
+    alternatives: 4
+  - p: 13
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 111, end: 293, italic: true}]}
+    text: '……………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………
+
+      (Należy wskazać, dlaczego zachowanie pracownika stanowiło nieprzestrzeganie ustalonej organizacji pracy i porządku w procesie pracy, np. wskazać
+      naruszenia obowiązków pracowniczych.)'
+    slots:
+    - {id: nalezy_wskazac_dlaczego_zachowanie_pracownika_st, span: [0, 110], type: text, hint: 'Należy wskazać, dlaczego zachowanie pracownika stanowiło
+        nieprzestrzeganie ustalonej organizacji pracy i porządku w procesie pracy, np. wskazać naruszenia obowiązków pracowniczych.'}
+    inline_hints:
+    - {span: [111, 293], text: 'Należy wskazać, dlaczego zachowanie pracownika stanowiło nieprzestrzeganie ustalonej organizacji pracy i porządku
+        w procesie pracy, np. wskazać naruszenia obowiązków pracowniczych.'}
+  - {p: 14, role: spacer}
+  - p: 15
+    role: body
+    layout: {align: center, size: 12.0, bold: true}
+    text: Pouczenie
+  - {p: 16, role: spacer}
+  - p: 17
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: 'Informuję, że zgodnie z art. 112 § 1 i 2 k.p., pracownik ma prawo wniesienia sprzeciwu od udzielonej kary w terminie 7 dni od dnia zawiadomienia
+      o ukaraniu. Nieodrzucenie sprzeciwu w ciągu 14 dni od dnia jego wniesienia jest równoznaczne z uwzględnieniem sprzeciwu. W ciągu 14 dni od
+      dnia zawiadomienia o odrzuceniu sprzeciwu, pracownik ma prawo wystąpić do Sądu Pracy o uchylenie kary porządkowej. '
+  - {p: 18, role: spacer}
+  - p: 19
+    role: signature_line
+    layout: {align: justify, size: 10.0, tabs: 4}
+    text: "     ............................................\t\t\t\t.........................................."
+    slots:
+    - {id: podpis_pracownika, span: [5, 49], type: signature, hint: podpis Pracownika}
+    - {id: podpis_pracodawcy, span: [53, 95], type: signature, hint: podpis Pracodawcy}
+  - p: 20
+    role: hint
+    layout: {align: justify, indent: {first: 708}, size: 10.0, tabs: 5}
+    text: "(podpis Pracownika)\t\t\t\t\t      (podpis Pracodawcy)"
+    hint_for: 19
+    hint_kind: label
+  - {p: 21, role: spacer}

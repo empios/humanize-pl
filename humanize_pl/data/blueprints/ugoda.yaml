@@ -3,6 +3,8 @@
 
 category: ugoda
 label_pl: ugoda
+# Kolejności sekcji nie sprawdzamy: realne wzory tej kategorii układają je różnie.
+check_order: false
 numbering: paragraph
 sections:
 - id: komparycja
@@ -26,3 +28,188 @@ sections:
   severity: required
   matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
       formy pisemnej, wymagają zachowania formy pisemnej]
+
+# Dokument ogólny: realny wzór tej kategorii. Przy użyciu wypełnia się wyłącznie
+# pola (`slots`); treść, kolejność i układ zostają jak we wzorze.
+document:
+  template: Ugoda.docx
+  label_pl: Ugoda
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+  blocks:
+  - p: 0
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: UGODA
+  - {p: 1, role: spacer}
+  - p: 2
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 49, end: 62, italic: true}]}
+    text: 'Zawarta w dniu …………………………… 2025 r. w …………………………… (miejscowość), '
+    slots:
+    - {id: p2_1, span: [15, 26], type: date, context: Zawarta w dniu ▢ 2025 r.}
+    - {id: miejscowosc, span: [37, 48], type: place, hint: miejscowość}
+    inline_hints:
+    - {span: [49, 62], text: miejscowość}
+  - {p: 3, role: spacer}
+  - p: 4
+    role: party_connector
+    layout: {align: justify, size: 10.0}
+    text: 'pomiędzy:'
+  - {p: 5, role: spacer}
+  - p: 6
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: '……………………………………………………………………..…………………………………………….…………………………………………………………………………………………………………………………………………………………………… '
+    slots:
+    - {id: imie_i_nazwisko_firma_miejsce_zamieszkania_siedz, span: [0, 108], type: text, hint: 'imię i nazwisko/firma; miejsce zamieszkania/siedziba;
+        nr i seria dokumentu tożsamości; PESEL, NIP, numer wpisu do CEIDG lub do KRS'}
+  - p: 7
+    role: hint
+    layout: {align: justify, size: 10.0, italic: true}
+    text: (imię i nazwisko/firma; miejsce zamieszkania/siedziba; nr i seria dokumentu tożsamości; PESEL, NIP, numer wpisu do CEIDG lub do KRS)
+    hint_for: 6
+    hint_kind: instruction
+  - {p: 8, role: spacer}
+  - p: 9
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 13, end: 21, bold: true}, {start: 23, end: 235, italic: true}]}
+    text: zwanym dalej Stroną 1, (nazewnictwo stron powinno zostać uzależnione od sytuacji w jakiej zawierana jest umowa, przykładowo w przypadku
+      roszczeń z umowy o świadczenie usług można zastosować sformułowanie Zleceniodawca – Zleceniobiorca)
+    alias: Stroną 1
+  - p: 10
+    role: party_connector
+    layout: {align: justify, size: 10.0}
+    text: 'a
+
+      '
+  - p: 11
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: '……………………………………………………………………..…………………………………………….…………………………………………………………………………………………………………………………………………………………………… '
+    slots:
+    - {id: imie_i_nazwisko_firma_miejsce_zamieszkania_siedz_2, span: [0, 108], type: text, hint: 'imię i nazwisko/firma; miejsce zamieszkania/siedziba;
+        nr i seria dokumentu tożsamości; PESEL, NIP, numer wpisu do CEIDG lub do KRS'}
+  - p: 12
+    role: hint
+    layout: {align: justify, size: 10.0, italic: true}
+    text: (imię i nazwisko/firma; miejsce zamieszkania/siedziba; nr i seria dokumentu tożsamości; PESEL, NIP, numer wpisu do CEIDG lub do KRS)
+    hint_for: 11
+    hint_kind: instruction
+  - {p: 13, role: spacer}
+  - p: 14
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 13, end: 21, bold: true}]}
+    text: 'zwanym dalej Stroną 2, '
+    alias: Stroną 2
+  - {p: 15, role: spacer}
+  - p: 16
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 22, end: 30, bold: true}]}
+    text: 'zwanymi dalej łącznie Stronami, '
+    alias: Stronami
+  - {p: 17, role: spacer}
+  - p: 18
+    role: field_header
+    layout: {align: justify, size: 10.0}
+    text: 'o następującej treści:'
+  - p: 19
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+    text: § 1
+  - {p: 20, role: spacer}
+  - p: 21
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: Przedmiotem niniejszego porozumienia jest uregulowanie wzajemnych stosunków między Stronami, dotyczących …………………………………………………………………………………………………………………………….
+      .
+    slots:
+    - {id: nalezy_opisac_czy_ugoda_zostala_sporzadzona_w_na, span: [105, 153], type: text, hint: 'należy opisać czy ugoda została sporządzona w
+        następstwie podpisania umowy, powstania roszczenia lub innej okoliczności'}
+  - p: 22
+    role: hint
+    layout: {align: justify, size: 10.0, italic: true}
+    text: (należy opisać czy ugoda została sporządzona w następstwie podpisania umowy, powstania roszczenia lub innej okoliczności)
+    hint_for: 21
+    hint_kind: instruction
+  - {p: 23, role: spacer}
+  - p: 24
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+    text: § 2
+  - {p: 25, role: spacer}
+  - p: 26
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 8, bold: true}, {start: 45,
+          end: 53, bold: true}, {start: 108, end: 196, italic: true}]}
+    text: Strona 1 zobowiązuje się do zapłaty na rzecz Strony 2 kwoty …………… złotych tytułem ………………………………………………………………… (np. zwrotu kosztów z tytułu
+      poniesionej szkody, tytułem odszkodowania/zadośćuczynienia).
+    slots:
+    - {id: p26_1, span: [60, 65], type: amount, context: rzecz Strony 2 kwoty ▢ złotych tytułem}
+    - {id: np_zwrotu_kosztow_z_tytulu_poniesionej_szkody_ty, span: [82, 107], type: text, hint: 'np. zwrotu kosztów z tytułu poniesionej szkody,
+        tytułem odszkodowania/zadośćuczynienia'}
+    inline_hints:
+    - {span: [108, 196], text: 'np. zwrotu kosztów z tytułu poniesionej szkody, tytułem odszkodowania/zadośćuczynienia'}
+  - p: 27
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 130, end: 138, bold: true}]}
+    text: "Kwota pieniężna określona w ust. 1 zostanie zapłacona przez zobowiązanego w całości \nw terminie do ………………………. na rachunek bankowy Strony\
+      \ 2 o numerze ……………………….."
+    slots:
+    - {id: p27_1, span: [99, 109], type: date, context: całości w terminie do ▢ na rachunek}
+    - {id: p27_2, span: [149, 160], type: text, context: Strony 2 o numerze ▢}
+  - p: 28
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 58, end: 66, bold: true}]}
+    text: Za dzień zapłaty uważany będzie dzień obciążenia rachunku Strony 1.
+  - {p: 29, role: spacer}
+  - p: 30
+    role: pagebreak
+    layout: {align: justify}
+    text: "\f"
+  - p: 31
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}, page_break_before: true}
+    text: § 3
+  - {p: 32, role: spacer}
+  - p: 33
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 8, bold: true}, {start: 107,
+          end: 115, bold: true}, {start: 260, end: 268, bold: true}, {start: 286, end: 294, bold: true}]}
+    text: Strona 2 oświadcza, że niniejsze porozumienie zaspokaja wszelkie jej roszczenia obecne oraz przyszłe wobec Strony 1, wynikające z sytuacji
+      określonej w § 1 ugody, a w szczególności oświadcza, że rezygnuje z dochodzenia tych roszczeń na drodze sądowej. Ponadto Strona 2 zrzeka się
+      wobec Strony 1 wszelkich roszczeń, związanych pośrednio lub bezpośrednio z sytuacją określoną w § 1 ugody.
+  - {p: 34, role: spacer}
+  - p: 35
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+    text: § 4
+  - {p: 36, role: spacer}
+  - p: 37
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Wszelkie zmiany niniejszej ugody wymagają formy pisemnej pod rygorem nieważności.
+  - p: 38
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: W sprawach nieuregulowanych niniejszą umową, zastosowanie mają przepisy ustawy z dnia 23 kwietnia 1964 r. – Kodeks cywilny.
+  - p: 39
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: Niniejsza ugoda sporządzona została w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze Stron.
+  - {p: 40, role: spacer}
+  - {p: 41, role: spacer}
+  - {p: 42, role: spacer}
+  - p: 43
+    role: blank_line
+    layout: {align: justify, indent: {left: 708}, size: 10.0}
+    text: '                …………………….....                              ……………………………. '
+    slots:
+    - {id: p43_1, span: [16, 29], type: signature, context: ▢}
+    - {id: p43_2, span: [59, 71], type: signature, context: ▢}
+  - p: 44
+    role: body
+    layout: {align: justify, size: 10.0, italic: true, tabs: 1}
+    text: "                               Strona 1                                            \t  Strona 2"
+  - {p: 45, role: spacer}
+  - {p: 46, role: spacer}

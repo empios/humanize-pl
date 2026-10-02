@@ -1,4 +1,3 @@
-import pytest
 from humanize_pl import humanize_text
 from humanize_pl.config import Mode
 

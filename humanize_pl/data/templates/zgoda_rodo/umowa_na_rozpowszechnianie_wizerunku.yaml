@@ -1,0 +1,220 @@
+template: umowa na rozpowszechnianie wizerunku.docx
+category: zgoda_rodo
+label_pl: Umowa na rozpowszechnianie wizerunku
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: Umowa na rozpowszechnianie wizerunku
+- {p: 1, role: spacer}
+- {p: 2, role: spacer}
+- p: 3
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: 'zawarta w dniu ……./……./………. r. pomiędzy:'
+  slots:
+  - {id: p3_1, span: [15, 18], type: date, context: zawarta w dniu ▢ r. pomiędzy}
+  - {id: p3_2, span: [19, 22], type: date, context: zawarta w dniu ▢ r. pomiędzy}
+  - {id: p3_3, span: [23, 27], type: date, context: zawarta w dniu ▢ r. pomiędzy}
+  alternatives: 3
+- {p: 4, role: spacer}
+- p: 5
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: …………………………………………………………………………………………………...........……………………………………
+  slots:
+  - {id: p5_1, span: [0, 62], type: text, context: ▢}
+- p: 6
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: …………………………………………………………………………………………………...........…………………………………………………………………………………………...............................................................................................
+  slots:
+  - {id: dane_podmiotu_korzystajacego_z_wizerunku, span: [0, 177], type: text, hint: dane podmiotu korzystającego z wizerunku}
+- p: 7
+  role: hint
+  layout: {align: justify, size: 10.0, italic: true}
+  text: (dane podmiotu korzystającego z wizerunku)
+  hint_for: 6
+  hint_kind: label
+- {p: 8, role: spacer}
+- p: 9
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 13, end: 27, bold: true}]}
+  text: zwanym dalej Korzystającym,
+  alias: Korzystającym
+- {p: 10, role: spacer}
+- p: 11
+  role: party_connector
+  layout: {align: justify, size: 10.0}
+  text: a
+- p: 12
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ………………………………………………………………………………………………...…………………………………………………………………………………………………………………………………………………...........…………………………………………………………………………………...........…………………………...........…………………………...........................
+  slots:
+  - {id: dane_osoby_udostepniajacej_swoj_wizerunek, span: [0, 205], type: text, hint: dane osoby udostępniającej swój wizerunek}
+- p: 13
+  role: hint
+  layout: {align: justify, size: 10.0, spans: [{start: 1, end: 43, italic: true}]}
+  text: (dane osoby udostępniającej swój wizerunek)
+  hint_for: 12
+  hint_kind: label
+- {p: 14, role: spacer}
+- p: 15
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 13, end: 29, bold: true}]}
+  text: zwanym dalej Udostępniającym,
+  alias: Udostępniającym
+- {p: 16, role: spacer}
+- p: 17
+  role: field_header
+  layout: {align: justify, size: 10.0}
+  text: 'o następującej treści:'
+- p: 18
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+  text: § 1
+- p: 19
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: Przedmiot umowy
+- {p: 20, role: spacer}
+- p: 21
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 184, end: 216, italic: true},
+      {start: 243, end: 266, italic: true}, {start: 301, end: 316, italic: true}]}
+  text: Na mocy niniejszej umowy, Udostępniający wyraża zgodę na rozpowszechnienie swojego wizerunku (dalej jako „Zgoda”) utrwalonego w trakcie
+    sesji zdjęciowej mającej miejsce w ………………………... (miejscowość, opcjonalnie adres) w dniu/dniach ……………………….. (data sesji zdjęciowej) w celu
+    promocji szkoły ………………………… (nazwa szkoły), której właścicielem jest Korzystający.
+  slots:
+  - {id: miejscowosc_opcjonalnie_adres, span: [171, 183], type: address, hint: 'miejscowość, opcjonalnie adres'}
+  - {id: data_sesji_zdjeciowej, span: [231, 242], type: date, hint: data sesji zdjęciowej}
+  - {id: nazwa_szkoly, span: [290, 300], type: text, hint: nazwa szkoły}
+  inline_hints:
+  - {span: [184, 216], text: 'miejscowość, opcjonalnie adres'}
+  - {span: [243, 266], text: data sesji zdjęciowej}
+  - {span: [301, 315], text: nazwa szkoły}
+  optional: true
+  condition: miejscowość, opcjonalnie adres
+- p: 22
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Zgoda, o której mowa w ust. 1, zostaje udzielona na warunkach i za wynagrodzeniem przewidzianym niniejszą umową.
+- {p: 23, role: spacer}
+- p: 24
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+  text: § 2
+- p: 25
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: Zgoda na wykorzystanie wizerunku
+- {p: 26, role: spacer}
+- p: 27
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Z chwilą zawarcia niniejszej umowy, Udostępniający udziela Zgody bez ograniczeń terytorialnych i czasowych, w zakresie wszelkich mediów,
+    w szczególności Zgoda obejmuje wykorzystanie, utrwalenie i powielanie wykonanych zdjęć za pośrednictwem dowolnego medium w dowolnym celu zgodnym
+    z obowiązującym prawem, włączając w to publikacje w prasie drukowanej i w Internecie, publiczne wykorzystanie zdjęć, wykorzystywanie w celach
+    marketingowych, promocyjnych i komercyjnych.
+- p: 28
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'W szczególności Korzystający jest uprawniony do:'
+- p: 29
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+  text: nieograniczonego używania, rozpowszechniania, przekształcania, modyfikacji i innych;
+- p: 30
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+  text: zmian w zakresie zdjęć utrwalających wizerunek Udostępniającego, według uznania Korzystającego;
+- p: 31
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
+  text: dowolnego łączenia zdjęć z tekstem i/lub innymi zdjęciami i/lub elementami graficznymi;
+- p: 32
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: d), kind: lowerLetter, src: auto, level: 0}}
+  text: "używania zdjęć utrwalającego wizerunek Udostępniającego w celach promocyjnych \ni reklamowych Korzystającego."
+- p: 33
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: "Korzystający jest uprawniony do przenoszenia wszelkich uprawnień wynikających ze Zgody \nbez konieczności uzyskania odrębnej zgody Udostępniającego."
+- p: 34
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: Udostępniający zobowiązuje się do niepodnoszenia względem Korzystającego, jakichkolwiek roszczeń związanych z wykorzystaniem zdjęć w zakresie,
+    o którym mowa powyżej, w szczególności roszczeń odszkodowawczych.
+- p: 35
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}, spans: [{start: 95, end: 137, italic: true}]}
+  text: Udostępniający zobowiązuje się, iż niniejsza Zgoda nie zostanie cofnięta przed upływem ……… lat (należy wskazać stosowny okres np. 5 lat)
+    od dnia jej udzielenia. W przypadku cofnięcia Zgody przez Udostępniającego postanawia się, że skutek wypowiedzenia nastąpi na koniec kolejnego
+    roku kalendarzowego, w którym wypowiedzenie Zgody w formie pisemnej zostało prawidłowo doręczone Korzystającemu.
+  slots:
+  - {id: p35_1, span: [87, 90], type: text, context: zostanie cofnięta przed upływem ▢ lat od}
+- {p: 36, role: spacer}
+- p: 37
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+  text: § 3
+- p: 38
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: Wynagrodzenie
+- {p: 39, role: spacer}
+- p: 40
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'Z tytułu należytego i zgodnego z Umową udzielenia, a także z tytułu zobowiązania Udostępniający do niewypowiadania Zgody, Korzystający
+    zapłaci Udostępniający wynagrodzenie w wysokości …………………….. zł (słownie: ……………………………..).'
+  slots:
+  - {id: p40_1, span: [184, 194], type: amount, context: Udostępniający wynagrodzenie w wysokości ▢ zł}
+  - {id: p40_2, span: [208, 221], type: amount, context: w wysokości zł słownie ▢}
+- p: 41
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: "Wynagrodzenie będzie płatne przelewem w terminie 30 dni od zawarcia niniejszej Umowy, \nna rachunek bankowy Udostępniającego."
+- {p: 42, role: spacer}
+- p: 43
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+  text: § 4
+- p: 44
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: Postanowienia końcowe
+- {p: 45, role: spacer}
+- p: 46
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: W sprawach nieuregulowanych w umowie zastosowanie znajdują w szczególności stosowne przepisy ustawy z dnia 23 kwietnia 1964 r. – Kodeks
+    cywilny oraz ustawy z dnia 4 lutego 1994 r. o prawie autorskim i prawach pokrewnych.
+- p: 47
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Zmiany umowy wymagają formy pisemnej pod rygorem nieważności.
+- p: 48
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: "Umowa została sporządzona w trzech jednobrzmiących egzemplarzach, po jednym dla każdej \nze Stron."
+- {p: 49, role: spacer}
+- {p: 50, role: spacer}
+- {p: 51, role: spacer}
+- p: 52
+  role: signature_line
+  layout: {align: justify, size: 10.0, tabs: 6}
+  text: "………………………………………….\t\t\t\t\t\t………………………………………"
+  slots:
+  - {id: p52_1, span: [0, 17], type: signature, context: ▢}
+  - {id: p52_2, span: [23, 38], type: signature, context: ▢}
+- p: 53
+  role: body
+  layout: {align: justify, indent: {first: 708}, size: 10.0, bold: true, tabs: 7}
+  text: "Korzystający \t\t\t\t\t\t\t        Udostępniający"
+- {p: 54, role: spacer}
+- {p: 55, role: spacer}
+- {p: 56, role: spacer}

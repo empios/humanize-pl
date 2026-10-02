@@ -1,4 +1,3 @@
-import pytest
 from humanize_pl.safety.validators import validate_candidate
 from humanize_pl.safety.protectors import ProtectedText
 

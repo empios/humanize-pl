@@ -1,0 +1,332 @@
+template: Umowa najmu nieruchomości (nielokalowej).docx
+category: umowa_najmu
+label_pl: Umowa najmu nieruchomości (nielokalowej)
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: UMOWA NAJMU NIERUCHOMOŚCI
+- {p: 1, role: spacer}
+- p: 2
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 42, end: 48, italic: true}, {start: 76, end: 91, italic: true}]}
+  text: 'Zawarta dnia ............................ (data) w ………..................... (miejscowość), pomiędzy:'
+  slots:
+  - {id: data, span: [13, 41], type: date, hint: data}
+  - {id: miejscowosc, span: [51, 75], type: place, hint: miejscowość}
+  inline_hints:
+  - {span: [42, 48], text: data}
+  - {span: [76, 89], text: miejscowość}
+- {p: 3, role: spacer}
+- p: 4
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: '..........................................................................................................................................................................................................................................................................................................'
+  slots:
+  - {id: imie_i_nazwisko_firma_miejsce_zamieszkania_siedz, span: [0, 298], type: text, hint: 'imię i nazwisko/firma; miejsce zamieszkania/siedziba;
+      nr i seria dokumentu tożsamości; PESEL, NIP'}
+- p: 5
+  role: hint
+  layout: {align: justify, size: 10.0, italic: true}
+  text: (imię i nazwisko/firma; miejsce zamieszkania/siedziba; nr i seria dokumentu tożsamości; PESEL, NIP)
+  hint_for: 4
+  hint_kind: instruction
+- p: 6
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 13, end: 25, bold: true}]}
+  text: zwanym dalej Wynajmującym
+  alias: Wynajmującym
+- p: 7
+  role: party_connector
+  layout: {align: justify, size: 10.0}
+  text: a
+- p: 8
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: '..........................................................................................................................................................................................................................................................................................................'
+  slots:
+  - {id: imie_i_nazwisko_firma_miejsce_zamieszkania_siedz_2, span: [0, 298], type: text, hint: 'imię i nazwisko/firma; miejsce zamieszkania/siedziba;
+      nr i seria dokumentu tożsamości; PESEL, NIP'}
+- p: 9
+  role: hint
+  layout: {align: justify, size: 10.0, italic: true}
+  text: (imię i nazwisko/firma; miejsce zamieszkania/siedziba; nr i seria dokumentu tożsamości; PESEL, NIP)
+  hint_for: 8
+  hint_kind: instruction
+- p: 10
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 13, end: 21, bold: true}]}
+  text: zwanym dalej Najemcą,
+  alias: Najemcą
+- {p: 11, role: spacer}
+- p: 12
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 13, end: 23, bold: true}]}
+  text: zwanymi dalej Stronami.
+  alias: Stronami
+- {p: 13, role: spacer}
+- p: 14
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+  text: § 1
+- {p: 15, role: spacer}
+- p: 16
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 66, end: 103, italic: true},
+      {start: 126, end: 158, italic: true}, {start: 190, end: 215, italic: true}, {start: 239, end: 254, bold: true}]}
+  text: Wynajmujący oświadcza, że jest właścicielem nieruchomości ………………… (rodzaj nieruchomości, np. gruntowej) położonej …………………………… (adres położenia
+    nieruchomości), działka ewidencyjna nr ………………… (nr działki ewidencyjnej), zwanej w treści umowy Nieruchomością.
+  slots:
+  - {id: rodzaj_nieruchomosci_np_gruntowej, span: [58, 65], type: text, hint: 'rodzaj nieruchomości, np. gruntowej'}
+  - {id: adres_polozenia_nieruchomosci, span: [114, 125], type: address, hint: adres położenia nieruchomości}
+  - {id: nr_dzialki_ewidencyjnej, span: [182, 189], type: text, hint: nr działki ewidencyjnej}
+  inline_hints:
+  - {span: [66, 103], text: 'rodzaj nieruchomości, np. gruntowej'}
+  - {span: [126, 157], text: adres położenia nieruchomości}
+  - {span: [190, 215], text: nr działki ewidencyjnej}
+- p: 17
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: "Wynajmujący oświadcza, że Nieruchomość jest wolna od obciążeń na rzecz osób trzecich, które mogłyby utrudnić lub uniemożliwić wykonywanie\
+    \ uprawnień Najemcy wynikających \nz niniejszej umowy."
+- {p: 18, role: spacer}
+- p: 19
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+  text: § 2
+- {p: 20, role: spacer}
+- p: 21
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Wynajmujący wynajmuje i oddaje Najemcy Nieruchomość w używanie, a Najemca zobowiązuje się płacić Wynajmującemu umówiony czynsz.
+- p: 22
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Zmiana sposobu przeznaczenia Nieruchomości wymaga uprzedniej zgody Wynajmującego wyrażonej w formie pisemnej pod rygorem nieważności.
+- p: 23
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: 'Najemca nie ma prawa podnajmować ani udostępniać Nieruchomości ani jej części osobom trzecim, bez zgody Wynajmującego wyrażonej w formie
+    pisemnej pod rygorem nieważności. '
+- p: 24
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: Najemca zobowiązuje się wykorzystywać Nieruchomość zgodnie z umową, w tym zgodnie z jej przeznaczeniem i właściwościami, oraz zasadami
+    prawidłowej gospodarki, a w szczególności utrzymywać Nieruchomość w niepogorszonym stanie ponad jej zużycie będące następstwem prawidłowego
+    używania.
+- p: 25
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+  text: 'Najemca nie może dokonywać na Nieruchomości zmian ani ulepszeń bez uprzedniej zgody Wynajmującego wyrażonej w formie pisemnej pod rygorem
+    nieważności. '
+- {p: 26, role: spacer}
+- p: 27
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+  text: § 3
+- {p: 28, role: spacer}
+- p: 29
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Wynajmujący zobowiązuje się wydać Najemcy Nieruchomość nie później niż w ciągu ........... dni kalendarzowych od daty zawarcia niniejszej
+    umowy.
+  slots:
+  - {id: p29_1, span: [79, 90], type: text, context: później niż w ciągu ▢ dni kalendarzowych}
+- p: 30
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Najemca zobowiązuje się zwrócić Wynajmującemu Nieruchomość nie później niż w ciągu ........... dni kalendarzowych od daty wygaśnięcia
+    lub rozwiązania niniejszej umowy z jakiegokolwiek powodu. '
+  slots:
+  - {id: p30_1, span: [83, 94], type: text, context: później niż w ciągu ▢ dni kalendarzowych}
+- p: 31
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 132, end: 141, bold: true}, {
+        start: 142, end: 146, bold: true}]}
+  text: Wydanie przedmiotu umowy i jego zwrot po zakończeniu najmu zostaną potwierdzone protokołem zdawczo-odbiorczym, którego wzór stanowi Załącznik
+    nr 1 do niniejszej Umowy.
+- p: 32
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: Po zakończeniu trwania niniejszej umowy Najemca obowiązany jest zwrócić Wynajmującemu przedmiot umowy w stanie niepogorszonym; jednakże
+    Najemca nie ponosi odpowiedzialności za zużycie przedmiotu umowy będące następstwem prawidłowego, normalnego używania.
+- {p: 33, role: spacer}
+- p: 34
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+  text: § 4
+- {p: 35, role: spacer}
+- p: 36
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 66, end: 84, italic: true}]}
+  text: 'Wysokość miesięcznego czynszu za najem Nieruchomości wynosi …………… (wysokość czynszu) zł (słownie: …………………………………………… złotych, 00/100).'
+  slots:
+  - {id: wysokosc_czynszu, span: [60, 65], type: text, hint: wysokość czynszu}
+  - {id: p36_2, span: [98, 115], type: amount, context: Nieruchomości wynosi zł słownie ▢ złotych 00}
+  inline_hints:
+  - {span: [66, 84], text: wysokość czynszu}
+- p: 37
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 183, end: 196, italic: true},
+      {start: 231, end: 248, italic: true}]}
+  text: 'Najemca zobowiązany jest uiszczać kwotę określoną w § 4 ust. 1 umowy z góry do dnia 10-ego każdego miesiąca przelewem na rachunek bankowy
+    Wynajmującego, prowadzony w banku ………………………… (nazwa banku) nr: ............................. (numer rachunku).'
+  slots:
+  - {id: nazwa_banku, span: [172, 182], type: text, hint: nazwa banku}
+  - {id: numer_rachunku, span: [201, 230], type: text, hint: numer rachunku}
+  inline_hints:
+  - {span: [183, 196], text: nazwa banku}
+  - {span: [231, 247], text: numer rachunku}
+- p: 38
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Za dzień zapłaty uważa się dzień, w którym zaksięgowane zostaną środki na rachunku bankowym Wynajmującego.
+- p: 39
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 13, italic: true}]}
+  text: (opcjonalnie) Czynsz za najem Nieruchomości będzie waloryzowany raz w roku o średnioroczny procentowy wzrost lub spadek Indeksu Wzrostu
+    Cen Towarów i Usług Konsumpcyjnych, ogłoszony przez Prezesa Głównego Urzędu Statystycznego za poprzedni rok kalendarzowy. Waloryzacja nie
+    wymaga zawarcia aneksu w formie pisemnej. Pierwsza waloryzacja nastąpi w …………… r., kolejne waloryzacje będą następowały w lutym każdego kolejnego
+    roku.
+  slots:
+  - {id: p39_1, span: [347, 352], type: place, context: Pierwsza waloryzacja nastąpi w ▢ r. kolejne}
+- {p: 40, role: spacer}
+- p: 41
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+  text: § 5
+- {p: 42, role: spacer}
+- p: 43
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 83, end: 132, italic: true},
+      {start: 173, end: 209, italic: true}]}
+  text: Niniejsza umowa zawarta zostaje na czas oznaczony, od dnia ………………… do dnia ………………… (data początku i zakończenia obowiązywania umowy) /
+    nieoznaczony począwszy od dnia ……………… (data początku obowiązywania umowy).
+  slots:
+  - {id: p43_1, span: [59, 66], type: date, context: czas oznaczony od dnia ▢ do dnia}
+  - {id: data_poczatku_i_zakonczenia_obowiazywania_umowy, span: [75, 82], type: date, hint: data początku i zakończenia obowiązywania umowy}
+  - {id: data_poczatku_obowiazywania_umowy, span: [166, 172], type: date, hint: data początku obowiązywania umowy}
+  inline_hints:
+  - {span: [83, 132], text: data początku i zakończenia obowiązywania umowy}
+  - {span: [173, 208], text: data początku obowiązywania umowy}
+- p: 44
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 57, italic: true}]}
+  text: (postanowienie przy umowie zawartej na czas nieoznaczony) Każda ze Stron może wypowiedzieć umowę z zachowaniem ………- miesięcznego okresu
+    wypowiedzenia ze skutkiem na koniec miesiąca.
+  slots:
+  - {id: p44_1, span: [111, 114], type: text, context: wypowiedzieć umowę z zachowaniem ▢ miesięcznego okresu}
+- p: 45
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 54, italic: true}]}
+  text: '(postanowienie przy umowie zawartej na czas oznaczony) Każda ze Stron może wypowiedzieć umowę z zachowaniem ………- miesięcznego okresu
+    wypowiedzenia ze skutkiem na koniec miesiąca w przypadku wystąpienia ważnych powodów uniemożliwiających dalsze wykonywanie umowy, w szczególności
+    takich jak: '
+  slots:
+  - {id: p45_1, span: [108, 111], type: text, context: wypowiedzieć umowę z zachowaniem ▢ miesięcznego okresu}
+- p: 46
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+  text: ………………………………………………………………………..;
+  slots:
+  - {id: p46_1, span: [0, 29], type: text, context: ▢}
+- p: 47
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+  text: ………………………………………………………………………..;
+  slots:
+  - {id: p47_1, span: [0, 29], type: text, context: ▢}
+- p: 48
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}, spans: [{start: 29, end: 70, italic: true}]}
+  text: "……………………………………………………………………… \n(przykładowe powody wypowiedzenia umowy)."
+  slots:
+  - {id: przykladowe_powody_wypowiedzenia_umowy, span: [0, 27], type: text, hint: przykładowe powody wypowiedzenia umowy}
+  inline_hints:
+  - {span: [29, 69], text: przykładowe powody wypowiedzenia umowy}
+- p: 49
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: 'Wynajmujący może w każdym czasie rozwiązać niniejszą Umowę bez zachowania okresu wypowiedzenia w przypadku, gdy:'
+- p: 50
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 4), kind: decimal, src: auto, level: 0}}
+  text: 'Najemca używa Nieruchomości w sposób niezgodny z przeznaczeniem; '
+- p: 51
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 5), kind: decimal, src: auto, level: 0}}
+  text: Najemca zalega z zapłatą czynszu za co najmniej ……………… (okres czasu);
+  slots:
+  - {id: okres_czasu, span: [48, 54], type: text, hint: okres czasu}
+  inline_hints:
+  - {span: [55, 68], text: okres czasu}
+- p: 52
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 6), kind: decimal, src: auto, level: 0}}
+  text: Najemca oddał Nieruchomość w podnajem lub do używania osobie trzeciej bez zgody Wynajmującego;
+- p: 53
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 7), kind: decimal, src: auto, level: 0}}
+  text: Najemca dokonał w Nieruchomości zmian lub ulepszeń bez zgody Wynajmującego.
+- p: 54
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+  text: 'Najemca ma prawo rozwiązać umowę bez zachowania okresu wypowiedzenia w przypadku, gdy:'
+- p: 55
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+  text: Wynajmujący zwleka z wydaniem przedmiotu umowy w umówionym terminie;
+- p: 56
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+  text: 'Nieruchomość okaże się posiadać wady lub usterki uniemożliwiające korzystanie z niego zgodnie z przeznaczeniem. '
+- p: 57
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}}
+  text: Wypowiedzenie lub rozwiązanie umowy, pod rygorem nieważności, powinno być dokonane w formie pisemnej.
+- {p: 58, role: spacer}
+- {p: 59, role: spacer}
+- p: 60
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 6, kind: paragraph, src: manual, level: 0}}
+  text: § 6
+- {p: 61, role: spacer}
+- p: 62
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '7.', kind: decimal, src: auto, level: 0}}
+  text: Wszelkie zmiany niniejszej umowy wymagają formy pisemnej pod rygorem nieważności.
+- p: 63
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '8.', kind: decimal, src: auto, level: 0}}
+  text: W sprawach nieuregulowanych niniejszą umową zastosowanie znajdą przepisy ustawy z dnia 23 kwietnia 1964 r. - Kodeks cywilny.
+- p: 64
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '9.', kind: decimal, src: auto, level: 0}}
+  text: Umowę niniejszą sporządzono w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze Stron.
+- {p: 65, role: spacer}
+- {p: 66, role: spacer}
+- {p: 67, role: spacer}
+- p: 68
+  role: signature_line
+  layout: {align: justify, size: 10.0, tabs: 7}
+  text: "...............................\t\t           \t\t\t\t\t          ................................."
+  slots:
+  - {id: p68_1, span: [0, 31], type: signature, context: ▢}
+  - {id: p68_2, span: [59, 92], type: signature, context: ▢}
+- p: 69
+  role: body
+  layout: {align: justify, size: 10.0, bold: true, tabs: 8}
+  text: "   Wynajmujący\t\t\t\t\t\t\t\t         Najemca"
+- {p: 70, role: spacer}
+- {p: 71, role: spacer}
+- p: 72
+  role: field_header
+  layout: {align: justify, size: 10.0}
+  text: 'Załączniki:'
+- p: 73
+  role: item
+  layout: {indent: {left: 567}, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 3}}
+  text: Protokół zdawczo-odbiorczy
+- {p: 74, role: spacer}

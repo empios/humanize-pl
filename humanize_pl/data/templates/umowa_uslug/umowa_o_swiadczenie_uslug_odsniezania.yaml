@@ -1,0 +1,310 @@
+template: Umowa o świadczenie usług odsnieżania.docx
+category: umowa_uslug
+label_pl: Umowa o świadczenie usług odśnieżania
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: Umowa o świadczenie usług odśnieżania
+- {p: 1, role: spacer}
+- {p: 2, role: spacer}
+- p: 3
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: 'Zawarta w dniu ………………… w …………………, '
+  slots:
+  - {id: p3_1, span: [15, 22], type: date, context: Zawarta w dniu ▢ w}
+  - {id: p3_2, span: [25, 32], type: place, context: Zawarta w dniu w ▢}
+- {p: 4, role: spacer}
+- p: 5
+  role: party_connector
+  layout: {align: justify, size: 10.0}
+  text: 'pomiędzy:'
+- {p: 6, role: spacer}
+- p: 7
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: '……………………………………………… zwanym dalej Zleceniodawcą, '
+  slots:
+  - {id: imie_i_nazwisko_firma_miejsce_zamieszkania_siedz, span: [0, 18], type: text, hint: 'imię i nazwisko/firma; miejsce zamieszkania/siedziba
+      i adres; nr i seria dokumentu tożsamości; PESEL, NIP'}
+- p: 8
+  role: hint
+  layout: {align: justify, indent: {left: 720}, size: 10.0, italic: true}
+  text: '[imię i nazwisko/firma; miejsce zamieszkania/siedziba i adres; nr i seria dokumentu tożsamości; PESEL, NIP]'
+  hint_for: 7
+  hint_kind: instruction
+- {p: 9, role: spacer}
+- p: 10
+  role: party_connector
+  layout: {align: justify, size: 10.0}
+  text: a
+- {p: 11, role: spacer}
+- p: 12
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: '……………………………………………… zwanym dalej Zleceniobiorcą, '
+  slots:
+  - {id: imie_i_nazwisko_firma_miejsce_zamieszkania_siedz_2, span: [0, 18], type: text, hint: 'imię i nazwisko/firma; miejsce zamieszkania/siedziba
+      i adres; nr i seria dokumentu tożsamości; PESEL, NIP'}
+- p: 13
+  role: hint
+  layout: {align: justify, indent: {left: 720}, size: 10.0, italic: true}
+  text: '[imię i nazwisko/firma; miejsce zamieszkania/siedziba i adres; nr i seria dokumentu tożsamości; PESEL, NIP]'
+  hint_for: 12
+  hint_kind: instruction
+- {p: 14, role: spacer}
+- p: 15
+  role: party_alias
+  layout: {align: justify, size: 10.0}
+  text: zwanymi dalej łącznie Stronami.
+  alias: Stronami
+- {p: 16, role: spacer}
+- {p: 17, role: spacer}
+- p: 18
+  role: clause_heading
+  layout: {align: center, size: 14.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+  text: § 1
+- {p: 19, role: spacer}
+- p: 20
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: Przedmiotem umowy jest świadczenie usługi odśnieżania nieruchomości położonej przy ul. ………………… przez Zleceniobiorcę na rzecz Zleceniodawcy.
+  slots:
+  - {id: p20_1, span: [87, 94], type: address, context: położonej przy ul. ▢ przez Zleceniobiorcę}
+- {p: 21, role: spacer}
+- p: 22
+  role: clause_heading
+  layout: {align: center, size: 14.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+  text: § 2
+- {p: 23, role: spacer}
+- p: 24
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'W ramach usługi odśnieżania Zleceniobiorca jest zobowiązany do:'
+- p: 25
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}, spans: [{start: 52, end: 137, italic: true}]}
+  text: odśnieżania nieruchomości ......................... (należy podać częstotliwość, np. codziennie, co dwa dni, raz w tygodniu, na wezwanie).
+    W przypadku znacznych opadów śniegu, gdy częstotliwość odśnieżania określona w zdaniu poprzedzającym będzie niewystarczająca do utrzymania
+    nieruchomości, o której mowa w § 1 ust. 1 w należytym stanie, Zleceniobiorca jest obowiązany do wykonania usługi odśnieżania z częstotliwością
+    zapewniającą bezpieczne przejście i przejazd przez tą nieruchomość,
+  slots:
+  - {id: nalezy_podac_czestotliwosc_np_codziennie_co_dwa, span: [26, 51], type: text, hint: 'należy podać częstotliwość, np. codziennie, co dwa
+      dni, raz w tygodniu, na wezwanie'}
+  inline_hints:
+  - {span: [52, 137], text: 'należy podać częstotliwość, np. codziennie, co dwa dni, raz w tygodniu, na wezwanie'}
+- p: 26
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}, spans: [{start: 82, end: 111, italic: true}]}
+  text: usuwanie śniegu z nieruchomości określonej w § 1 ust. 1 nie rzadziej niż …………………… (należy podać częstotliwość),
+  slots:
+  - {id: nalezy_podac_czestotliwosc, span: [73, 81], type: text, hint: należy podać częstotliwość}
+  inline_hints:
+  - {span: [82, 110], text: należy podać częstotliwość}
+- p: 27
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
+  text: posypywanie  nieruchomości solą/piaskiem po każdym odśnieżaniu,
+- p: 28
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: d), kind: lowerLetter, src: auto, level: 0}, spans: [{start: 23, end: 61, italic: true}]}
+  text: '………………………………………………………… (miejsce na inne zobowiązania stron). '
+  slots:
+  - {id: miejsce_na_inne_zobowiazania_stron, span: [0, 22], type: place, hint: miejsce na inne zobowiązania stron}
+  inline_hints:
+  - {span: [23, 59], text: miejsce na inne zobowiązania stron}
+- p: 29
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 83, end: 96, italic: true}]}
+  text: 'Powyższe zadania Zleceniobiorca będzie wykonywał osobiście lub przez osobę trzecią (opcjonalnie), którą wskazał, z zastrzeżeniem § 9.
+    Zleceniobiorca ponosi pełną odpowiedzialność za czynności wykonywane przez osoby trzecie, którym powierzył wykonanie poszczególnych czynności
+    na rzecz Zleceniodawcy. '
+- p: 30
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: 'Zleceniobiorca będzie wykonywał usługę odśnieżania przy wykorzystaniu własnych narzędzi. '
+- {p: 31, role: spacer}
+- p: 32
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+  text: § 3
+- {p: 33, role: spacer}
+- p: 34
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'Zleceniodawca ma obowiązek:'
+- p: 35
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+  text: 'udostępnić Zleceniobiorcy nieruchomość, o której mowa w § 1 ust. 1 w celu wykonania usługi odśnieżania, '
+- p: 36
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+  text: 'dostarczyć zleceniobiorcy sól/piasek w celu wykonania czynności, o której mowa w § 2 ust. 1 lit. c. '
+- p: 37
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}, spans: [{start: 17, end: 52, italic: true}]}
+  text: '………………………………………. (inne zobowiązania zleceniodawcy). '
+  slots:
+  - {id: inne_zobowiazania_zleceniodawcy, span: [0, 16], type: text, hint: inne zobowiązania zleceniodawcy}
+  inline_hints:
+  - {span: [17, 50], text: inne zobowiązania zleceniodawcy}
+- p: 38
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Zleceniodawca zobowiązuje się płacić w ustalonym terminie wynagrodzenie Zleceniobiorcy.
+- {p: 39, role: spacer}
+- p: 40
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+  text: § 4
+- {p: 41, role: spacer}
+- p: 42
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Za wykonanie przedmiotu umowy Zleceniodawca zapłaci Zleceniobiorcy wynagrodzenie w kwocie …………………….zł brutto miesięcznie.
+  slots:
+  - {id: p42_1, span: [90, 99], type: text, context: Zleceniobiorcy wynagrodzenie w kwocie ▢ zł brutto}
+- p: 43
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Wynagrodzenie będzie płatne z góry na podstawie faktury VAT wystawionej przez Zleceniobiorcę i przesłanej na adres poczty elektronicznej
+    Zleceniodawcy.
+- p: 44
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Wynagrodzenie za usługę Zleceniobiorca będzie otrzymywał przelewem na konto bankowe w terminie ……… dni od wystawienia faktury VAT.
+  slots:
+  - {id: p44_1, span: [95, 98], type: text, context: konto bankowe w terminie ▢ dni od}
+- p: 45
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: Koszty związane z wykonaniem umowy będą pokrywane przez Zleceniobiorcę.
+- {p: 46, role: spacer}
+- p: 47
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+  text: § 5
+- {p: 48, role: spacer}
+- p: 49
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: Wykonanie niniejszej umowy nastąpi w okresie od ………………………….. do…………………..
+  slots:
+  - {id: p49_1, span: [48, 60], type: date, context: nastąpi w okresie od ▢ do}
+  - {id: p49_2, span: [63, 72], type: date, context: w okresie od do ▢}
+- {p: 50, role: spacer}
+- p: 51
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 6, kind: paragraph, src: manual, level: 0}}
+  text: § 6
+- {p: 52, role: spacer}
+- p: 53
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'Zleceniobiorca zobowiązuje się wykonywać powierzone czynności z należytą starannością. '
+- p: 54
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Zleceniobiorca oświadcza, że świadczy profesjonalne usługi w zakresie odśnieżania nieruchomości w ramach prowadzonej działalności gospodarczej. '
+- p: 55
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 248, end: 263, italic: true}]}
+  text: 'Zleceniobiorca zobowiązuje się do zawarcia umowy ubezpieczenia OC, której zakres będzie obejmował świadczenie usług w ramach niniejszej
+    umowy. Zleceniobiorca zobowiązuje się do utrzymania ważności polisy OC przez cały czas trwania niniejszej umowy (opcjonalnie). '
+- {p: 56, role: spacer}
+- p: 57
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 7, kind: paragraph, src: manual, level: 0}}
+  text: § 7
+- {p: 58, role: spacer}
+- p: 59
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: 'W razie niemożności dokonania określonej czynności Zleceniobiorca obowiązany jest niezwłocznie powiadomić o tym Zleceniodawcę. '
+- {p: 60, role: spacer}
+- p: 61
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 8, kind: paragraph, src: manual, level: 0}}
+  text: § 8
+- {p: 62, role: spacer}
+- p: 63
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'Zleceniobiorca odpowiada za szkody wyrządzone Zleceniodawcy, chyba że szkoda powstała wskutek okoliczności, za które Zleceniobiorca odpowiedzialności
+    nie ponosi. '
+- p: 64
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Ponadto, Zleceniobiorca odpowiada za szkody wyrządzone osobom trzecim wskutek wadliwego wykonania usługi odśnieżania. '
+- p: 65
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: 'W razie gdyby osoba trzecia, która poniosła szkodę wskutek wadliwego wykonania usługi odśnieżania, dochodziła naprawienia szkody z tego
+    tytułu od Zleceniodawcy, Zleceniobiorca zobowiązuje się do zapłacenia Zleceniodawcy kwoty odpowiadającej odszkodowaniu, które Zleceniodawca
+    wypłaci osobie trzeciej. '
+- {p: 66, role: spacer}
+- p: 67
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 9, kind: paragraph, src: manual, level: 0}}
+  text: § 9
+- {p: 68, role: spacer}
+- p: 69
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: 'Zleceniobiorca nie może powierzyć wykonania czynności objętych zleceniem osobom trzecim bez uprzedniej pisemnej zgody Zleceniodawcy. '
+- {p: 70, role: spacer}
+- p: 71
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 10, kind: paragraph, src: manual, level: 0}}
+  text: § 10
+- {p: 72, role: spacer}
+- p: 73
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: Każda ze stron może rozwiązać umowę w drodze pisemnego wypowiedzenia z zachowaniem trzymiesięcznego okresu wypowiedzenia, pod rygorem
+    nieważności.
+- {p: 74, role: spacer}
+- p: 75
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 11, kind: paragraph, src: manual, level: 0}}
+  text: § 11
+- {p: 76, role: spacer}
+- p: 77
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Wszelkie zmiany niniejszej umowy wymagają zachowania formy pisemnej pod rygorem nieważności.
+- p: 78
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Umowa została sporządzona w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze stron. '
+- p: 79
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: W sprawach nieuregulowanych niniejszą umową będą miały zastosowanie przepisy ustawy z dnia 23 kwietnia 1964 r. Kodeks cywilny (t.j. Dz.U.2020.1740
+    ze zm.).
+- p: 80
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: Wszelkie spory, jakie mogą wyniknąć w związku z niniejszą umową będą rozpatrywane przez sąd powszechny właściwy ze względu na miejsce
+    zamieszkania Zleceniodawcy.
+- {p: 81, role: spacer}
+- {p: 82, role: spacer}
+- p: 83
+  role: body
+  layout: {align: justify, size: 10.0, bold: true}
+  text: 'Zleceniodawca:                                                                                                     Zleceniobiorca: '
+- p: 84
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ………………………                                                                                                 ….…………………..
+  slots:
+  - {id: p84_1, span: [0, 9], type: signature, context: ▢}
+  - {id: p84_2, span: [106, 117], type: signature, context: ▢}
+- {p: 85, role: spacer}
+- {p: 86, role: spacer}
+- {p: 87, role: spacer}
+- {p: 88, role: spacer}

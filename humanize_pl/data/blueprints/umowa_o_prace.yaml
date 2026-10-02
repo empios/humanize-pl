@@ -3,6 +3,8 @@
 
 category: umowa_o_prace
 label_pl: umowa o pracę
+# Kolejności sekcji nie sprawdzamy: realne wzory tej kategorii układają je różnie.
+check_order: false
 numbering: paragraph
 sections:
 - id: komparycja
@@ -32,3 +34,330 @@ sections:
   severity: required
   matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, porozumienie, za porozumieniem,
     w przedmiocie rozwiązania, formę pisemną, wymagają formy]
+
+# Dokument ogólny: realny wzór tej kategorii. Przy użyciu wypełnia się wyłącznie
+# pola (`slots`); treść, kolejność i układ zostają jak we wzorze.
+document:
+  template: Umowa o pracę na czas określony lub nieokreślony.docx
+  label_pl: Umowa o pracę na czas określony lub nieokreślony
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+  blocks:
+  - p: 0
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: UMOWA O PRACĘ
+  - {p: 1, role: spacer}
+  - {p: 2, role: spacer}
+  - p: 3
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 42, end: 48, italic: true}, {start: 76, end: 91, italic: true}]}
+    text: 'Zawarta dnia ............................ (data) w ………..................... (miejscowość), pomiędzy:'
+    slots:
+    - {id: data, span: [13, 41], type: date, hint: data}
+    - {id: miejscowosc, span: [51, 75], type: place, hint: miejscowość}
+    inline_hints:
+    - {span: [42, 48], text: data}
+    - {span: [76, 89], text: miejscowość}
+  - {p: 4, role: spacer}
+  - p: 5
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: '..........................................................................................................................................................................................................................................................................................................'
+    slots:
+    - {id: imie_i_nazwisko_firma_miejsce_zamieszkania_siedz, span: [0, 298], type: text, hint: 'imię i nazwisko/firma; miejsce zamieszkania/siedziba;
+        nr i seria dokumentu tożsamości; PESEL, NIP'}
+  - p: 6
+    role: hint
+    layout: {align: justify, size: 10.0, italic: true}
+    text: (imię i nazwisko/firma; miejsce zamieszkania/siedziba; nr i seria dokumentu tożsamości; PESEL, NIP)
+    hint_for: 5
+    hint_kind: instruction
+  - p: 7
+    role: field
+    layout: {align: justify, size: 10.0, spans: [{start: 99, end: 138, italic: true}]}
+    text: 'reprezentowanym przez: ……………………………………………………………………………………………………………..
+
+      ………………………………………………………………………………… (dane osoby reprezentującej pracodawcę)'
+    slots:
+    - {id: reprezentowanym_przez, span: [23, 66], type: person, label: reprezentowanym przez}
+    - {id: dane_osoby_reprezentujacej_pracodawce, span: [67, 98], type: person, hint: dane osoby reprezentującej pracodawcę, label: reprezentowanym
+        przez}
+    inline_hints:
+    - {span: [99, 138], text: dane osoby reprezentującej pracodawcę}
+  - {p: 8, role: spacer}
+  - p: 9
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 13, end: 24, bold: true}]}
+    text: zwanym dalej Pracodawcą,
+    alias: Pracodawcą
+  - {p: 10, role: spacer}
+  - p: 11
+    role: party_connector
+    layout: {align: justify, size: 10.0}
+    text: 'a '
+  - {p: 12, role: spacer}
+  - p: 13
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: '.....................................................................................................................................................'
+    slots:
+    - {id: p13_1, span: [0, 149], type: text, context: ▢}
+  - p: 14
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: '....................................................................................................................................................,'
+    slots:
+    - {id: imie_i_nazwisko_firma_miejsce_zamieszkania_siedz_2, span: [0, 148], type: text, hint: 'imię i nazwisko/firma; miejsce zamieszkania/siedziba;
+        nr i seria dokumentu tożsamości; PESEL, NIP'}
+  - p: 15
+    role: hint
+    layout: {align: justify, size: 10.0, italic: true}
+    text: (imię i nazwisko/firma; miejsce zamieszkania/siedziba; nr i seria dokumentu tożsamości; PESEL, NIP)
+    hint_for: 14
+    hint_kind: instruction
+  - {p: 16, role: spacer}
+  - p: 17
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 13, end: 25, bold: true}]}
+    text: zwanym dalej Pracownikiem,
+    alias: Pracownikiem
+  - {p: 18, role: spacer}
+  - p: 19
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 22, end: 30, bold: true}]}
+    text: zwanymi dalej łącznie Stronami,
+    alias: Stronami
+  - {p: 20, role: spacer}
+  - p: 21
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: 'na '
+  - {p: 22, role: spacer}
+  - p: 23
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: '.....................................................................................................................................................'
+    slots:
+    - {id: czas_nieokreslony_czas_okreslony_od_do, span: [0, 149], type: text, hint: 'czas nieokreślony, czas określony od………  do.........'}
+  - p: 24
+    role: hint
+    layout: {align: center, size: 10.0, italic: true}
+    text: (czas nieokreślony, czas określony od………  do......... )
+    hint_for: 23
+    hint_kind: label
+  - {p: 25, role: spacer}
+  - p: 26
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+    text: § 1
+  - {p: 27, role: spacer}
+  - p: 28
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: 'Strony ustalają następujące warunki zatrudnienia:'
+  - p: 29
+    role: item
+    layout: {align: justify, indent: {left: 1068}, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}, spans: [{start: 45, end: 63,
+          italic: true}]}
+    text: 'rodzaj umówionej pracy: ……………………………………………….; (nazwa stanowiska)'
+    slots:
+    - {id: nazwa_stanowiska, span: [24, 43], type: text, hint: nazwa stanowiska, label: rodzaj umówionej pracy}
+    inline_hints:
+    - {span: [45, 63], text: nazwa stanowiska}
+  - p: 30
+    role: item
+    layout: {align: justify, indent: {left: 1068}, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}, spans: [{start: 46, end: 102,
+          italic: true}]}
+    text: 'miejsce wykonywania pracy: ………………………………………….; (miejsce lub miejsca, w których ma być świadczona praca)'
+    slots:
+    - {id: miejsce_wykonywania_pracy, span: [27, 44], type: place, hint: 'miejsce lub miejsca, w których ma być świadczona praca', label: miejsce
+        wykonywania pracy}
+    inline_hints:
+    - {span: [46, 102], text: 'miejsce lub miejsca, w których ma być świadczona praca'}
+  - p: 31
+    role: item
+    layout: {align: justify, indent: {left: 1068}, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}, spans: [{start: 78, end: 105,
+          italic: true}]}
+    text: 'wymiar czasu pracy..........................................................; (np. pełen etat, 1/2 etatu) '
+    slots:
+    - {id: np_pelen_etat_1_2_etatu, span: [18, 76], type: text, hint: 'np. pełen etat, 1/2 etatu'}
+    inline_hints:
+    - {span: [78, 105], text: 'np. pełen etat, 1/2 etatu'}
+  - p: 32
+    role: item
+    layout: {align: justify, indent: {left: 1068}, size: 10.0, marker: {text: d), kind: lowerLetter, src: auto, level: 0}}
+    text: 'wynagrodzenie zasadnicze w wysokości …………………………. zł (słownie: …………………. złotych)'
+    slots:
+    - {id: p32_1, span: [37, 48], type: amount, context: wynagrodzenie zasadnicze w wysokości ▢ zł}
+    - {id: p32_2, span: [62, 70], type: amount, context: w wysokości zł słownie ▢ złotych}
+  - p: 33
+    role: body
+    layout: {align: justify, indent: {left: 1068}, size: 10.0}
+    text: zostanie wypłacone pracownikowi w formie przelewu na numer rachunku bankowego ..................................... w terminie do ..........................................................................
+    slots:
+    - {id: p33_1, span: [78, 115], type: text, context: na numer rachunku bankowego ▢ w terminie}
+    - {id: p33_2, span: [130, 204], type: date, context: bankowego w terminie do ▢}
+  - p: 34
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Pracownik zobowiązuje się do nieujawniania osobom trzecim wysokości otrzymywanego wynagrodzenia.
+  - {p: 35, role: spacer}
+  - p: 36
+    role: pagebreak
+    layout: {align: justify}
+    text: "\f"
+  - p: 37
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}, page_break_before: true}
+    text: § 2
+  - {p: 38, role: spacer}
+  - p: 39
+    role: field
+    layout: {align: justify, size: 10.0}
+    text: 'Termin rozpoczęcia pracy: ........................................'
+    slots:
+    - {id: termin_rozpoczecia_pracy, span: [26, 66], type: text, label: Termin rozpoczęcia pracy}
+  - {p: 40, role: spacer}
+  - p: 41
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+    text: § 3
+  - {p: 42, role: spacer}
+  - p: 43
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 40, end: 237, italic: true}]}
+    text: 'Do zakresu obowiązków pracownika należy (należy opisać obowiązki pracownika w sposób możliwie jak najbardziej szczegółowy, możliwe jest
+      również określenie obowiązków pracownika poprzez sporządzenie wykazu stanowiącego załącznik do umowy):'
+  - p: 44
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: ………………………………………………………………………………………..;
+    slots:
+    - {id: p44_1, span: [0, 35], type: text, context: ▢}
+  - p: 45
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+    text: ………………………………………………………………………………………..;
+    slots:
+    - {id: p45_1, span: [0, 35], type: text, context: ▢}
+  - p: 46
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}}
+    text: ……………………………………………………………………………………….. .
+    slots:
+    - {id: p46_1, span: [0, 35], type: text, context: ▢}
+  - {p: 47, role: spacer}
+  - p: 48
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+    text: § 4
+    optional: true
+    condition: postanowienie nie jest obowiązkowe, rekomenduje się jednak jego zastosowanie
+  - p: 49
+    role: hint
+    layout: {align: center, size: 10.0, italic: true}
+    text: (postanowienie nie jest obowiązkowe, rekomenduje się jednak jego zastosowanie)
+    hint_for: 48
+    hint_kind: instruction
+  - p: 50
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: W trakcie obowiązywania umowy, a także po jej rozwiązaniu, Pracownik zobowiązany jest do zachowania w tajemnicy wszelkich informacji dotyczących
+      Pracodawcy, jego organizacji, działalności handlowej, finansów, transakcji, tajemnic handlowych, służbowych oraz wszelkich innych danych,
+      o których Pracownik dowiedział się w związku z wykonywaną pracą.
+  - p: 51
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: 'W przypadku rozwiązania umowy Pracownik zobowiązuje się do zwrotu Pracodawcy najpóźniej
+
+      w dniu rozwiązania umowy wszelkich dokumentów i innych materiałów dotyczących tajemnicy przedsiębiorstwa, jakie sporządził, zebrał, opracował
+      lub otrzymał w czasie trwania umowy albo
+
+      w związku lub przy okazji jej wykonywania.'
+  - {p: 52, role: spacer}
+  - p: 53
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+    text: § 5
+  - {p: 54, role: spacer}
+  - p: 55
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: Pracownik zobowiązuje się do wykonywania powierzonych mu obowiązków według swej najlepszej wiedzy i przy zachowaniu najwyższej staranności.
+  - p: 56
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 6, kind: paragraph, src: manual, level: 0}}
+    text: § 6
+  - {p: 57, role: spacer}
+  - p: 58
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Pracownik wyraża zgodę na przetwarzanie jego danych osobowych, określonych w komparycji  niniejszej Umowy oraz w jej treści przez Pracodawcę
+      w celu i na okres realizacji niniejszej Umowy, zgodnie z postanowieniami niniejszego punktu.
+  - p: 59
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: "Przetwarzanie danych osobowych z tytułu niniejszej Umowy odbywać się będzie w zgodzie \ni w oparciu o przepisy rozporządzenia Parlamentu\
+      \ Europejskiego i Rady (EU) 2016/679 z dnia 27 kwietnia 2016 roku w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych\
+      \ i w sprawie swobodnego przepływu takich danych oraz uchylenia dyrektywy 95/46/WE (ogólne rozporządzenie o ochronie danych), zwane dalej\
+      \ „RODO”."
+  - p: 60
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: "Cel i zakres powierzenia przetwarzania danych osobowych wynika bezpośrednio i ogranicza się wyłącznie do zdań wynikających z niniejszej\
+      \ Umowy. Na powyższych danych będą wykonywane \nw szczególności operacje: przechowywanie, transfer, utrwalanie, analizowanie, a także czynności\
+      \ polegające na tworzeniu kopii bezpieczeństwa oraz czynności związane z odtwarzaniem z kopii bezpieczeństwa."
+  - p: 61
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+    text: Do przetwarzania danych osobowych mogą być dopuszczone wyłącznie osoby posiadające upoważnienie, o których mowa w art. 37 UODO lub w art.
+      29 RODO oraz przeszkolone z zakresu przepisów dotyczących ochrony danych osobowych.
+  - {p: 62, role: spacer}
+  - p: 63
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 7, kind: paragraph, src: manual, level: 0}}
+    text: § 7
+  - {p: 64, role: spacer}
+  - p: 65
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Wszelkie zmiany niniejszej umowy oraz jej wypowiedzenie lub rozwiązanie wymagają dla swej ważności formy pisemnej pod rygorem nieważności.
+  - p: 66
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: W sprawach nieuregulowanych niniejszą umową zastosowanie mają przepisy ustawy z dnia 26 czerwca 1974 r. - Kodeks pracy.
+  - p: 67
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: Umowę sporządzono w dwóch jednobrzmiących egzemplarzach po jednym dla każdej ze Stron.
+  - {p: 68, role: spacer}
+  - {p: 69, role: spacer}
+  - {p: 70, role: spacer}
+  - p: 71
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: '............................................................                          ..............................................................'
+    slots:
+    - {id: podpis_pracownika, span: [0, 60], type: signature, hint: podpis pracownika}
+    - {id: podpis_osoby_reprezentujacej_pracodawce_albo_oso, span: [86, 148], type: signature, hint: podpis osoby reprezentującej pracodawcę albo
+        osoby upoważnionej do składania oświadczeń w imieniu pracodawcy}
+  - p: 72
+    role: hint
+    layout: {align: justify, indent: {first: 708}, size: 9.0, italic: true, tabs: 2}
+    text: "     (podpis pracownika)                             \t\t        (podpis osoby reprezentującej pracodawcę "
+    hint_for: 71
+    hint_kind: instruction
+  - p: 73
+    role: hint
+    layout: {align: justify, indent: {first: 708}, size: 9.0, italic: true, tabs: 7}
+    text: "\t\t\t\t\t\t\t     albo osoby upoważnionej do "
+    hint_for: 71
+    hint_kind: instruction
+  - p: 74
+    role: hint
+    layout: {align: center, indent: {left: 4248, first: 708}, size: 9.0, italic: true}
+    text: składania oświadczeń w imieniu pracodawcy)
+    hint_for: 71
+    hint_kind: instruction
+  - {p: 75, role: spacer}

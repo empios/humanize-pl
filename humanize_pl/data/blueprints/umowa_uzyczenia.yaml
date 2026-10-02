@@ -3,6 +3,8 @@
 
 category: umowa_uzyczenia
 label_pl: umowa użyczenia
+# Kolejności sekcji nie sprawdzamy: realne wzory tej kategorii układają je różnie.
+check_order: false
 numbering: paragraph
 sections:
 - id: komparycja
@@ -30,3 +32,297 @@ sections:
   severity: required
   matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
       formy pisemnej, wymagają zachowania formy pisemnej]
+
+# Dokument ogólny: realny wzór tej kategorii. Przy użyciu wypełnia się wyłącznie
+# pola (`slots`); treść, kolejność i układ zostają jak we wzorze.
+document:
+  template: Umowa użyczenia lokalu.docx
+  label_pl: Umowa użyczenia lokalu
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 1417, bottom: 1417, left: 1417, right: 1417}}
+  blocks:
+  - p: 0
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: UMOWA UŻYCZENIA
+  - {p: 1, role: spacer}
+  - p: 2
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 42, end: 48, italic: true}, {start: 63, end: 78, italic: true}]}
+    text: 'Zawarta dnia ............................ (data) w …………………………… (miejscowość), pomiędzy:'
+    slots:
+    - {id: data, span: [13, 41], type: date, hint: data}
+    - {id: miejscowosc, span: [51, 62], type: place, hint: miejscowość}
+    inline_hints:
+    - {span: [42, 48], text: data}
+    - {span: [63, 76], text: miejscowość}
+  - {p: 3, role: spacer}
+  - p: 4
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: '..........................................................................................................................................................................................................................................................................................................'
+    slots:
+    - {id: imie_i_nazwisko_firma_miejsce_zamieszkania_siedz, span: [0, 298], type: text, hint: 'imię i nazwisko/firma; miejsce zamieszkania/siedziba;
+        nr i seria dokumentu tożsamości; PESEL, NIP'}
+  - p: 5
+    role: hint
+    layout: {align: justify, size: 10.0, italic: true}
+    text: (imię i nazwisko/firma; miejsce zamieszkania/siedziba; nr i seria dokumentu tożsamości; PESEL, NIP)
+    hint_for: 4
+    hint_kind: instruction
+  - p: 6
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 13, end: 24, bold: true}]}
+    text: zwanym dalej Użyczającym
+    alias: Użyczającym
+  - p: 7
+    role: party_connector
+    layout: {align: justify, size: 10.0}
+    text: a
+  - p: 8
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: '..........................................................................................................................................................................................................................................................................................................'
+    slots:
+    - {id: imie_i_nazwisko_firma_miejsce_zamieszkania_siedz_2, span: [0, 298], type: text, hint: 'imię i nazwisko/firma; miejsce zamieszkania/siedziba;
+        nr i seria dokumentu tożsamości; PESEL, NIP'}
+  - p: 9
+    role: hint
+    layout: {align: justify, size: 10.0, italic: true}
+    text: (imię i nazwisko/firma; miejsce zamieszkania/siedziba; nr i seria dokumentu tożsamości; PESEL, NIP)
+    hint_for: 8
+    hint_kind: instruction
+  - p: 10
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 13, end: 22, bold: true}]}
+    text: zwanym dalej Biorącym,
+    alias: Biorącym
+  - {p: 11, role: spacer}
+  - p: 12
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 14, end: 23, bold: true}]}
+    text: zwanymi dalej Stronami.
+    alias: Stronami
+  - {p: 13, role: spacer}
+  - p: 14
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+    text: § 1
+  - {p: 15, role: spacer}
+  - p: 16
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 98, end: 123, italic: true},
+        {start: 142, end: 144, vert: superscript}, {start: 144, end: 165, italic: true}, {start: 199, end: 221, italic: true}, {start: 262, end: 300,
+          italic: true}]}
+    text: Użyczający oświadcza, że jest właścicielem lokalu mieszkalnego/użytkowego położonego w ………………………… (adres położenia lokalu) o powierzchni
+      ……… m2 (powierzchnia lokalu) objętego Księgą Wieczystą nr ……… (nr księgi wieczystej) prowadzoną przez Sąd Rejonowy w ………………… (miejscowość
+      sądu wieczystoksięgowego).
+    slots:
+    - {id: adres_polozenia_lokalu, span: [87, 97], type: address, hint: adres położenia lokalu}
+    - {id: p16_2, span: [137, 140], type: text, context: położonego w o powierzchni ▢ m2 objętego}
+    - {id: nr_ksiegi_wieczystej, span: [195, 198], type: text, hint: nr księgi wieczystej}
+    - {id: miejscowosc_sadu_wieczystoksiegowego, span: [254, 261], type: place, hint: miejscowość sądu wieczystoksięgowego}
+    inline_hints:
+    - {span: [98, 122], text: adres położenia lokalu}
+    - {span: [199, 221], text: nr księgi wieczystej}
+    - {span: [262, 300], text: miejscowość sądu wieczystoksięgowego}
+  - p: 17
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Użyczający oświadcza, że lokal o którym mowa w § 1 ust. 1,  jest wolny od obciążeń na rzecz osób trzecich, które mogłyby utrudnić lub
+      uniemożliwić wykonywanie Biorącemu w używanie uprawnień wynikających z niniejszej umowy.
+  - {p: 18, role: spacer}
+  - p: 19
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+    text: § 2
+  - {p: 20, role: spacer}
+  - p: 21
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 89, end: 91, bold: true}, {start: 103,
+          end: 124, bold: true}]}
+    text: Użyczający użycza i daje w bezpłatne używanie Biorącemu lokal, o którym mowa w § 1 ust. 1, zwany dalej Przedmiotem użyczenia.
+  - p: 22
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Biorący wraz z zawarciem niniejszej umowy potwierdza odbiór opisanego wyżej Przedmiotu użyczenia.
+  - p: 23
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: Biorący oświadcza, iż Przedmiot użyczenia został mu użyczony w stanie zdatnym do użytku oraz Biorący nie wnosi z tego tytułu żadnych zastrzeżeń.
+  - p: 24
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 211, end: 225, bold: true}]}
+    text: Strony oświadczają, że stan techniczny lokalu, jego wyposażenie, wskazania liczników oraz ilość kompletów kluczy przekazanych Biorącemu,
+      zostały szczegółowo opisane w protokole zdawczo-odbiorczym, który stanowi Załącznik nr 1 do niniejszej umowy.
+  - {p: 25, role: spacer}
+  - p: 26
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+    text: § 3
+  - {p: 27, role: spacer}
+  - p: 28
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: 'Biorący nie ma prawa oddawać Przedmiotu użyczenia w najem albo użyczenie osobom trzecim, bez zgody Użyczającego wyrażonej w formie pisemnej
+      pod rygorem nieważności. '
+  - p: 29
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Biorący zobowiązuje się korzystać z Przedmiotu użyczenia zgodnie z umową, w tym zgodnie z jego przeznaczeniem i właściwościami, oraz zasadami
+      prawidłowej gospodarki, a w szczególności utrzymywać Przedmiot użyczenia w niepogorszonym stanie ponad jego zużycie będące następstwem prawidłowego
+      używania.
+  - p: 30
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: Wszelkie naprawy Przedmiotu użyczenia, których dokonanie stanie się konieczne w trakcie trwania niniejszego stosunku użyczenia, obciążają
+      Biorącego.
+  - p: 31
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+    text: Wszystkie koszty i opłaty eksploatacyjne wynikające z korzystania z Przedmiotu użyczenia przez cały czas trwania Umowy poniesie Biorący.
+  - {p: 32, role: spacer}
+  - p: 33
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+    text: § 4
+  - {p: 34, role: spacer}
+  - p: 35
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 83, end: 132, italic: true},
+        {start: 173, end: 209, italic: true}]}
+    text: Niniejsza umowa zawarta zostaje na czas oznaczony, od dnia ………………… do dnia ………………… (data początku i zakończenia obowiązywania umowy) /
+      nieoznaczony począwszy od dnia ……………… (data początku obowiązywania umowy).
+    slots:
+    - {id: p35_1, span: [59, 66], type: date, context: czas oznaczony od dnia ▢ do dnia}
+    - {id: data_poczatku_i_zakonczenia_obowiazywania_umowy, span: [75, 82], type: date, hint: data początku i zakończenia obowiązywania umowy}
+    - {id: data_poczatku_obowiazywania_umowy, span: [166, 172], type: date, hint: data początku obowiązywania umowy}
+    inline_hints:
+    - {span: [83, 132], text: data początku i zakończenia obowiązywania umowy}
+    - {span: [173, 208], text: data początku obowiązywania umowy}
+  - p: 36
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 57, italic: true}]}
+    text: (postanowienie przy umowie zawartej na czas nieoznaczony) Każda ze Stron może wypowiedzieć umowę z zachowaniem ………- miesięcznego okresu
+      wypowiedzenia ze skutkiem na koniec miesiąca.
+    slots:
+    - {id: p36_1, span: [111, 114], type: text, context: wypowiedzieć umowę z zachowaniem ▢ miesięcznego okresu}
+  - p: 37
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 54, italic: true}]}
+    text: '(postanowienie przy umowie zawartej na czas oznaczony) Każda ze Stron może wypowiedzieć umowę z zachowaniem ………- miesięcznego okresu
+      wypowiedzenia ze skutkiem na koniec miesiąca w przypadku wystąpienia ważnych powodów uniemożliwiających dalsze wykonywanie mowy, w szczególności
+      takich jak: '
+    slots:
+    - {id: p37_1, span: [108, 111], type: text, context: wypowiedzieć umowę z zachowaniem ▢ miesięcznego okresu}
+  - p: 38
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: …………………………………………………………………………;
+    slots:
+    - {id: p38_1, span: [0, 28], type: text, context: ▢}
+  - p: 39
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+    text: …………………………………………………………………………;
+    slots:
+    - {id: p39_1, span: [0, 28], type: text, context: ▢}
+  - p: 40
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}, spans: [{start: 29, end: 70, italic: true}]}
+    text: '…………………………………………………………………………
+
+      (przykładowe powody wypowiedzenia umowy).'
+    slots:
+    - {id: przykladowe_powody_wypowiedzenia_umowy, span: [0, 28], type: text, hint: przykładowe powody wypowiedzenia umowy}
+    inline_hints:
+    - {span: [29, 69], text: przykładowe powody wypowiedzenia umowy}
+  - p: 41
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+    text: 'Użyczający może w każdym czasie rozwiązać niniejszą umowę bez zachowania okresu wypowiedzenia w przypadku, gdy:'
+  - p: 42
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: 'Biorący używa Przedmiotu użyczenia w sposób niezgodny z przeznaczeniem; '
+  - p: 43
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+    text: Biorący oddał Przedmiot użyczenia w podnajem lub do używania osobie trzeciej bez zgody Użyczającego.
+  - p: 44
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+    text: 'Biorący ma prawo rozwiązać umowę bez zachowania okresu wypowiedzenia w przypadku, gdy Przedmiot użyczenia okaże się posiadać wady lub
+      usterki uniemożliwiające korzystanie z niego zgodnie z przeznaczeniem. '
+  - p: 45
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}}
+    text: Wypowiedzenie lub rozwiązanie umowy, pod rygorem nieważności, powinno być dokonane w formie pisemnej.
+  - p: 46
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '7.', kind: decimal, src: auto, level: 0}}
+    text: 'Biorący zobowiązuje się zwrócić Przedmiot użyczenia w stanie niepogorszonym najpóźniej w terminie …… dni od dnia wygaśnięcia lub rozwiązania
+      umowy z jakiegokolwiek powodu. '
+    slots:
+    - {id: p46_1, span: [98, 100], type: text, context: niepogorszonym najpóźniej w terminie ▢ dni od}
+  - {p: 47, role: spacer}
+  - p: 48
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+    text: § 5
+  - {p: 49, role: spacer}
+  - p: 50
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Wszelkie zmiany i uzupełnienia niniejszej umowy wymagają formy pisemnej pod rygorem nieważności.
+  - p: 51
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: W sprawach nieuregulowanych niniejszą umową zastosowanie znajdą przepisy ustawy z dnia 23 kwietnia 1964 r. - Kodeks cywilny.
+  - p: 52
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: Umowę niniejszą sporządzono w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze Stron.
+  - {p: 53, role: spacer}
+  - {p: 54, role: spacer}
+  - {p: 55, role: spacer}
+  - p: 56
+    role: blank_line
+    layout: {align: center, size: 10.0}
+    text: ………………………………
+    slots:
+    - {id: p56_1, span: [0, 12], type: signature, context: ▢}
+  - p: 57
+    role: body
+    layout: {align: justify, size: 10.0, bold: true}
+    text: '                        Użyczający'
+  - {p: 58, role: spacer}
+  - {p: 59, role: spacer}
+  - p: 60
+    role: blank_line
+    layout: {align: center, size: 10.0}
+    text: ………………………………
+    slots:
+    - {id: p60_1, span: [0, 12], type: signature, context: ▢}
+  - p: 61
+    role: body
+    layout: {align: justify, size: 10.0, bold: true}
+    text: '                          Biorący'
+  - p: 62
+    role: field_header
+    layout: {align: justify, indent: {left: -4536}, size: 10.0}
+    text: 'Załączniki:   '
+  - p: 63
+    role: field_header
+    layout: {align: justify, indent: {left: -4536}, size: 10.0}
+    text: 'Załączniki:'
+  - p: 64
+    role: field_header
+    layout: {align: justify, indent: {left: 66}, size: 10.0}
+    text: 'Załączniki:'
+  - p: 65
+    role: item
+    layout: {indent: {left: 709}, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Protokół zdawczo-odbiorczy
+  - {p: 66, role: spacer}
+  - {p: 67, role: spacer}

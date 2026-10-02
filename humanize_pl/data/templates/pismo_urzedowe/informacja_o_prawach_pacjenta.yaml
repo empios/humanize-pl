@@ -1,0 +1,170 @@
+template: Informacja o prawach pacjenta.docx
+category: pismo_urzedowe
+label_pl: Informacja o prawach pacjenta
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: INFORMACJA O PRAWACH PACJENTA
+- {p: 1, role: spacer}
+- p: 2
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 163, end: 209, italic: true}]}
+  text: 'Niniejszym pragniemy poinformować, że przetwarzamy Pana/-i dane osobowe. Administratorem Danych Osobowych jest: ..................................................
+    (wpisać dane administratora danych osobowych).'
+  slots:
+  - {id: wpisac_dane_administratora_danych_osobowych, span: [112, 162], type: text, hint: wpisać dane administratora danych osobowych}
+  inline_hints:
+  - {span: [163, 208], text: wpisać dane administratora danych osobowych}
+- p: 3
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'W celu udzielania świadczeń leczniczych na podstawie obowiązku wynikającego z rozporządzenia Ministra Zdrowia z 6 kwietnia 2020 r. w sprawie
+    rodzajów, zakresu i wzorów dokumentacji medycznej oraz sposobu jej przetwarzania oraz ustawy z 6 listopada 2008 r. o prawach pacjenta i Rzeczniku
+    Praw Pacjenta, będziemy przetwarzać Pana/-i dane osobowe z następujących kategorii:'
+- p: 4
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+  text: 'podstawowe dane identyfikacyjne: imię i nazwisko, data urodzenia, oznaczenie płci, PESEL, adres zamieszkania, telefon, e-mail;'
+- p: 5
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+  text: dane dotyczące zdrowia (diagnostyka, leczenie, profilaktyka ...........................).
+  slots:
+  - {id: p5_1, span: [60, 87], type: text, context: zdrowia diagnostyka leczenie profilaktyka ▢}
+- p: 6
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: 'Pana/-i dane możemy udostępnić następującym kategoriom podmiotów:'
+- p: 7
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+  text: księgowym - w zakresie wystawionych rachunków za leczenie;
+- p: 8
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+  text: serwisom - w celu naprawy.
+- p: 9
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
+  text: ………………………………………… .
+  slots:
+  - {id: p9_1, span: [0, 16], type: text, context: ▢}
+- p: 10
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: Pana/-i dane pozyskane w celu udzielania świadczeń leczniczych przechowujemy przez okres 20 lat. W przypadku dzieci do ukończenia 2. roku
+    życia – 22 lata.
+- p: 11
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+  text: Nagrania z monitoringu zachowywane są przez okres 3 miesięcy.
+- p: 12
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}}
+  text: 'Panu/-i przysługują prawa:'
+- p: 13
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}}
+  text: uzyskania potwierdzenia, czy przetwarzamy Pana/-i dane osobowe, a jeżeli ma to miejsce, do uzyskania dostępu do tych danych, po weryfikacji
+    tożsamości;
+- p: 14
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 4), kind: decimal, src: auto, level: 0}}
+  text: dostępu do swoich danych oraz otrzymania ich kopii, po weryfikacji tożsamości;
+- p: 15
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 5), kind: decimal, src: auto, level: 0}}
+  text: do nieodpłatnej pierwszej kopii przetwarzanych danych, wydanie kolejnych kopii jest odpłatne;
+- p: 16
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 6), kind: decimal, src: auto, level: 0}}
+  text: do informacji o przedłużeniu ponad jeden miesiąc terminu na rozpatrzenie żądania osoby;
+- p: 17
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 7), kind: decimal, src: auto, level: 0}}
+  text: do informacji o tym, że obiekt jest monitorowany i odbywa się monitoring wizyjny oraz dźwiękowy, jak również przy wejściu na teren jednostki
+    znajduje się tabliczka informująca o monitoringu wizyjnym;
+- p: 18
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 8), kind: decimal, src: auto, level: 0}}
+  text: do informacji o planowanej zmianie celu przetwarzania danych, przy innym celu niż udzielanie świadczeń leczniczych;
+- p: 19
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 9), kind: decimal, src: auto, level: 0}}
+  text: do sprostowania (poprawienia) swoich danych;
+- p: 20
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 10), kind: decimal, src: auto, level: 0}}
+  text: do bycia zapomnianym - nie znajduje tutaj zastosowania wobec danych osobowych przetwarzanych na podstawie art. 9 ust. 2 lit. h RODO, w szczególności
+    wobec przetwarzania danych w ramach dokumentacji medycznej przez cały wymagany okres archiwizacji zgodny z art. 29 ust. 1 ustawy o prawach
+    pacjenta w zw. z art. 17 ust. 3 lit. b RODO;
+- p: 21
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 11), kind: decimal, src: auto, level: 0}}
+  text: do bycia zapomnianym - w przypadku, gdy dane przetwarzane są na podstawie zgody pacjenta (udzielonej w innym celu niż udzielanie świadczeń
+    leczniczych), może Pan/i zrealizować prawo do bycia zapomnianym, w zakresie celu określonego w tej zgodzie;
+- p: 22
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 12), kind: decimal, src: auto, level: 0}}
+  text: do ograniczenia przetwarzania danych - nie ma zastosowania w odniesieniu do Pana/-i danych osobowych przetwarzanych w celach udzielania
+    świadczeń medycznych, w szczególności w ramach dokumentacji medycznej, możemy przetwarzać dane w dotychczasowym zakresie, albowiem mogłoby
+    to istotnie utrudnić realizację tego celu;
+- p: 23
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 13), kind: decimal, src: auto, level: 0}}
+  text: do cofnięcia zgody na przetwarzanie danych osobowych - w każdej chwili może Pan/i cofnąć zgodę na przetwarzanie danych osobowych w celach
+    marketingowych, edukacyjnych, naukowych, reklamowych - o ile takiej zgody Pan/i udzielił/-a nam pisemnie; cofnięcie zgody nie będzie wpływać
+    na zgodność z prawem przetwarzania, którego dokonaliśmy na podstawie Pana/-i zgody przed jej wycofaniem;
+- p: 24
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 14), kind: decimal, src: auto, level: 0}}
+  text: 'do udostępnienia dokumentacji medycznej na zasadach określonych w art. 26 i 27 ustawy
+
+    z 6 listopada 2008 r. o prawach pacjenta i Rzeczniku Praw Pacjenta;'
+- p: 25
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 15), kind: decimal, src: auto, level: 0}}
+  text: do wniesienia skargi do organu nadzorczego - jeżeli Pan/i uważa, że przetwarzamy dane osobowe niezgodnie z prawem, może Pan/i złożyć skargę
+    do Prezesa Urzędu Ochrony Danych Osobowych.
+- p: 26
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '7.', kind: decimal, src: auto, level: 0}}
+  text: 'Weryfikacji tożsamości dokonuje się poprzez kontrolę okazanego przez Pana/-ią dokumentu potwierdzającego tożsamość, zawierającego co
+    najmniej: zdjęcie, imię i nazwisko oraz PESEL lub w przypadku jego braku - innego dokumentu jednoznacznie identyfikującego Pacjenta. Dokumentem
+    potwierdzającym tożsamość jest w szczególności: dowód osobisty, legitymacja studencka, prawo jazdy, paszport. Możemy utrwalić informację o weryfikacji
+    poprzez wpisanie do dokumentacji: daty dokonania weryfikacji tożsamości oraz informacji o dokumencie na podstawie, którego została ona dokonana,
+    z jednoczesnym wskazaniem numeru/identyfikatora tego dokumentu (np. numer i seria dowodu osobistego).'
+- p: 27
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '8.', kind: decimal, src: auto, level: 0}}
+  text: Jeżeli w imieniu Pacjenta małoletniego występuje przedstawiciel ustawowy, to tożsamość Pacjenta może być potwierdzona również przez przedstawiciela
+    ustawowego w drodze oświadczenia i okazania dowodu tożsamości przedstawiciela ustawowego. Możemy utrwalić informację o dacie dokonania weryfikacji
+    oraz dokumencie przedstawiciela ustawowego na podstawie, które go została ona dokonana.
+- p: 28
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '9.', kind: decimal, src: auto, level: 0}}
+  text: 'W celu wykonania Pana/-i praw proszę o skierowanie żądań korespondencyjnie lub zadzwonić pod numer tel.: ...............................
+    Proszę pamiętać, że przed realizacją Pana/-i żądania będziemy musieli upewnić się, czy żądanie na pewno pochodzi od Pana/-i, czyli zadamy
+    Panu/-i pytania o dane, na które odpowiedź zna wyłącznie Pan/i. Jeżeli weryfikacja Pana/-i tożsamości nie zostanie pomyślnie przeprowadzona
+    będziemy musieli prosić Pana/-ią o osobiste odwiedzenie naszej jednostki w celu potwierdzenia żądania i prawidłowej identyfikacji, dopiero
+    wówczas Pana/-i żądanie będzie podlegało realizacji.'
+  slots:
+  - {id: p28_1, span: [105, 136], type: text, context: zadzwonić pod numer tel. ▢ Proszę pamiętać}
+- p: 29
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '10.', kind: decimal, src: auto, level: 0}}
+  text: Podanie przez Pana/-ią danych osobowych jest wymogiem ustawowym wynikającym z § 1 i § 2 rozporządzenia Ministra Zdrowia z 6 kwietnia 2020 r.
+    w sprawie rodzajów, zakresu i wzorów dokumentacji medycznej oraz sposobu jej przetwarzania oraz z art. 24 i 25 ustawy z 6 listopada 2008 r.
+    o prawach pacjenta i Rzeczniku Praw Pacjenta.
+- p: 30
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '11.', kind: decimal, src: auto, level: 0}}
+  text: Jeżeli Pan/i nie poda danych osobowych, nie będziemy mogli udzielić Panu/-i świadczeń leczniczych.
+- p: 31
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '12.', kind: decimal, src: auto, level: 0}}
+  text: Zgoda pisemna na przetwarzanie danych osobowych w celu reklamowym, marketingowym, edukacyjnym lub naukowym jest dobrowolna.
+- {p: 32, role: spacer}

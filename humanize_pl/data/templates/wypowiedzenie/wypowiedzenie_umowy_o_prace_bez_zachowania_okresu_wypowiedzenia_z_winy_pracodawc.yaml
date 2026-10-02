@@ -1,0 +1,154 @@
+template: Wypowiedzenie umowy o pracę bez zachowania okresu wypowiedzenia z winy pracodawcy przez pracownika.docx
+category: wypowiedzenie
+label_pl: Wypowiedzenie umowy o pracę bez zachowania okresu wypowiedzenia z winy pracodawcy przez pracownika
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: body
+  layout: {align: right, indent: {first: 708}, size: 10.0, spans: [{start: 9, end: 22, italic: true}, {start: 37, end: 43, italic: true}]}
+  text: …………………… (miejscowość), dnia …………….. (data)
+  slots:
+  - {id: miejscowosc, span: [0, 8], type: place, hint: miejscowość}
+  - {id: data, span: [29, 36], type: date, hint: data}
+  inline_hints:
+  - {span: [9, 22], text: miejscowość}
+  - {span: [37, 43], text: data}
+- {p: 1, role: spacer}
+- p: 2
+  role: body
+  layout: {size: 10.0}
+  text: '…………………………….
+
+    ul. …………………………
+
+    …-… ……………………..'
+  slots:
+  - {id: dane_pracownika_imie_i_nazwisko_adres, span: [0, 12], type: address, hint: 'dane Pracownika, imię i nazwisko, adres'}
+  - {id: dane_pracownika_imie_i_nazwisko_adres_2, span: [17, 27], type: address, hint: 'dane Pracownika, imię i nazwisko, adres'}
+  - {id: dane_pracownika_imie_i_nazwisko_adres_3, span: [28, 42], type: address, hint: 'dane Pracownika, imię i nazwisko, adres'}
+- p: 3
+  role: hint
+  layout: {size: 10.0, italic: true}
+  text: (dane Pracownika, imię i nazwisko, adres)
+  hint_for: 2
+  hint_kind: label
+- p: 4
+  role: blank_line
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: '.......................................................'
+  slots:
+  - {id: p4_1, span: [0, 55], type: text, context: ▢}
+- p: 5
+  role: blank_line
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: '.......................................................'
+  slots:
+  - {id: p5_1, span: [0, 55], type: text, context: ▢}
+- p: 6
+  role: blank_line
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: '.......................................................'
+  slots:
+  - {id: dane_pracodawcy_imie_i_nazwisko_adres_lub_okresl, span: [0, 55], type: text, hint: 'dane Pracodawcy, imię i nazwisko, adres lub określenie
+      firmy, adresu siedziby, NIP-u'}
+- p: 7
+  role: hint
+  layout: {indent: {left: 4820}, size: 10.0, italic: true}
+  text: ' (dane Pracodawcy, imię i nazwisko, adres lub '
+  hint_for: 6
+  hint_kind: instruction
+- p: 8
+  role: hint
+  layout: {indent: {left: 4820}, size: 10.0, italic: true}
+  text: określenie firmy, adresu siedziby, NIP-u)
+  hint_for: 6
+  hint_kind: instruction
+- {p: 9, role: spacer}
+- {p: 10, role: spacer}
+- p: 11
+  role: body
+  layout: {align: center, size: 14.0, bold: true}
+  text: Oświadczenie o rozwiązaniu umowy o pracę bez zachowania okresu wypowiedzenia
+- {p: 12, role: spacer}
+- {p: 13, role: spacer}
+- p: 14
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 198, end: 229, italic: true}, {start: 241, end: 254, italic: true}, {start: 282, end: 305,
+        italic: true}, {start: 378, end: 404, italic: true}]}
+  text: Niniejszym, działając w imieniu własnym, na podstawie na podstawie art. 30 § 1 pkt 3 w zw. z art. 55 ustawy z dnia 26 czerwca 1974 r.
+    - Kodeks pracy, rozwiązuje umowę o pracę zawartą dnia ………………….. (data podpisania umowy o pracę) w …………………. (miejscowość) pomiędzy mną, a ……………………….
+    (określenie pracodawcy) bez zachowania okresu wypowiedzenia, z uwagi na ……………………………………………………….. (powód rozwiązania umowy).
+  slots:
+  - {id: data_podpisania_umowy_o_prace, span: [188, 197], type: date, hint: data podpisania umowy o pracę}
+  - {id: miejscowosc_2, span: [232, 240], type: place, hint: miejscowość}
+  - {id: okreslenie_pracodawcy, span: [271, 281], type: text, hint: określenie pracodawcy}
+  - {id: powod_rozwiazania_umowy, span: [354, 377], type: text, hint: powód rozwiązania umowy}
+  inline_hints:
+  - {span: [198, 229], text: data podpisania umowy o pracę}
+  - {span: [241, 254], text: miejscowość}
+  - {span: [282, 305], text: określenie pracodawcy}
+  - {span: [378, 403], text: powód rozwiązania umowy}
+- {p: 15, role: spacer}
+- p: 16
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: 'Mając na uwadze powyższe, wzywam Pana/Panią/Państwa do zapłaty należnego mi odszkodowania w wysokości ……………………………. zł (słownie: ………………………………..
+    złotych), które odpowiada wysokości należnego mi wynagrodzenia za okres wypowiedzenia. '
+  slots:
+  - {id: p16_1, span: [102, 114], type: amount, context: mi odszkodowania w wysokości ▢ zł które}
+  - {id: p16_2, span: [128, 142], type: amount, context: w wysokości zł słownie ▢ złotych które}
+- {p: 17, role: spacer}
+- {p: 18, role: spacer}
+- p: 19
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: Uzasadnienie
+- {p: 20, role: spacer}
+- p: 21
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………
+  slots:
+  - {id: opis_przyczyny_uzasadniajacej_rozwiazanie_stosun, span: [0, 150], type: text, hint: opis przyczyny uzasadniającej rozwiązanie stosunku
+      pracy}
+- p: 22
+  role: hint
+  layout: {align: center, size: 10.0, italic: true}
+  text: (opis przyczyny uzasadniającej rozwiązanie stosunku pracy).
+  hint_for: 21
+  hint_kind: label
+- {p: 23, role: spacer}
+- {p: 24, role: spacer}
+- p: 25
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 55, end: 78, italic: true}]}
+  text: Tym samym, rozwiązanie umowy o pracę z dnia ………………………… (data podpisania umowy) we wskazanym trybie należy uznać za uzasadnione.
+  slots:
+  - {id: data_podpisania_umowy, span: [44, 54], type: date, hint: data podpisania umowy}
+  inline_hints:
+  - {span: [55, 78], text: data podpisania umowy}
+- {p: 26, role: spacer}
+- {p: 27, role: spacer}
+- {p: 28, role: spacer}
+- {p: 29, role: spacer}
+- p: 30
+  role: body
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: Z poważaniem,
+- p: 31
+  role: blank_line
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: …………………….
+  slots:
+  - {id: podpis_pracownika, span: [0, 9], type: signature, hint: podpis pracownika}
+- p: 32
+  role: hint
+  layout: {align: right, indent: {first: 708}, size: 10.0, italic: true}
+  text: (podpis pracownika)
+  hint_for: 31
+  hint_kind: label
+- {p: 33, role: spacer}
+- {p: 34, role: spacer}
+- {p: 35, role: spacer}
+- {p: 36, role: spacer}

@@ -3,6 +3,8 @@
 
 category: umowa_sprzedazy
 label_pl: umowa sprzedaży
+# Kolejności sekcji nie sprawdzamy: realne wzory tej kategorii układają je różnie.
+check_order: false
 numbering: paragraph
 sections:
 - id: komparycja
@@ -31,3 +33,208 @@ sections:
   severity: required
   matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
       formy pisemnej, wymagają zachowania formy pisemnej]
+
+# Dokument ogólny napisany dla tej kategorii: wśród realnych wzorów nie było
+# ogólnego. Przy użyciu wypełnia się wyłącznie pola (`slots`).
+document:
+  label_pl: Umowa sprzedaży
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 1417, bottom: 1417, left: 1417, right: 1417}}
+  blocks:
+  - p: 0
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: UMOWA SPRZEDAŻY
+  - {p: 1, role: spacer}
+  - p: 2
+    role: body
+    layout: {align: justify, size: 11.0}
+    text: 'zawarta w dniu ………………… (data) w ………………… (miejscowość) pomiędzy:'
+    slots:
+    - {id: data, span: [15, 22], type: date, hint: data}
+    - {id: miejscowosc, span: [32, 39], type: place, hint: miejscowość}
+    inline_hints:
+    - {span: [23, 29], text: data}
+    - {span: [40, 53], text: miejscowość}
+  - p: 3
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: ………………………………………………………………………………………………
+    slots:
+    - {id: sprzedajacy, span: [0, 36], type: text, hint: 'imię i nazwisko lub firma, adres lub siedziba, PESEL lub NIP'}
+  - p: 4
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true}
+    text: (imię i nazwisko lub firma, adres lub siedziba, PESEL lub NIP)
+    hint_for: 3
+    hint_kind: label
+  - p: 5
+    role: party_alias
+    layout: {align: justify, size: 11.0}
+    text: zwanym dalej Sprzedającym,
+    alias: Sprzedającym
+  - p: 6
+    role: party_connector
+    layout: {align: justify, size: 11.0}
+    text: a
+  - p: 7
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: ………………………………………………………………………………………………
+    slots:
+    - {id: kupujacy, span: [0, 36], type: text, hint: 'imię i nazwisko lub firma, adres lub siedziba, PESEL lub NIP'}
+  - p: 8
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true}
+    text: (imię i nazwisko lub firma, adres lub siedziba, PESEL lub NIP)
+    hint_for: 7
+    hint_kind: label
+  - p: 9
+    role: party_alias
+    layout: {align: justify, size: 11.0}
+    text: zwanym dalej Kupującym,
+    alias: Kupującym
+  - p: 10
+    role: party_alias
+    layout: {align: justify, size: 11.0}
+    text: zwanymi dalej łącznie Stronami.
+    alias: Stronami
+  - {p: 11, role: spacer}
+  - p: 12
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 1., kind: paragraph, src: manual, level: 0}}
+    text: § 1. Przedmiot umowy
+  - p: 13
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: '1. Sprzedający sprzedaje, a Kupujący kupuje rzecz ruchomą: ……………………………………………… (opis rzeczy i dane identyfikujące), zwaną dalej Przedmiotem
+      sprzedaży.'
+    slots:
+    - {id: opis_rzeczy_i_dane_identyfikujace, span: [59, 77], type: text, hint: opis rzeczy i dane identyfikujące, label: 'Sprzedający sprzedaje,
+        a Kupujący kupuje rzecz ruchomą'}
+    inline_hints:
+    - {span: [78, 113], text: opis rzeczy i dane identyfikujące}
+  - {p: 14, role: spacer}
+  - p: 15
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 2., kind: paragraph, src: manual, level: 0}}
+    text: § 2. Cena i sposób zapłaty
+  - p: 16
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Strony ustalają cenę Przedmiotu sprzedaży na kwotę ………………… (cena w zł).
+    slots:
+    - {id: cena_w_zl, span: [54, 61], type: amount, hint: cena w zł}
+    inline_hints:
+    - {span: [62, 73], text: cena w zł}
+  - p: 17
+    role: field
+    layout: {align: justify, size: 11.0}
+    text: 'słownie: ……………………………………………… złotych'
+    slots:
+    - {id: slownie, span: [9, 27], type: amount, label: słownie}
+  - p: 18
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '2.', kind: decimal, src: manual, level: 0}}
+    text: 2. Kupujący zapłaci cenę w terminie do dnia ………………… (termin zapłaty) na rachunek bankowy Sprzedającego nr ……………………………… (numer rachunku).
+    slots:
+    - {id: termin_zaplaty, span: [44, 51], type: date, hint: termin zapłaty}
+    - {id: numer_rachunku, span: [106, 118], type: text, hint: numer rachunku}
+    inline_hints:
+    - {span: [52, 68], text: termin zapłaty}
+    - {span: [119, 135], text: numer rachunku}
+  - {p: 19, role: spacer}
+  - p: 20
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 3., kind: paragraph, src: manual, level: 0}}
+    text: § 3. Oświadczenia Sprzedającego
+  - p: 21
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Sprzedający oświadcza, że Przedmiot sprzedaży stanowi jego wyłączną własność, nie jest obciążony prawami osób trzecich ani nie jest
+      przedmiotem postępowania sądowego, administracyjnego lub egzekucyjnego.
+  - p: 22
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '2.', kind: decimal, src: manual, level: 0}}
+    text: '2. Sprzedający oświadcza, że znane mu wady Przedmiotu sprzedaży to: ……………………………………………… (opis wad albo informacja o ich braku).'
+    slots:
+    - {id: opis_wad_albo_informacja_o_ich_braku, span: [68, 86], type: text, hint: opis wad albo informacja o ich braku, label: 'Sprzedający oświadcza,
+        że znane mu wady Przedmiotu sprzedaży to'}
+    inline_hints:
+    - {span: [87, 125], text: opis wad albo informacja o ich braku}
+  - {p: 23, role: spacer}
+  - p: 24
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 4., kind: paragraph, src: manual, level: 0}}
+    text: § 4. Wydanie i przeniesienie własności
+  - p: 25
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Własność Przedmiotu sprzedaży przechodzi na Kupującego z chwilą zawarcia Umowy.
+  - p: 26
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '2.', kind: decimal, src: manual, level: 0}}
+    text: 2. Sprzedający wydaje Kupującemu Przedmiot sprzedaży wraz z dotyczącymi go dokumentami w dniu ………………… (data wydania) w ………………………… (miejsce
+      wydania).
+    slots:
+    - {id: data_wydania, span: [94, 101], type: date, hint: data wydania}
+    - {id: miejsce_wydania, span: [119, 129], type: place, hint: miejsce wydania}
+    inline_hints:
+    - {span: [102, 116], text: data wydania}
+    - {span: [130, 147], text: miejsce wydania}
+  - p: 27
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '3.', kind: decimal, src: manual, level: 0}}
+    text: 3. Z chwilą wydania Przedmiotu sprzedaży przechodzą na Kupującego korzyści i ciężary związane z rzeczą oraz niebezpieczeństwo jej przypadkowej
+      utraty lub uszkodzenia.
+  - {p: 28, role: spacer}
+  - p: 29
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 5., kind: paragraph, src: manual, level: 0}}
+    text: § 5. Odpowiedzialność za wady
+  - p: 30
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Sprzedający odpowiada wobec Kupującego z tytułu rękojmi za wady fizyczne i prawne Przedmiotu sprzedaży na zasadach określonych w Kodeksie
+      cywilnym.
+  - p: 31
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '2.', kind: decimal, src: manual, level: 0}}
+    text: 2. Jeżeli Kupujący jest konsumentem, a Sprzedający przedsiębiorcą, odpowiedzialność Sprzedającego za brak zgodności Przedmiotu sprzedaży
+      z Umową określają przepisy ustawy z dnia 30 maja 2014 r. o prawach konsumenta.
+  - {p: 32, role: spacer}
+  - p: 33
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 6., kind: paragraph, src: manual, level: 0}}
+    text: § 6. Postanowienia końcowe
+  - p: 34
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Koszty zawarcia Umowy, w tym podatek od czynności cywilnoprawnych, jeżeli jest należny, ponosi Kupujący.
+  - p: 35
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '2.', kind: decimal, src: manual, level: 0}}
+    text: 2. Zmiany Umowy wymagają formy pisemnej pod rygorem nieważności.
+  - p: 36
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '3.', kind: decimal, src: manual, level: 0}}
+    text: 3. W sprawach nieuregulowanych Umową mają zastosowanie przepisy Kodeksu cywilnego.
+  - p: 37
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '4.', kind: decimal, src: manual, level: 0}}
+    text: 4. Umowę sporządzono w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze Stron.
+  - {p: 38, role: spacer}
+  - {p: 39, role: spacer}
+  - p: 40
+    role: signature_line
+    layout: {align: justify, size: 11.0, tabs: 5}
+    text: "……………………………………\t\t\t\t\t……………………………………"
+    slots:
+    - {id: podpis_sprzedajacego, span: [0, 14], type: signature, hint: podpis Sprzedającego}
+    - {id: podpis_kupujacego, span: [19, 33], type: signature, hint: podpis Kupującego}
+  - p: 41
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true, tabs: 5}
+    text: "(podpis Sprzedającego)\t\t\t\t\t(podpis Kupującego)"
+    hint_for: 40
+    hint_kind: label

@@ -1,0 +1,154 @@
+template: Umowa najmu okazjonalnego lokalu - wskazanie lokalu zastępczego.docx
+category: umowa_najmu
+label_pl: Umowa najmu okazjonalnego lokalu - wskazanie lokalu zastępczego
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 0, end: 14, bold: true}, {start: 14, end: 95, italic: true}]}
+  text: Załącznik nr … (należy wskazać właściwy nr załącznika, odpowiednio dla postanowień umowy najmu)
+  inline_hints:
+  - {span: [15, 95], text: 'należy wskazać właściwy nr załącznika, odpowiednio dla postanowień umowy najmu'}
+  optional: true
+  condition: "oświadczenie Najemcy dotyczące wskazania lokalu, do którego Najemca przeniesie się \nw przypadku opróżnienia lokalu"
+- {p: 1, role: spacer}
+- p: 2
+  role: hint
+  layout: {align: justify, size: 10.0, bold: true}
+  text: "[oświadczenie Najemcy dotyczące wskazania lokalu, do którego Najemca przeniesie się \nw przypadku opróżnienia lokalu]"
+  hint_for: 0
+  hint_kind: instruction
+- {p: 3, role: spacer}
+- {p: 4, role: spacer}
+- p: 5
+  role: body
+  layout: {align: right, indent: {first: 708}, size: 10.0, spans: [{start: 17, end: 31, bold: true}, {start: 48, end: 54, bold: true}]}
+  text: '................ [miejscowość], dnia .......... [data]'
+  slots:
+  - {id: miejscowosc, span: [0, 16], type: place, hint: miejscowość}
+  - {id: data, span: [37, 47], type: date, hint: data}
+  inline_hints:
+  - {span: [17, 30], text: miejscowość}
+  - {span: [48, 54], text: data}
+- {p: 6, role: spacer}
+- p: 7
+  role: blank_line
+  layout: {size: 10.0}
+  text: '.........................................'
+  slots:
+  - {id: p7_1, span: [0, 41], type: text, context: ▢}
+- p: 8
+  role: blank_line
+  layout: {size: 10.0}
+  text: '.........................................'
+  slots:
+  - {id: imie_i_nazwisko_najemcy_adres_zameldowania, span: [0, 41], type: text, hint: 'imię i nazwisko Najemcy, Adres zameldowania'}
+- p: 9
+  role: hint
+  layout: {size: 10.0, bold: true}
+  text: '[imię i nazwisko Najemcy,'
+  hint_for: 8
+  hint_kind: label
+- p: 10
+  role: hint
+  layout: {size: 10.0, bold: true}
+  text: Adres zameldowania]
+  hint_for: 8
+  hint_kind: label
+- {p: 11, role: spacer}
+- p: 12
+  role: field_header
+  layout: {align: right, indent: {first: 708}, size: 10.0, tabs: 5}
+  text: "     Do:\t\t\t\t\t"
+- p: 13
+  role: blank_line
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: '......................................................'
+  slots:
+  - {id: do, span: [0, 54], type: date, label: Do}
+- p: 14
+  role: blank_line
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: '......................................................'
+  slots:
+  - {id: do_2, span: [0, 54], type: date, hint: 'imię i nazwisko Wynajmującego, Adres zamieszkania', label: Do}
+- p: 15
+  role: hint
+  layout: {align: right, indent: {first: 708}, size: 10.0, bold: true}
+  text: '[imię i nazwisko Wynajmującego,'
+  hint_for: 14
+  hint_kind: label
+- p: 16
+  role: hint
+  layout: {align: right, indent: {first: 708}, size: 10.0, bold: true}
+  text: '    Adres zamieszkania]'
+  hint_for: 14
+  hint_kind: label
+- {p: 17, role: spacer}
+- {p: 18, role: spacer}
+- p: 19
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: OŚWIADCZENIE O WSKAZANIU INNEGO LOKALU
+- {p: 20, role: spacer}
+- p: 21
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 55, end: 68, bold: true}, {start: 97, end: 143, bold: true}, {start: 308, end: 321, bold: true},
+      {start: 350, end: 396, bold: true}, {start: 428, end: 465, bold: true}]}
+  text: "Niniejszym, jako najemca lokalu położonego w ......... [miejscowość] przy ul. .................. [ulica, numer domu/mieszkania i kod\
+    \ pocztowy], wskazuję, iż w przypadku wykonania egzekucji obowiązku opróżnienia lokalu, przeniosę się wraz z osobami zamieszkującymi ze mną,\
+    \ do lokalu położonego w ............ [miejscowość] przy ul. .................. [ulica, numer domu/mieszkania \ni kod pocztowy], należącego\
+    \ do ............... [imię i nazwisko właściciela lokalu]."
+  slots:
+  - {id: miejscowosc_2, span: [45, 54], type: place, hint: miejscowość}
+  - {id: ulica_numer_domu_mieszkania_i_kod_pocztowy, span: [78, 96], type: address, hint: 'ulica, numer domu/mieszkania i kod pocztowy'}
+  - {id: miejscowosc_3, span: [295, 307], type: place, hint: miejscowość}
+  - {id: ulica_numer_domu_mieszkania_i_kod_pocztowy_2, span: [331, 349], type: address, hint: "ulica, numer domu/mieszkania \ni kod pocztowy"}
+  - {id: imie_i_nazwisko_wlasciciela_lokalu, span: [412, 427], type: date, hint: imię i nazwisko właściciela lokalu}
+  inline_hints:
+  - {span: [55, 68], text: miejscowość}
+  - {span: [97, 142], text: 'ulica, numer domu/mieszkania i kod pocztowy'}
+  - {span: [308, 321], text: miejscowość}
+  - {span: [350, 396], text: "ulica, numer domu/mieszkania \ni kod pocztowy"}
+  - {span: [428, 464], text: imię i nazwisko właściciela lokalu}
+- {p: 22, role: spacer}
+- p: 23
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: "Jednocześnie oświadczam, że zgodnie z zawartą Umową najmu z dnia ………., w przypadku utraty możliwości zamieszkania pod wskazanym powyżej\
+    \ adresem, zobowiązuję się w terminie ..... dni od dnia powzięcia wiadomości o tym zdarzeniu, wskazać inny lokal, w którym mógłbym zamieszkać\
+    \ \nw przypadku wykonania egzekucji obowiązku opróżnienia lokalu, stanowiącego przedmiot Umowy najmu."
+  slots:
+  - {id: p23_1, span: [65, 69], type: date, context: Umową najmu z dnia ▢ w przypadku}
+  - {id: p23_2, span: [172, 177], type: text, context: zobowiązuję się w terminie ▢ dni od}
+- {p: 24, role: spacer}
+- p: 25
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: '..................................................'
+  slots:
+  - {id: podpis_najemcy, span: [0, 50], type: signature, hint: podpis Najemcy}
+- p: 26
+  role: hint
+  layout: {size: 10.0}
+  text: '[podpis Najemcy]'
+  hint_for: 25
+  hint_kind: label
+- p: 27
+  role: body
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: Potwierdzam odbiór oświadczenia
+- p: 28
+  role: blank_line
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: '.......................................................'
+  slots:
+  - {id: data_i_podpis_wynajmujacego, span: [0, 55], type: signature, hint: data i podpis Wynajmującego}
+- p: 29
+  role: hint
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: '[data i podpis Wynajmującego]'
+  hint_for: 28
+  hint_kind: label
+- {p: 30, role: spacer}

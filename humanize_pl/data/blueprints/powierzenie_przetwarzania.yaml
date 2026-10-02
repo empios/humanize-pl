@@ -3,6 +3,8 @@
 
 category: powierzenie_przetwarzania
 label_pl: umowa powierzenia przetwarzania danych
+# Kolejności sekcji nie sprawdzamy: realne wzory tej kategorii układają je różnie.
+check_order: false
 numbering: paragraph
 sections:
 - id: komparycja
@@ -30,3 +32,360 @@ sections:
   severity: required
   matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
       formy pisemnej, wymagają zachowania formy pisemnej]
+
+# Dokument ogólny: realny wzór tej kategorii. Przy użyciu wypełnia się wyłącznie
+# pola (`slots`); treść, kolejność i układ zostają jak we wzorze.
+document:
+  template: Umowa powierzenia przetwarzania danych osobowych.docx
+  label_pl: Umowa powierzenia przetwarzania danych osobowych
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+  blocks:
+  - p: 0
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: Umowa powierzenia przetwarzania danych osobowych
+  - {p: 1, role: spacer}
+  - p: 2
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 26, end: 32, italic: true}, {start: 42, end: 55, italic: true}]}
+    text: 'zawarta w dniu ……………….... (data) w ……………. (miejscowość) pomiędzy:'
+    slots:
+    - {id: data, span: [15, 25], type: date, hint: data}
+    - {id: miejscowosc, span: [35, 41], type: place, hint: miejscowość}
+    inline_hints:
+    - {span: [26, 32], text: data}
+    - {span: [42, 55], text: miejscowość}
+  - {p: 3, role: spacer}
+  - p: 4
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: ……………………………………………………………………….………..
+    slots:
+    - {id: p4_1, span: [0, 33], type: text, context: ▢}
+  - p: 5
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: '……………………………………………………………………….………..  '
+    slots:
+    - {id: dane_podmiotu_ktory_bedzie_otrzymywal_dane_osobo, span: [0, 33], type: text, hint: 'dane podmiotu, który będzie otrzymywał dane osobowe'}
+  - p: 6
+    role: hint
+    layout: {align: justify, size: 10.0, italic: true}
+    text: '(dane podmiotu, który będzie otrzymywał dane osobowe) '
+    hint_for: 5
+    hint_kind: label
+  - {p: 7, role: spacer}
+  - p: 8
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 30, end: 57, bold: true}]}
+    text: zwanym w dalszej części umowy „Podmiotem przetwarzającym”
+    alias: Podmiotem
+  - p: 9
+    role: party_connector
+    layout: {align: justify, size: 10.0}
+    text: oraz
+  - p: 10
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: '……………………………………………………………………….……….. '
+    slots:
+    - {id: p10_1, span: [0, 33], type: text, context: ▢}
+  - p: 11
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: '……………………………………………………………………….……….. '
+    slots:
+    - {id: dane_podmiotu_ktory_przekazuje_dane_osobowe, span: [0, 33], type: text, hint: 'dane podmiotu, który przekazuje dane osobowe'}
+  - p: 12
+    role: hint
+    layout: {align: justify, size: 10.0, italic: true}
+    text: '(dane podmiotu, który przekazuje dane osobowe) '
+    hint_for: 11
+    hint_kind: label
+  - {p: 13, role: spacer}
+  - p: 14
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 30, end: 76, bold: true}]}
+    text: zwanym w dalszej części umowy „Administratorem danych” lub „Administratorem”
+    alias: Administratorem
+  - {p: 15, role: spacer}
+  - p: 16
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+    text: '§ 1
+
+      Powierzenie przetwarzania danych osobowych'
+  - {p: 17, role: spacer}
+  - p: 18
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 26, end: 47, bold: true}, {start: 56,
+          end: 83, bold: true}]}
+    text: "Na mocy niniejszej Umowy, Administrator danych powierza Podmiotowi przetwarzającemu dane osobowe do przetwarzania na zasadach i w celach\
+      \ określonych w Umowie, w trybie art. 28 Rozporządzenia Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. \nw sprawie\
+      \ ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych oraz uchylenia dyrektywy\
+      \ 95/46/WE (ogólne rozporządzenie o ochronie danych) (zwanego w dalszej części umowy Rozporządzeniem RODO)."
+  - p: 19
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}]}
+    text: "Podmiot przetwarzający zobowiązuje się przetwarzać powierzone mu dane osobowe zgodnie \nz niniejszą umową, Rozporządzeniem RODO oraz\
+      \ z innymi przepisami prawa powszechnie obowiązującego, które chronią prawa osób, których dane dotyczą."
+  - p: 20
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}]}
+    text: Podmiot przetwarzający oświadcza, że stosuje środki bezpieczeństwa spełniające wymogi Rozporządzenia RODO.
+  - {p: 21, role: spacer}
+  - p: 22
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+    text: '§ 2
+
+      Zakres i cel przetwarzania danych'
+  - {p: 23, role: spacer}
+  - p: 24
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}, {start: 179,
+          end: 180, italic: true}]}
+    text: Podmiot przetwarzający będzie przetwarzał, powierzone na podstawie umowy ............................, dane osobowe w postaci ………..……..……...........................................
+    slots:
+    - {id: p24_1, span: [73, 101], type: text, context: powierzone na podstawie umowy ▢ dane osobowe}
+    - {id: p24_2, span: [126, 180], type: text, context: dane osobowe w postaci ▢}
+  - p: 25
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 17, end: 38, bold: true}, {start: 76,
+          end: 98, bold: true}, {start: 122, end: 167, italic: true}, {start: 167, end: 189, bold: true}, {start: 189, end: 190, italic: true},
+        {start: 191, end: 213, italic: true}, {start: 214, end: 219, italic: true}, {start: 224, end: 227, italic: true}, {start: 233, end: 234,
+          italic: true}, {start: 235, end: 254, italic: true}]}
+    text: Powierzone przez Administratora danych dane osobowe będą przetwarzane przez Podmiot przetwarzający wyłącznie w celu …………… (należy podać
+      cel przetwarzania danych przez podmiot przetwarzający, np. realizacji umowy z dnia ………… nr …………… w zakresie ………………..).
+    slots:
+    - {id: nalezy_podac_cel_przetwarzania_danych_przez_podm, span: [116, 121], type: text, hint: 'należy podać cel przetwarzania danych przez podmiot
+        przetwarzający, np. realizacji umowy z dnia ………… nr …………… w zakresie ………………..'}
+    - {id: p25_2, span: [219, 223], type: date, context: realizacji umowy z dnia ▢ nr w}
+    - {id: p25_3, span: [227, 232], type: text, context: umowy z dnia nr ▢ w zakresie}
+    - {id: p25_4, span: [244, 252], type: text, context: dnia nr w zakresie ▢}
+    inline_hints:
+    - {span: [122, 253], text: 'należy podać cel przetwarzania danych przez podmiot przetwarzający, np. realizacji umowy z dnia ………… nr …………… w
+        zakresie ………………..'}
+  - {p: 26, role: spacer}
+  - p: 27
+    role: clause_heading
+    layout: {align: center, size: 14.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+    text: '§ 3
+
+      Sposób wykonania umowy w zakresie przetwarzania danych osobowych'
+  - {p: 28, role: spacer}
+  - p: 29
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}]}
+    text: "Podmiot przetwarzający zobowiązuje się, przy przetwarzaniu powierzonych danych osobowych, do ich zabezpieczenia przez stosowanie odpowiednich\
+      \ środków technicznych i organizacyjnych zapewniających adekwatny stopień bezpieczeństwa odpowiadający ryzyku związanemu \nz przetwarzaniem\
+      \ danych osobowych, o których mowa w art. 32 Rozporządzenia RODO."
+  - p: 30
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}]}
+    text: Podmiot przetwarzający zobowiązuje się dołożyć należytej staranności przy przetwarzaniu powierzonych danych osobowych.
+  - p: 31
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}]}
+    text: 'Podmiot przetwarzający zobowiązuje się do nadania upoważnień do przetwarzania danych osobowych wszystkim osobom, które będą przetwarzały
+      powierzone dane w celu realizacji niniejszej umowy. '
+  - p: 32
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}, {start: 288,
+          end: 313, bold: true}]}
+    text: Podmiot przetwarzający zobowiązuje się zapewnić zachowanie w tajemnicy (o której mowa w art. 28 ust. 3 pkt b Rozporządzenia RODO) przetwarzanych
+      danych przez osoby, które upoważnia do przetwarzania danych osobowych w celu realizacji niniejszej umowy, zarówno w trakcie zatrudnienia ich
+      w Podmiocie przetwarzającym, jak i po ustaniu stosunku pracy.
+  - p: 33
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}, {start: 97,
+          end: 113, bold: true}]}
+    text: Podmiot przetwarzający po zakończeniu świadczenia usług związanych z przetwarzaniem usuwa/zwraca Administratorowi wszelkie dane osobowe
+      oraz usuwa wszelkie ich istniejące kopie, chyba że prawo Unii lub prawo państwa członkowskiego nakazują przechowywanie danych osobowych.
+  - p: 34
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}, spans: [{start: 19, end: 41, bold: true}, {start: 49,
+          end: 65, bold: true}]}
+    text: W miarę możliwości Podmiot przetwarzający pomaga Administratorowi w niezbędnym zakresie wywiązywać się z obowiązku odpowiadania na żądania
+      osoby, której dane dotyczą oraz wywiązywania się z obowiązków określonych w art. 32−36 Rozporządzenia RODO.
+  - p: 35
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '7.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}, {start: 105,
+          end: 121, bold: true}, {start: 136, end: 156, italic: true}, {start: 157, end: 174, italic: true}]}
+    text: Podmiot przetwarzający po stwierdzeniu naruszenia ochrony danych osobowych bez zbędnej zwłoki zgłasza je administratorowi w ciągu ……………
+      (można wskazać np. w ciągu 24 godzin).
+    slots:
+    - {id: mozna_wskazac_np_w_ciagu_24_godzin, span: [130, 135], type: text, hint: można wskazać np. w ciągu 24 godzin}
+    inline_hints:
+    - {span: [136, 173], text: można wskazać np. w ciągu 24 godzin}
+  - {p: 36, role: spacer}
+  - p: 37
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+    text: '§ 4
+
+      Prawo kontroli'
+  - {p: 38, role: spacer}
+  - p: 39
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 20, bold: true}, {start: 121,
+          end: 143, bold: true}]}
+    text: 'Administrator danych zgodnie z art. 28 ust. 3 pkt h) Rozporządzenia RODO ma prawo kontroli, czy środki zastosowane przez Podmiot przetwarzający
+      przy przetwarzaniu i zabezpieczeniu powierzonych danych osobowych spełniają postanowienia umowy. '
+  - p: 40
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 20, bold: true}, {start: 72,
+          end: 98, bold: true}]}
+    text: Administrator danych realizować będzie prawo kontroli w godzinach pracy Podmiotu przetwarzającego.
+  - p: 41
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}, {start: 119,
+          end: 133, bold: true}]}
+    text: 'Podmiot przetwarzający zobowiązuje się do usunięcia uchybień stwierdzonych podczas kontroli w terminie wskazanym przez Administratora
+      danych nie dłuższym niż ……… dni. '
+    slots:
+    - {id: p41_1, span: [158, 161], type: text, context: danych nie dłuższym niż ▢ dni.}
+  - p: 42
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}, {start: 34,
+          end: 50, bold: true}]}
+    text: Podmiot przetwarzający udostępnia Administratorowi wszelkie informacje niezbędne do wykazania spełnienia obowiązków określonych w art.
+      28 Rozporządzenia RODO.
+  - {p: 43, role: spacer}
+  - p: 44
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+    text: '§ 5
+
+      Odpowiedzialność Podmiotu przetwarzającego'
+  - {p: 45, role: spacer}
+  - p: 46
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}]}
+    text: 'Podmiot przetwarzający jest odpowiedzialny za udostępnienie lub wykorzystanie danych osobowych niezgodnie z treścią umowy, a w szczególności
+      za udostępnienie powierzonych do przetwarzania danych osobowych osobom nieupoważnionym. '
+  - p: 47
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}, {start: 70,
+          end: 92, bold: true}, {start: 199, end: 221, bold: true}, {start: 372, end: 397, bold: true}, {start: 521, end: 546, bold: true}, {start: 756,
+          end: 777, bold: true}]}
+    text: "Podmiot przetwarzający zobowiązuje się do niezwłocznego poinformowania Administratora danych o jakimkolwiek postępowaniu, w szczególności\
+      \ administracyjnym lub sądowym, dotyczącym przetwarzania przez Podmiot przetwarzający danych osobowych określonych w umowie, \no jakiejkolwiek\
+      \ decyzji administracyjnej lub orzeczeniu dotyczącym przetwarzania tych danych, skierowanych do Podmiotu przetwarzającego, a także o wszelkich\
+      \ planowanych, o ile są wiadome, lub realizowanych kontrolach i inspekcjach dotyczących przetwarzania w Podmiocie przetwarzającym tych danych\
+      \ osobowych, w szczególności prowadzonych przez inspektorów upoważnionych przez Generalnego Inspektora Ochrony Danych Osobowych. Niniejszy\
+      \ ustęp dotyczy wyłącznie danych osobowych powierzonych przez Administratora danych."
+  - {p: 48, role: spacer}
+  - p: 49
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 6, kind: paragraph, src: manual, level: 0}}
+    text: '§ 6
+
+      Czas obowiązywania umowy'
+  - {p: 50, role: spacer}
+  - p: 51
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 101, end: 102, italic: true}]}
+    text: Niniejsza umowa obowiązuje od dnia jej zawarcia przez czas nieokreślony/określony od …………. do………………. .
+    slots:
+    - {id: p51_1, span: [85, 90], type: date, context: czas nieokreślony określony od ▢ do}
+    - {id: p51_2, span: [93, 100], type: date, context: nieokreślony określony od do ▢}
+  - p: 52
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 67, end: 130, italic: true}]}
+    text: Każda ze stron może wypowiedzieć niniejszą umowę z zachowaniem ……… (należy wskazać termin trwania wypowiedzenia np. jeden miesiąc)  okresu
+      wypowiedzenia.
+    slots:
+    - {id: nalezy_wskazac_termin_trwania_wypowiedzenia_np_j, span: [63, 66], type: text, hint: należy wskazać termin trwania wypowiedzenia np. jeden
+        miesiąc}
+    inline_hints:
+    - {span: [67, 130], text: należy wskazać termin trwania wypowiedzenia np. jeden miesiąc}
+  - p: 53
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 7, kind: paragraph, src: manual, level: 0}}
+    text: '§ 7
+
+      Rozwiązanie umowy'
+  - {p: 54, role: spacer}
+  - p: 55
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 20, bold: true}]}
+    text: 'Administrator danych może rozwiązać niniejszą umowę ze skutkiem natychmiastowym, gdy Podmiot przetwarzający:'
+  - p: 56
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: pomimo zobowiązania go do usunięcia uchybień stwierdzonych podczas kontroli nie usunie ich w wyznaczonym terminie;
+  - p: 57
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+    text: przetwarza dane osobowe w sposób niezgodny z umową;
+  - p: 58
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}, spans: [{start: 69, end: 90, bold: true}]}
+    text: powierzył przetwarzanie danych osobowych innemu podmiotowi bez zgody Administratora danych.
+  - {p: 59, role: spacer}
+  - p: 60
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 8, kind: paragraph, src: manual, level: 0}}
+    text: '§ 8
+
+      Zasady zachowania poufności'
+  - {p: 61, role: spacer}
+  - p: 62
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}, {start: 152,
+          end: 173, bold: true}]}
+    text: Podmiot przetwarzający zobowiązuje się do zachowania w tajemnicy wszelkich informacji, danych, materiałów, dokumentów i danych osobowych
+      otrzymanych od Administratora danych i od współpracujących z nim osób oraz danych uzyskanych w jakikolwiek inny sposób, zamierzony czy przypadkowy
+      w formie ustnej, pisemnej lub elektronicznej („dane poufne”).
+  - p: 63
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}, {start: 181,
+          end: 202, bold: true}]}
+    text: Podmiot przetwarzający oświadcza, że w związku ze zobowiązaniem do zachowania w tajemnicy danych poufnych nie będą one wykorzystywane,
+      ujawniane ani udostępniane bez pisemnej zgody Administratora danych w innym celu niż wykonanie Umowy, chyba że konieczność ujawnienia posiadanych
+      informacji wynika z obowiązujących przepisów prawa lub Umowy.
+  - p: 64
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: Strony zobowiązują się do dołożenia wszelkich starań w celu zapewnienia, aby środki łączności wykorzystywane do odbioru, przekazywania
+      oraz przechowywania danych poufnych gwarantowały zabezpieczenie danych poufnych w tym w szczególności danych osobowych powierzonych do przetwarzania,
+      przed dostępem osób trzecich nieupoważnionych do zapoznania się z ich treścią.
+  - {p: 65, role: spacer}
+  - p: 66
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 9, kind: paragraph, src: manual, level: 0}}
+    text: '§ 9
+
+      Postanowienia końcowe'
+  - {p: 67, role: spacer}
+  - p: 68
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Umowa została sporządzona w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze stron.
+  - p: 69
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: W sprawach nieuregulowanych zastosowanie będą miały przepisy ustawy Kodeks cywilny oraz Rozporządzenia RODO.
+  - p: 70
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 137, end: 158, bold: true}]}
+    text: 'Sądem właściwym dla rozpatrzenia sporów wynikających z niniejszej umowy będzie sąd właściwy miejsmiejscowo cowego ze względu na siedzibę
+      Administratora danych. '
+  - {p: 71, role: spacer}
+  - {p: 72, role: spacer}
+  - p: 73
+    role: signature_line
+    layout: {align: justify, size: 10.0, tabs: 6}
+    text: "….……………………....…….   \t\t\t\t\t\t   …….……………….……………..                                                                                \
+      \                                    "
+    slots:
+    - {id: p73_1, span: [0, 17], type: signature, context: ▢}
+    - {id: p73_2, span: [29, 46], type: signature, context: ▢}
+  - p: 74
+    role: body
+    layout: {align: justify, size: 10.0, bold: true}
+    text: Administrator danych                                                                            Podmiot przetwarzający
+  - {p: 75, role: spacer}
+  - {p: 76, role: spacer}

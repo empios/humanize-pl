@@ -98,6 +98,13 @@ def test_unrecognised_text_is_unspecified_rather_than_guessed() -> None:
     assert guess.specified is False
 
 
+@pytest.mark.parametrize("title", ["Umowa zlecenia", "Umowa zlecenie", "Umowa o zlecenie"])
+def test_commission_contract_title_variants(title):
+    guess = classify_category(title + " – wykonanie strony internetowej\nPodpisy stron")
+    assert guess.category.id == "umowa_zlecenia"
+    assert guess.evidence
+
+
 def test_classification_is_deterministic() -> None:
     text = (FIXTURES / "ai_legal_01_umowa_uslug.txt").read_text(encoding="utf-8")
     results = {classify_category(text).category.id for _ in range(5)}

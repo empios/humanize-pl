@@ -1,0 +1,131 @@
+template: wniosek o uchylenie mandatu karnego.docx
+category: wniosek_procesowy
+label_pl: Wniosek o uchylenie mandatu karnego
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: body
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: ……………..………………, dnia ……… 2025r.
+  slots:
+  - {id: p0_1, span: [0, 13], type: text, context: ▢ dnia 2025r.}
+  - {id: p0_2, span: [20, 23], type: date, context: dnia ▢ 2025r.}
+- {p: 1, role: spacer}
+- p: 2
+  role: blank_line
+  layout: {size: 10.0}
+  text: ……………………………………
+  slots:
+  - {id: p2_1, span: [0, 14], type: text, context: ▢}
+- p: 3
+  role: blank_line
+  layout: {size: 10.0}
+  text: ……………………………………
+  slots:
+  - {id: dane_klienta_imie_nazwisko_pesel_adres_do_dorecz, span: [0, 14], type: text, hint: 'dane Klienta, imię nazwisko, PESEL, adres do doręczeń'}
+- p: 4
+  role: hint
+  layout: {size: 10.0, italic: true}
+  text: '(dane Klienta, imię nazwisko, PESEL, adres do doręczeń) '
+  hint_for: 3
+  hint_kind: label
+- p: 5
+  role: body
+  layout: {indent: {left: 4820}, size: 10.0, spans: [{start: 0, end: 12, bold: true}]}
+  text: Sąd Rejonowy w ……………….
+  slots:
+  - {id: p5_1, span: [15, 22], type: place, context: Sąd Rejonowy w ▢}
+- p: 6
+  role: blank_line
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: …………………………………………
+  slots:
+  - {id: p6_1, span: [0, 16], type: text, context: ▢}
+- p: 7
+  role: blank_line
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: …………………………………………
+  slots:
+  - {id: p7_1, span: [0, 16], type: text, context: ▢}
+- {p: 8, role: spacer}
+- p: 9
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: 'WNIOSEK O UCHYLENIE MANDATU KARNEGO '
+- {p: 10, role: spacer}
+- p: 11
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: Działając w imieniu własnym, na podstawie art. 101 Kodeksu postępowania w sprawach o wykroczenia, składam wniosek o uchylenie mandatu
+    karnego o serii i numerze …………………. nałożonego na mnie w dniu …………………………….. za wykroczenie z art. ….. Kodeksu wykroczeń polegające na rzekomym
+    ……………………………………………… .
+  slots:
+  - {id: p11_1, span: [160, 168], type: text, context: o serii i numerze ▢ nałożonego na}
+  - {id: p11_2, span: [195, 208], type: date, context: na mnie w dniu ▢ za wykroczenie}
+  - {id: p11_3, span: [231, 234], type: text, context: za wykroczenie z art. ▢ Kodeksu wykroczeń}
+  - {id: p11_4, span: [276, 294], type: text, context: wykroczeń polegające na rzekomym ▢}
+- {p: 12, role: spacer}
+- {p: 13, role: spacer}
+- p: 14
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: UZASADNIENIE
+- p: 15
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ………………………………………………………………………………………………………………………………………………….
+  slots:
+  - {id: p15_1, span: [0, 56], type: text, context: ▢}
+- p: 16
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ………………………………………………………………………………………………………………………………………………….
+  slots:
+  - {id: p16_1, span: [0, 56], type: text, context: ▢}
+- p: 17
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ………………………………………………………………………………………………………………………………………………….
+  slots:
+  - {id: p17_1, span: [0, 56], type: text, context: ▢}
+- p: 18
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ………………………………………………………………………………………………………………………………………………….
+  slots:
+  - {id: p18_1, span: [0, 56], type: text, context: ▢}
+- p: 19
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ………………………………………………………………………………………………………………………………………………….
+  slots:
+  - {id: p19_1, span: [0, 56], type: text, context: ▢}
+- {p: 20, role: spacer}
+- {p: 21, role: spacer}
+- {p: 22, role: spacer}
+- {p: 23, role: spacer}
+- p: 24
+  role: field_header
+  layout: {align: justify, size: 10.0, bold: true}
+  text: 'Załączniki:'
+- p: 25
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: …………………
+  slots:
+  - {id: p25_1, span: [0, 7], type: text, context: ▢}
+- {p: 26, role: spacer}
+- {p: 27, role: spacer}
+- p: 28
+  role: body
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: Z poważaniem
+- p: 29
+  role: blank_line
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: '.................................'
+  slots:
+  - {id: p29_1, span: [0, 33], type: signature, context: ▢}
+- {p: 30, role: spacer}
+- {p: 31, role: spacer}

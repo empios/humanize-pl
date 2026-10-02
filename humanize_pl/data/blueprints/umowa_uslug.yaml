@@ -11,6 +11,8 @@
 
 category: umowa_uslug
 label_pl: umowa o świadczenie usług
+# Kolejności sekcji nie sprawdzamy: realne wzory tej kategorii układają je różnie.
+check_order: false
 numbering: paragraph
 sections:
 - id: komparycja
@@ -60,3 +62,253 @@ sections:
   severity: required
   matches: [podpis, jednobrzmiących egzemplarzach, 'egzemplarzach, po jednym', 'egzemplarzach, po 1',
     egzemplarzu dla każdej]
+
+# Dokument ogólny napisany dla tej kategorii: wśród realnych wzorów nie było
+# ogólnego. Przy użyciu wypełnia się wyłącznie pola (`slots`).
+document:
+  label_pl: Umowa o świadczenie usług
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 1417, bottom: 1417, left: 1417, right: 1417}}
+  blocks:
+  - p: 0
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: UMOWA O ŚWIADCZENIE USŁUG
+  - {p: 1, role: spacer}
+  - p: 2
+    role: body
+    layout: {align: justify, size: 11.0}
+    text: 'zawarta w dniu ………………… (data) w ………………… (miejscowość) pomiędzy:'
+    slots:
+    - {id: data, span: [15, 22], type: date, hint: data}
+    - {id: miejscowosc, span: [32, 39], type: place, hint: miejscowość}
+    inline_hints:
+    - {span: [23, 29], text: data}
+    - {span: [40, 53], text: miejscowość}
+  - p: 3
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: ………………………………………………………………………………………………
+    slots:
+    - {id: zamawiajacy, span: [0, 36], type: text, hint: 'imię i nazwisko lub firma, adres lub siedziba, PESEL lub NIP'}
+  - p: 4
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true}
+    text: (imię i nazwisko lub firma, adres lub siedziba, PESEL lub NIP)
+    hint_for: 3
+    hint_kind: label
+  - p: 5
+    role: party_alias
+    layout: {align: justify, size: 11.0}
+    text: zwanym dalej Zamawiającym,
+    alias: Zamawiającym
+  - p: 6
+    role: party_connector
+    layout: {align: justify, size: 11.0}
+    text: a
+  - p: 7
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: ………………………………………………………………………………………………
+    slots:
+    - {id: wykonawca, span: [0, 36], type: text, hint: 'imię i nazwisko lub firma, adres lub siedziba, PESEL lub NIP'}
+  - p: 8
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true}
+    text: (imię i nazwisko lub firma, adres lub siedziba, PESEL lub NIP)
+    hint_for: 7
+    hint_kind: label
+  - p: 9
+    role: party_alias
+    layout: {align: justify, size: 11.0}
+    text: zwanym dalej Wykonawcą,
+    alias: Wykonawcą
+  - p: 10
+    role: party_alias
+    layout: {align: justify, size: 11.0}
+    text: zwanymi dalej łącznie Stronami.
+    alias: Stronami
+  - {p: 11, role: spacer}
+  - p: 12
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 1., kind: paragraph, src: manual, level: 0}}
+    text: § 1. Przedmiot umowy
+  - p: 13
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Zamawiający zleca, a Wykonawca zobowiązuje się świadczyć na rzecz Zamawiającego usługi polegające na ……………………………………………… (opis usług),
+      zwane dalej Usługami.
+    slots:
+    - {id: opis_uslug, span: [104, 122], type: text, hint: opis usług}
+    inline_hints:
+    - {span: [123, 135], text: opis usług}
+  - p: 14
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '2.', kind: decimal, src: manual, level: 0}}
+    text: 2. Szczegółowy zakres Usług określa ………………………… (dokument określający zakres Usług).
+    slots:
+    - {id: dokument_okreslajacy_zakres_uslug, span: [36, 46], type: id_number, hint: dokument określający zakres Usług}
+    inline_hints:
+    - {span: [47, 82], text: dokument określający zakres Usług}
+  - p: 15
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '3.', kind: decimal, src: manual, level: 0}}
+    text: 3. Wykonawca oświadcza, że posiada wiedzę, doświadczenie i środki niezbędne do należytego świadczenia Usług.
+  - {p: 16, role: spacer}
+  - p: 17
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 2., kind: paragraph, src: manual, level: 0}}
+    text: § 2. Termin i sposób wykonania
+  - p: 18
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Umowa zostaje zawarta na czas ………………… (oznaczony albo nieoznaczony), począwszy od dnia ………………… (data rozpoczęcia świadczenia Usług).
+    slots:
+    - {id: czas_umowy, span: [33, 40], type: text, hint: oznaczony albo nieoznaczony}
+    - {id: data_rozpoczecia_swiadczenia_uslug, span: [90, 97], type: date, hint: data rozpoczęcia świadczenia Usług}
+    inline_hints:
+    - {span: [41, 70], text: oznaczony albo nieoznaczony}
+    - {span: [98, 134], text: data rozpoczęcia świadczenia Usług}
+  - p: 19
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '2.', kind: decimal, src: manual, level: 0}}
+    text: 2. Jeżeli Umowa zostaje zawarta na czas oznaczony, wygasa z dniem ………………… (data zakończenia świadczenia Usług).
+    slots:
+    - {id: data_zakonczenia_swiadczenia_uslug, span: [66, 73], type: date, hint: data zakończenia świadczenia Usług}
+    inline_hints:
+    - {span: [74, 110], text: data zakończenia świadczenia Usług}
+  - p: 20
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '3.', kind: decimal, src: manual, level: 0}}
+    text: 3. Wykonawca świadczy Usługi z należytą starannością, z uwzględnieniem zawodowego charakteru prowadzonej działalności oraz wskazówek Zamawiającego.
+  - p: 21
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '4.', kind: decimal, src: manual, level: 0}}
+    text: 4. Wykonawca może powierzyć świadczenie Usług osobie trzeciej wyłącznie za uprzednią pisemną zgodą Zamawiającego.
+  - {p: 22, role: spacer}
+  - p: 23
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 3., kind: paragraph, src: manual, level: 0}}
+    text: § 3. Obowiązki Zamawiającego
+  - p: 24
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Zamawiający przekazuje Wykonawcy informacje i dokumenty niezbędne do świadczenia Usług oraz współdziała z Wykonawcą w zakresie koniecznym
+      do ich wykonania.
+  - {p: 25, role: spacer}
+  - p: 26
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 4., kind: paragraph, src: manual, level: 0}}
+    text: § 4. Wynagrodzenie
+  - p: 27
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Z tytułu świadczenia Usług Wykonawcy przysługuje wynagrodzenie w wysokości ………………… (kwota netto w zł) ………………… (okres rozliczeniowy
+      albo za całość Usług), powiększone o podatek od towarów i usług według obowiązującej stawki, jeżeli jest należny.
+    slots:
+    - {id: kwota_netto_w_zl, span: [78, 85], type: amount, hint: kwota netto w zł}
+    - {id: okres_rozliczeniowy_albo_za_calosc_uslug, span: [105, 112], type: amount, hint: okres rozliczeniowy albo za całość Usług}
+    inline_hints:
+    - {span: [86, 104], text: kwota netto w zł}
+    - {span: [113, 155], text: okres rozliczeniowy albo za całość Usług}
+  - p: 28
+    role: field
+    layout: {align: justify, size: 11.0}
+    text: 'słownie: ……………………………………………… złotych'
+    slots:
+    - {id: slownie, span: [9, 27], type: amount, label: słownie}
+  - p: 29
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '2.', kind: decimal, src: manual, level: 0}}
+    text: 2. Wynagrodzenie płatne jest na podstawie prawidłowo wystawionej faktury albo rachunku, w terminie ………… (liczba dni) dni od dnia jego
+      doręczenia Zamawiającemu, na rachunek bankowy Wykonawcy nr ……………………………… (numer rachunku).
+    slots:
+    - {id: liczba_dni, span: [99, 103], type: text, hint: liczba dni}
+    - {id: numer_rachunku, span: [193, 205], type: text, hint: numer rachunku}
+    inline_hints:
+    - {span: [104, 116], text: liczba dni}
+    - {span: [206, 222], text: numer rachunku}
+  - p: 30
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '3.', kind: decimal, src: manual, level: 0}}
+    text: 3. Wynagrodzenie obejmuje wszystkie koszty poniesione przez Wykonawcę w związku ze świadczeniem Usług, chyba że Strony postanowią inaczej
+      na piśmie.
+  - {p: 31, role: spacer}
+  - p: 32
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 5., kind: paragraph, src: manual, level: 0}}
+    text: § 5. Odpowiedzialność
+  - p: 33
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Wykonawca odpowiada za niewykonanie lub nienależyte wykonanie Usług na zasadach określonych w Kodeksie cywilnym.
+  - {p: 34, role: spacer}
+  - p: 35
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 6., kind: paragraph, src: manual, level: 0}}
+    text: § 6. Poufność
+  - p: 36
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Wykonawca zachowa w tajemnicy informacje uzyskane w związku z wykonywaniem Umowy, zarówno w czasie jej trwania, jak i po jej rozwiązaniu,
+      chyba że obowiązek ich ujawnienia wynika z przepisów prawa.
+  - {p: 37, role: spacer}
+  - p: 38
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 7., kind: paragraph, src: manual, level: 0}}
+    text: § 7. Rozwiązanie umowy
+  - p: 39
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Każda ze Stron może wypowiedzieć Umowę z zachowaniem ………… (okres wypowiedzenia) okresu wypowiedzenia, ze skutkiem na koniec miesiąca
+      kalendarzowego.
+    slots:
+    - {id: okres_wypowiedzenia, span: [56, 60], type: text, hint: okres wypowiedzenia}
+    inline_hints:
+    - {span: [61, 82], text: okres wypowiedzenia}
+  - p: 40
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '2.', kind: decimal, src: manual, level: 0}}
+    text: 2. Każda ze Stron może wypowiedzieć Umowę ze skutkiem natychmiastowym z ważnych powodów, w szczególności w razie rażącego naruszenia jej
+      postanowień przez drugą Stronę.
+  - p: 41
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '3.', kind: decimal, src: manual, level: 0}}
+    text: 3. Wypowiedzenie wymaga formy pisemnej pod rygorem nieważności.
+  - {p: 42, role: spacer}
+  - p: 43
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 8., kind: paragraph, src: manual, level: 0}}
+    text: § 8. Postanowienia końcowe
+  - p: 44
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Zmiany Umowy wymagają formy pisemnej pod rygorem nieważności.
+  - p: 45
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '2.', kind: decimal, src: manual, level: 0}}
+    text: 2. W sprawach nieuregulowanych Umową stosuje się przepisy Kodeksu cywilnego, a na podstawie art. 750 Kodeksu cywilnego – odpowiednio przepisy
+      o zleceniu.
+  - p: 46
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '3.', kind: decimal, src: manual, level: 0}}
+    text: 3. Spory wynikające z Umowy rozstrzyga sąd powszechny właściwy według przepisów Kodeksu postępowania cywilnego.
+  - p: 47
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '4.', kind: decimal, src: manual, level: 0}}
+    text: 4. Umowę sporządzono w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze Stron.
+  - {p: 48, role: spacer}
+  - {p: 49, role: spacer}
+  - p: 50
+    role: signature_line
+    layout: {align: justify, size: 11.0, tabs: 5}
+    text: "……………………………………\t\t\t\t\t……………………………………"
+    slots:
+    - {id: podpis_zamawiajacego, span: [0, 14], type: signature, hint: podpis Zamawiającego}
+    - {id: podpis_wykonawcy, span: [19, 33], type: signature, hint: podpis Wykonawcy}
+  - p: 51
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true, tabs: 5}
+    text: "(podpis Zamawiającego)\t\t\t\t\t(podpis Wykonawcy)"
+    hint_for: 50
+    hint_kind: label

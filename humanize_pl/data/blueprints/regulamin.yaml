@@ -58,3 +58,252 @@ sections:
     label_pl: postanowienia końcowe
     severity: required
     matches: ["postanowienia końcowe", "w sprawach nieuregulowanych"]
+
+# Dokument ogólny napisany dla tej kategorii: wśród realnych wzorów nie było
+# ogólnego. Przy użyciu wypełnia się wyłącznie pola (`slots`).
+document:
+  label_pl: Regulamin świadczenia usług drogą elektroniczną
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 1417, bottom: 1417, left: 1417, right: 1417}}
+  blocks:
+  - p: 0
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: REGULAMIN ŚWIADCZENIA USŁUG DROGĄ ELEKTRONICZNĄ
+  - {p: 1, role: spacer}
+  - p: 2
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 1., kind: paragraph, src: manual, level: 0}}
+    text: § 1. Postanowienia ogólne
+  - p: 3
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Regulamin określa zasady korzystania z serwisu internetowego ……………………………… (nazwa i adres internetowy serwisu), zwanego dalej Serwisem.
+    slots:
+    - {id: nazwa_i_adres_internetowy_serwisu, span: [64, 76], type: address, hint: nazwa i adres internetowy serwisu}
+    inline_hints:
+    - {span: [77, 112], text: nazwa i adres internetowy serwisu}
+  - p: 4
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '2.', kind: decimal, src: manual, level: 0}}
+    text: 2. Regulamin jest regulaminem, o którym mowa w art. 8 ustawy z dnia 18 lipca 2002 r. o świadczeniu usług drogą elektroniczną.
+  - p: 5
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '3.', kind: decimal, src: manual, level: 0}}
+    text: 3. Usługodawca udostępnia Regulamin nieodpłatnie przed zawarciem umowy, w sposób umożliwiający jego pozyskanie, odtwarzanie i utrwalanie.
+  - {p: 6, role: spacer}
+  - p: 7
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 2., kind: paragraph, src: manual, level: 0}}
+    text: § 2. Usługodawca
+  - p: 8
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: '1. Serwis jest prowadzony przez ……………………………… (imię i nazwisko lub firma usługodawcy) z siedzibą w ……………………………… (adres siedziby), ………………………………
+      (numer KRS albo wpis do CEIDG), NIP ………………… (numer NIP), dalej: Usługodawca.'
+    slots:
+    - {id: imie_i_nazwisko_lub_firma_uslugodawcy, span: [32, 44], type: person, hint: imię i nazwisko lub firma usługodawcy}
+    - {id: adres_siedziby, span: [98, 110], type: address, hint: adres siedziby}
+    - {id: numer_krs_albo_wpis_do_ceidg, span: [129, 141], type: id_number, hint: numer KRS albo wpis do CEIDG}
+    - {id: numer_nip, span: [178, 185], type: id_number, hint: numer NIP}
+    inline_hints:
+    - {span: [45, 84], text: imię i nazwisko lub firma usługodawcy}
+    - {span: [111, 127], text: adres siedziby}
+    - {span: [142, 172], text: numer KRS albo wpis do CEIDG}
+    - {span: [186, 197], text: numer NIP}
+  - p: 9
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '2.', kind: decimal, src: manual, level: 0}}
+    text: 2. Kontakt z Usługodawcą jest możliwy pod adresem poczty elektronicznej ………………………… (adres e-mail) oraz pod numerem telefonu …………………………
+      (numer telefonu).
+    slots:
+    - {id: adres_e_mail, span: [72, 82], type: address, hint: adres e-mail}
+    - {id: numer_telefonu, span: [124, 134], type: text, hint: numer telefonu}
+    inline_hints:
+    - {span: [83, 97], text: adres e-mail}
+    - {span: [135, 151], text: numer telefonu}
+  - {p: 10, role: spacer}
+  - p: 11
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 3., kind: paragraph, src: manual, level: 0}}
+    text: § 3. Definicje
+  - p: 12
+    role: field_header
+    layout: {align: justify, size: 11.0}
+    text: 'Użyte w Regulaminie pojęcia oznaczają:'
+  - p: 13
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Konsument – osoba fizyczna dokonująca z przedsiębiorcą czynności prawnej niezwiązanej bezpośrednio z jej działalnością gospodarczą
+      lub zawodową.
+  - p: 14
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '2.', kind: decimal, src: manual, level: 0}}
+    text: 2. Użytkownik – każdy podmiot korzystający z Serwisu.
+  - p: 15
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '3.', kind: decimal, src: manual, level: 0}}
+    text: 3. Usługa – usługa świadczona przez Usługodawcę drogą elektroniczną za pośrednictwem Serwisu.
+  - p: 16
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '4.', kind: decimal, src: manual, level: 0}}
+    text: 4. Umowa – umowa o świadczenie Usługi zawierana między Usługodawcą a Użytkownikiem na zasadach określonych w Regulaminie.
+  - {p: 17, role: spacer}
+  - p: 18
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 4., kind: paragraph, src: manual, level: 0}}
+    text: § 4. Rodzaje i zakres usług
+  - p: 19
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: '1. Za pośrednictwem Serwisu Usługodawca świadczy następujące Usługi: ……………………………………………… (rodzaje usług świadczonych w Serwisie).'
+    slots:
+    - {id: rodzaje_uslug_swiadczonych_w_serwisie, span: [69, 87], type: text, hint: rodzaje usług świadczonych w Serwisie, label: Za pośrednictwem
+        Serwisu Usługodawca świadczy następujące Usługi}
+    inline_hints:
+    - {span: [88, 127], text: rodzaje usług świadczonych w Serwisie}
+  - p: 20
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '2.', kind: decimal, src: manual, level: 0}}
+    text: 2. Do korzystania z Serwisu niezbędne są urządzenie z dostępem do sieci Internet, aktualna wersja przeglądarki internetowej oraz aktywny
+      adres poczty elektronicznej.
+  - p: 21
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '3.', kind: decimal, src: manual, level: 0}}
+    text: 3. Użytkownika obowiązuje zakaz dostarczania treści o charakterze bezprawnym.
+  - {p: 22, role: spacer}
+  - p: 23
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 5., kind: paragraph, src: manual, level: 0}}
+    text: § 5. Zawarcie umowy i jej rozwiązanie
+  - p: 24
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Umowa zostaje zawarta z chwilą ……………………………… (zdarzenie, z którym Umowa zostaje zawarta).
+    slots:
+    - {id: zdarzenie_z_ktorym_umowa_zostaje_zawarta, span: [34, 46], type: text, hint: 'zdarzenie, z którym Umowa zostaje zawarta'}
+    inline_hints:
+    - {span: [47, 90], text: 'zdarzenie, z którym Umowa zostaje zawarta'}
+  - p: 25
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '2.', kind: decimal, src: manual, level: 0}}
+    text: 2. Umowa o świadczenie Usługi o charakterze ciągłym zostaje zawarta na czas nieoznaczony. Użytkownik może ją wypowiedzieć w każdym czasie
+      ze skutkiem natychmiastowym, przesyłając oświadczenie na adres poczty elektronicznej Usługodawcy.
+  - p: 26
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '3.', kind: decimal, src: manual, level: 0}}
+    text: 3. Usługodawca może wypowiedzieć Umowę z ważnych przyczyn, z zachowaniem ………… (okres wypowiedzenia) okresu wypowiedzenia.
+    slots:
+    - {id: okres_wypowiedzenia, span: [73, 77], type: text, hint: okres wypowiedzenia}
+    inline_hints:
+    - {span: [78, 99], text: okres wypowiedzenia}
+  - {p: 27, role: spacer}
+  - p: 28
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 6., kind: paragraph, src: manual, level: 0}}
+    text: § 6. Odstąpienie od umowy przez konsumenta
+  - p: 29
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Konsument, który zawarł Umowę na odległość, może w terminie 14 dni odstąpić od niej bez podawania przyczyny i bez ponoszenia kosztów,
+      z wyjątkiem kosztów określonych w art. 33, art. 34 ust. 2 i art. 35 ustawy z dnia 30 maja 2014 r. o prawach konsumenta.
+  - p: 30
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '2.', kind: decimal, src: manual, level: 0}}
+    text: 2. Termin do odstąpienia od Umowy biegnie od dnia jej zawarcia, a w przypadku umowy, w wykonaniu której Usługodawca wydaje rzecz – od
+      objęcia rzeczy w posiadanie przez konsumenta.
+  - p: 31
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '3.', kind: decimal, src: manual, level: 0}}
+    text: 3. Oświadczenie o odstąpieniu od Umowy konsument może złożyć na formularzu, którego wzór stanowi załącznik nr 2 do ustawy o prawach konsumenta,
+      lub w innej formie, przesyłając je na adres ………………………… (adres do korespondencji lub e-mail).
+    slots:
+    - {id: adres_do_korespondencji_lub_e_mail, span: [188, 198], type: date, hint: adres do korespondencji lub e-mail}
+    inline_hints:
+    - {span: [199, 235], text: adres do korespondencji lub e-mail}
+  - p: 32
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '4.', kind: decimal, src: manual, level: 0}}
+    text: 4. Prawo odstąpienia od Umowy nie przysługuje w przypadkach określonych w art. 38 ustawy o prawach konsumenta.
+  - p: 33
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '5.', kind: decimal, src: manual, level: 0}}
+    text: 5. Przepisy dotyczące konsumenta stosuje się do osoby fizycznej zawierającej Umowę bezpośrednio związaną z jej działalnością gospodarczą,
+      gdy z treści Umowy wynika, że nie posiada ona dla niej charakteru zawodowego.
+  - {p: 34, role: spacer}
+  - p: 35
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 7., kind: paragraph, src: manual, level: 0}}
+    text: § 7. Reklamacje
+  - p: 36
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Reklamacje dotyczące Usług Użytkownik może składać na adres poczty elektronicznej ………………………… (adres e-mail do reklamacji) albo pisemnie
+      na adres siedziby Usługodawcy.
+    slots:
+    - {id: adres_e_mail_do_reklamacji, span: [85, 95], type: date, hint: adres e-mail do reklamacji}
+    inline_hints:
+    - {span: [96, 124], text: adres e-mail do reklamacji}
+  - p: 37
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '2.', kind: decimal, src: manual, level: 0}}
+    text: 2. Reklamacja powinna zawierać dane Użytkownika, opis problemu oraz żądanie Użytkownika.
+  - p: 38
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '3.', kind: decimal, src: manual, level: 0}}
+    text: 3. Usługodawca rozpatruje reklamację w terminie 14 dni od dnia jej otrzymania i informuje Użytkownika o sposobie jej rozpatrzenia.
+  - p: 39
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '4.', kind: decimal, src: manual, level: 0}}
+    text: 4. Konsument może skorzystać z pozasądowych sposobów rozpatrywania reklamacji i dochodzenia roszczeń, w tym z pomocy miejskiego lub powiatowego
+      rzecznika konsumentów.
+  - {p: 40, role: spacer}
+  - p: 41
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 8., kind: paragraph, src: manual, level: 0}}
+    text: § 8. Dane osobowe
+  - p: 42
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Administratorem danych osobowych Użytkowników jest Usługodawca. Informacje o przetwarzaniu danych osobowych zawiera ………………………… (dokument
+      z informacją o przetwarzaniu danych).
+    slots:
+    - {id: dokument_z_informacja_o_przetwarzaniu_danych, span: [119, 129], type: text, hint: dokument z informacją o przetwarzaniu danych}
+    inline_hints:
+    - {span: [130, 176], text: dokument z informacją o przetwarzaniu danych}
+  - {p: 43, role: spacer}
+  - p: 44
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 9., kind: paragraph, src: manual, level: 0}}
+    text: § 9. Zmiany Regulaminu
+  - p: 45
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Usługodawca może zmienić Regulamin z ważnych przyczyn, w szczególności w razie zmiany przepisów prawa lub zakresu świadczonych Usług.
+  - p: 46
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '2.', kind: decimal, src: manual, level: 0}}
+    text: 2. O zmianie Regulaminu Usługodawca informuje Użytkowników co najmniej ………… (liczba dni) dni przed jej wejściem w życie. Użytkownik, który
+      nie akceptuje zmian, może wypowiedzieć Umowę.
+    slots:
+    - {id: liczba_dni, span: [71, 75], type: text, hint: liczba dni}
+    inline_hints:
+    - {span: [76, 88], text: liczba dni}
+  - {p: 47, role: spacer}
+  - p: 48
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 10., kind: paragraph, src: manual, level: 0}}
+    text: § 10. Postanowienia końcowe
+  - p: 49
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. W sprawach nieuregulowanych Regulaminem mają zastosowanie przepisy prawa polskiego, w szczególności Kodeksu cywilnego, ustawy o świadczeniu
+      usług drogą elektroniczną oraz ustawy o prawach konsumenta.
+  - p: 50
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '2.', kind: decimal, src: manual, level: 0}}
+    text: 2. Regulamin wchodzi w życie z dniem ………………… (data wejścia w życie).
+    slots:
+    - {id: data_wejscia_w_zycie, span: [37, 44], type: date, hint: data wejścia w życie}
+    inline_hints:
+    - {span: [45, 67], text: data wejścia w życie}

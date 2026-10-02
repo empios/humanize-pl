@@ -1,0 +1,68 @@
+template: Pełnomocnictwo ogólne.docx
+category: pelnomocnictwo
+label_pl: Pełnomocnictwo procesowe
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: body
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: ……………..……………… (miejscowość), ……………………….. (data udzielenia pełnomocnictwa)
+  slots:
+  - {id: miejscowosc, span: [0, 13], type: place, hint: miejscowość}
+  - {id: data_udzielenia_pelnomocnictwa, span: [29, 40], type: date, hint: data udzielenia pełnomocnictwa}
+  inline_hints:
+  - {span: [14, 27], text: miejscowość}
+  - {span: [41, 73], text: data udzielenia pełnomocnictwa}
+- {p: 1, role: spacer}
+- p: 2
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: PEŁNOMOCNICTWO PROCESOWE
+- {p: 3, role: spacer}
+- p: 4
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 50, end: 67, italic: true}, {start: 117, end: 148, italic: true}, {start: 258, end: 368,
+        italic: true}]}
+  text: 'Niniejszym, w imieniu własnym ja, ……………………………………. (imię i nazwisko) (PESEL: ……………………………), udzielam ……………………………………….. (imię i nazwisko
+    Pełnomocnika) (PESEL: ……………………………) pełnomocnictwa do reprezentowania mnie w postępowaniu w sprawie ………………………………………………………….. (nazwa prowadzonego
+    postępowania - ewentualnie sygnatura oraz inne dane wskazujące na konkretne postępowanie).'
+  slots:
+  - {id: imie_i_nazwisko, span: [34, 49], type: person, hint: imię i nazwisko}
+  - {id: p4_2, span: [76, 87], type: pesel, context: imieniu własnym ja PESEL ▢ udzielam pełnomocnictwa}
+  - {id: imie_i_nazwisko_pelnomocnika, span: [99, 116], type: person, hint: imię i nazwisko Pełnomocnika}
+  - {id: p4_4, span: [156, 167], type: pesel, context: własnym ja udzielam PESEL ▢ pełnomocnictwa do}
+  - {id: nazwa_prowadzonego_postepowania_ewentualnie_sygn, span: [233, 257], type: text, hint: nazwa prowadzonego postępowania - ewentualnie sygnatura
+      oraz inne dane wskazujące na konkretne postępowanie}
+  inline_hints:
+  - {span: [50, 67], text: imię i nazwisko}
+  - {span: [117, 147], text: imię i nazwisko Pełnomocnika}
+  - {span: [258, 367], text: nazwa prowadzonego postępowania - ewentualnie sygnatura oraz inne dane wskazujące na konkretne postępowanie}
+- {p: 5, role: spacer}
+- p: 6
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: 'Niniejsze pełnomocnictwo obejmuje umocowanie Pełnomocnika do reprezentowania w niniejszej sprawie przed organami administracyjnymi i
+    sądami wszystkich instancji. '
+- {p: 7, role: spacer}
+- p: 8
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 37, end: 110, italic: true}]}
+  text: Pełnomocnictwo obejmuje/nie obejmuje (należy zdecydować, czy Pełnomocnik może udzielać dalszych pełnomocnictw) prawa do ustanawiania dalszych
+    pełnomocników.
+- {p: 9, role: spacer}
+- {p: 10, role: spacer}
+- p: 11
+  role: blank_line
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: ………………………………………………………………
+  slots:
+  - {id: wlasnoreczny_podpis_osoby_udzielajacej_pelnomocn, span: [0, 24], type: signature, hint: własnoręczny podpis osoby udzielającej pełnomocnictwa}
+- p: 12
+  role: hint
+  layout: {align: right, indent: {first: 708}, size: 10.0, spans: [{start: 1, end: 55, italic: true}]}
+  text: (własnoręczny podpis osoby udzielającej pełnomocnictwa)
+  hint_for: 11
+  hint_kind: label
+- {p: 13, role: spacer}
+- {p: 14, role: spacer}

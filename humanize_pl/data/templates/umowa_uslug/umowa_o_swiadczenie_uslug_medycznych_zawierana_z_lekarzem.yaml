@@ -1,0 +1,538 @@
+template: umowa o świadczenie usług medycznych (zawierana z lekarzem).docx
+category: umowa_uslug
+label_pl: Umowa o świadczenie usług medycznych (zawierana z lekarzem)
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: UMOWA
+- p: 1
+  role: body
+  layout: {align: center, size: 14.0, bold: true}
+  text: "o świadczenie usług medycznych \n"
+- {p: 2, role: spacer}
+- p: 3
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 41, end: 54, italic: true}]}
+  text: 'zawarta w dniu ……………………… roku w …………………… (miejscowość), pomiędzy:'
+  slots:
+  - {id: p3_1, span: [15, 24], type: date, context: zawarta w dniu ▢ roku w}
+  - {id: miejscowosc, span: [32, 40], type: place, hint: miejscowość}
+  inline_hints:
+  - {span: [41, 54], text: miejscowość}
+- {p: 4, role: spacer}
+- p: 5
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ………………………………………………………………………………………………
+  slots:
+  - {id: p5_1, span: [0, 36], type: text, context: ▢}
+- p: 6
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ………………………………………………………………………………………………
+  slots:
+  - {id: p6_1, span: [0, 36], type: text, context: ▢}
+- p: 7
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ………………………………………………………………………………………………
+  slots:
+  - {id: oznaczenie_podmiotu_leczniczego, span: [0, 36], type: text, hint: oznaczenie podmiotu leczniczego}
+- p: 8
+  role: hint
+  layout: {align: justify, size: 10.0, italic: true}
+  text: (oznaczenie podmiotu leczniczego)
+  hint_for: 7
+  hint_kind: label
+- {p: 9, role: spacer}
+- p: 10
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 30, end: 53, bold: true}]}
+  text: 'zwanym w dalszej części umowy Udzielającym zamówienia, '
+  alias: Udzielającym
+- {p: 11, role: spacer}
+- p: 12
+  role: party_connector
+  layout: {align: justify, size: 10.0}
+  text: a
+- {p: 13, role: spacer}
+- p: 14
+  role: body
+  layout: {align: justify, size: 10.0, tabs: 1}
+  text: "lek. med. ………………………………………………………… prowadzącym Indywidualną Praktykę Lekarską\nz siedzibą w ……………………, NIP …………………………, REGON ……………………………………\t"
+  slots:
+  - {id: p14_1, span: [10, 32], type: text, context: lek. med. ▢ prowadzącym Indywidualną}
+  - {id: p14_2, span: [89, 97], type: place, context: Lekarską z siedzibą w ▢ NIP REGON}
+  - {id: p14_3, span: [103, 113], type: id_number, context: z siedzibą w NIP ▢ REGON}
+  - {id: p14_4, span: [121, 135], type: id_number, context: siedzibą w NIP REGON ▢}
+- {p: 15, role: spacer}
+- p: 16
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 30, end: 53, bold: true}]}
+  text: zwanym w dalszej części umowy Przyjmującym zamówienie,
+  alias: Przyjmującym
+- {p: 17, role: spacer}
+- p: 18
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 16, end: 24, bold: true}]}
+  text: zwanymi łącznie Stronami.
+  alias: Stronami
+- {p: 19, role: spacer}
+- p: 20
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+  text: § 1
+- p: 21
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}, {start: 35,
+        end: 57, bold: true}, {start: 163, end: 187, bold: true}]}
+  text: Udzielający zamówienia powierza, a Przyjmujący zamówienie przyjmuje do wykonania udzielanie świadczeń zdrowotnych w zakresie ……………………………………
+    w podmiocie leczniczym Udzielającego zamówienia przy ul. ……………………………… w ……...................
+  slots:
+  - {id: p21_1, span: [125, 139], type: text, context: świadczeń zdrowotnych w zakresie ▢ w podmiocie}
+  - {id: p21_2, span: [197, 209], type: address, context: Udzielającego zamówienia przy ul. ▢ w}
+  - {id: p21_3, span: [212, 233], type: place, context: zamówienia przy ul. w ▢}
+- p: 22
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 157, end: 182, bold: true}]}
+  text: Miejscem udzielania świadczeń zdrowotnych objętych przedmiotem niniejszej umowy jest miejsce wezwania – miejsce, w którym znajduje się
+    pacjent poza siedzibą Udzielającego zamówienia.
+- p: 23
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: "[opcjonalnie] Zakres świadczeń zdrowotnych wykonywanych w ramach umowy określony został \nw załączniku nr 1 do niniejszej umowy — stanowiącym\
+    \ jej integralną część."
+- p: 24
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}, {start: 124,
+        end: 148, bold: true}, {start: 220, end: 243, bold: true}, {start: 298, end: 322, bold: true}]}
+  text: Przyjmujący zamówienie zobowiązuje się do zapewnienia wykonywania świadczeń zdrowotnych w formie stacjonarnej poza siedzibą Udzielającego
+    zamówienia zgodnie z comiesięcznym harmonogramem (grafikiem) ustalonym wspólnie z Udzielającym zamówienia i ustalonymi w tym zakresie zasadami
+    obowiązującymi u Udzielającego zamówienie.
+- p: 25
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 24, bold: true}]}
+  text: Przyjmującemu zamówienie przysługuje możliwość nieświadczenia usług objętych niniejszą umową przez okres do ……………………… dni roboczych rocznie
+    z zachowaniem prawa do wynagrodzenia w wysokości odpowiadającej……….. godzinom świadczenia usług (wg wynagrodzenia z § 7 ust. 1 umowy za świadczenie
+    usług medycznych) za jeden dzień możliwości nieświadczenia usług.
+  slots:
+  - {id: p25_1, span: [108, 117], type: date, context: umową przez okres do ▢ dni roboczych}
+  - {id: p25_2, span: [203, 208], type: text, context: wynagrodzenia w wysokości odpowiadającej ▢ godzinom świadczenia}
+- p: 26
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}, spans: [{start: 43, end: 65, bold: true}, {start: 112,
+        end: 136, bold: true}, {start: 315, end: 340, bold: true}, {start: 402, end: 426, bold: true}, {start: 427, end: 450, bold: true}]}
+  text: "W celu ustalenia dni nieświadczenia usług, Przyjmujący zamówienie jest zobowiązany złożyć pisemną informację do Udzielającego zamówienia\
+    \ ze wskazaniem, w jakich dniach dni nieświadczenia usług miałyby przypadać, co najmniej na 14 dni przed planowaną datą ich wykorzystania.\
+    \ Ustalenie dni nieświadczenia usług przez Przyjmującego zamówienie  \nw sposób określony w zdaniu poprzedzającym jest wiążące dla Udzielającego\
+    \ zamówienia. Udzielający zamówienia może wedle swobodnego uznania wyrazić zgodę na dni wolne jedynie w przypadku, gdy wniosek zostanie złożony\
+    \ z naruszeniem 14-dniowego terminu określonego\nw zdaniu pierwszym."
+- p: 27
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '7.', kind: decimal, src: auto, level: 0}, spans: [{start: 70, end: 94, bold: true}, {start: 320,
+        end: 345, bold: true}]}
+  text: Za niewykorzystane w danym roku kalendarzowym dni wskazanych w ust. 6 Przyjmującemu zamówienie przysługuje ekwiwalent pieniężny obliczany
+    zgodnie z ust. 6. Ekwiwalent będzie wypłacany łącznie z wynagrodzeniem za miesiąc styczeń roku następnego po roku, w którym niewykorzystane
+    dni, o których mowa powyżej przysługiwały Przyjmującemu zamówienie.
+- p: 28
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '8.', kind: decimal, src: auto, level: 0}, spans: [{start: 58, end: 80, bold: true}]}
+  text: Świadczenia zdrowotne objęte przedmiotem niniejszej Umowy Przyjmujący zamówienie zobowiązuje się wykonywać z najwyższą starannością, zgodnie
+    ze wskazaniami aktualnej wiedzy medycznej, dostępnymi metodami i środkami zapobiegania, rozpoznawania i leczenia chorób, respektując prawa
+    pacjenta oraz zgodnie z zasadami etyki zawodowej.
+- p: 29
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '9.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}, {start: 193,
+        end: 215, bold: true}]}
+  text: Przyjmujący zamówienie będzie udzielać świadczeń będących przedmiotem niniejszej umowy za pomocą własnego sprzętu i aparatury medycznej,
+    których stan jest zgodny z wymogami BHP i co do którego Przyjmujący zamówienie posiada niezbędne certyfikaty.
+- {p: 30, role: spacer}
+- p: 31
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+  text: § 2
+- p: 32
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 47, end: 69, bold: true}]}
+  text: Świadczenia zdrowotne będące przedmiotem umowy Przyjmujący zamówienie zobowiązuje się wykonać w szczególności zgodnie zasadami przyjętymi
+    w zakresie czynności wykonywanych przez lekarza specjalistę.
+- p: 33
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}]}
+  text: Przyjmujący zamówienie dołoży starań zmierzających do stałego podnoszenia swoich kwalifikacji zawodowych, w tym uzupełniania wiedzy medycznej
+    o aktualne wskazania.
+- p: 34
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 64, end: 86, bold: true}, {start: 155,
+        end: 179, bold: true}]}
+  text: W czasie wykonywania obowiązków wynikających z niniejszej umowy Przyjmujący zamówienie może opuścić miejsce wykonywania tych obowiązków
+    po uzyskaniu zgody Udzielającego zamówienia lub osoby przez niego wskazanej.
+- p: 35
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}, {start: 147,
+        end: 171, bold: true}]}
+  text: Przyjmujący zamówienie zobowiązuje się zapoznać ze wszystkimi regulaminami, zarządzeniami oraz innymi aktami wewnętrznymi przedstawionymi
+    mu przez Udzielającego zamówienia związanymi z wykonywaniem niniejszej umowy.
+- p: 36
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 23, bold: true}, {start: 212,
+        end: 234, bold: true}]}
+  text: 'Przyjmujący zamówienie zaopatruje się na swój koszt w odpowiednią ilość podstawowej odzieży ochronnej oraz obuwie robocze wymagane do
+    świadczenia usług wskazanych w § 1. zgodne z przepisami prawa w tym zakresie. Przyjmujący zamówienie jest obowiązany do noszenia tej odzieży
+    i obuwia przy świadczeniu tych usług. '
+- {p: 37, role: spacer}
+- p: 38
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+  text: § 3
+- p: 39
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 0, end: 22, bold: true}, {start: 36, end: 61, bold: true}]}
+  text: 'Przyjmujący zamówienie ponosi wobec Udzielającego zamówienia odpowiedzialność za udzielanie lub zaniechanie wykonywania przez siebie
+    świadczeń zdrowotnych do wysokości sumy gwarancyjnej posiadanego przez siebie obowiązkowego ubezpieczenia OC, chyba, że szkoda powstała z
+    wyłącznej winy lub rażącego niedbalstwa Przyjmującego zamówienie – w takich sytuacjach jego odpowiedzialność jest nielimitowana kwotowo. '
+- {p: 40, role: spacer}
+- {p: 41, role: spacer}
+- p: 42
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+  text: § 4
+- p: 43
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}]}
+  text: Przyjmujący zamówienie zobowiązuje się do wykonywania przedmiotu niniejszej umowy osobiście, z zastrzeżeniem postanowień poniższych.
+- p: 44
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 74, end: 96, bold: true}, {start: 148,
+        end: 172, bold: true}]}
+  text: W razie wystąpienia potrzeby ustanowienia zastępstwa, przez osobę trzecią Przyjmujący zamówienie zobowiązany jest o tym fakcie powiadomić
+    na piśmie Udzielającego zamówienia z co najmniej 2-dniowym wyprzedzeniem z jednoczesnym wskazaniem osoby zastępującej.
+- p: 45
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 118, end: 142, bold: true}, {
+        start: 144, end: 166, bold: true}, {start: 290, end: 314, bold: true}]}
+  text: 'W razie wystąpienia potrzeby ustanowienia zastępstwa przez osobę trzecią, która była niemożliwa do przewidzenia przez Przyjmującego zamówienie,
+    Przyjmujący zamówienie zobowiązany jest o tym fakcie powiadomić możliwie jak najszybciej telefonicznie lub mailowo lub o ile to możliwe na
+    piśmie Udzielającego zamówienia z jednoczesnym wskazaniem osoby zastępującej. '
+- p: 46
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 200, end: 224, bold: true}]}
+  text: Osoba zastępująca powinna posiadać wszystkie niezbędne kwalifikacje wymagane do wykonywania świadczeń zdrowotnych objętych przedmiotem
+    niniejszej umowy, nie mniejsze od kwalifikacji posiadanych przez Przyjmującego zamówienie.
+- p: 47
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}, spans: [{start: 78, end: 100, bold: true}]}
+  text: Wszelkie roszczenia związane z działaniami i zaniechaniami osoby zastępującej Udzielający zamówienia zobowiązuje się kierować bezpośrednio
+    do osoby zastępującej.
+- p: 48
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}, {start: 149,
+        end: 173, bold: true}, {start: 213, end: 237, bold: true}]}
+  text: Przyjmujący zamówienie wykonuje wynikające z niniejszej umowy zobowiązania w sposób samodzielny, bez bezpośredniego nadzoru i kierownictwa
+    ze strony Udzielającego zamówienia, z zastrzeżeniem uprawnień kontrolnych Udzielającego zamówienia.
+- {p: 49, role: spacer}
+- p: 50
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+  text: § 5
+- p: 51
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'Przyjmujący zamówienie zobowiązuje się do:'
+- p: 52
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}, spans: [{start: 329, end: 353, bold: true}]}
+  text: "prowadzenia i udostępniania dokumentacji medycznej zgodnie z obowiązującymi w tym zakresie przepisami prawa, w szczególności rozporządzeniem\
+    \ Ministra Zdrowia z dnia\n6 kwietnia 2020 r. w sprawie rodzajów, zakresu i wzorów dokumentacji medycznej oraz sposobu jej przetwarzania (t.j.\
+    \ Dz.U.2024.798) oraz zgodnie z obowiązującymi \nu Udzielającego zamówienia zasadami i wzorami;"
+- p: 53
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+  text: 'do znajomości i przestrzegania przepisów określających prawa pacjenta w tym ustawy
+
+    z dnia 6 listopada 2008 r. o prawach pacjenta i Rzeczniku Praw Pacjenta (t.j. Dz.U.2024.581);'
+- p: 54
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}, spans: [{start: 89, end: 113, bold: true}]}
+  text: znajomości i przestrzegania standardów udzielania świadczeń zdrowotnych ustalanych przez Udzielającego zamówienia;
+- p: 55
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 4), kind: decimal, src: auto, level: 0}, spans: [{start: 41, end: 65, bold: true}]}
+  text: stosowania się do zarządzeń wewnętrznych Udzielającego zamówienia o charakterze porządkowym i organizacyjnym;
+- p: 56
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 5), kind: decimal, src: auto, level: 0}}
+  text: przestrzegania przepisów rozporządzenia Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób
+    fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych oraz uchylenia dyrektywy 95/46/WE (ogólne
+    rozporządzenie o ochronie danych) (dalej jako RODO);
+- p: 57
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 6), kind: decimal, src: auto, level: 0}, spans: [{start: 118, end: 142, bold: true}]}
+  text: do współpracy z lekarzami, pielęgniarkami, pielęgniarzami i innymi osobami udzielającymi świadczeń na rzecz pacjentów Udzielającego zamówienia
+    w czasie realizacji umowy.
+- p: 58
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 65, end: 87, bold: true}]}
+  text: Właścicielem dokumentacji, o której mowa w § 5 ust. 1 pkt 1 jest Udzielający zamówienia.
+- {p: 59, role: spacer}
+- p: 60
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 6, kind: paragraph, src: manual, level: 0}}
+  text: § 6
+- p: 61
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}]}
+  text: Przyjmujący zamówienie zobowiązany jest do utrzymywania ważnego ubezpieczenia odpowiedzialności cywilnej, w tym zakresie oraz nie zmniejszania
+    jego zakresu, w stosunku do przedłożonej wraz z Umową polisy.
+- p: 62
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}]}
+  text: 'Przyjmujący zamówienie zobowiązany jest do posiadania praktycznej książeczki zdrowia
+
+    i aktualnych badań profilaktycznych. '
+- p: 63
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}, {start: 69,
+        end: 94, bold: true}]}
+  text: Przyjmujący zamówienie zobowiązuje się do aktualizowania, na żądanie Udzielającego zamówienia, dokumentów wskazanych w ust. 1 poprzez
+    dostarczenie ich kopii.
+- {p: 64, role: spacer}
+- p: 65
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 7, kind: paragraph, src: manual, level: 0}}
+  text: § 7
+- p: 66
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}, {start: 91,
+        end: 115, bold: true}]}
+  text: 'Przyjmujący zamówienie za wykonane świadczenia zdrowotne objęte niniejszą umową otrzyma od Udzielającego zamówienia wynagrodzenie w wysokości:'
+- p: 67
+  role: item
+  layout: {align: justify, indent: {left: 1080}, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+  text: ………
+  slots:
+  - {id: p67_1, span: [0, 3], type: text, context: ▢}
+- p: 68
+  role: item
+  layout: {align: justify, indent: {left: 1080}, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+  text: ………
+  slots:
+  - {id: p68_1, span: [0, 3], type: text, context: ▢}
+- p: 69
+  role: item
+  layout: {align: justify, indent: {left: 1080}, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}}
+  text: ………
+  slots:
+  - {id: p69_1, span: [0, 3], type: text, context: ▢}
+- p: 70
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Strony ustalają miesiąc kalendarzowy jako okres rozliczeniowy.
+- p: 71
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 186, end: 210, bold: true}, {
+        start: 217, end: 241, bold: true}]}
+  text: Wynagrodzenie obliczone na podstawie ust. 1, wypłacane będzie comiesięcznie, w terminie do ………… dnia miesiąca następującego po zakończonym
+    miesiącu rozliczeniowym, na podstawie złożonej Udzielającemu zamówienia przez Przyjmującego zamówienie prawidłowo wystawionej faktury za wykonane
+    świadczenia, najpóźniej do …… dnia miesiąca następującego po miesiącu rozliczeniowym.
+  slots:
+  - {id: p71_1, span: [91, 95], type: date, context: comiesięcznie w terminie do ▢ dnia miesiąca}
+  - {id: p71_2, span: [312, 314], type: date, context: wykonane świadczenia najpóźniej do ▢ dnia miesiąca}
+- p: 72
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 54, end: 78, bold: true}]}
+  text: 'Należność wypłacana będzie przelewem na konto bankowe Przyjmującego zamówienie
+
+    o numerze rachunku: ……………………………… .'
+  slots:
+  - {id: p72_1, span: [99, 111], type: text, context: zamówienie o numerze rachunku ▢}
+- p: 73
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}, spans: [{start: 57, end: 82, bold: true}]}
+  text: Dniem płatności jest dzień obciążenia rachunku bankowego Udzielającego zamówienia.
+- {p: 74, role: spacer}
+- p: 75
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 8, kind: paragraph, src: manual, level: 0}}
+  text: § 8
+- p: 76
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}]}
+  text: Przyjmujący zamówienie zobowiązany jest do udzielania organom kontrolnym Narodowego Funduszu Zdrowia oraz innych uprawnionych do kontroli
+    podmiotom, wszelkich niezbędnych informacji i wyjaśnień związanych z wykonywaniem niniejszej umowy w terminie wyznaczonym przez Narodowy Fundusz
+    Zdrowia lub inne uprawnione podmioty.
+- p: 77
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}, {start: 34,
+        end: 58, bold: true}]}
+  text: 'Przyjmujący zamówienie przedstawi Udzielającemu zamówienia na jego żądanie wszelkie informacje związane z:'
+- p: 78
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+  text: udzielonymi na podstawie niniejszej umowy świadczeniami zdrowotnymi;
+- p: 79
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}, spans: [{start: 62, end: 87, bold: true}]}
+  text: prowadzeniem wymaganej przepisami prawa i aktami wewnętrznymi Udzielającego zamówienia dokumentacji medycznej;
+- p: 80
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}, spans: [{start: 24, end: 48, bold: true}]}
+  text: gospodarowaniem mieniem Udzielającego zamówienia, w tym lekami, materiałami opatrunkowymi i pozostałymi materiałami.
+- {p: 81, role: spacer}
+- p: 82
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 9, kind: paragraph, src: manual, level: 0}}
+  text: § 9
+- p: 83
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: Umowa jest zawarta na czas nieokreślony i wchodzi w życie w dniu …………… / określony i obowiązuje od dnia ……………… r. do dnia …………………… r.
+  slots:
+  - {id: p83_1, span: [65, 70], type: date, context: w życie w dniu ▢ określony i}
+  - {id: p83_2, span: [104, 110], type: date, context: i obowiązuje od dnia ▢ r. do}
+  - {id: p83_3, span: [122, 130], type: date, context: dnia r. do dnia ▢ r.}
+- {p: 84, role: spacer}
+- p: 85
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 10, kind: paragraph, src: manual, level: 0}}
+  text: § 10
+- p: 86
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 11, bold: true}]}
+  text: Strony mogą rozwiązać umowę z zachowaniem trzymiesięcznego okresu wypowiedzenia ze skutkiem na koniec miesiąca kalendarzowego.
+- p: 87
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 23, bold: true}]}
+  text: 'Udzielający zamówienia może rozwiązać umowę ze skutkiem natychmiastowym w przypadku:'
+- p: 88
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}, spans: [{start: 44, end: 68, bold: true}]}
+  text: rażącego naruszenia postanowień umowy przez Przyjmującego zamówienie,
+- p: 89
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}, spans: [{start: 14, end: 38, bold: true}]}
+  text: stawienia się Przyjmującego zamówienie do udzielania świadczeń w stanie nietrzeźwości,
+- p: 90
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}, spans: [{start: 19, end: 43, bold: true}]}
+  text: brak stawienia się Przyjmującego zamówienie do udzielania świadczeń zgodnie z harmonogramem,
+- p: 91
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 4), kind: decimal, src: auto, level: 0}, spans: [{start: 12, end: 36, bold: true}, {start: 118,
+        end: 142, bold: true}]}
+  text: Pozbawienie Przyjmującego zamówienie uprawnień zawodowych, zawieszenie lub zamknięcie działalności gospodarczej przez Przyjmującego zamówienie.
+- p: 92
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}]}
+  text: Przyjmujący zamówienie może rozwiązać umowę ze skutkiem natychmiastowym w przypadku opóźnień w płatności wynagrodzenia, o którym mowa
+    w § 7, trwających przez co najmniej dwa pełne okresy płatności.
+- p: 93
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 26, end: 48, bold: true}, {start: 89,
+        end: 113, bold: true}]}
+  text: W razie rozwiązania umowy Przyjmujący zamówienie zobowiązany jest niezwłocznie przekazać Udzielającemu zamówienie wszelką dokumentację
+    medyczną oraz wszelkie inne dokumenty, jakie sporządził, zebrał, opracował lub otrzymał w trakcie trwania umowy w związku z jej wykonaniem.
+- p: 94
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+  text: Wypowiedzenie lub rozwiązanie niniejszej umowy powinno nastąpić w formie pisemnej pod rygorem nieważności.
+- {p: 95, role: spacer}
+- p: 96
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 11, kind: paragraph, src: manual, level: 0}}
+  text: § 11
+- p: 97
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}, {start: 55,
+        end: 79, bold: true}, {start: 300, end: 324, bold: true}]}
+  text: Udzielający zamówienia, w trybie art. 28 RODO powierza Przyjmującemu zamówienie dane osobowe, tj. dokumentacja medyczna indywidualna,
+    dokumentacja medyczna zbiorcza, dokumentacja ambulatoryjna indywidualna, dokumentacja ambulatoryjna zbiorcza w celu realizacji umowy wykonywania
+    usług medycznych dla Udzielającego zamówienia.
+- p: 98
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}]}
+  text: Przyjmujący zamówienie zapewnia przestrzeganie zasad przetwarzania i ochrony danych osobowych zgodnie z przepisami ustawy o ochronie danych
+    osobowych, a od 25 maja 2018 r., RODO oraz wydanymi na jego podstawie krajowymi przepisami z zakresu ochrony danych osobowych.
+- p: 99
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}]}
+  text: 'Przyjmujący zamówienie będzie przetwarzał powierzone na podstawie umowy następujące rodzaje danych osobowych: szczególne oraz dane dotyczące
+    pacjentów, w postaci imion, nazwisk, nr PESEL, adresu zamieszkania, stanu zdrowia, oraz danych w dokumentacji medycznej wyłącznie w ww. celu.'
+- p: 100
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}]}
+  text: Przyjmujący zamówienie zobowiązuje się dołożyć należytej staranności przy przetwarzaniu powierzonych danych osobowych.
+- p: 101
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}]}
+  text: 'Przyjmujący zamówienie zobowiązuje się do zachowania w tajemnicy, o której mowa w art. 28 ust. 3 lit. b RODO, danych przetwarzanych w
+    zakresie obowiązywania niniejszej umowy,
+
+    a w szczególności  nieudostępniania ich innym podmiotom, także w postaci zagregowanych danych statystycznych, zarówno podczas trwania umowy,
+    jak i po jej ustaniu.'
+- p: 102
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}]}
+  text: "Przyjmujący zamówienie jest odpowiedzialny za przetwarzanie danych osobowych niezgodnie \nz treścią umowy, RODO lub wydanymi na jego\
+    \ podstawie krajowymi przepisami z zakresu ochrony danych osobowych, a w szczególności za udostępnienie powierzonych do przetwarzania danych\
+    \ osobowych osobom nieupoważnionym."
+- {p: 103, role: spacer}
+- p: 104
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 12, kind: paragraph, src: manual, level: 0}}
+  text: § 12
+- p: 105
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Zmiany umowy wymagają formy pisemnej pod rygorem nieważności.
+- p: 106
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: W sprawach nieuregulowanych niniejszą umową mają zastosowanie przepisy ustawy z dnia 23 kwietnia 1964 r. Kodeks cywilny i innych przepisów
+    powszechnie obowiązujących, w tym z zakresu ochrony zdrowia.
+- p: 107
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 145, end: 170, bold: true}]}
+  text: 'Ewentualne spory mogące wyniknąć przy realizacji umowy, rozstrzygane będą przez właściwy miejscowo sąd powszechny ze względu na miejsce
+    siedziby Udzielającego zamówienia. '
+- p: 108
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: Umowę sporządzono w 2 (dwóch) jednobrzmiących egzemplarzach, po 1 (jednym) egzemplarzu dla każdej ze Stron.
+- {p: 109, role: spacer}
+- {p: 110, role: spacer}
+- p: 111
+  role: signature_line
+  layout: {align: justify, size: 10.0, tabs: 2}
+  text: "                ………………………………………\t\t                                  ………………………………………"
+  slots:
+  - {id: p111_1, span: [16, 31], type: signature, context: ▢}
+  - {id: p111_2, span: [67, 82], type: signature, context: ▢}
+- p: 112
+  role: body
+  layout: {align: justify, size: 10.0, bold: true, tabs: 5}
+  text: "                Przyjmujący zamówienie\t\t\t\t\t Udzielający zamówienia"
+- {p: 113, role: spacer}
+- {p: 114, role: spacer}
+- p: 115
+  role: field_header
+  layout: {align: justify, size: 10.0, bold: true}
+  text: 'Załączniki:'
+- p: 116
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Zakres czynności wykonywanych w ramach umowy.
+- p: 117
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Oryginał lub uwierzytelniona kopia polisy ubezpieczeniowej.
+- p: 118
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Prawo wykonywania zawodu lekarza Przyjmującego zamówienie.
+- {p: 119, role: spacer}
+- {p: 120, role: spacer}
+- {p: 121, role: spacer}

@@ -1,0 +1,351 @@
+template: Umowa o prowadzenie mediów społecznościowych.docx
+category: umowa_serwisu
+label_pl: Umowa o prowadzenie mediów społecznościowych
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: Umowa o prowadzenie mediów społecznościowych
+- {p: 1, role: spacer}
+- {p: 2, role: spacer}
+- p: 3
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: 'Zawarta w dniu ………………… w …………………, '
+  slots:
+  - {id: p3_1, span: [15, 22], type: date, context: Zawarta w dniu ▢ w}
+  - {id: p3_2, span: [25, 32], type: place, context: Zawarta w dniu w ▢}
+- {p: 4, role: spacer}
+- p: 5
+  role: party_connector
+  layout: {align: justify, size: 10.0}
+  text: 'pomiędzy:'
+- {p: 6, role: spacer}
+- p: 7
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 32, end: 45, bold: true}]}
+  text: "……………………………………………… zwanym dalej Zleceniodawcą, \n[imię i nazwisko/firma; miejsce zamieszkania/siedziba i adres; nr i seria dokumentu\
+    \ tożsamości; PESEL, NIP]"
+  slots:
+  - {id: p7_1, span: [0, 18], type: text, context: ▢ zwanym dalej}
+- {p: 8, role: spacer}
+- p: 9
+  role: party_connector
+  layout: {align: justify, size: 10.0}
+  text: 'a
+
+    '
+- p: 10
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 32, end: 46, bold: true}]}
+  text: "……………………………………………… zwanym dalej Zleceniobiorcą, \n[imię i nazwisko/firma; miejsce zamieszkania/siedziba i adres; nr i seria dokumentu\
+    \ tożsamości; PESEL, NIP]"
+  slots:
+  - {id: p10_1, span: [0, 18], type: text, context: ▢ zwanym dalej}
+- {p: 11, role: spacer}
+- p: 12
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: 'zwanymi dalej łącznie stronami, '
+- {p: 13, role: spacer}
+- {p: 14, role: spacer}
+- p: 15
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+  text: § 1
+- p: 16
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'Zleceniobiorca zobowiązuje się do prowadzenia mediów społecznościowych Zleceniodawcy za wynagrodzeniem. '
+- p: 17
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Zleceniobiorca zobowiązuje się do prowadzenia następujących stron w następujących serwisach:'
+- p: 18
+  role: item
+  layout: {align: justify, indent: {left: 1416}, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+  text: ……………………………
+  slots:
+  - {id: p18_1, span: [0, 11], type: text, context: ▢}
+- p: 19
+  role: item
+  layout: {align: justify, indent: {left: 1788}, size: 10.0, marker: {text: ●, kind: bullet, src: auto, level: 0}}
+  text: ……………………………..
+  slots:
+  - {id: p19_1, span: [0, 13], type: text, context: ▢}
+- p: 20
+  role: item
+  layout: {align: justify, indent: {left: 1788}, size: 10.0, marker: {text: ●, kind: bullet, src: auto, level: 0}}
+  text: ……………………………..
+  slots:
+  - {id: p20_1, span: [0, 13], type: text, context: ▢}
+- p: 21
+  role: item
+  layout: {align: justify, indent: {left: 1788}, size: 10.0, marker: {text: ●, kind: bullet, src: auto, level: 0}}
+  text: ……………………………..
+  slots:
+  - {id: p21_1, span: [0, 13], type: text, context: ▢}
+- p: 22
+  role: item
+  layout: {align: justify, indent: {left: 1416}, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+  text: ……………………………
+  slots:
+  - {id: p22_1, span: [0, 11], type: text, context: ▢}
+- p: 23
+  role: item
+  layout: {align: justify, indent: {left: 1788}, size: 10.0, marker: {text: ●, kind: bullet, src: auto, level: 0}}
+  text: ……………………………..
+  slots:
+  - {id: p23_1, span: [0, 13], type: text, context: ▢}
+- p: 24
+  role: item
+  layout: {align: justify, indent: {left: 1788}, size: 10.0, marker: {text: ●, kind: bullet, src: auto, level: 0}}
+  text: ……………………………..
+  slots:
+  - {id: p24_1, span: [0, 13], type: text, context: ▢}
+- p: 25
+  role: item
+  layout: {align: justify, indent: {left: 1788}, size: 10.0, marker: {text: ●, kind: bullet, src: auto, level: 0}}
+  text: ……………………………..
+  slots:
+  - {id: p25_1, span: [0, 13], type: text, context: ▢}
+- p: 26
+  role: item
+  layout: {align: justify, indent: {left: 1416}, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
+  text: ……………………………
+  slots:
+  - {id: p26_1, span: [0, 11], type: text, context: ▢}
+- p: 27
+  role: item
+  layout: {align: justify, indent: {left: 1788}, size: 10.0, marker: {text: ●, kind: bullet, src: auto, level: 0}}
+  text: ……………………………..
+  slots:
+  - {id: p27_1, span: [0, 13], type: text, context: ▢}
+- p: 28
+  role: item
+  layout: {align: justify, indent: {left: 1788}, size: 10.0, marker: {text: ●, kind: bullet, src: auto, level: 0}}
+  text: ……………………………..
+  slots:
+  - {id: p28_1, span: [0, 13], type: text, context: ▢}
+- p: 29
+  role: item
+  layout: {align: justify, indent: {left: 1788}, size: 10.0, marker: {text: ●, kind: bullet, src: auto, level: 0}}
+  text: ……………………………..
+  slots:
+  - {id: p29_1, span: [0, 13], type: text, context: ▢}
+- p: 30
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: 'W ramach prowadzenia stron, o których mowa w ust. 2, Zleceniobiorca zobowiązuje się do:'
+- p: 31
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+  text: …………………………..
+  slots:
+  - {id: p31_1, span: [0, 12], type: text, context: ▢}
+- p: 32
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+  text: …………………………..
+  slots:
+  - {id: p32_1, span: [0, 12], type: text, context: ▢}
+- p: 33
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
+  text: …………………………..
+  slots:
+  - {id: p33_1, span: [0, 12], type: text, context: ▢}
+- p: 34
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: 'Strony mogą określić aneksem w formie pisemnej dodatkowe zasady wykonywania zlecenia. '
+- {p: 35, role: spacer}
+- {p: 36, role: spacer}
+- p: 37
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+  text: '§ 2 '
+- p: 38
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'Zleceniodawca zobowiązuje się do przekazania Zleceniobiorcy dostępu do kont wskazanych w § 1 ust. 2. '
+- p: 39
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Zleceniobiorca nie będzie uniemożliwiał lub utrudniał Zleceniodawcy w żaden sposób dostępu do kont wskazanych w § 1 ust. 2 w trakcie
+    trwania umowy oraz po jej zakończeniu. '
+- {p: 40, role: spacer}
+- p: 41
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+  text: § 3
+- p: 42
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'Zleceniobiorca przenosi na Zleceniodawcę prawa autorskie do wszystkich treści zamieszczonych na stronach lub fanpage’ach, o których mowa
+    w § 1 ust. 2, wytworzonych przez Zleceniobiorcę w trakcie trwania umowy i w ramach jej wykonywania. '
+- p: 43
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Strony mogą w dodatkowym porozumieniu zawartym w formie pisemnej pod rygorem nieważności ustalić, że prawa autorskie do niektórych treści
+    wytworzonych przez Zleceniobiorcę będą przeniesione na Zleceniodawcę za dodatkowym wynagrodzeniem. '
+- {p: 44, role: spacer}
+- p: 45
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+  text: § 4
+- p: 46
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: 'Zlecenie opisane w § 1 wykonywane będzie w okresie od ………………………….. do………………….. / bezterminowo. '
+  slots:
+  - {id: p46_1, span: [54, 66], type: date, context: będzie w okresie od ▢ do bezterminowo.}
+  - {id: p46_2, span: [69, 78], type: date, context: w okresie od do ▢ bezterminowo.}
+- {p: 47, role: spacer}
+- p: 48
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+  text: § 5
+- p: 49
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Zleceniodawca zobowiązuje się za wykonanie/wykonywanie czynności wskazanych w § 1, zapłacić Zleceniobiorcy wynagrodzenie w kwocie ……………...
+    (słownie:……………………………… ……………………….. ) złotych brutto za każdą przepracowaną godzinę przez Zleceniobiorcę.
+  slots:
+  - {id: p49_1, span: [130, 138], type: text, context: Zleceniobiorcy wynagrodzenie w kwocie ▢ złotych brutto}
+  - {id: p49_2, span: [148, 172], type: amount, context: wynagrodzenie w kwocie słownie ▢ złotych brutto}
+- p: 50
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Wynagrodzenie, o którym mowa w § 3 pkt 1 płatne będzie: w terminie …… dni od wykonania umowy na podstawie prawidłowo wystawionej faktury,
+    w terminie …… dni po otrzymaniu przez Zleceniodawcę prawidłowo wystawionej faktury za miesiąc poprzedni. '
+  slots:
+  - {id: wynagrodzenie_o_ktorym_mowa_w_3_pkt_1_platne_bed, span: [67, 69], type: amount, label: 'Wynagrodzenie, o którym mowa w § 3 pkt 1 płatne
+      będzie'}
+  - {id: wynagrodzenie_o_ktorym_mowa_w_3_pkt_1_platne_bed_2, span: [149, 151], type: amount, label: 'Wynagrodzenie, o którym mowa w § 3 pkt 1
+      płatne będzie'}
+- p: 51
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Płatność wynagrodzenia, o którym mowa w § 3 pkt 2 nastąpi przelewem na konto bankowe Zleceniobiorcy o nr …………………………………………………………….. .
+  slots:
+  - {id: p51_1, span: [105, 130], type: text, context: bankowe Zleceniobiorcy o nr ▢}
+- p: 52
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: 'Zapłata jest uważana za dokonaną z chwilą obciążenia rachunku bankowego Zleceniodawcy. '
+- {p: 53, role: spacer}
+- p: 54
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 6, kind: paragraph, src: manual, level: 0}}
+  text: § 6
+- p: 55
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'Zleceniobiorca obowiązany jest do zachowania w tajemnicy wszelkich informacji uzyskanych w trakcie realizacji niniejszej umowy. '
+- p: 56
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Naruszenie obowiązku z § 4 pkt 1 powoduje obowiązek zapłaty przez Zleceniobiorcę kary umownej na rzecz Zleceniodawcy w wysokości ……………..
+    (słownie:…………………………… ………………………………) złotych przelewem na konto bankowe Zleceniodawcy o nr ………………………………………… …………………………….. . '
+  slots:
+  - {id: p56_1, span: [129, 136], type: amount, context: rzecz Zleceniodawcy w wysokości ▢ złotych przelewem}
+  - {id: p56_2, span: [146, 170], type: amount, context: Zleceniodawcy w wysokości słownie ▢ złotych przelewem}
+  - {id: p56_3, span: [226, 256], type: text, context: bankowe Zleceniodawcy o nr ▢}
+- p: 57
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: 'Zleceniobiorca w trakcie wykonywania niniejszego zlecenia zobowiązuje się do niewykonywania pracy, podejmowania zatrudnienia oraz prowadzenia
+    działalności gospodarczej, których charakter występuje w relacji konkurencji do zlecenia będącego przedmiotem niniejszej umowy. '
+- p: 58
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: 'Naruszenie obowiązku z § 4 pkt 3 powoduje obowiązek zapłaty przez Zleceniobiorcę kary umownej na rzecz Zleceniodawcy w wysokości ……………..
+    (słownie:…………………………… ………………………………) złotych przelewem na konto bankowe Zleceniodawcy o nr ……..………………………………… …………………………………….. . '
+  slots:
+  - {id: p58_1, span: [129, 136], type: amount, context: rzecz Zleceniodawcy w wysokości ▢ złotych przelewem}
+  - {id: p58_2, span: [146, 170], type: amount, context: Zleceniodawcy w wysokości słownie ▢ złotych przelewem}
+  - {id: p58_3, span: [226, 260], type: text, context: bankowe Zleceniodawcy o nr ▢}
+- {p: 59, role: spacer}
+- p: 60
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 7, kind: paragraph, src: manual, level: 0}}
+  text: § 7
+- p: 61
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: Strony zgodnie oświadczają, że ich wolą nie jest nawiązanie stosunku pracy.
+- {p: 62, role: spacer}
+- p: 63
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 8, kind: paragraph, src: manual, level: 0}}
+  text: § 8
+- p: 64
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: 'Zleceniobiorca zobowiązuje się wykonywać powierzone czynności z należytą starannością. '
+- p: 65
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 9, kind: paragraph, src: manual, level: 0}}
+  text: § 9
+- p: 66
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: 'W razie niemożności dokonania określonej czynności Zleceniobiorca obowiązany jest niezwłocznie powiadomić o tym Zleceniodawcę. '
+- {p: 67, role: spacer}
+- p: 68
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 10, kind: paragraph, src: manual, level: 0}}
+  text: § 10
+- p: 69
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: 'Zleceniobiorca nie może powierzyć wykonania czynności objętych zleceniem osobom trzecim bez uprzedniej pisemnej zgody Zleceniodawcy. '
+- {p: 70, role: spacer}
+- p: 71
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 11, kind: paragraph, src: manual, level: 0}}
+  text: § 11
+- p: 72
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: 'Każda ze stron może rozwiązać umowę w drodze pisemnego wypowiedzenia z zachowaniem ……………………………………………… okresu wypowiedzenia. '
+  slots:
+  - {id: p72_1, span: [83, 101], type: text, context: pisemnego wypowiedzenia z zachowaniem ▢ okresu wypowiedzenia.}
+- {p: 73, role: spacer}
+- {p: 74, role: spacer}
+- p: 75
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 12, kind: paragraph, src: manual, level: 0}}
+  text: § 12
+- p: 76
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Wszelkie zmiany niniejszej umowy wymagają zachowania formy pisemnej pod rygorem nieważności.
+- p: 77
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Umowa została sporządzona w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze stron. '
+- p: 78
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: W sprawach nieuregulowanych niniejszą umową będą miały zastosowanie przepisy Kodeksu cywilnego.
+- p: 79
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: 'Wszelkie spory, jakie mogą wyniknąć w związku z niniejszą umową będą rozpatrywane przez sąd powszechny właściwy ze względu na miejsce
+    zamieszkania Zleceniodawcy. '
+- {p: 80, role: spacer}
+- p: 81
+  role: field
+  layout: {align: justify, size: 10.0, spans: [{start: 0, end: 13, bold: true}, {start: 21, end: 35, bold: true}], tabs: 24}
+  text: "Zleceniodawca:\t\t\t\t\t\t\tZleceniobiorca:\t\t\t\t\t\t\t\t\t\t\n……………………...\t\t\t\t\t\t\t……….…………………"
+  slots:
+  - {id: zleceniodawca, span: [47, 58], type: signature, label: Zleceniodawca}
+  - {id: zleceniodawca_2, span: [65, 76], type: signature, label: Zleceniodawca}
+- {p: 82, role: spacer}
+- {p: 83, role: spacer}
+- {p: 84, role: spacer}
+- {p: 85, role: spacer}

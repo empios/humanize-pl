@@ -1,0 +1,109 @@
+template: wniosek o wydanie swiadectwa pracy.docx
+category: wniosek_procesowy
+label_pl: Wniosek o wydanie świadectwa pracy
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: body
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: …….………. (miejscowość), …………. (data)
+  slots:
+  - {id: miejscowosc, span: [0, 7], type: place, hint: miejscowość}
+  - {id: data, span: [23, 28], type: date, hint: data}
+  inline_hints:
+  - {span: [8, 21], text: miejscowość}
+  - {span: [29, 35], text: data}
+- {p: 1, role: spacer}
+- {p: 2, role: spacer}
+- p: 3
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ………………………………..
+  slots:
+  - {id: p3_1, span: [0, 14], type: text, context: ▢}
+- p: 4
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ………………………………..
+  slots:
+  - {id: p4_1, span: [0, 14], type: text, context: ▢}
+- p: 5
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ………………………………..
+  slots:
+  - {id: p5_1, span: [0, 14], type: text, context: ▢}
+- p: 6
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ……………………………....
+  slots:
+  - {id: dane_wnioskodawcy_imie_nazwisko_nr_dowodu_osobis, span: [0, 15], type: text, hint: 'Dane wnioskodawcy: imię, nazwisko, nr dowodu osobistego,
+      PESEL'}
+- p: 7
+  role: hint
+  layout: {align: justify, size: 10.0}
+  text: '(Dane wnioskodawcy: imię, nazwisko, '
+  hint_for: 6
+  hint_kind: label
+- p: 8
+  role: hint
+  layout: {align: justify, size: 10.0}
+  text: nr dowodu osobistego, PESEL)
+  hint_for: 6
+  hint_kind: label
+- p: 9
+  role: hint
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: (Dane pracodawcy)
+- p: 10
+  role: blank_line
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: '.................................'
+  slots:
+  - {id: p10_1, span: [0, 33], type: text, context: ▢}
+- p: 11
+  role: blank_line
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: ………………………………
+  slots:
+  - {id: p11_1, span: [0, 12], type: text, context: ▢}
+- p: 12
+  role: blank_line
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: ………………………………
+  slots:
+  - {id: p12_1, span: [0, 12], type: text, context: ▢}
+- {p: 13, role: spacer}
+- {p: 14, role: spacer}
+- p: 15
+  role: body
+  layout: {align: center, size: 14.0, bold: true}
+  text: 'Wniosek o wydanie świadectwa pracy '
+- {p: 16, role: spacer}
+- p: 17
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: Zwracam się z wnioskiem o wydanie mi świadectwa pracy dotyczącego łącznego okresu zatrudnienia w związku z zatrudnieniem mnie w dniu ……………………….r.
+    na podstawie umowy o (należy wskazać rodzaj umowy) o numerze ………………….. w …………………………
+  slots:
+  - {id: p17_1, span: [133, 143], type: date, context: zatrudnieniem mnie w dniu ▢ r. na}
+  - {id: p17_2, span: [207, 216], type: text, context: umowy o o numerze ▢ w}
+  - {id: p17_3, span: [219, 229], type: place, context: o o numerze w ▢}
+- {p: 18, role: spacer}
+- {p: 19, role: spacer}
+- p: 20
+  role: blank_line
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: .……………………………
+  slots:
+  - {id: wlasnoreczny_podpis, span: [0, 12], type: signature, hint: własnoręczny podpis}
+- p: 21
+  role: hint
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: (własnoręczny podpis)
+  hint_for: 20
+  hint_kind: label
+- {p: 22, role: spacer}
+- {p: 23, role: spacer}

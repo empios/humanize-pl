@@ -3,6 +3,8 @@
 
 category: uchwala_wspolnoty
 label_pl: uchwała wspólnoty mieszkaniowej
+# Kolejności sekcji nie sprawdzamy: realne wzory tej kategorii układają je różnie.
+check_order: false
 numbering: paragraph
 sections:
 - id: nr
@@ -29,3 +31,166 @@ sections:
   label_pl: głosy (za/przeciw)
   severity: expected
   matches: ['za:', przeciw, udziałów, głos]
+
+# Dokument ogólny: realny wzór tej kategorii. Przy użyciu wypełnia się wyłącznie
+# pola (`slots`); treść, kolejność i układ zostają jak we wzorze.
+document:
+  template: Ogólna uchwała wspólnoty mieszkaniowej.docx
+  label_pl: Ogólna uchwała wspólnoty mieszkaniowej
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+  blocks:
+  - {p: 0, role: spacer}
+  - p: 1
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: UCHWAŁA NR ……….…..
+    slots:
+    - {id: p1_1, span: [11, 18], type: text, context: UCHWAŁA NR ▢}
+  - p: 2
+    role: body
+    layout: {align: center, size: 14.0, bold: true}
+    text: z dnia ………………..
+    slots:
+    - {id: p2_1, span: [7, 15], type: date, context: z dnia ▢}
+  - p: 3
+    role: body
+    layout: {align: center, size: 14.0, bold: true}
+    text: Wspólnoty Mieszkaniowej ……………….……… w ………………
+    slots:
+    - {id: p3_1, span: [24, 34], type: text, context: Wspólnoty Mieszkaniowej ▢ w}
+    - {id: p3_2, span: [37, 43], type: place, context: Wspólnoty Mieszkaniowej w ▢}
+  - {p: 4, role: spacer}
+  - p: 5
+    role: body
+    layout: {align: center, size: 14.0, bold: true}
+    text: w przedmiocie ……………………………………………………………..
+    slots:
+    - {id: p5_1, span: [14, 39], type: text, context: w przedmiocie ▢}
+  - {p: 6, role: spacer}
+  - p: 7
+    role: party_alias
+    layout: {align: justify, size: 10.0}
+    text: 'Na podstawie art. 23 ustawy z dnia 24 czerwca 1994 r. o własności lokali (t.j. Dz.U. z 2021 r. poz. 1048) właściciele lokali w nieruchomości
+      przy ul. ………….…………….. w ……………………….., zwani w dalszej treści uchwały Wspólnotą Mieszkaniową uchwalają, co następuje:'
+    slots:
+    - {id: p7_1, span: [150, 162], type: address, context: w nieruchomości przy ul. ▢ w zwani}
+    - {id: p7_2, span: [165, 176], type: place, context: nieruchomości przy ul. w ▢ zwani w}
+    alias: Wspólnotą
+  - {p: 8, role: spacer}
+  - p: 9
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+    text: § 1
+  - {p: 10, role: spacer}
+  - p: 11
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: ……………………………………………………………………………………………………………………………………
+    slots:
+    - {id: p11_1, span: [0, 50], type: text, context: ▢}
+  - p: 12
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: ……………………………………………………………………………………………………………………………………
+    slots:
+    - {id: p12_1, span: [0, 50], type: text, context: ▢}
+  - p: 13
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: ……………………………………………………………………………………………………………………………………
+    slots:
+    - {id: przedmiot_uchwaly_powinien_w_sposob_jednoznaczny, span: [0, 50], type: text, hint: Przedmiot uchwały powinien w sposób jednoznaczny opisywać
+        decyzję podjętą przez właścicieli lokali}
+  - p: 14
+    role: hint
+    layout: {align: justify, size: 10.0}
+    text: (Przedmiot uchwały powinien w sposób jednoznaczny opisywać decyzję podjętą przez właścicieli lokali)
+    hint_for: 13
+    hint_kind: instruction
+  - {p: 15, role: spacer}
+  - p: 16
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+    text: § 2
+  - {p: 17, role: spacer}
+  - p: 18
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: Wspólnota Mieszkaniowa udziela Zarządowi Wspólnoty pełnomocnictwa do realizacji niniejszej Uchwały.
+  - {p: 19, role: spacer}
+  - p: 20
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+    text: § 3
+  - {p: 21, role: spacer}
+  - p: 22
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 36, end: 96, italic: true}]}
+    text: Uchwała wchodzi w życie z dniem ……… (np. z dniem podjęcia lub poprzez wskazanie konkretnej daty)
+    slots:
+    - {id: np_z_dniem_podjecia_lub_poprzez_wskazanie_konkre, span: [32, 35], type: text, hint: np. z dniem podjęcia lub poprzez wskazanie konkretnej
+        daty}
+    inline_hints:
+    - {span: [36, 96], text: np. z dniem podjęcia lub poprzez wskazanie konkretnej daty}
+  - {p: 23, role: spacer}
+  - {p: 24, role: spacer}
+  - {p: 25, role: spacer}
+  - p: 26
+    role: field_header
+    layout: {align: justify, size: 10.0, italic: true, spans: [{start: 0, end: 10, bold: true}, {start: 49, end: 50, bold: true}]}
+    text: 'Załączniki (dokumenty związane z podjętą uchwałą):'
+  - p: 27
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: …………………………………………..
+    slots:
+    - {id: p27_1, span: [0, 18], type: text, context: ▢}
+  - {p: 28, role: spacer}
+  - p: 29
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: 'Wspólnota Mieszkaniowa w głosowaniu potwierdzonym podpisami właścicieli, bądź osób przez nich upoważnionych, na odwrocie niniejszej uchwały:'
+  - p: 30
+    role: field
+    layout: {align: justify, size: 10.0, tabs: 2}
+    text: "Za:\t\t………………………………… % udziałów"
+    slots:
+    - {id: za, span: [5, 18], type: text, label: Za}
+  - p: 31
+    role: field
+    layout: {align: justify, size: 10.0, tabs: 1}
+    text: "Przeciw:\t………………………………… % udziałów"
+    slots:
+    - {id: przeciw, span: [9, 22], type: text, label: Przeciw}
+  - p: 32
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: przyjęła uchwałę / nie przyjęła uchwały*
+  - p: 33
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: Uchwała podejmowana w trybie indywidualnego zbierania głosów.
+  - {p: 34, role: spacer}
+  - {p: 35, role: spacer}
+  - {p: 36, role: spacer}
+  - p: 37
+    role: signature_line
+    layout: {align: justify, size: 10.0, tabs: 7}
+    text: "__________________\t\t\t\t\t\t\t__________________"
+    slots:
+    - {id: protokolant, span: [0, 18], type: text, hint: protokolant}
+    - {id: przewodniczacy, span: [25, 43], type: text, hint: przewodniczący}
+  - p: 38
+    role: hint
+    layout: {align: justify, size: 10.0, tabs: 7}
+    text: "       (protokolant)\t\t\t\t\t\t\t    (przewodniczący)"
+    hint_for: 37
+    hint_kind: label
+  - {p: 39, role: spacer}
+  - p: 40
+    role: body
+    layout: {align: justify, size: 9.0, spans: [{start: 2, end: 25, italic: true}]}
+    text: '*   niepotrzebne skreślić'
+  - {p: 41, role: spacer}
+  - {p: 42, role: spacer}

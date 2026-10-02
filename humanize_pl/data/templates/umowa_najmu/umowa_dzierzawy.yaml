@@ -1,0 +1,206 @@
+template: umowa dzierżawy.docx
+category: umowa_najmu
+label_pl: Umowa dzierżawy
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: UMOWA DZIERŻAWY
+- p: 1
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: 'Zawarta w dniu ……………..……………. pomiędzy :'
+  slots:
+  - {id: p1_1, span: [15, 28], type: date, context: Zawarta w dniu ▢ pomiędzy}
+- {p: 2, role: spacer}
+- p: 3
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: 'Panią/em ……………………..…………………. zam. ……………………..………………… '
+  slots:
+  - {id: p3_1, span: [9, 27], type: text, context: Panią em ▢ zam.}
+  - {id: p3_2, span: [33, 50], type: text, context: Panią em zam. ▢}
+- p: 4
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: PESEL ………………………………, leg. się dowodem osobistym …………………………
+  slots:
+  - {id: p4_1, span: [6, 18], type: pesel, context: PESEL ▢ leg. się}
+  - {id: p4_2, span: [47, 57], type: text, context: leg. się dowodem osobistym ▢}
+- p: 5
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: 'zwanym w dalszej treści umowy „wydzierżawiającym” '
+- p: 6
+  role: party_connector
+  layout: {align: justify, size: 10.0}
+  text: 'a '
+- p: 7
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: 'Panią/em ……………………..…………………. zam. ……………………..………………… '
+  slots:
+  - {id: p7_1, span: [9, 27], type: text, context: Panią em ▢ zam.}
+  - {id: p7_2, span: [33, 50], type: text, context: Panią em zam. ▢}
+- p: 8
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: PESEL ………………………………, leg. się dowodem osobistym …………………………
+  slots:
+  - {id: p8_1, span: [6, 18], type: pesel, context: PESEL ▢ leg. się}
+  - {id: p8_2, span: [47, 57], type: text, context: leg. się dowodem osobistym ▢}
+- p: 9
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: zwanym w dalszej treści umowy „dzierżawcą”.
+- {p: 10, role: spacer}
+- p: 11
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+  text: § 1
+- p: 12
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Wydzierżawiający wydzierżawia dzierżawcy grunty rolne położone we wsi ……...…………..
+  slots:
+  - {id: p12_1, span: [70, 81], type: text, context: rolne położone we wsi ▢}
+- p: 13
+  role: body
+  layout: {align: justify, indent: {left: 720}, size: 10.0}
+  text: gm. ……..……………. o pow. ..………. ha, działki ewidencyjne nr ……..………………… .
+  slots:
+  - {id: p13_1, span: [4, 14], type: text, context: gm. ▢ o pow.}
+  - {id: p13_2, span: [22, 28], type: text, context: gm. o pow. ▢ ha działki}
+  - {id: p13_3, span: [56, 67], type: text, context: ha działki ewidencyjne nr ▢}
+- p: 14
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Wydzierżawiający oświadcza iż jest właścicielem gruntów rolnych, położonych we wsi……………… gm. ……..……………. o pow. ..………. ha, działki ewidencyjne
+    nr ……..………………… '
+  slots:
+  - {id: p14_1, span: [82, 88], type: text, context: rolnych położonych we wsi ▢ gm. o}
+  - {id: p14_2, span: [93, 103], type: text, context: położonych we wsi gm. ▢ o pow.}
+  - {id: p14_3, span: [111, 117], type: text, context: wsi gm. o pow. ▢ ha działki}
+  - {id: p14_4, span: [145, 156], type: text, context: ha działki ewidencyjne nr ▢}
+- p: 15
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Wydzierżawiający oświadcza, że przedmiot dzierżawy nie jest obciążony żadnymi prawami osób trzecich oraz jest zdatny do użytku zgodnie
+    z niniejszą Umową.
+- {p: 16, role: spacer}
+- p: 17
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+  text: § 2
+- p: 18
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Umowa zostaje zawarta na okres ………. lat, od dnia ……………………………
+  slots:
+  - {id: p18_1, span: [31, 35], type: text, context: zostaje zawarta na okres ▢ lat od}
+  - {id: p18_2, span: [49, 60], type: date, context: okres lat od dnia ▢}
+- p: 19
+  role: body
+  layout: {align: justify, indent: {left: 720}, size: 10.0}
+  text: ' do dnia ………………….'
+  slots:
+  - {id: p19_1, span: [9, 17], type: date, context: do dnia ▢}
+- p: 20
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Stronom przysługuje prawo do wcześniejszego rozwiązania umowy z zachowaniem …………… terminu wypowiedzenia. '
+  slots:
+  - {id: p20_1, span: [76, 81], type: text, context: rozwiązania umowy z zachowaniem ▢ terminu wypowiedzenia.}
+- {p: 21, role: spacer}
+- p: 22
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+  text: § 3
+- p: 23
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Za dzierżawę ww. gruntów dzierżawca będzie opłacał czynsz w wysokości ……………...…………………….……………….. płatny do dnia ………………………….. . na rachunek
+    bankowy……………………………………….
+  slots:
+  - {id: p23_1, span: [70, 95], type: amount, context: opłacał czynsz w wysokości ▢ płatny do}
+  - {id: p23_2, span: [111, 123], type: date, context: wysokości płatny do dnia ▢ na rachunek}
+  - {id: p23_3, span: [145, 161], type: text, context: dnia na rachunek bankowy ▢}
+- p: 24
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Datą dokonania zapłaty przez dzierżawcę będzie data uznania rachunku bankowego wydzierżawiającego wskazanego w punkcie wyżej. '
+- {p: 25, role: spacer}
+- p: 26
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+  text: § 4
+- p: 27
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Dzierżawca z dniem ……………….……… przystępuje do użytkowania gruntów wymienionych w § 1 umowy i zobowiązuje się uprawiać ww. grunty zgodnie
+    z wymogami prawidłowej gospodarki.
+  slots:
+  - {id: p27_1, span: [19, 29], type: text, context: Dzierżawca z dniem ▢ przystępuje do}
+- p: 28
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Dzierżawca nie może zmieniać przeznaczenia przedmiotu dzierżawy bez uprzedniej pisemnej zgody Wydzierżawiającego.
+- p: 29
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Dzierżawca nie może bez uprzedniej pisemnej zgody Wydzierżawiającego oddać osobom trzecim przedmiotu dzierżawy do bezpłatnego użytku ani
+    poddzierżawić.
+- {p: 30, role: spacer}
+- p: 31
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+  text: § 5
+- p: 32
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: W sprawach nie określonych w niniejszej umowie mają zastosowanie odpowiednio przepisy Kodeksu Cywilnego o dzierżawie.
+- {p: 33, role: spacer}
+- p: 34
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 6, kind: paragraph, src: manual, level: 0}}
+  text: § 6
+- p: 35
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'Niniejsza Umowa stanowi całość uzgodnień między Stronami i uchyla wszelkie poprzedzające je Umowy, porozumienia i uzgodnienia, pisemne
+    i ustne, dotyczące przedmiotu Umowy. '
+- p: 36
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Zmiany i uzupełnienia niniejszej Umowy mogą być dokonane wyłącznie w formie pisemnej pod rygorem nieważności. '
+- p: 37
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Zawarcie, interpretacja, ważność i wykonanie niniejszej Umowy podlegają przepisom prawa polskiego.
+- p: 38
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: Jeżeli którekolwiek z postanowień niniejszej Umowy uznane zostanie za nieważne lub prawnie wadliwe, pozostałe postanowienia pozostają
+    w mocy w najszerszym zakresie dopuszczalnym przez prawo.
+- p: 39
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+  text: Wszelkie spory wynikające lub związane z niniejszą Umową, których nie można rozstrzygnąć w drodze wzajemnego porozumienia, będą rozstrzygane
+    przez sąd powszechny właściwy miejscowo dla miejsca zamieszkania/siedziby Wydzierżawiającego.
+- p: 40
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}}
+  text: '6.6. Niniejsza Umowa została sporządzona w dwóch jednobrzmiących egzemplarzach '
+- p: 41
+  role: body
+  layout: {align: justify, indent: {left: 720}, size: 10.0}
+  text: w polskiej wersji językowej, po jednym egzemplarzu każdej wersji językowej dla każdej ze Stron.
+- {p: 42, role: spacer}
+- {p: 43, role: spacer}
+- p: 44
+  role: body
+  layout: {align: justify, indent: {hanging: 2}, size: 10.0, bold: true, tabs: 7}
+  text: "WYDZIERŻAWIAJĄCY\t\t\t\t\t\t\tDZIERŻAWCA "
+- {p: 45, role: spacer}

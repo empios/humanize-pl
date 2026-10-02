@@ -1,0 +1,133 @@
+template: Wypowiedzenie umowy o pracę z zachowaniem okresu wypowiedzenia przez pracownika.docx
+category: wypowiedzenie
+label_pl: Wypowiedzenie umowy o pracę z zachowaniem okresu wypowiedzenia przez pracownika
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: body
+  layout: {align: right, indent: {first: 708}, size: 10.0, spans: [{start: 9, end: 22, italic: true}, {start: 37, end: 43, italic: true}]}
+  text: …………………… (miejscowość), dnia …………….. (data)
+  slots:
+  - {id: miejscowosc, span: [0, 8], type: place, hint: miejscowość}
+  - {id: data, span: [29, 36], type: date, hint: data}
+  inline_hints:
+  - {span: [9, 22], text: miejscowość}
+  - {span: [37, 43], text: data}
+- {p: 1, role: spacer}
+- p: 2
+  role: body
+  layout: {size: 10.0}
+  text: '…………………………….
+
+    ul. …………………………
+
+    …-… ……………………..'
+  slots:
+  - {id: dane_pracownika_imie_i_nazwisko_adres, span: [0, 12], type: address, hint: 'dane Pracownika, imię i nazwisko, adres'}
+  - {id: dane_pracownika_imie_i_nazwisko_adres_2, span: [17, 27], type: address, hint: 'dane Pracownika, imię i nazwisko, adres'}
+  - {id: dane_pracownika_imie_i_nazwisko_adres_3, span: [28, 42], type: address, hint: 'dane Pracownika, imię i nazwisko, adres'}
+- p: 3
+  role: hint
+  layout: {size: 10.0, italic: true}
+  text: (dane Pracownika, imię i nazwisko, adres)
+  hint_for: 2
+  hint_kind: label
+- p: 4
+  role: blank_line
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: '.......................................................'
+  slots:
+  - {id: p4_1, span: [0, 55], type: text, context: ▢}
+- p: 5
+  role: blank_line
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: '.......................................................'
+  slots:
+  - {id: p5_1, span: [0, 55], type: text, context: ▢}
+- p: 6
+  role: blank_line
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: '.......................................................'
+  slots:
+  - {id: dane_pracodawcy_imie_i_nazwisko_adres_lub_okresl, span: [0, 55], type: text, hint: 'dane Pracodawcy, imię i nazwisko, adres lub określenie
+      firmy, adresu siedziby, NIP-u'}
+- p: 7
+  role: hint
+  layout: {indent: {left: 4820}, size: 10.0, italic: true}
+  text: ' (dane Pracodawcy, imię i nazwisko, adres lub '
+  hint_for: 6
+  hint_kind: instruction
+- p: 8
+  role: hint
+  layout: {indent: {left: 4820}, size: 10.0, italic: true}
+  text: określenie firmy, adresu siedziby, NIP-u)
+  hint_for: 6
+  hint_kind: instruction
+- {p: 9, role: spacer}
+- p: 10
+  role: body
+  layout: {align: center, size: 14.0, bold: true}
+  text: Oświadczenie o rozwiązaniu umowy o pracę z zachowaniem okresu wypowiedzenia
+- {p: 11, role: spacer}
+- p: 12
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 169, end: 190, italic: true}, {start: 202, end: 231, italic: true}, {start: 264, end: 281,
+        italic: true}, {start: 307, end: 337, italic: true}, {start: 388, end: 423, italic: true}]}
+  text: Niniejszym, działając w imieniu własnym, na podstawie art. 30 § 1 pkt 2 ustawy z dnia 26 czerwca 1974 r. - Kodeks pracy, wypowiadam umowę
+    o pracę zawartą dnia ……………………… (data zawarcia umowy) w …………………… (miejscowość zawarcia umowy) pomiędzy mną, a …………………………………….. (dane pracodawcy),
+    z zachowaniem ………………….. (długość okresu wypowiedzenia) okresu wypowiedzenia, ze skutkiem na ………………………….. (data upływu okresu wypowiedzenia).
+  slots:
+  - {id: data_zawarcia_umowy, span: [159, 168], type: date, hint: data zawarcia umowy}
+  - {id: miejscowosc_zawarcia_umowy, span: [193, 201], type: place, hint: miejscowość zawarcia umowy}
+  - {id: dane_pracodawcy, span: [247, 263], type: text, hint: dane pracodawcy}
+  - {id: dlugosc_okresu_wypowiedzenia, span: [297, 306], type: text, hint: długość okresu wypowiedzenia}
+  - {id: data_uplywu_okresu_wypowiedzenia, span: [375, 387], type: date, hint: data upływu okresu wypowiedzenia}
+  inline_hints:
+  - {span: [169, 190], text: data zawarcia umowy}
+  - {span: [202, 230], text: miejscowość zawarcia umowy}
+  - {span: [264, 281], text: dane pracodawcy}
+  - {span: [307, 337], text: długość okresu wypowiedzenia}
+  - {span: [388, 422], text: data upływu okresu wypowiedzenia}
+- {p: 13, role: spacer}
+- p: 14
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: Uzasadnienie
+- {p: 15, role: spacer}
+- p: 16
+  role: blank_line
+  layout: {align: justify, size: 10.0, tabs: 2}
+  text: "………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………\t\
+    \t"
+  slots:
+  - {id: fakultatywne_uzasadnienie_zlozenia_oswiadczenia, span: [0, 165], type: text, hint: fakultatywne uzasadnienie złożenia oświadczenia o
+      rozwiązaniu umowy o pracę z zachowaniem okresu wypowiedzenia}
+  optional: true
+  condition: fakultatywne uzasadnienie złożenia oświadczenia o rozwiązaniu umowy o pracę z zachowaniem okresu wypowiedzenia
+- p: 17
+  role: hint
+  layout: {align: center, size: 10.0, italic: true}
+  text: (fakultatywne uzasadnienie złożenia oświadczenia o rozwiązaniu umowy o pracę z zachowaniem okresu wypowiedzenia)
+  hint_for: 16
+  hint_kind: instruction
+- {p: 18, role: spacer}
+- {p: 19, role: spacer}
+- p: 20
+  role: body
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: Z poważaniem
+- p: 21
+  role: blank_line
+  layout: {align: right, indent: {first: 708}, size: 10.0, tabs: 9}
+  text: "\t\t\t\t\t\t\t\t\t……………………."
+  slots:
+  - {id: podpis_pracownika, span: [9, 18], type: signature, hint: podpis Pracownika}
+- p: 22
+  role: hint
+  layout: {align: right, indent: {first: 708}, size: 10.0, italic: true}
+  text: ' (podpis Pracownika)'
+  hint_for: 21
+  hint_kind: label
+- {p: 23, role: spacer}
+- {p: 24, role: spacer}

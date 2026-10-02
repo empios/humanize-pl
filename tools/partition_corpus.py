@@ -21,7 +21,6 @@ import json
 import unicodedata
 from pathlib import Path
 
-
 _POLISH_MAP = str.maketrans(
     "ąćęłńóśźżĄĆĘŁŃÓŚŹŻ",
     "acelnoszzACELNOSZZ",
@@ -90,7 +89,7 @@ def recover_title(name: str) -> str:
     return "".join(out)
 
 
-def _rules() -> list[tuple[str, str, "callable"]]:
+def _rules() -> list[tuple[str, str, callable]]:
     """Ordered rules: (type_id, label_pl, predicate on the ASCII skeleton).
 
     First match wins, so put the more specific genre before the more general.
@@ -263,8 +262,9 @@ def partition(directory: str | Path) -> dict[str, list[str]]:
 
 def main() -> None:
     import sys
-    src = sys.argv[1] if len(sys.argv) > 1 else r"C:\Users\empios\Documents\humanize-pl_dokumenty\Dokumenty"
-    out = sys.argv[2] if len(sys.argv) > 2 else r"C:\Users\empios\Documents\humanize-pl_dokumenty\corpus_partition.json"
+    if len(sys.argv) != 3:
+        raise SystemExit("użycie: python tools/partition_corpus.py <katalog_szablonów> <wynik.json>")
+    src, out = sys.argv[1], sys.argv[2]
     result = partition(src)
     total = sum(len(v) for v in result.values())
     with open(out, "w", encoding="utf-8") as f:

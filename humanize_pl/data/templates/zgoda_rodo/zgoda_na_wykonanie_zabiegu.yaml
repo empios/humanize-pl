@@ -1,0 +1,124 @@
+template: zgoda na wykonanie zabiegu.docx
+category: zgoda_rodo
+label_pl: Zgoda na wykonanie zabiegu
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: body
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: ………………………… (miejscowość), dnia ……………… (data)
+  slots:
+  - {id: miejscowosc, span: [0, 10], type: place, hint: miejscowość}
+  - {id: data, span: [31, 37], type: date, hint: data}
+  inline_hints:
+  - {span: [11, 24], text: miejscowość}
+  - {span: [38, 44], text: data}
+- {p: 1, role: spacer}
+- {p: 2, role: spacer}
+- {p: 3, role: spacer}
+- p: 4
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: 'ZGODA PACJENTA NA ZABIEG '
+- {p: 5, role: spacer}
+- p: 6
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 122, end: 137, italic: true}], tabs: 1}
+  text: "\tNiniejszym wyrażam zgodę na wykonanie zabiegu polegającego na  ......................................................... (opis zabiegu)."
+  slots:
+  - {id: opis_zabiegu, span: [64, 121], type: text, hint: opis zabiegu}
+  inline_hints:
+  - {span: [122, 136], text: opis zabiegu}
+- {p: 7, role: spacer}
+- p: 8
+  role: body
+  layout: {align: justify, size: 10.0, tabs: 1}
+  text: "\tJednocześnie informuję, że zostałam(-em) poinformowana/y w sposób jasny i zrozumiały:\no proponowanych metodach leczenia polegających\
+    \ na: …………………………………………………………………"
+  slots:
+  - {id: p8_1, span: [138, 163], type: text, context: metodach leczenia polegających na ▢}
+- p: 9
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: …………………………………………………………………………………………………………………………………………………
+  slots:
+  - {id: p9_1, span: [0, 55], type: text, context: ▢}
+- p: 10
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: '………………………………………………………………………………………………………………………………………………… '
+  slots:
+  - {id: p10_1, span: [0, 55], type: text, context: ▢}
+- p: 11
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 57, end: 110, italic: true}]}
+  text: …………………………………………………………………………………………………………………………………………………  (wskazać metody leczenia zaproponowane przez lekarza), jak również o alternatywnych
+    metodach leczenia polegających na …………………………………………………………………………………………………………  ……………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………
+  slots:
+  - {id: wskazac_metody_leczenia_zaproponowane_przez_leka, span: [0, 55], type: text, hint: wskazać metody leczenia zaproponowane przez lekarza}
+  - {id: p11_2, span: [175, 327], type: text, context: metodach leczenia polegających na ▢}
+  inline_hints:
+  - {span: [57, 110], text: wskazać metody leczenia zaproponowane przez lekarza}
+- p: 12
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: …………………………………………………………………………………………………………………………………………………
+  slots:
+  - {id: wskazac_dopuszczalne_alternatywne_metody_leczeni, span: [0, 55], type: text, hint: wskazać dopuszczalne alternatywne metody leczenia
+      zaproponowane przez lekarza}
+- p: 13
+  role: hint
+  layout: {align: justify, size: 10.0, spans: [{start: 0, end: 79, italic: true}]}
+  text: (wskazać dopuszczalne alternatywne metody leczenia zaproponowane przez lekarza),
+  hint_for: 12
+  hint_kind: instruction
+- {p: 14, role: spacer}
+- p: 15
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: oraz o wszelkich możliwych następstwach  i powikłaniach powyższego zabiegu w postaci …………………
+  slots:
+  - {id: p15_1, span: [85, 92], type: text, context: powyższego zabiegu w postaci ▢}
+- p: 16
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: '………………………………………………………………………………………………………………………………………………… '
+  slots:
+  - {id: p16_1, span: [0, 55], type: text, context: ▢}
+- p: 17
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: '………………………………………………………………………………………………………………………………………………… '
+  slots:
+  - {id: p17_1, span: [0, 55], type: text, context: ▢}
+- p: 18
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 56, end: 103, italic: true}]}
+  text: '………………………………………………………………………………………………………………………………………………… (opisać ewentualne konsekwencje danego zabiegu) oraz akceptuję możliwość ich
+    wystąpienia. '
+  slots:
+  - {id: opisac_ewentualne_konsekwencje_danego_zabiegu, span: [0, 55], type: text, hint: opisać ewentualne konsekwencje danego zabiegu}
+  inline_hints:
+  - {span: [56, 103], text: opisać ewentualne konsekwencje danego zabiegu}
+- {p: 19, role: spacer}
+- p: 20
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: Jednocześnie potwierdzam, iż umożliwiono mi zadawanie pytań oraz uzyskiwanie pełnych i zrozumiałych odpowiedzi na nie.
+- {p: 21, role: spacer}
+- {p: 22, role: spacer}
+- p: 23
+  role: blank_line
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: ………………………………
+  slots:
+  - {id: podpis_pacjenta, span: [0, 12], type: signature, hint: podpis pacjenta}
+- p: 24
+  role: hint
+  layout: {align: right, indent: {first: 708}, size: 10.0, italic: true}
+  text: (podpis pacjenta)
+  hint_for: 23
+  hint_kind: label
+- {p: 25, role: spacer}
+- {p: 26, role: spacer}

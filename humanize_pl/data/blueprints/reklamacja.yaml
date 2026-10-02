@@ -37,3 +37,221 @@ sections:
   label_pl: podpis
   severity: required
   matches: [podpis, z poważaniem]
+
+# Dokument ogólny: realny wzór tej kategorii. Przy użyciu wypełnia się wyłącznie
+# pola (`slots`); treść, kolejność i układ zostają jak we wzorze.
+document:
+  template: Reklamacja (niezgodność towaru z umową).docx
+  label_pl: Reklamacja (niezgodność towaru z umową)
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+  blocks:
+  - p: 0
+    role: body
+    layout: {align: right, indent: {first: 708}, size: 10.0}
+    text: …………………, dnia ………………… r.
+    slots:
+    - {id: miejscowosc_data_sporzadzenia_pisma, span: [0, 7], type: date, hint: 'miejscowość, data sporządzenia pisma'}
+    - {id: miejscowosc_data_sporzadzenia_pisma_2, span: [14, 21], type: date, hint: 'miejscowość, data sporządzenia pisma'}
+  - p: 1
+    role: hint
+    layout: {align: right, indent: {first: 708}, size: 10.0, italic: true}
+    text: (miejscowość, data sporządzenia pisma)
+    hint_for: 0
+    hint_kind: label
+  - {p: 2, role: spacer}
+  - p: 3
+    role: blank_line
+    layout: {size: 10.0}
+    text: '.......................................................'
+    slots:
+    - {id: p3_1, span: [0, 55], type: text, context: ▢}
+  - p: 4
+    role: blank_line
+    layout: {size: 10.0}
+    text: '.......................................................'
+    slots:
+    - {id: p4_1, span: [0, 55], type: text, context: ▢}
+  - p: 5
+    role: blank_line
+    layout: {size: 10.0}
+    text: '.......................................................'
+    slots:
+    - {id: dane_reklamujacego, span: [0, 55], type: text, hint: dane reklamującego}
+  - p: 6
+    role: hint
+    layout: {size: 10.0, italic: true}
+    text: ' (dane reklamującego)'
+    hint_for: 5
+    hint_kind: label
+  - p: 7
+    role: blank_line
+    layout: {align: right, indent: {first: 708}, size: 10.0}
+    text: '.......................................................'
+    slots:
+    - {id: p7_1, span: [0, 55], type: text, context: ▢}
+  - p: 8
+    role: blank_line
+    layout: {align: right, indent: {first: 708}, size: 10.0}
+    text: '.......................................................'
+    slots:
+    - {id: p8_1, span: [0, 55], type: text, context: ▢}
+  - p: 9
+    role: blank_line
+    layout: {align: right, indent: {first: 708}, size: 10.0}
+    text: '.......................................................'
+    slots:
+    - {id: dane_odbiorcy_sprzedawcy, span: [0, 55], type: text, hint: dane Odbiorcy - sprzedawcy}
+  - p: 10
+    role: hint
+    layout: {align: right, indent: {first: 708}, size: 10.0, italic: true}
+    text: ' (dane Odbiorcy - sprzedawcy)'
+    hint_for: 9
+    hint_kind: label
+  - {p: 11, role: spacer}
+  - {p: 12, role: spacer}
+  - p: 13
+    role: body
+    layout: {align: center, size: 14.0, bold: true}
+    text: REKLAMACJA W RAMACH RĘKOJMI
+  - {p: 14, role: spacer}
+  - p: 15
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 129, end: 151, italic: true}, {start: 161, end: 196, italic: true}, {start: 285, end: 313,
+          italic: true}]}
+    text: Niniejszym, działając w imieniu własnym, w ramach składanej przeze mnie reklamacji dotyczącej zakupionego od Państwa w dniu ………… (dzień
+      zakupu rzeczy) ……………………… (oznaczenie przedmiotu reklamacji) oświadczam, iż zakupiona przeze mnie rzecz ma wady, które zostały stwierdzone
+      dnia …………… (dzień wykrycia wady rzeczy), czyli w ciągu ………… dni od dnia zakupu/doręczenia rzeczy.
+    slots:
+    - {id: dzien_zakupu_rzeczy, span: [124, 128], type: date, hint: dzień zakupu rzeczy}
+    - {id: oznaczenie_przedmiotu_reklamacji, span: [151, 160], type: text, hint: oznaczenie przedmiotu reklamacji}
+    - {id: dzien_wykrycia_wady_rzeczy, span: [279, 284], type: date, hint: dzień wykrycia wady rzeczy}
+    - {id: p15_4, span: [329, 333], type: text, context: dnia czyli w ciągu ▢ dni od}
+    inline_hints:
+    - {span: [129, 150], text: dzień zakupu rzeczy}
+    - {span: [161, 195], text: oznaczenie przedmiotu reklamacji}
+    - {span: [285, 313], text: dzień wykrycia wady rzeczy}
+  - {p: 16, role: spacer}
+  - p: 17
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 158, end: 174, italic: true}, {start: 227, end: 522, italic: true}]}
+    text: W ramach składanej przeze mnie reklamacji, na podstawie art. 43d ust. 1 ustawy z dnia 30 maja 2014 r. o prawach konsumenta, wzywam państwa
+      do naprawy/wymiany (należy wybrać) urządzenia, w rozsądnym terminie, nie później niż do …………… (przepisy przewidują dokonanie naprawy/wymiany
+      rzeczy objętej wadami w „terminie rozsądnym” jednak ustawodawca nie precyzuje jak taki termin należy interpretować. Zatem termin naprawy/wymiany
+      przez konsumenta może być ustalany dowolnie, począwszy od określonej liczby dni/tygodni/miesięcy)
+    slots:
+    - {id: przepisy_przewiduja_dokonanie_naprawy_wymiany_rz, span: [227, 232], type: date, hint: 'przepisy przewidują dokonanie naprawy/wymiany
+        rzeczy objętej wadami w „terminie rozsądnym” jednak ustawodawca nie precyzuje jak taki termin należy interpretować. Zatem termin naprawy/wymiany
+        przez konsumenta może być ustalany dowolnie, począwszy od określonej liczby dni/tygodni/miesięcy'}
+    inline_hints:
+    - {span: [233, 522], text: 'przepisy przewidują dokonanie naprawy/wymiany rzeczy objętej wadami w „terminie rozsądnym” jednak ustawodawca nie
+        precyzuje jak taki termin należy interpretować. Zatem termin naprawy/wymiany przez konsumenta może być ustalany dowolnie, począwszy od określonej
+        liczby dni/tygodni/miesięcy'}
+  - {p: 18, role: spacer}
+  - p: 19
+    role: body
+    layout: {align: center, size: 12.0, bold: true}
+    text: Uzasadnienie
+  - {p: 20, role: spacer}
+  - p: 21
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: ……………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: p21_1, span: [0, 110], type: text, context: ▢}
+  - p: 22
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: …………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: p22_1, span: [0, 55], type: text, context: ▢}
+  - p: 23
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: …………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: p23_1, span: [0, 55], type: text, context: ▢}
+  - p: 24
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: …………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: p24_1, span: [0, 55], type: text, context: ▢}
+  - p: 25
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: …………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: p25_1, span: [0, 55], type: text, context: ▢}
+  - p: 26
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: …………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: p26_1, span: [0, 55], type: text, context: ▢}
+  - p: 27
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: …………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: p27_1, span: [0, 55], type: text, context: ▢}
+  - p: 28
+    role: body
+    layout: {align: justify, size: 10.0, italic: true}
+    text: '(w tym miejscu należy uzasadnić złożenie reklamacji, w tym wskazanie w jaki sposób zakupiona rzecz jest niezgodna z umową np.: '
+  - p: 29
+    role: item
+    layout: {align: justify, size: 10.0, italic: true, marker: {text: '-', kind: bullet, src: manual, level: 2}}
+    text: '- nie ma właściwości, które rzecz tego rodzaju powinna mieć ze względu na cel w umowie oznaczony albo wynikający z jej przeznaczenia;'
+  - p: 30
+    role: item
+    layout: {align: justify, size: 10.0, italic: true, marker: {text: '-', kind: bullet, src: manual, level: 2}}
+    text: '- nie ma właściwości, o których istnieniu sprzedawca zapewnił kupującego, w tym przedstawiając próbkę lub wzór;'
+  - p: 31
+    role: item
+    layout: {align: justify, size: 10.0, italic: true, marker: {text: '-', kind: bullet, src: manual, level: 2}}
+    text: '- nie nadaje się do celu, o którym kupujący poinformował sprzedawcę przy zawieraniu umowy, a sprzedawca nie zgłosił zastrzeżenia co do
+      takiego jej przeznaczenia;'
+  - p: 32
+    role: item
+    layout: {align: justify, size: 10.0, italic: true, marker: {text: '-', kind: bullet, src: manual, level: 2}}
+    text: '- została kupującemu wydana w stanie niezupełnym.'
+  - {p: 33, role: spacer}
+  - {p: 34, role: spacer}
+  - p: 35
+    role: blank_line
+    layout: {align: right, indent: {first: 708}, size: 10.0}
+    text: ………………………………………
+    slots:
+    - {id: wlasnoreczny_podpis, span: [0, 15], type: signature, hint: własnoręczny podpis}
+  - p: 36
+    role: hint
+    layout: {align: right, indent: {first: 708}, size: 10.0, italic: true}
+    text: (własnoręczny podpis)
+    hint_for: 35
+    hint_kind: label
+  - {p: 37, role: spacer}
+  - p: 38
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 0, end: 12, bold: true}, {start: 12, end: 214, italic: true}]}
+    text: 'Załączniki: (należy wymienić wszystkie dokumenty stanowiące dowód zaistnienia wady – wykazane w uzasadnieniu np. umowa sprzedaży, zdjęcia
+      potwierdzające wadę, opinia rzeczoznawcy w której wskazano wystąpienie wady)'
+  - p: 39
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: ……………………
+    slots:
+    - {id: p39_1, span: [0, 8], type: text, context: ▢}
+  - p: 40
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: ……………………
+    slots:
+    - {id: p40_1, span: [0, 8], type: text, context: ▢}
+  - p: 41
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: ……………………
+    slots:
+    - {id: p41_1, span: [0, 8], type: text, context: ▢}
+  - {p: 42, role: spacer}

@@ -1,0 +1,109 @@
+template: Zgoda na przetwarzanie danych osobowych oraz przesyłanie informacji marketingowych.docx
+category: zgoda_rodo
+label_pl: Zgoda na przetwarzanie danych osobowych oraz przesyłanie informacji marketingowych
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: body
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: ………………., dnia …………………
+  slots:
+  - {id: miejscowosc_data, span: [0, 7], type: date, hint: 'miejscowość, data'}
+  - {id: miejscowosc_data_2, span: [14, 21], type: date, hint: 'miejscowość, data'}
+- p: 1
+  role: hint
+  layout: {align: right, indent: {first: 708}, size: 10.0, italic: true}
+  text: (miejscowość, data)
+  hint_for: 0
+  hint_kind: label
+- {p: 2, role: spacer}
+- {p: 3, role: spacer}
+- {p: 4, role: spacer}
+- p: 5
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: Oświadczenie
+- p: 6
+  role: body
+  layout: {align: center, size: 14.0, bold: true}
+  text: w sprawie wyrażenia zgody na przetwarzanie danych osobowych
+- {p: 7, role: spacer}
+- {p: 8, role: spacer}
+- p: 9
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 150, end: 350, italic: true}]}
+  text: 'Ja niżej popisana/podpisany na podstawie art. 6 ust. 1 lit. a rozporządzenia Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia
+    2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych oraz
+    uchylenia dyrektywy 95/46/WE (ogólne rozporządzenie o ochronie danych) (Dz.U.UE.L.2016.119.1 ze zm.), zwanego dalej „RODO” wyrażam zgodę na
+    przetwarzanie następujących kategorii moich danych osobowych (imię, nazwisko, telefon, adres e-mail, adres) przez Administratora, którym jest
+    ……………………………… sp. z.o.o. z siedzibą w …………………… wpisana do Rejestru Przedsiębiorców Krajowego Rejestru Sądowego prowadzonego przez Sąd ……………………………
+    pod nr KRS: ……………………, posiadająca NIP: ………………… oraz REGON: …………………………… o kapitale zakładowym w wysokości ……………………, reprezentowana przez: …………………………
+    w celu …………………………………'
+  slots:
+  - {id: p9_1, span: [562, 574], type: text, context: przez Administratora którym jest ▢ sp. z.o.o.}
+  - {id: p9_2, span: [599, 607], type: place, context: z.o.o. z siedzibą w ▢ wpisana do}
+  - {id: p9_3, span: [695, 706], type: text, context: Sądowego prowadzonego przez Sąd ▢ pod nr}
+  - {id: p9_4, span: [719, 727], type: id_number, context: Sąd pod nr KRS ▢ posiadająca NIP}
+  - {id: p9_5, span: [746, 753], type: id_number, context: nr KRS posiadająca NIP ▢ oraz REGON}
+  - {id: p9_6, span: [766, 777], type: id_number, context: posiadająca NIP oraz REGON ▢ o kapitale}
+  - {id: p9_7, span: [812, 820], type: amount, context: kapitale zakładowym w wysokości ▢ reprezentowana przez}
+  - {id: p9_8, span: [844, 854], type: person, context: w wysokości reprezentowana przez ▢ w celu}
+  - {id: p9_9, span: [862, 875], type: text, context: reprezentowana przez w celu ▢}
+  alias: RODO
+- {p: 10, role: spacer}
+- p: 11
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: 'Podanie przeze mnie danych osobowych jest dobrowolne. '
+- {p: 12, role: spacer}
+- p: 13
+  role: field_header
+  layout: {align: justify, size: 10.0}
+  text: 'Zostałam/em poinformowana/y o tym, że posiadam prawo do:'
+- p: 14
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+  text: żądania od Administratora dostępu do moich danych osobowych;
+- p: 15
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+  text: żądania od Administratora sprostowania moich danych osobowych;
+- p: 16
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
+  text: żądania od Administratora usunięcia moich danych osobowych;
+- p: 17
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: d), kind: lowerLetter, src: auto, level: 0}}
+  text: żądania od Administratora ograniczenia przetwarzania moich danych osobowych;
+- p: 18
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: e), kind: lowerLetter, src: auto, level: 0}}
+  text: wniesienia sprzeciwu wobec przetwarzania moich danych osobowych;
+- p: 19
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: f), kind: lowerLetter, src: auto, level: 0}}
+  text: przenoszenia moich danych osobowych;
+- p: 20
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: g), kind: lowerLetter, src: auto, level: 0}}
+  text: wniesienia skargi do organu nadzorczego – Prezesa Urzędu Ochrony Danych Osobowych.
+- {p: 21, role: spacer}
+- {p: 22, role: spacer}
+- {p: 23, role: spacer}
+- p: 24
+  role: blank_line
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: ………………………………………
+  slots:
+  - {id: podpis_klienta_kontrahenta, span: [0, 15], type: signature, hint: podpis klienta/kontrahenta}
+- p: 25
+  role: hint
+  layout: {align: right, indent: {first: 708}, size: 10.0, italic: true}
+  text: (podpis klienta/kontrahenta)
+  hint_for: 24
+  hint_kind: label
+- {p: 26, role: spacer}
+- {p: 27, role: spacer}
+- {p: 28, role: spacer}

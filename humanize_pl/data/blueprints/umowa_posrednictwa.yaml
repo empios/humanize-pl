@@ -3,6 +3,8 @@
 
 category: umowa_posrednictwa
 label_pl: umowa pośrednictwa
+# Kolejności sekcji nie sprawdzamy: realne wzory tej kategorii układają je różnie.
+check_order: false
 numbering: paragraph
 sections:
 - id: komparycja
@@ -30,3 +32,418 @@ sections:
   severity: required
   matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
       formy pisemnej, wymagają zachowania formy pisemnej]
+
+# Dokument ogólny: realny wzór tej kategorii. Przy użyciu wypełnia się wyłącznie
+# pola (`slots`); treść, kolejność i układ zostają jak we wzorze.
+document:
+  template: umowa pośrednictwa w sprzedaży nieruchomości (z klauzula wyłączności).docx
+  label_pl: Umowa pośrednictwa w sprzedaży nieruchomości (z klauzulą wyłączności)
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+  blocks:
+  - p: 0
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: 'UMOWA POŚREDNICTWA '
+  - p: 1
+    role: body
+    layout: {align: center, size: 14.0, bold: true}
+    text: 'W SPRZEDAŻY NIERUCHOMOŚCI '
+  - {p: 2, role: spacer}
+  - {p: 3, role: spacer}
+  - p: 4
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 27, end: 46, italic: true}, {start: 61, end: 74, italic: true}]}
+    text: Zawarta w dniu …………………………… (dzień/miesiąc/rok) w …..…………………… (miejscowość)
+    slots:
+    - {id: dzien_miesiac_rok, span: [15, 26], type: date, hint: dzień/miesiąc/rok}
+    - {id: miejscowosc, span: [49, 60], type: place, hint: miejscowość}
+    inline_hints:
+    - {span: [27, 46], text: dzień/miesiąc/rok}
+    - {span: [61, 74], text: miejscowość}
+  - {p: 5, role: spacer}
+  - p: 6
+    role: party_connector
+    layout: {align: justify, size: 10.0}
+    text: 'pomiędzy:'
+  - p: 7
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: …………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: p7_1, span: [0, 55], type: text, context: ▢}
+  - p: 8
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: …………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: imie_i_nazwisko_firma_miejsce_zamieszkania_siedz, span: [0, 55], type: text, hint: 'imię i nazwisko/firma; miejsce zamieszkania/siedziba
+        i adres; nr i seria dokumentu tożsamości; PESEL, NIP'}
+  - p: 9
+    role: hint
+    layout: {align: justify, size: 10.0, italic: true}
+    text: (imię i nazwisko/firma; miejsce zamieszkania/siedziba i adres; nr i seria dokumentu tożsamości; PESEL, NIP)
+    hint_for: 8
+    hint_kind: instruction
+  - {p: 10, role: spacer}
+  - p: 11
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 22, end: 34, bold: true}]}
+    text: zwanym w treści umowy Zamawiającym,
+    alias: Zamawiającym
+  - {p: 12, role: spacer}
+  - p: 13
+    role: party_connector
+    layout: {align: justify, size: 10.0}
+    text: a
+  - {p: 14, role: spacer}
+  - p: 15
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: ……………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: imie_i_nazwisko_firma_miejsce_zamieszkania_siedz_2, span: [0, 110], type: text, hint: 'imię i nazwisko/firma; miejsce zamieszkania/siedziba
+        i adres; nr i seria dokumentu tożsamości; PESEL, NIP'}
+  - p: 16
+    role: hint
+    layout: {align: justify, size: 10.0, italic: true}
+    text: (imię i nazwisko/firma; miejsce zamieszkania/siedziba i adres; nr i seria dokumentu tożsamości; PESEL, NIP)
+    hint_for: 15
+    hint_kind: instruction
+  - {p: 17, role: spacer}
+  - p: 18
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 22, end: 34, bold: true}]}
+    text: 'zwanym w treści umowy Pośrednikiem, '
+    alias: Pośrednikiem
+  - {p: 19, role: spacer}
+  - p: 20
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 23, end: 31, bold: true}]}
+    text: zwanymi w treści umowy Stronami.
+    alias: Stronami
+  - {p: 21, role: spacer}
+  - p: 22
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+    text: § 1
+  - p: 23
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: Przedmiotem umowy jest odpłatne wykonywanie przez Pośrednika, czynności zmierzających do zawarcia umowy zbywającej prawo własności do
+      nieruchomości określonej w § 2 umowy.
+  - {p: 24, role: spacer}
+  - p: 25
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+    text: § 2
+  - p: 26
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 11, bold: true}, {start: 18,
+          end: 30, bold: true}, {start: 59, end: 71, bold: true}, {start: 152, end: 213, italic: true}, {start: 295, end: 310, italic: true}, {
+          start: 333, end: 396, italic: true}]}
+    text: "Zamawiający zleca Pośrednikowi prowadzenie spraw z zakresu pośrednictwa, w zbyciu prawa własności nieruchomości, położonej w ………………………………………………………………….\
+      \ (adres położenia nieruchomości oraz inne dane nieruchomości), dla której prowadzona jest \nKsięga Wieczysta ...................................\
+      \ (numer księgi), przez ……………………………………. (wskazanie wydziału oraz sądu, który prowadzi księgę wieczystą) (dalej jako Nieruchomość)."
+    slots:
+    - {id: adres_polozenia_nieruchomosci_oraz_inne_dane_nie, span: [125, 151], type: place, hint: adres położenia nieruchomości oraz inne dane nieruchomości}
+    - {id: numer_ksiegi, span: [259, 294], type: text, hint: numer księgi}
+    - {id: wskazanie_wydzialu_oraz_sadu_ktory_prowadzi_ksie, span: [317, 332], type: person, hint: 'wskazanie wydziału oraz sądu, który prowadzi
+        księgę wieczystą'}
+    inline_hints:
+    - {span: [152, 212], text: adres położenia nieruchomości oraz inne dane nieruchomości}
+    - {span: [295, 309], text: numer księgi}
+    - {span: [333, 396], text: 'wskazanie wydziału oraz sądu, który prowadzi księgę wieczystą'}
+  - p: 27
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 11, bold: true}, {start: 118,
+          end: 249, italic: true}]}
+    text: "Zamawiający oświadcza, że nieruchomość wskazana w ust. 1 stanowi jego własność, wchodzącą \nw skład majątku osobistego (w innym przypadku,\
+      \ należy wskazać na tytuł prawny do korzystania \nz nieruchomości oraz ustalić, czy należą do majątku osobistego)."
+  - p: 28
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 11, bold: true}]}
+    text: Zamawiający oświadcza, że nieruchomość wskazana w ust. 1 jest wolna od wad prawnych oraz wszelkich zobowiązań na rzecz osób trzecich,
+      nie jest również przedmiotem postępowania sądowego. Ponadto nieruchomość nie jest obciążona wpisami w dziale III i IV księgi wieczystej.
+  - {p: 29, role: spacer}
+  - p: 30
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+    text: § 3
+  - p: 31
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: 'Cena ofertowa Nieruchomości wynosi: .................. zł  (słownie: .................... złotych).'
+    slots:
+    - {id: cena_ofertowa_nieruchomosci_wynosi, span: [36, 54], type: text, label: Cena ofertowa Nieruchomości wynosi}
+    - {id: cena_ofertowa_nieruchomosci_wynosi_2, span: [69, 89], type: amount, label: Cena ofertowa Nieruchomości wynosi}
+  - {p: 32, role: spacer}
+  - p: 33
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+    text: § 4
+  - p: 34
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 11, bold: true}, {start: 39,
+          end: 51, bold: true}]}
+    text: Zamawiający zobowiązuje się przedłożyć Pośrednikowi wszelkie informacje, niezbędne do zawarcia umowy przeniesienia prawa własności nieruchomości,
+      wskazanej w § 2 ust. 1 umowy.
+  - p: 35
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 11, bold: true}, {start: 40,
+          end: 52, bold: true}]}
+    text: Zamawiający zobowiązuje się uzgadniać z Pośrednikiem zmiany wysokości proponowanych cen nieruchomości, a także współdziałać w zakresie
+      negocjacji danych cen z potencjalnymi nabywcami.
+  - p: 36
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 11, bold: true}, {start: 108,
+          end: 118, bold: true}]}
+    text: Zamawiający ma prawo odmówić sprzedaży przedmiotowych nieruchomości potencjalnemu nabywcy, wskazanemu przez Pośrednika, bez konieczności
+      podawania uzasadnienia.
+  - {p: 37, role: spacer}
+  - p: 38
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+    text: § 5
+  - p: 39
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 9, bold: true}, {start: 232,
+          end: 245, bold: true}]}
+    text: 'Pośrednik zobowiązuje się do skompletowania pełnej dokumentacji nieruchomości, dokonania wizytacji nieruchomości, sporządzenia karty
+      opisu nieruchomości, osobistego uczestnictwa
+
+      w prezentacji nieruchomości i prezentowania w imieniu Zamawiającego warunków zbycia nieruchomości.'
+  - p: 40
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 9, bold: true}]}
+    text: Pośrednik zobowiązuje się do osobistego udziału w negocjacjach i współdziałaniu podczas przygotowania transakcji, umów przedwstępnych
+      zbycia własności nieruchomości, jak i umów ostatecznych, przenoszących własność na wskazanego nabywcę.
+  - p: 41
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 62, end: 71, bold: true}, {start: 99,
+          end: 112, bold: true}]}
+    text: W przypadku znalezienia potencjalnych nabywców nieruchomości, Pośrednik zobowiązuje się do podania Zamawiającemu danych kontaktowych kupujących.
+  - p: 42
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 9, bold: true}]}
+    text: Pośrednik oświadcza, że posiada ubezpieczenie od odpowiedzialności cywilnej ważne przez okres trwania niniejszej umowy.
+  - {p: 43, role: spacer}
+  - p: 44
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 6, kind: paragraph, src: manual, level: 0}}
+    text: § 6
+  - p: 45
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 9, end: 19, bold: true}]}
+    text: Prowizja Pośrednika za wykonanie przedmiotu umowy, określonego w § 1 i § 2 niniejszej umowy, wynosi ..... ceny sprzedaży nieruchomości.
+    slots:
+    - {id: p45_1, span: [100, 105], type: text, context: 2 niniejszej umowy wynosi ▢ ceny sprzedaży}
+  - p: 46
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: "Wynagrodzenie określone w ust. 1 zostanie powiększone o podatek VAT w stawce obowiązującej \nw dniu wystawienia faktury VAT."
+  - p: 47
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 56, end: 68, bold: true}, {start: 75,
+          end: 88, bold: true}]}
+    text: "Wynagrodzenie określone w ust. 1 i 2 zostanie wypłacone Pośrednikowi przez Zamawiającego, \nw ciągu 7 dni od momentu podpisania aktu\
+      \ notarialnego przenoszącego prawo własności nieruchomości, przelewem, na rachunek bankowy wskazany w fakturze VAT."
+  - {p: 48, role: spacer}
+  - p: 49
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 7, kind: paragraph, src: manual, level: 0}}
+    text: § 7
+  - p: 50
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 28, end: 41, bold: true}, {start: 122,
+          end: 132, bold: true}, {start: 148, end: 158, bold: true}, {start: 187, end: 198, bold: true}, {start: 207, end: 219, bold: true}]}
+    text: W przypadku sprzedaży przez Zamawiającego Nieruchomości w okresie obowiązywania niniejszej umowy nabywcom wskazanym przez Pośrednika,
+      z pominięciem Pośrednika przy zawieraniu transakcji, Zamawiający zapłaci Pośrednikowi wynagrodzenie w wysokości dwukrotnej prowizji, wskazanej
+      w § 6 ust. 1 i 2 umowy.
+  - p: 51
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 28, end: 41, bold: true}, {start: 146,
+          end: 156, bold: true}, {start: 186, end: 197, bold: true}, {start: 206, end: 218, bold: true}]}
+    text: W przypadku sprzedaży przez Zamawiającego przedmiotowej nieruchomości, przed upływem …. od rozwiązania niniejszej umowy, nabywcom wskazanym
+      przez Pośrednika podczas obowiązywania umowy, Zamawiający zapłaci Pośrednikowi wynagrodzenie odpowiadające prowizji wskazanej w § 6 ust. 1
+      i 2 umowy.
+    slots:
+    - {id: p51_1, span: [85, 87], type: text, context: przedmiotowej nieruchomości przed upływem ▢ od rozwiązania}
+  - p: 52
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: Zapis § 6 ust. 3 stosuje się odpowiednio.
+  - {p: 53, role: spacer}
+  - p: 54
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 8, kind: paragraph, src: manual, level: 0}}
+    text: § 8
+  - p: 55
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 11, bold: true}, {start: 73,
+          end: 83, bold: true}]}
+    text: "Zamawiający zobowiązuje się do każdorazowego, niezwłocznego informowania Pośrednika \no zmianach w stanie prawnym i faktycznym nieruchomości\
+      \ wskazanej w § 2 ust. 1 umowy."
+  - p: 56
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 11, bold: true}, {start: 14,
+          end: 23, bold: true}]}
+    text: "Zamawiający i Pośrednik zobowiązują się do wzajemnego, niezwłocznego informowania \no każdorazowej zmianie swoich danych adresowych i\
+      \ numerów kontaktowych."
+  - {p: 57, role: spacer}
+  - p: 58
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 9, kind: paragraph, src: manual, level: 0}}
+    text: § 9
+  - p: 59
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 0, end: 13, bold: true}, {start: 84, end: 93, bold: true}, {start: 143, end: 156, bold: true}]}
+    text: '[opcjonalnie] Niniejsza umowa została zawarta poza lokalem Agencji Nieruchomości, a Pośrednik udzielił wszystkich wymaganych prawem informacji
+      Zamawiającemu, zgodnie z art. 12 ustawy z dnia 30 maja 2014 r. o prawach konsumenta. Do umowy dołączono informację o prawie do odstąpienia
+      od umowy.'
+  - {p: 60, role: spacer}
+  - p: 61
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 10, kind: paragraph, src: manual, level: 0}}
+    text: § 10
+  - p: 62
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 11, bold: true}, {start: 132,
+          end: 142, bold: true}]}
+    text: Zamawiający wyraża zgodę na przetwarzanie jego danych osobowych, określonych w komparycji  niniejszej Umowy oraz w jej treści przez Pośrednika
+      w celu i na okres realizacji niniejszej Umowy, zgodnie z postanowieniami niniejszego punktu.
+  - p: 63
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: "Przetwarzanie danych osobowych z tytułu niniejszej Umowy odbywać się będzie w zgodzie \ni w oparciu o:"
+  - p: 64
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+    text: ustawę z dnia 10 maja 2018 r. o ochronie danych osobowych, zwaną dalej „UODO” wraz z aktami wykonawczymi;
+  - p: 65
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+    text: "rozporządzenie Parlamentu Europejskiego i Rady (EU) 2016/679 z dnia 27 kwietnia 2016 roku w sprawie ochrony osób fizycznych w związku\
+      \ z przetwarzaniem danych osobowych \ni w sprawie swobodnego przepływu takich danych oraz uchylenia dyrektywy 95/46/WE (ogólne rozporządzenie\
+      \ o ochronie danych), zwane dalej „RODO”."
+  - p: 66
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 87, end: 96, bold: true}]}
+    text: Administratorem danych osobowych, których przetwarzanie wynika z niniejszej Umowy jest Pośrednik.
+  - p: 67
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+    text: 'Cel i zakres powierzenia przetwarzania danych osobowych wynika bezpośrednio i ogranicza się wyłącznie do zadań wynikających z niniejszej
+      Umowy. Na powyższych danych będą wykonywane w szczególności operacje: przechowywanie, transfer, utrwalanie, analizowanie, a także czynności
+      polegające na tworzeniu kopii bezpieczeństwa oraz czynności związane z odtwarzaniem z kopii bezpieczeństwa.'
+  - p: 68
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+    text: Do przetwarzania danych osobowych mogą być dopuszczone wyłącznie osoby posiadające upoważnienie, o których mowa w art. 37 UODO lub w art.
+      29 RODO oraz przeszkolone z zakresu przepisów dotyczących ochrony danych osobowych.
+  - {p: 69, role: spacer}
+  - p: 70
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 11, kind: paragraph, src: manual, level: 0}}
+    text: § 11
+  - p: 71
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 0, end: 9, bold: true}]}
+    text: Pośrednik oświadcza, iż zgodnie z art. 181 ust. 3 ustawy z dnia 21 sierpnia 1997 r. o gospodarce nieruchomościami (t.j. Dz.U.2024.1145
+      ze zm.) jest ubezpieczony od odpowiedzialności cywilnej za szkody, które mogą wyniknąć w związku z wykonywaniem czynności pośrednictwa.
+  - {p: 72, role: spacer}
+  - p: 73
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 12, kind: paragraph, src: manual, level: 0}}
+    text: § 12
+  - p: 74
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 32, end: 59, bold: true}]}
+    text: Umowa niniejsza zostaje zawarta z zastrzeżeniem wyłączności.
+  - p: 75
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 163, end: 175, bold: true}, {
+          start: 177, end: 188, bold: true}, {start: 330, end: 340, bold: true}]}
+    text: Zastrzeżenie wyłączności oznacza, że Zamawiający na podstawie niniejszej umowy zobowiązuje się, że powierzy wykonywanie czynności określonych
+      § 2 ust. 1 wyłącznie Pośrednikowi. Zamawiający nie może w okresie w którym wyłączność została zastrzeżona, ani bezpośrednio, ani pośrednio
+      zawrzeć umowy, która mogłaby naruszyć wyłączność Pośrednika.
+  - p: 76
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 95, end: 108, bold: true}]}
+    text: Niedotrzymanie zobowiązania określonego w ust. 1 i 2 powyżej spowoduje obowiązek zapłaty przez Zamawiającego kary umownej w wysokości
+      ……. .
+    slots:
+    - {id: p76_1, span: [134, 137], type: amount, context: kary umownej w wysokości ▢}
+  - {p: 77, role: spacer}
+  - p: 78
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 13, kind: paragraph, src: manual, level: 0}}
+    text: § 13
+  - p: 79
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Umowa zostaje zawarta na czas określony …………….., począwszy od dnia ………………. / nieokreślony od dnia ……………….. r.
+    slots:
+    - {id: p79_1, span: [40, 47], type: text, context: zawarta na czas określony ▢ począwszy od}
+    - {id: p79_2, span: [67, 74], type: date, context: określony począwszy od dnia ▢ nieokreślony od}
+    - {id: p79_3, span: [98, 106], type: date, context: dnia nieokreślony od dnia ▢ r.}
+  - p: 80
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 7, bold: true}]}
+    text: Stronom umowy przysługuje prawo jej rozwiązania z zachowaniem jednomiesięcznego okresu wypowiedzenia ze skutkiem na koniec miesiąca kalendarzowego.
+  - p: 81
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 7, end: 16, bold: true}, {start: 112,
+          end: 125, bold: true}, {start: 127, end: 139, bold: true}]}
+    text: Jeżeli Pośrednik dokonał czynności zmierzających do zrealizowania umowy, to w przypadku rozwiązania umowy przez Zamawiającego, Pośrednikowi
+      należy się zwrot poniesionych kosztów.
+  - p: 82
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+    text: Wszelkie zmiany niniejszej umowy wymagają formy pisemnej pod rygorem nieważności.
+  - p: 83
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}, spans: [{start: 137, end: 147, bold: true}]}
+    text: Ewentualne spory mogące wyniknąć przy realizacji umowy, rozstrzygane będą przez właściwy miejscowo sąd powszechny ze względu na siedzibę
+      Pośrednika.
+  - p: 84
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}}
+    text: W sprawach nieuregulowanych niniejszą umową mają zastosowanie przepisy ustawy z dnia 23 kwietnia 1964 r. - Kodeks cywilny;
+  - p: 85
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '7.', kind: decimal, src: auto, level: 0}}
+    text: Umowę sporządzono w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze Stron.
+  - {p: 86, role: spacer}
+  - {p: 87, role: spacer}
+  - p: 88
+    role: signature_line
+    layout: {align: justify, size: 10.0, tabs: 6}
+    text: "…………………………………\t          \t\t\t \t\t         …………………………………"
+    slots:
+    - {id: p88_1, span: [0, 13], type: signature, context: ▢}
+    - {id: p88_2, span: [39, 52], type: signature, context: ▢}
+  - p: 89
+    role: body
+    layout: {align: justify, size: 10.0, bold: true, tabs: 6}
+    text: "    ZAMAWIAJĄCY\t\t\t\t                       \t\t                POŚREDNIK"
+  - {p: 90, role: spacer}
+  - {p: 91, role: spacer}
+  - {p: 92, role: spacer}
+  - {p: 93, role: spacer}
+  - p: 94
+    role: field_header
+    layout: {align: justify, size: 10.0, bold: true}
+    text: 'Załączniki:'
+  - p: 95
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Kopia świadectwa nadania licencji w zakresie pośrednictwa w obrocie nieruchomościami;
+  - p: 96
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Certyfikat zawarcia umowy ubezpieczenia OC w zakresie pośrednictwa w obrocie nieruchomościami.
+  - {p: 97, role: spacer}
+  - {p: 98, role: spacer}
+  - {p: 99, role: spacer}
+  - {p: 100, role: spacer}

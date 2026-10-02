@@ -46,3 +46,145 @@ sections:
   label_pl: podpis wnioskodawcy
   severity: expected
   matches: [podpis, własnoręczny podpis, z wyrazami szacunku]
+
+# Dokument ogólny: realny wzór tej kategorii. Przy użyciu wypełnia się wyłącznie
+# pola (`slots`); treść, kolejność i układ zostają jak we wzorze.
+document:
+  template: Wniosek o udostępnienie informacji publicznej.docx
+  label_pl: Wniosek o udostępnienie informacji publicznej
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+  blocks:
+  - p: 0
+    role: body
+    layout: {align: right, indent: {first: 708}, size: 10.0}
+    text: ………………….. (miejscowość), dnia ………… r.
+    slots:
+    - {id: miejscowosc, span: [0, 9], type: place, hint: miejscowość}
+    - {id: p0_2, span: [30, 34], type: date, context: dnia ▢ r.}
+    inline_hints:
+    - {span: [10, 23], text: miejscowość}
+  - {p: 1, role: spacer}
+  - p: 2
+    role: blank_line
+    layout: {size: 10.0}
+    text: …………………………………
+    slots:
+    - {id: p2_1, span: [0, 13], type: text, context: ▢}
+  - p: 3
+    role: blank_line
+    layout: {size: 10.0}
+    text: …………………………………
+    slots:
+    - {id: p3_1, span: [0, 13], type: text, context: ▢}
+  - p: 4
+    role: blank_line
+    layout: {size: 10.0}
+    text: …………………………………
+    slots:
+    - {id: adres_wnioskodawcy, span: [0, 13], type: address, hint: adres wnioskodawcy}
+  - p: 5
+    role: hint
+    layout: {size: 10.0, italic: true}
+    text: (adres wnioskodawcy)
+    hint_for: 4
+    hint_kind: label
+  - {p: 6, role: spacer}
+  - {p: 7, role: spacer}
+  - p: 8
+    role: blank_line
+    layout: {indent: {left: 4820}, size: 10.0}
+    text: ……………………………………
+    slots:
+    - {id: p8_1, span: [0, 14], type: text, context: ▢}
+  - p: 9
+    role: blank_line
+    layout: {indent: {left: 4820}, size: 10.0}
+    text: ……………………………………
+    slots:
+    - {id: p9_1, span: [0, 14], type: text, context: ▢}
+  - p: 10
+    role: blank_line
+    layout: {indent: {left: 4820}, size: 10.0}
+    text: ……………………………………
+    slots:
+    - {id: adres_organu, span: [0, 14], type: address, hint: adres organu}
+  - p: 11
+    role: hint
+    layout: {indent: {left: 4820}, size: 10.0, italic: true}
+    text: (adres organu)
+    hint_for: 10
+    hint_kind: label
+  - {p: 12, role: spacer}
+  - p: 13
+    role: body
+    layout: {align: center, size: 12.0, bold: true}
+    text: WNIOSEK O UDZIELENIE INFORMACJI PUBLICZNEJ
+  - {p: 14, role: spacer}
+  - p: 15
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 216, end: 290, italic: true}]}
+    text: 'Niniejszym, działając w imieniu własnym na podstawie art. 2 ust. 1 ustawy o dostępie do informacji publicznej z dnia 6 września 2001
+      zwracam się z prośbą o udostępnienie informacji w zakresie dotyczącym ……………………………… (należy wskazać czego dotyczy wniosek o udzielenie informacji
+      publicznej) poprzez odpowiedzi na następujące pytanie: '
+    slots:
+    - {id: nalezy_wskazac_czego_dotyczy_wniosek_o_udzieleni, span: [203, 215], type: text, hint: należy wskazać czego dotyczy wniosek o udzielenie
+        informacji publicznej}
+    inline_hints:
+    - {span: [216, 289], text: należy wskazać czego dotyczy wniosek o udzielenie informacji publicznej}
+    optional: true
+    condition: należy wskazać czego dotyczy wniosek o udzielenie informacji publicznej
+  - p: 16
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}, tabs: 1}
+    text: "………………………………… ……………………………………………………………………………………… (miejsce na wskazanie pytania na które organ ma udzielić odpowiedzi)\t"
+    slots:
+    - {id: miejsce_na_wskazanie_pytania_na_ktore_organ_ma_u, span: [0, 47], type: text, hint: miejsce na wskazanie pytania na które organ ma udzielić
+        odpowiedzi}
+    inline_hints:
+    - {span: [48, 116], text: miejsce na wskazanie pytania na które organ ma udzielić odpowiedzi}
+  - {p: 17, role: spacer}
+  - p: 18
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: 'Jeżeli odpowiedź na powyższe pytanie jest twierdząca proszę o udzielenie informacji: '
+  - p: 19
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+    text: ……………………………………………………………………………………………………
+    slots:
+    - {id: p19_1, span: [0, 38], type: text, context: ▢}
+  - p: 20
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}}
+    text: ……………………………………………………………………………………………………
+    slots:
+    - {id: miejsce_na_wskazanie_zakresu_informacji_publiczn, span: [0, 38], type: text, hint: miejsce na wskazanie zakresu informacji publicznej
+        jaką organ ma udzielić w związku z wniesionym wnioskiem}
+  - p: 21
+    role: hint
+    layout: {align: justify, indent: {left: 720}, size: 10.0, italic: true}
+    text: (miejsce na wskazanie zakresu informacji publicznej jaką organ ma udzielić w związku z wniesionym wnioskiem)
+    hint_for: 20
+    hint_kind: instruction
+  - {p: 22, role: spacer}
+  - p: 23
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: Powyższe informacje uprzejmie proszę o przesłanie na mój adres email/adres zamieszkania wskazany we wniosku
+  - {p: 24, role: spacer}
+  - {p: 25, role: spacer}
+  - p: 26
+    role: blank_line
+    layout: {align: right, indent: {first: 708}, size: 10.0}
+    text: …………………………………………
+    slots:
+    - {id: wlasnoreczny_podpis, span: [0, 16], type: signature, hint: własnoręczny podpis}
+  - p: 27
+    role: hint
+    layout: {align: right, indent: {first: 708}, size: 10.0, italic: true}
+    text: (własnoręczny podpis)
+    hint_for: 26
+    hint_kind: label
+  - {p: 28, role: spacer}
+  - {p: 29, role: spacer}

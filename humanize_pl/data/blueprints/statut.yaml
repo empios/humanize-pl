@@ -3,6 +3,8 @@
 
 category: statut
 label_pl: statut
+# Kolejności sekcji nie sprawdzamy: realne wzory tej kategorii układają je różnie.
+check_order: false
 numbering: paragraph
 sections:
 - id: nazwa
@@ -33,3 +35,569 @@ sections:
   label_pl: zmiana i rozwiązanie
   severity: expected
   matches: [zmian, rozwiązanie, likwidacj, przekształcenie]
+
+# Dokument ogólny: realny wzór tej kategorii. Przy użyciu wypełnia się wyłącznie
+# pola (`slots`); treść, kolejność i układ zostają jak we wzorze.
+document:
+  template: Statut fundacji.docx
+  label_pl: Statut fundacji
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+  blocks:
+  - p: 0
+    role: title
+    layout: {align: center, size: 14.0, bold: true, spans: [{start: 26, end: 42, italic: true}]}
+    text: Statut Fundacji ……………………… (nazwa fundacji)
+    slots:
+    - {id: nazwa_fundacji, span: [16, 25], type: text, hint: nazwa fundacji}
+    inline_hints:
+    - {span: [26, 42], text: nazwa fundacji}
+  - {p: 1, role: spacer}
+  - p: 2
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+    text: § 1
+  - {p: 3, role: spacer}
+  - p: 4
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 19, end: 35, italic: true}]}
+    text: Fundacja ……………………. (nazwa fundacji)  zwana dalej Fundacją, działa na podstawie ustawy z dnia 6 kwietnia 1984 r. o fundacjach oraz postanowień
+      niniejszego statutu.
+    slots:
+    - {id: nazwa_fundacji_2, span: [9, 18], type: text, hint: nazwa fundacji}
+    inline_hints:
+    - {span: [19, 35], text: nazwa fundacji}
+  - p: 5
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 44, end: 70, italic: true}]}
+    text: Fundacja została ustanowiona przez …………………. (imię i nazwisko fundatora), zwanego dalej Fundatorem, aktem notarialnym sporządzonym przez
+      notariusza …………….. w kancelarii notarialnej w ………………………, w dniu …………...
+    slots:
+    - {id: imie_i_nazwisko_fundatora, span: [35, 43], type: person, hint: imię i nazwisko fundatora}
+    - {id: p5_2, span: [147, 154], type: text, context: notarialnym sporządzonym przez notariusza ▢ w kancelarii}
+    - {id: p5_3, span: [182, 191], type: place, context: w kancelarii notarialnej w ▢ w dniu}
+    - {id: p5_4, span: [200, 207], type: date, context: notarialnej w w dniu ▢}
+    inline_hints:
+    - {span: [44, 71], text: imię i nazwisko fundatora}
+  - {p: 6, role: spacer}
+  - p: 7
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+    text: § 2
+  - {p: 8, role: spacer}
+  - p: 9
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Siedzibą Fundacji jest ………………………..
+    slots:
+    - {id: p9_1, span: [23, 34], type: text, context: Siedzibą Fundacji jest ▢}
+  - p: 10
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Czas trwania fundacji jest nieoznaczony.
+  - p: 11
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 45, end: 112, italic: true}]}
+    text: Terenem działania Fundacji jest ……………………………. (np. konkretne województwo, obszar całej Rzeczypospolitej Polskiej), przy czym w zakresie
+      niezbędnym dla właściwego realizowania celów, Fundacja może prowadzić działalność także poza granicami Rzeczpospolitej Polskiej.
+    slots:
+    - {id: np_konkretne_wojewodztwo_obszar_calej_rzeczyposp, span: [32, 44], type: text, hint: 'np. konkretne województwo, obszar całej Rzeczypospolitej
+        Polskiej'}
+    inline_hints:
+    - {span: [45, 112], text: 'np. konkretne województwo, obszar całej Rzeczypospolitej Polskiej'}
+  - {p: 12, role: spacer}
+  - p: 13
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+    text: § 3
+  - {p: 14, role: spacer}
+  - p: 15
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Fundacja posiada osobowość prawną.
+  - p: 16
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Nadzór nad Fundacją sprawuje minister właściwy ds. ………………………..
+    slots:
+    - {id: p16_1, span: [51, 62], type: text, context: sprawuje minister właściwy ds. ▢}
+  - {p: 17, role: spacer}
+  - p: 18
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+    text: § 4
+  - {p: 19, role: spacer}
+  - p: 20
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: Fundacja może ustanawiać certyfikaty, odznaki i przyznawać je wraz z innymi nagrodami i wyróżnieniami osobom fizycznym i prawnym zasłużonym
+      dla fundacji, przyczyniającym się do realizacji celów fundacji.
+  - {p: 21, role: spacer}
+  - p: 22
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+    text: § 5
+  - {p: 23, role: spacer}
+  - p: 24
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 51, end: 72, italic: true}]}
+    text: 'Celem Fundacji jest ………………………………………………………………………….. (opis celu fundacji). '
+    slots:
+    - {id: opis_celu_fundacji, span: [20, 50], type: text, hint: opis celu fundacji}
+    inline_hints:
+    - {span: [51, 71], text: opis celu fundacji}
+  - {p: 25, role: spacer}
+  - p: 26
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 6, kind: paragraph, src: manual, level: 0}}
+    text: § 6
+  - {p: 27, role: spacer}
+  - p: 28
+    role: field_header
+    layout: {align: justify, size: 10.0}
+    text: 'Fundacja realizuje swoje cele poprzez:'
+  - p: 29
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+    text: ………………………………………………………….
+    slots:
+    - {id: p29_1, span: [0, 23], type: text, context: ▢}
+  - p: 30
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+    text: ………………………………………………………….
+    slots:
+    - {id: p30_1, span: [0, 23], type: text, context: ▢}
+  - p: 31
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
+    text: ………………………………………………………….
+    slots:
+    - {id: p31_1, span: [0, 23], type: text, context: ▢}
+  - {p: 32, role: spacer}
+  - p: 33
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 7, kind: paragraph, src: manual, level: 0}}
+    text: § 7
+  - {p: 34, role: spacer}
+  - p: 35
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: 'Majątek Fundacji stanowi fundusz założycielski w kwocie …………………….. (słownie: ………………….. złotych) oraz inne mienie nabyte przez Fundację
+      w toku działania środki.'
+    slots:
+    - {id: p35_1, span: [56, 66], type: text, context: fundusz założycielski w kwocie ▢ oraz inne}
+    - {id: p35_2, span: [77, 86], type: amount, context: założycielski w kwocie słownie ▢ złotych oraz}
+  - {p: 36, role: spacer}
+  - p: 37
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 8, kind: paragraph, src: manual, level: 0}}
+    text: § 8
+  - {p: 38, role: spacer}
+  - p: 39
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: 'Fundacja może prowadzić działalność gospodarczą na zasadach ogólnych określonych w odrębnych przepisach. Działalność gospodarcza Fundacji
+      – sklasyfikowana zgodnie z Polską Klasyfikacją Działalności obejmuje:'
+  - p: 40
+    role: item
+    layout: {align: justify, indent: {left: 1134}, size: 10.0, marker: {text: d), kind: lowerLetter, src: auto, level: 0}}
+    text: ……… - PKD ……..
+    slots:
+    - {id: p40_1, span: [0, 3], type: text, context: ▢ PKD}
+    - {id: p40_2, span: [10, 14], type: text, context: PKD ▢}
+  - p: 41
+    role: item
+    layout: {align: justify, indent: {left: 1134}, size: 10.0, marker: {text: e), kind: lowerLetter, src: auto, level: 0}}
+    text: ……… - PKD ……..
+    slots:
+    - {id: p41_1, span: [0, 3], type: text, context: ▢ PKD}
+    - {id: p41_2, span: [10, 14], type: text, context: PKD ▢}
+  - p: 42
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: 'Dochód z działalności gospodarczej Fundacji służy realizacji celów Statutowych, z tym zastrzeżeniem, że odpowiednia część dochodu z działalności
+      gospodarczej może być przeznaczona na zapewnienie kontynuacji działalności gospodarczej. '
+  - {p: 43, role: spacer}
+  - p: 44
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 9, kind: paragraph, src: manual, level: 0}}
+    text: § 9
+  - {p: 45, role: spacer}
+  - p: 46
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: 'Przychody Fundacji pochodzą z:'
+  - p: 47
+    role: item
+    layout: {align: justify, indent: {left: 1416}, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+    text: darowizn, spadków, zapisów,
+  - p: 48
+    role: item
+    layout: {align: justify, indent: {left: 1416}, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+    text: dotacji i subwencji od osób prawnych,
+  - p: 49
+    role: item
+    layout: {align: justify, indent: {left: 1416}, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
+    text: zbiórek publicznych,
+  - p: 50
+    role: item
+    layout: {align: justify, indent: {left: 1416}, size: 10.0, marker: {text: d), kind: lowerLetter, src: auto, level: 0}}
+    text: majątku fundacji,
+  - p: 51
+    role: item
+    layout: {align: justify, indent: {left: 1416}, size: 10.0, marker: {text: e), kind: lowerLetter, src: auto, level: 0}}
+    text: odsetek i lokat bankowych;
+  - p: 52
+    role: item
+    layout: {align: justify, indent: {left: 1416}, size: 10.0, marker: {text: f), kind: lowerLetter, src: auto, level: 0}}
+    text: działalności gospodarczej;
+  - p: 53
+    role: item
+    layout: {align: justify, indent: {left: 1416}, size: 10.0, marker: {text: g), kind: lowerLetter, src: auto, level: 0}}
+    text: ………………………………………
+    slots:
+    - {id: p53_1, span: [0, 15], type: text, context: ▢}
+  - p: 54
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Całość przychodów uzyskiwanych przez Fundację jest przeznaczana wyłącznie na działalność statutową.
+  - {p: 55, role: spacer}
+  - p: 56
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 10, kind: paragraph, src: manual, level: 0}}
+    text: § 10
+  - {p: 57, role: spacer}
+  - p: 58
+    role: field_header
+    layout: {align: justify, size: 10.0}
+    text: 'Władzami Fundacji są:'
+  - p: 59
+    role: item
+    layout: {align: justify, indent: {left: 1416}, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+    text: Zarząd Fundacji, zwany dalej Zarządem,
+  - p: 60
+    role: item
+    layout: {align: justify, indent: {left: 1416}, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}, spans: [{start: 32, end: 212,
+          italic: true}]}
+    text: Rada Fundacji, zwana dalej Radą (nie jest to organ obowiązkowy, można z niego zrezygnować i usunąć postanowienia dotyczące tego organu,
+      w takim wypadku należy dostosować postanowienia dotyczące powołania zarządu).
+  - {p: 61, role: spacer}
+  - p: 62
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 11, kind: paragraph, src: manual, level: 0}}
+    text: § 11
+  - {p: 63, role: spacer}
+  - p: 64
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Rada jest organem kontrolnym i opiniującym Fundacji.
+  - p: 65
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Rada składa się z …….. członków i jest wybierana na kadencję trwającą …….. lat. Rada wybiera ze swego grona Przewodniczącego Rady, który
+      kieruje jej pracami.
+    slots:
+    - {id: p65_1, span: [18, 22], type: text, context: Rada składa się z ▢ członków i}
+    - {id: p65_2, span: [70, 74], type: text, context: wybierana na kadencję trwającą ▢ lat. Rada}
+  - p: 66
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: Członków pierwszego składu Rady powołuje Fundator. Następnych członków Rady na miejsce osób, które przestały pełnić tę funkcję lub dla
+      rozszerzenia składu Rady, powołuje swą decyzją Rada.
+  - p: 67
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+    text: W szczególnie uzasadnionych przypadkach odwołanie członka Rady i przez to pozbawienie go członkostwa w Radzie może nastąpić w wyniku uchwały
+      podjętej jednogłośnie przez pozostałych członków Rady.
+  - p: 68
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+    text: 'Członkostwo w Radzie wygasa na skutek:'
+  - p: 69
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}}
+    text: dobrowolnego ustąpienia, zgłoszonego pisemnie do Przewodniczącego Rady,
+  - p: 70
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '7.', kind: decimal, src: auto, level: 0}}
+    text: utraty praw obywatelskich na skutek skazania prawomocnym wyrokiem sądu za przestępstwo popełnione z winy umyślnej,
+  - p: 71
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '8.', kind: decimal, src: auto, level: 0}}
+    text: odwołania, o którym mowa w punkcie 4. niniejszego paragrafu,
+  - p: 72
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '9.', kind: decimal, src: auto, level: 0}}
+    text: śmierci członka.
+  - p: 73
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '10.', kind: decimal, src: auto, level: 0}}
+    text: Nie można łączyć członkostwa w Radzie z członkostwem w Zarządzie.
+  - {p: 74, role: spacer}
+  - p: 75
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 12, kind: paragraph, src: manual, level: 0}}
+    text: § 12
+  - {p: 76, role: spacer}
+  - p: 77
+    role: field_header
+    layout: {align: justify, size: 10.0}
+    text: 'Do zadań Rady Fundacji należy:'
+  - p: 78
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+    text: wytyczanie głównych kierunków działalności Fundacji,
+  - p: 79
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+    text: nadzór i kontrola nad działalnością Fundacji, w szczególności kontrola stanu majątkowego Fundacji,
+  - p: 80
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
+    text: zatwierdzanie rocznych sprawozdań Zarządu z działalności oraz udzielanie Zarządowi absolutorium,
+  - p: 81
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: d), kind: lowerLetter, src: auto, level: 0}}
+    text: powoływanie i odwoływanie członków Zarządu, w tym Prezesa Zarządu,
+  - p: 82
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: e), kind: lowerLetter, src: auto, level: 0}}
+    text: podejmowanie decyzji o zmianie statutu Fundacji,
+  - p: 83
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: f), kind: lowerLetter, src: auto, level: 0}}
+    text: podejmowanie decyzji o połączeniu z inną fundacją lub o likwidacji Fundacji,
+  - p: 84
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: g), kind: lowerLetter, src: auto, level: 0}}
+    text: podejmowanie decyzji we wszystkich innych sprawach niezastrzeżonych do kompetencji innych organów.
+  - {p: 85, role: spacer}
+  - p: 86
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 13, kind: paragraph, src: manual, level: 0}}
+    text: § 13
+  - {p: 87, role: spacer}
+  - p: 88
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Rada zbiera się co najmniej …….. raz/y w roku.
+    slots:
+    - {id: p88_1, span: [28, 32], type: text, context: zbiera się co najmniej ▢ raz y}
+  - p: 89
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Radę zwołuje Przewodniczący Rady z własnej inicjatywy albo na wniosek Zarządu, zgłoszony na piśmie.
+  - p: 90
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: Rada podejmuje decyzje w formie uchwał – zwykłą większością głosów, przy obecności co najmniej połowy swoich członków, jeśli dalsze postanowienia
+      nie stanowią inaczej. W razie równej liczby głosów decyduje głos Przewodniczącego.
+  - p: 91
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 196, end: 247, italic: true}]}
+    text: Posiedzenie Rady może być zwołane w trybie nadzwyczajnym dla rozpatrzenia sprawy o szczególnym charakterze, z inicjatywy Zarządu bądź na
+      pisemny wniosek Przewodniczącego Rady lub przynajmniej ……… (liczba członków konieczna do zwołania posiedzenia) jej członków.
+    slots:
+    - {id: liczba_czlonkow_konieczna_do_zwolania_posiedzeni, span: [192, 195], type: text, hint: liczba członków konieczna do zwołania posiedzenia}
+    inline_hints:
+    - {span: [196, 247], text: liczba członków konieczna do zwołania posiedzenia}
+  - p: 92
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+    text: Nadzwyczajne posiedzenie Rady winno być zwołane nie później niż w ciągu 14 dni od daty zgłoszenia wniosku.
+  - p: 93
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}}
+    text: Każdy z członków zwyczajnych Rady dysponuje jednym głosem.
+  - p: 94
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '7.', kind: decimal, src: auto, level: 0}}
+    text: Posiedzenia Rady prowadzi Przewodniczący lub członek Rady przez niego wskazany.
+  - {p: 95, role: spacer}
+  - p: 96
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 14, kind: paragraph, src: manual, level: 0}}
+    text: § 14
+  - {p: 97, role: spacer}
+  - p: 98
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Zarząd składa się z …….. członków, w tym Prezesa, powoływanych przez Radę na kadencję trwającą …….. lat.
+    slots:
+    - {id: p98_1, span: [20, 24], type: text, context: Zarząd składa się z ▢ członków w}
+    - {id: p98_2, span: [95, 99], type: text, context: Radę na kadencję trwającą ▢ lat.}
+  - p: 99
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Funkcję członka Zarządu można pełnić przez więcej niż jedną kadencję.
+  - p: 100
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: Pierwszy skład Zarządu powołuje Fundator. Kolejny skład jest wybierany przez Radę.
+  - p: 101
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+    text: 'Członkostwo w Zarządzie ustaje na skutek:'
+  - p: 102
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+    text: złożenia pisemnej rezygnacji na ręce Rady Fundacji,
+  - p: 103
+    role: item
+    layout: {align: justify, indent: {left: 1134}, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+    text: utraty praw obywatelskich na skutek skazania prawomocnym wyrokiem sądu za przestępstwo popełnione z winy umyślnej,
+  - p: 104
+    role: item
+    layout: {align: justify, indent: {left: 1134}, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
+    text: śmierci członka Zarządu,
+  - p: 105
+    role: item
+    layout: {align: justify, indent: {left: 1134}, size: 10.0, marker: {text: d), kind: lowerLetter, src: auto, level: 0}}
+    text: odwołania przez Radę Fundacji.
+  - p: 106
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+    text: Zarząd w całości lub każdy z jego członków może być odwołany przez Radę przed upływem kadencji, w drodze uchwały podjętej jednomyślnie
+      przez wszystkich członków Rady.
+  - {p: 107, role: spacer}
+  - p: 108
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 15, kind: paragraph, src: manual, level: 0}}
+    text: § 15
+  - {p: 109, role: spacer}
+  - p: 110
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Zarząd kieruje działalnością Fundacji i reprezentuje ją na zewnątrz.
+  - p: 111
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: 'Do kompetencji Zarządu należy:'
+  - p: 112
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+    text: kierowanie bieżącą działalnością Fundacji,
+  - p: 113
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+    text: realizacja celów statutowych,
+  - p: 114
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
+    text: sporządzanie planów pracy i budżetu,
+  - p: 115
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: d), kind: lowerLetter, src: auto, level: 0}}
+    text: sprawowanie zarządu nad majątkiem Fundacji,
+  - p: 116
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: e), kind: lowerLetter, src: auto, level: 0}}
+    text: reprezentowanie Fundacji na zewnątrz,
+  - p: 117
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: f), kind: lowerLetter, src: auto, level: 0}}
+    text: zatrudnianie pracowników i ustalanie wysokości ich wynagrodzenia,
+  - p: 118
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: g), kind: lowerLetter, src: auto, level: 0}}
+    text: składanie wniosku do Rady o zmianę statutu,
+  - p: 119
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: h), kind: lowerLetter, src: auto, level: 0}}
+    text: wnioskowanie do Rady o połączenie lub likwidację Fundacji.
+  - p: 120
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: Zarząd co roku zobowiązany jest przedkładać Radzie roczne sprawozdanie z działalności Fundacji.
+  - {p: 121, role: spacer}
+  - p: 122
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 16, kind: paragraph, src: manual, level: 0}}
+    text: § 16
+  - {p: 123, role: spacer}
+  - p: 124
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Posiedzenia Zarządu odbywają się w miarę potrzeb, nie rzadziej jednak niż raz na ………………..
+    slots:
+    - {id: p124_1, span: [81, 89], type: text, context: jednak niż raz na ▢}
+  - p: 125
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Posiedzenia Zarządu zwołuje Prezes, przesyłając informację o terminie pocztą elektroniczną, a w przypadku braku takiej możliwości listem
+      poleconym, na co najmniej …….. dni przed planowanym spotkaniem posiedzenia muszą zostać poinformowani wszyscy członkowie Zarządu.
+    slots:
+    - {id: p125_1, span: [163, 167], type: text, context: poleconym na co najmniej ▢ dni przed}
+  - p: 126
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: Zarząd podejmuje decyzje za pomocą uchwał zwykłą większością głosów przy obecności co najmniej połowy swoich członków, jeśli dalsze postanowienia
+      nie stanowią inaczej. W przypadku równego rozłożenia głosów decyduje głos Prezesa.
+  - {p: 127, role: spacer}
+  - p: 128
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 17, kind: paragraph, src: manual, level: 0}}
+    text: § 17
+  - {p: 129, role: spacer}
+  - p: 130
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 102, end: 164, italic: true}]}
+    text: Do składania oświadczeń woli w imieniu Fundacji, w tym w sprawach majątkowych, uprawnionych jest …….. (liczba członków zarządu uprawnionych
+      do składania oświadczeń) członków zarządu działających łącznie.
+    slots:
+    - {id: liczba_czlonkow_zarzadu_uprawnionych_do_skladani, span: [97, 101], type: text, hint: liczba członków zarządu uprawnionych do składania
+        oświadczeń}
+    inline_hints:
+    - {span: [102, 164], text: liczba członków zarządu uprawnionych do składania oświadczeń}
+  - {p: 131, role: spacer}
+  - p: 132
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 18, kind: paragraph, src: manual, level: 0}}
+    text: § 18
+  - p: 133
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: Zmian w statucie Fundacji dokonuje Rada bezwzględną większością głosów, przy obecności co najmniej połowy członków uprawnionych do głosowania.
+      Zmiana może dotyczyć celów określonych w akcie założycielskim.
+  - {p: 134, role: spacer}
+  - p: 135
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 19, kind: paragraph, src: manual, level: 0}}
+    text: § 19
+  - {p: 136, role: spacer}
+  - p: 137
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Fundacja może się połączyć z inną fundacją dla efektywnego realizowania swoich celów.
+  - p: 138
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: 'Połączenie z inną fundacją nie może nastąpić, jeżeli w jego wyniku mógłby ulec istotnej zmianie cel Fundacji. '
+  - p: 139
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: W sprawach połączenia z inną fundacją decyzję podejmuje Rada bezwzględną większością głosów, przy obecności co najmniej połowy członków
+      uprawnionych do głosowania.
+  - {p: 140, role: spacer}
+  - p: 141
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 20, kind: paragraph, src: manual, level: 0}}
+    text: § 20
+  - {p: 142, role: spacer}
+  - p: 143
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Fundacja ulega likwidacji w razie osiągnięcia celów, dla których została ustanowiona lub w razie wyczerpania się jej środków finansowych
+      i majątku. O likwidacji Fundacji Zarząd zawiadamia ministra właściwego do spraw kultury i dziedzictwa narodowego.
+  - p: 144
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Decyzję o likwidacji podejmuje Rada bezwzględną większością głosów, przy obecności co najmniej połowy członków uprawnionych do głosowania.
+  - p: 145
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: Środki finansowe i majątek pozostały po likwidacji Fundacji mogą zostać przeznaczone mocą uchwały Rady na rzecz działających w RP organizacji
+      o zbliżonych celach.
+  - {p: 146, role: spacer}
+  - {p: 147, role: spacer}

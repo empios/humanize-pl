@@ -33,3 +33,213 @@ sections:
   label_pl: podpis
   severity: required
   matches: [podpis, z poważaniem]
+
+# Dokument ogólny: realny wzór tej kategorii. Przy użyciu wypełnia się wyłącznie
+# pola (`slots`); treść, kolejność i układ zostają jak we wzorze.
+document:
+  template: Odwołanie od decyzji Zakład Ubezpieczeń Społecznych.docx
+  label_pl: Odwołanie od decyzji Zakładu Ubezpieczeń Społecznych
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+  blocks:
+  - p: 0
+    role: body
+    layout: {align: right, indent: {first: 708}, size: 10.0}
+    text: '....…........ (miejscowość), …............. (data)'
+    slots:
+    - {id: miejscowosc, span: [0, 13], type: place, hint: miejscowość}
+    - {id: data, span: [29, 43], type: date, hint: data}
+    inline_hints:
+    - {span: [14, 27], text: miejscowość}
+    - {span: [44, 50], text: data}
+  - {p: 1, role: spacer}
+  - {p: 2, role: spacer}
+  - p: 3
+    role: body
+    layout: {indent: {left: 4820}, size: 10.0}
+    text: Sąd Rejonowy w ……………………………………
+    slots:
+    - {id: p3_1, span: [15, 29], type: place, context: Sąd Rejonowy w ▢}
+  - {p: 4, role: spacer}
+  - p: 5
+    role: body
+    layout: {indent: {left: 4820}, size: 10.0}
+    text: za pośrednictwem
+  - {p: 6, role: spacer}
+  - p: 7
+    role: blank_line
+    layout: {indent: {left: 4820}, size: 10.0}
+    text: …………………………….
+    slots:
+    - {id: p7_1, span: [0, 12], type: text, context: ▢}
+  - p: 8
+    role: blank_line
+    layout: {indent: {left: 4820}, size: 10.0}
+    text: …………………………….
+    slots:
+    - {id: p8_1, span: [0, 12], type: text, context: ▢}
+  - p: 9
+    role: blank_line
+    layout: {indent: {left: 4820}, size: 10.0}
+    text: …………………………….
+    slots:
+    - {id: p9_1, span: [0, 12], type: text, context: ▢}
+  - p: 10
+    role: blank_line
+    layout: {indent: {left: 4820}, size: 10.0}
+    text: …………………………….
+    slots:
+    - {id: wskazanie_oddzialu_i_adresu_zus_ktory_wydal_decy, span: [0, 12], type: text, hint: 'wskazanie oddziału i adresu ZUS, który wydał decyzję'}
+  - p: 11
+    role: hint
+    layout: {indent: {left: 4820}, size: 10.0}
+    text: (wskazanie oddziału i adresu ZUS, który wydał decyzję)
+    hint_for: 10
+    hint_kind: label
+  - {p: 12, role: spacer}
+  - p: 13
+    role: blank_line
+    layout: {indent: {left: 4820}, size: 10.0}
+    text: '.......................................................'
+    slots:
+    - {id: p13_1, span: [0, 55], type: text, context: ▢}
+  - p: 14
+    role: blank_line
+    layout: {indent: {left: 4820}, size: 10.0}
+    text: '.......................................................'
+    slots:
+    - {id: p14_1, span: [0, 55], type: text, context: ▢}
+  - p: 15
+    role: blank_line
+    layout: {indent: {left: 4820}, size: 10.0}
+    text: '.......................................................'
+    slots:
+    - {id: p15_1, span: [0, 55], type: text, context: ▢}
+  - p: 16
+    role: blank_line
+    layout: {indent: {left: 4820}, size: 10.0}
+    text: '.......................................................'
+    slots:
+    - {id: dane_osoby_odwolujacej_sie, span: [0, 55], type: text, hint: dane osoby odwołującej się}
+  - p: 17
+    role: hint
+    layout: {indent: {left: 4820}, size: 10.0}
+    text: (dane osoby odwołującej się)
+    hint_for: 16
+    hint_kind: label
+  - {p: 18, role: spacer}
+  - {p: 19, role: spacer}
+  - p: 20
+    role: field
+    layout: {size: 10.0}
+    text: Znak:……………………………………
+    slots:
+    - {id: znak, span: [5, 19], type: text, label: Znak}
+  - {p: 21, role: spacer}
+  - p: 22
+    role: body
+    layout: {align: center, size: 14.0, bold: true}
+    text: ODWOŁANIE OD DECYZJI ZAKŁADU UBEZPIECZEŃ SPOŁECZNYCH
+  - {p: 23, role: spacer}
+  - p: 24
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 109, end: 123, italic: true}]}
+    text: 'Niniejszym odwołuję się od decyzji Zakładu Ubezpieczeń Społecznych z dnia ………………. nr ……………. i zaskarżam ją w całości/części. '
+    slots:
+    - {id: p24_1, span: [74, 81], type: date, context: Ubezpieczeń Społecznych z dnia ▢ nr i}
+    - {id: p24_2, span: [85, 91], type: text, context: Społecznych z dnia nr ▢ i zaskarżam}
+  - {p: 25, role: spacer}
+  - p: 26
+    role: field_header
+    layout: {align: justify, size: 10.0}
+    text: 'W związku z tym wnoszę o:'
+  - p: 27
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: ………………………………………………………………………………………………………………………………………………………………………..……………………………………………………………………………………………………………..;
+    slots:
+    - {id: p27_1, span: [0, 108], type: text, context: ▢}
+  - p: 28
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+    text: ………………………………………………………………………………………………………………………………………………………………………………………………………………………………..………………………………………………………
+    slots:
+    - {id: odwolujacy_wskazuje_o_co_wnosi, span: [0, 107], type: text, hint: odwołujący wskazuje o co wnosi}
+  - p: 29
+    role: hint
+    layout: {align: justify, size: 10.0}
+    text: (odwołujący wskazuje o co wnosi)
+    hint_for: 28
+    hint_kind: label
+  - {p: 30, role: spacer}
+  - p: 31
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: 'Decyzji o nr …………………… zarzucam naruszenie następujących przepisów prawa :'
+    slots:
+    - {id: p31_1, span: [13, 21], type: text, context: Decyzji o nr ▢ zarzucam naruszenie}
+  - p: 32
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}}
+    text: ………………………………………………………………………………………………………………………………………………………………………..……………………………………………………………………………………………………………..;
+    slots:
+    - {id: p32_1, span: [0, 108], type: text, context: ▢}
+  - p: 33
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 4), kind: decimal, src: auto, level: 0}}
+    text: ………………………………………………………………………………………………………………………………………………………………………………………………………………………………..………………………………………………………
+    slots:
+    - {id: w_tej_czesci_odwolujacy_wskazuje_zarzuty_przeciw, span: [0, 107], type: text, hint: w tej części odwołujący wskazuje zarzuty przeciwko
+        uzyskanej decyzji}
+  - p: 34
+    role: hint
+    layout: {align: justify, size: 10.0}
+    text: (w tej części odwołujący wskazuje zarzuty przeciwko uzyskanej decyzji)
+    hint_for: 33
+    hint_kind: label
+  - {p: 35, role: spacer}
+  - {p: 36, role: spacer}
+  - p: 37
+    role: body
+    layout: {align: center, size: 12.0, bold: true}
+    text: Uzasadnienie
+  - p: 38
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: ………………………….………………………….………………………….…………………………………………….………………………….………………………….…………………………………………….………………………….………………………….…….……………………………………….………………………….………………………….…………………………………………….………………………….………………………….…………………………………………….………………………….………………………….…………………………………………….………………………….………………………….…………………………………………….………………………….………………………….…………………………………………….………………………….….……………………….…………………………………………….………………………….………………………….…………………………………………….………………………….………………………….…………………………………………….…………………….…….………………………….…………………………………………….………………………….………………………….…………………………………………….………………………….………………………….…………………………………………….………………………….………………………….…………………………………………….………………………….………………………….…….………
+    slots:
+    - {id: w_tym_miejscu_nalezy_w_sposob_obszerny_wskazac_i, span: [0, 642], type: text, hint: w tym miejscu należy w sposób obszerny wskazać i
+        opisać wszelkie okoliczności faktyczne sprawy i w szczególności powołać wszystkie dowody}
+  - p: 39
+    role: hint
+    layout: {align: justify, size: 10.0}
+    text: (w tym miejscu należy w sposób obszerny wskazać i opisać wszelkie okoliczności faktyczne sprawy i w szczególności powołać wszystkie dowody)
+    hint_for: 38
+    hint_kind: instruction
+  - {p: 40, role: spacer}
+  - p: 41
+    role: blank_line
+    layout: {align: right, indent: {first: 708}, size: 10.0}
+    text: '.................................'
+    slots:
+    - {id: podpis, span: [0, 33], type: signature, hint: podpis}
+  - p: 42
+    role: hint
+    layout: {align: right, indent: {first: 708}, size: 10.0}
+    text: '   (podpis)'
+    hint_for: 41
+    hint_kind: label
+  - {p: 43, role: spacer}
+  - p: 44
+    role: field_header
+    layout: {align: justify, size: 10.0, bold: true}
+    text: 'Załączniki:'
+  - p: 45
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 5), kind: decimal, src: auto, level: 0}}
+    text: Decyzja Zakładu Ubezpieczeń Społecznych z dnia ………., nr ………………………………………;
+    slots:
+    - {id: p45_1, span: [47, 51], type: date, context: Ubezpieczeń Społecznych z dnia ▢ nr}
+    - {id: p45_2, span: [56, 71], type: text, context: Społecznych z dnia nr ▢}
+  - {p: 46, role: spacer}
+  - {p: 47, role: spacer}

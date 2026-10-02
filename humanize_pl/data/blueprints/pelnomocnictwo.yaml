@@ -29,3 +29,99 @@ sections:
   label_pl: podpis mocodawcy
   severity: required
   matches: [podpis, własnoręczny]
+
+# Dokument ogólny napisany dla tej kategorii: wśród realnych wzorów nie było
+# ogólnego. Przy użyciu wypełnia się wyłącznie pola (`slots`).
+document:
+  label_pl: Pełnomocnictwo ogólne
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 1417, bottom: 1417, left: 1417, right: 1417}}
+  blocks:
+  - p: 0
+    role: body
+    layout: {align: right, size: 11.0}
+    text: ………………………… (miejscowość), dnia ………………… (data)
+    slots:
+    - {id: miejscowosc, span: [0, 10], type: place, hint: miejscowość}
+    - {id: data, span: [31, 38], type: date, hint: data}
+    inline_hints:
+    - {span: [11, 24], text: miejscowość}
+    - {span: [39, 45], text: data}
+  - {p: 1, role: spacer}
+  - p: 2
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: PEŁNOMOCNICTWO OGÓLNE
+  - {p: 3, role: spacer}
+  - p: 4
+    role: body
+    layout: {align: justify, size: 11.0}
+    text: 'Ja, niżej podpisany/a, ……………………………………… (imię i nazwisko mocodawcy), zamieszkały/a w ……………………………………… (adres zamieszkania), legitymujący/a
+      się ………………………… (seria i numer dowodu osobistego), PESEL: ………………………… (PESEL mocodawcy),'
+    slots:
+    - {id: imie_i_nazwisko_mocodawcy, span: [23, 38], type: person, hint: imię i nazwisko mocodawcy}
+    - {id: adres_zamieszkania, span: [84, 99], type: address, hint: adres zamieszkania}
+    - {id: seria_i_numer_dowodu_osobistego, span: [141, 151], type: id_number, hint: seria i numer dowodu osobistego}
+    - {id: pesel_mocodawcy, span: [194, 204], type: pesel, hint: PESEL mocodawcy}
+    inline_hints:
+    - {span: [39, 66], text: imię i nazwisko mocodawcy}
+    - {span: [100, 120], text: adres zamieszkania}
+    - {span: [152, 185], text: seria i numer dowodu osobistego}
+    - {span: [205, 222], text: PESEL mocodawcy}
+    alternatives: 4
+  - p: 5
+    role: body
+    layout: {align: justify, size: 11.0}
+    text: 'udzielam ……………………………………… (imię i nazwisko pełnomocnika), zamieszkałemu/ej w ……………………………………… (adres pełnomocnika), PESEL: ………………………… (PESEL
+      pełnomocnika),'
+    slots:
+    - {id: imie_i_nazwisko_pelnomocnika, span: [9, 24], type: person, hint: imię i nazwisko pełnomocnika}
+    - {id: adres_pelnomocnika, span: [76, 91], type: address, hint: adres pełnomocnika}
+    - {id: pesel_pelnomocnika, span: [121, 131], type: pesel, hint: PESEL pełnomocnika}
+    inline_hints:
+    - {span: [25, 55], text: imię i nazwisko pełnomocnika}
+    - {span: [92, 112], text: adres pełnomocnika}
+    - {span: [132, 152], text: PESEL pełnomocnika}
+  - p: 6
+    role: body
+    layout: {align: justify, size: 11.0}
+    text: pełnomocnictwa ogólnego do dokonywania w moim imieniu czynności zwykłego zarządu.
+  - p: 7
+    role: field
+    layout: {align: justify, size: 11.0}
+    text: 'Pełnomocnictwo obejmuje w szczególności: ……………………………………………… (czynności objęte pełnomocnictwem).'
+    slots:
+    - {id: czynnosci_objete_pelnomocnictwem, span: [41, 59], type: text, hint: czynności objęte pełnomocnictwem, label: Pełnomocnictwo obejmuje
+        w szczególności}
+    inline_hints:
+    - {span: [60, 94], text: czynności objęte pełnomocnictwem}
+  - p: 8
+    role: body
+    layout: {align: justify, size: 11.0}
+    text: Pełnomocnik ………………… (jest albo nie jest) uprawniony do udzielania dalszych pełnomocnictw.
+    slots:
+    - {id: dalsze_pelnomocnictwa, span: [12, 19], type: text, hint: jest albo nie jest}
+    inline_hints:
+    - {span: [20, 40], text: jest albo nie jest}
+  - p: 9
+    role: body
+    layout: {align: justify, size: 11.0}
+    text: Pełnomocnictwo zostaje udzielone na czas ………………… (nieoznaczony albo do wskazanej daty).
+    slots:
+    - {id: czas_pelnomocnictwa, span: [41, 48], type: date, hint: nieoznaczony albo do wskazanej daty}
+    inline_hints:
+    - {span: [49, 86], text: nieoznaczony albo do wskazanej daty}
+  - {p: 10, role: spacer}
+  - {p: 11, role: spacer}
+  - p: 12
+    role: blank_line
+    layout: {align: right, size: 11.0}
+    text: ………………………………………
+    slots:
+    - {id: podpis_mocodawcy, span: [0, 15], type: signature, hint: własnoręczny podpis mocodawcy}
+  - p: 13
+    role: hint
+    layout: {align: right, size: 8.0, italic: true}
+    text: (własnoręczny podpis mocodawcy)
+    hint_for: 12
+    hint_kind: label

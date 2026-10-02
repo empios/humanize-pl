@@ -25,3 +25,169 @@ sections:
   label_pl: postanowienia końcowe
   severity: required
   matches: [w sprawach nieuregulowanych, postanowienia końcowe, przepisy ustawy]
+
+# Dokument ogólny: realny wzór tej kategorii. Przy użyciu wypełnia się wyłącznie
+# pola (`slots`); treść, kolejność i układ zostają jak we wzorze.
+document:
+  template: Regulamin najmu krótkoterminowego.docx
+  label_pl: Regulamin najmu krótkoterminowego
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+  blocks:
+  - p: 0
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: Regulamin najmu krótkoterminowego
+  - {p: 1, role: spacer}
+  - p: 2
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+    text: § 1
+  - {p: 3, role: spacer}
+  - p: 4
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: Przedmiotem regulaminu jest krótkoterminowy najem lokalu, którego cechy są określone w ofercie wynajmu krótkoterminowego. Właściciel obiektu
+      nie świadczy na rzecz Najemcy żadnych dodatkowych usług. W szczególności właściciel obiektu nie świadczy na rzecz Najemcy usług hotelarskich
+  - {p: 5, role: spacer}
+  - p: 6
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+    text: § 2
+  - {p: 7, role: spacer}
+  - p: 8
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: Niniejszy Regulamin określa warunki wynajmu krótkoterminowego lokalu położonego w ……….. przy ul. ……………. w …………………………………………… Warunkiem
+      rezerwacji jest zaakceptowanie postanowień niniejszego regulaminu.
+    slots:
+    - {id: p8_1, span: [82, 87], type: place, context: krótkoterminowego lokalu położonego w ▢ przy ul.}
+    - {id: p8_2, span: [97, 103], type: address, context: położonego w przy ul. ▢ w Warunkiem}
+    - {id: p8_3, span: [106, 123], type: place, context: w przy ul. w ▢ Warunkiem rezerwacji}
+  - {p: 9, role: spacer}
+  - p: 10
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+    text: § 3
+  - {p: 11, role: spacer}
+  - p: 12
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Doba rozpoczyna się o godzinie ………….. w dniu przyjazdu, kończy o godzinie ……………. dnia następnego.
+    slots:
+    - {id: p12_1, span: [31, 37], type: text, context: rozpoczyna się o godzinie ▢ w dniu}
+    - {id: p12_2, span: [74, 80], type: text, context: przyjazdu kończy o godzinie ▢ dnia następnego.}
+  - p: 13
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Najemca zobowiązany jest poinformować właściciela obiektu o planowanej godzinie przyjazdu, najpóźniej w dniu poprzedzającym planowany
+      dzień przyjazdu. Najemca zobowiązany jest natychmiast poinformować właściciela obiektu o braku możliwości dotarcia na umówioną wcześniej godzinę.
+      Właściciel obiektu nie ponosi odpowiedzialności wobec Najemcy za ewentualne opóźnienia w wydaniu obiektu spowodowane brakiem właściwego zawiadomienia
+      o godzinie przyjazdu.
+  - {p: 14, role: spacer}
+  - p: 15
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+    text: § 4
+  - {p: 16, role: spacer}
+  - p: 17
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: 'Do obowiązków Wynajmującego należy w szczególności: '
+  - p: 18
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+    text: 'wydanie Najemcy kluczy do lokalu, w godzinie ustalonej zgodnie z § 3 ust. 2 regulaminu; '
+  - p: 19
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+    text: zapewnienie Najemcy warunków pełnego i nieskrępowanego pobytu w lokalu.
+  - p: 20
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Wynajmujący nie ponosi odpowiedzialności za utratę lub uszkodzenie rzeczy na terenie lokalu przez osoby tam przebywające.
+  - {p: 21, role: spacer}
+  - p: 22
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+    text: § 5
+  - {p: 23, role: spacer}
+  - p: 24
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: 'Do obowiązków Najemcy należy w szczególności: '
+  - p: 25
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
+    text: utrzymywanie lokalu w stanie, w jakim lokal został mu przekazany, w tym do jego posprzątania;
+  - p: 26
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: d), kind: lowerLetter, src: auto, level: 0}}
+    text: przestrzeganie ciszy nocnej, w godzinach ……………;
+    slots:
+    - {id: p26_1, span: [41, 46], type: text, context: ciszy nocnej w godzinach ▢}
+  - p: 27
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: e), kind: lowerLetter, src: auto, level: 0}}
+    text: natychmiastowe poinformowania Wynajmującego o ewentualnych uszkodzeniach i brakach zastanych w lokalu;
+  - p: 28
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: f), kind: lowerLetter, src: auto, level: 0}}
+    text: Najemca nie ma prawa bez wcześniejszej zgody Wynajmującego dokonywać jakichkolwiek napraw lub czynić jakichkolwiek nakładów lub zmian
+      w lokalu;
+  - p: 29
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: g), kind: lowerLetter, src: auto, level: 0}}
+    text: 'korzystanie z lokalu w liczbie osób uzgodnionych z Wynajmującym. '
+  - {p: 30, role: spacer}
+  - p: 31
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 6, kind: paragraph, src: manual, level: 0}}
+    text: § 6
+  - {p: 32, role: spacer}
+  - p: 33
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: 'W lokalu obowiązuje całkowity zakaz palenia papierosów.  '
+  - {p: 34, role: spacer}
+  - p: 35
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 7, kind: paragraph, src: manual, level: 0}}
+    text: § 7
+  - {p: 36, role: spacer}
+  - p: 37
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: W przypadku zgubienia kluczy, Najemca będzie zobowiązany do uiszczenia kary umownej w wysokości …………..
+    slots:
+    - {id: p37_1, span: [96, 102], type: amount, context: kary umownej w wysokości ▢}
+  - {p: 38, role: spacer}
+  - p: 39
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 8, kind: paragraph, src: manual, level: 0}}
+    text: § 8
+  - {p: 40, role: spacer}
+  - p: 41
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: 'W sprawach nieuregulowanych niniejszym regulaminem zastosowanie znajdą przepisy ustawy z dnia 23 kwietnia 1964 r. – Kodeks cywilny. '
+  - p: 42
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Wszelkie spory wynikłe na tle stosowania postanowień niniejszego regulaminu, rozstrzyga Sąd właściwy dla miejsca zamieszkania Wynajmującego.
+  - {p: 43, role: spacer}
+  - {p: 44, role: spacer}
+  - p: 45
+    role: blank_line
+    layout: {align: right, indent: {first: 708}, size: 10.0}
+    text: '..............................   '
+    slots:
+    - {id: podpis_najemcy, span: [0, 30], type: signature, hint: podpis najemcy}
+  - p: 46
+    role: hint
+    layout: {align: right, indent: {first: 708}, size: 10.0, italic: true}
+    text: (podpis najemcy)
+    hint_for: 45
+    hint_kind: label
+  - {p: 47, role: spacer}
+  - {p: 48, role: spacer}

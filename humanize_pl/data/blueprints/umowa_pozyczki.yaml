@@ -30,3 +30,228 @@ sections:
   severity: required
   matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
       formy pisemnej, wymagają zachowania formy pisemnej]
+
+# Dokument ogólny: realny wzór tej kategorii. Przy użyciu wypełnia się wyłącznie
+# pola (`slots`); treść, kolejność i układ zostają jak we wzorze.
+document:
+  template: Umowa pożyczki.docx
+  label_pl: Umowa pożyczki
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+  blocks:
+  - p: 0
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: UMOWA POŻYCZKI
+  - {p: 1, role: spacer}
+  - p: 2
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 49, end: 63, italic: true}]}
+    text: 'zawarta dnia ......................... w ………………… (miejscowość) pomiędzy:'
+    slots:
+    - {id: p2_1, span: [13, 38], type: date, context: zawarta dnia ▢ w pomiędzy}
+    - {id: miejscowosc, span: [41, 48], type: place, hint: miejscowość}
+    inline_hints:
+    - {span: [49, 62], text: miejscowość}
+  - {p: 3, role: spacer}
+  - p: 4
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: ……………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: dane_pozyczkodawcy_imie_nazwisko_adres_zamieszka, span: [0, 110], type: text, hint: 'dane pożyczkodawcy – imię, nazwisko, adres zamieszkania,
+        nr PESEL'}
+  - p: 5
+    role: hint
+    layout: {align: justify, size: 10.0, italic: true}
+    text: (dane pożyczkodawcy – imię, nazwisko, adres zamieszkania, nr PESEL)
+    hint_for: 4
+    hint_kind: label
+  - {p: 6, role: spacer}
+  - p: 7
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 13, end: 26, bold: true}]}
+    text: zwanym dalej Pożyczkodawcą,
+    alias: Pożyczkodawcą
+  - {p: 8, role: spacer}
+  - p: 9
+    role: party_connector
+    layout: {align: justify, size: 10.0}
+    text: a
+  - {p: 10, role: spacer}
+  - p: 11
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: ……………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: dane_pozyczkobiorcy_imie_nazwisko_adres_zamieszk, span: [0, 110], type: text, hint: 'dane pożyczkobiorcy - imię, nazwisko, adres zamieszkania,
+        nr PESEL'}
+  - p: 12
+    role: hint
+    layout: {align: justify, size: 10.0, italic: true}
+    text: (dane pożyczkobiorcy - imię, nazwisko, adres zamieszkania, nr PESEL)
+    hint_for: 11
+    hint_kind: label
+  - {p: 13, role: spacer}
+  - p: 14
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 13, end: 27, bold: true}]}
+    text: zwanym dalej Pożyczkobiorcą,
+    alias: Pożyczkobiorcą
+  - {p: 15, role: spacer}
+  - p: 16
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 22, end: 30, bold: true}]}
+    text: zwanymi dalej łącznie Stronami.
+    alias: Stronami
+  - {p: 17, role: spacer}
+  - p: 18
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+    text: § 1
+  - {p: 19, role: spacer}
+  - p: 20
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 47, end: 60, bold: true}, {start: 90,
+          end: 104, bold: true}, {start: 153, end: 169, italic: true}, {start: 231, end: 245, bold: true}, {start: 292, end: 305, bold: true}]}
+    text: 'Przedmiotem niniejszej umowy jest zobowiązanie Pożyczkodawcy do przeniesienia na własność Pożyczkobiorcy kwoty pieniężnej w wysokości
+      ……………………………………………… (kwota pożyczki) zł (słownie: …………………………………………………… złotych) oraz zobowiązanie Pożyczkobiorcy do zwrotu tej samej ilości
+      pieniędzy na rzecz Pożyczkodawcy.'
+    slots:
+    - {id: kwota_pozyczki, span: [134, 152], type: amount, hint: kwota pożyczki}
+    - {id: p20_2, span: [183, 203], type: amount, context: w wysokości zł słownie ▢ złotych oraz}
+    inline_hints:
+    - {span: [153, 169], text: kwota pożyczki}
+  - p: 21
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 41, end: 54, bold: true}, {start: 85,
+          end: 99, bold: true}, {start: 130, end: 143, italic: true}, {start: 166, end: 182, italic: true}, {start: 185, end: 198, italic: true},
+        {start: 215, end: 229, bold: true}, {start: 290, end: 298, italic: true}]}
+    text: Kwota pożyczki zostanie przekazana przez Pożyczkodawcę przelewem na rachunek bankowy Pożyczkobiorcy  prowadzony w banku ………………….. (nazwa
+      banku) o numerze …………………………… (numer rachunku) / (opcjonalnie) do rąk własnych Pożyczkobiorcy po zawarciu niniejszej umowy, nie później niż
+      w terminie …… (ilość) dni od dnia jej zawarcia.
+    slots:
+    - {id: nazwa_banku, span: [120, 129], type: text, hint: nazwa banku}
+    - {id: numer_rachunku, span: [154, 165], type: text, hint: numer rachunku}
+    - {id: ilosc, span: [287, 289], type: text, hint: ilość}
+    inline_hints:
+    - {span: [130, 143], text: nazwa banku}
+    - {span: [166, 182], text: numer rachunku}
+    - {span: [290, 297], text: ilość}
+  - {p: 22, role: spacer}
+  - p: 23
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+    text: § 2
+  - {p: 24, role: spacer}
+  - p: 25
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 14, bold: true}, {start: 67,
+          end: 73, italic: true}, {start: 95, end: 108, bold: true}, {start: 138, end: 151, italic: true}, {start: 174, end: 191, italic: true},
+        {start: 193, end: 206, italic: true}, {start: 224, end: 237, bold: true}]}
+    text: Pożyczkobiorca zobowiązuje się do spłaty pożyczki do dnia …………… r. (data)  na rachunek bankowy Pożyczkodawcy prowadzony w banku …………………..
+      (nazwa banku) o numerze …………………………… (numer rachunku) / (opcjonalnie) do rąk własnych  Pożyczkodawcy.
+    slots:
+    - {id: p25_1, span: [58, 63], type: date, context: spłaty pożyczki do dnia ▢ r. na}
+    - {id: nazwa_banku_2, span: [128, 137], type: text, hint: nazwa banku}
+    - {id: numer_rachunku_2, span: [162, 173], type: text, hint: numer rachunku}
+    inline_hints:
+    - {span: [138, 151], text: nazwa banku}
+    - {span: [174, 190], text: numer rachunku}
+  - p: 26
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 13, italic: true}, {
+          start: 88, end: 104, italic: true}]}
+    text: (opcjonalnie) Spłata pożyczki nastąpi w równych miesięcznych ratach wynoszących ………. zł (wysokość raty).
+    slots:
+    - {id: p26_1, span: [80, 84], type: text, context: równych miesięcznych ratach wynoszących ▢ zł}
+  - p: 27
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 13, italic: true}, {
+          start: 57, end: 88, italic: true}]}
+    text: '(opcjonalnie) Spłata pożyczki rozpocznie się od …………… r. (miesiąc i rok początku spłaty). '
+    slots:
+    - {id: p27_1, span: [48, 53], type: date, context: pożyczki rozpocznie się od ▢ r.}
+  - p: 28
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 13, italic: true}, {
+          start: 51, end: 58, italic: true}, {start: 97, end: 110, bold: true}, {start: 141, end: 154, italic: true}, {start: 172, end: 185, bold: true}]}
+    text: (opcjonalnie) Raty pożyczki będą płatne do dnia …… (dzień) każdego miesiąca, na rachunek bankowy Pożyczkodawcy, o którym mowa w § 2 ust.
+      1 / (opcjonalnie) do rąk własnych  Pożyczkodawcy.
+    slots:
+    - {id: dzien, span: [48, 50], type: date, hint: dzień}
+    inline_hints:
+    - {span: [51, 58], text: dzień}
+  - p: 29
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}, spans: [{start: 120, end: 133, bold: true}, {
+          start: 164, end: 177, italic: true}, {start: 202, end: 215, bold: true}]}
+    text: Za dotrzymanie terminu spłaty, o którym mowa w § 2 ust. 1, uważa się zaksięgowanie wpłaconej kwoty na rachunku bankowym Pożyczkodawcy,
+      o którym mowa w § 2 ust. 1 / (opcjonalnie) zapłatę do rąk własnych Pożyczkodawcy w tym dniu lub wcześniej.
+  - p: 30
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 14, bold: true}]}
+    text: Pożyczkobiorca może dokonać spłaty całości lub części pożyczki przed terminem jej spłaty, bez ponoszenia dodatkowych kosztów.
+  - p: 31
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '7.', kind: decimal, src: auto, level: 0}}
+    text: Strony mogą zgodnie przesunąć termin płatności pożyczki w drodze aneksu do niniejszej umowy.
+  - {p: 32, role: spacer}
+  - p: 33
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+    text: § 3 (opcjonalnie)
+  - p: 34
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 176, end: 190, bold: true}, {
+          start: 221, end: 234, bold: true}]}
+    text: 'Od kwoty pożyczki określonej w § 1 ust. 1 naliczane będą odsetki kapitałowe w wysokości ……… % rocznie. Odsetki będą naliczone za okres
+      od dnia przekazania całej kwoty pożyczki Pożyczkobiorcy do dnia zwrotu całej pożyczki Pożyczkodawcy. '
+    slots:
+    - {id: p34_1, span: [88, 91], type: amount, context: odsetki kapitałowe w wysokości ▢ rocznie. Odsetki}
+  - p: 35
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Odsetki zostaną zapłacone przez Pożyczkobiorcę jednorazowo wraz ze spłatą całej kwoty pożyczki, w dniu końcowym umowy.
+  - {p: 36, role: spacer}
+  - p: 37
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+    text: § 4
+  - {p: 38, role: spacer}
+  - p: 39
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Wszelkie zmiany lub uzupełnienia niniejszej umowy wymagają formy pisemnej pod rygorem nieważności.
+  - p: 40
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 123, end: 136, bold: true}]}
+    text: Sądem właściwym dla dochodzenia roszczeń z tytułu niniejszej umowy będzie sąd powszechny właściwy dla miejsca zamieszkania Pożyczkodawcy.
+  - p: 41
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 78, end: 92, bold: true}]}
+    text: Wszelkie koszty wynikające zawarcia niniejszej umowy zostaną poniesione przez Pożyczkobiorcę.
+  - p: 42
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+    text: W sprawach nieuregulowanych niniejszą umową mają zastosowanie przepisy ustawy z dnia 23 kwietnia 1964 r. - Kodeks cywilny.
+  - p: 43
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+    text: 'Umowa została sporządzona w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze stron. '
+  - {p: 44, role: spacer}
+  - {p: 45, role: spacer}
+  - {p: 46, role: spacer}
+  - p: 47
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: '...........................................................                      ...........................................................'
+    slots:
+    - {id: p47_1, span: [0, 59], type: signature, context: ▢}
+    - {id: p47_2, span: [81, 140], type: signature, context: ▢}
+  - p: 48
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: '               Pożyczkodawca                                                           Pożyczkobiorca               '
+  - {p: 49, role: spacer}
+  - {p: 50, role: spacer}

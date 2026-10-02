@@ -1,0 +1,122 @@
+template: Wniosek o udzielenie urlopu macierzyńskiego.docx
+category: wniosek_procesowy
+label_pl: Wniosek o udzielenie urlopu macierzyńskiego
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: body
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: …………………, dnia …………………………
+  slots:
+  - {id: miejscowosc_data_sporzadzenia_pisma, span: [0, 7], type: date, hint: 'miejscowość, data sporządzenia pisma'}
+  - {id: miejscowosc_data_sporzadzenia_pisma_2, span: [14, 24], type: date, hint: 'miejscowość, data sporządzenia pisma'}
+- p: 1
+  role: hint
+  layout: {align: right, indent: {first: 708}, size: 10.0, italic: true}
+  text: (miejscowość, data sporządzenia pisma)
+  hint_for: 0
+  hint_kind: label
+- {p: 2, role: spacer}
+- p: 3
+  role: blank_line
+  layout: {size: 10.0}
+  text: '.......................................................'
+  slots:
+  - {id: p3_1, span: [0, 55], type: text, context: ▢}
+- p: 4
+  role: blank_line
+  layout: {size: 10.0}
+  text: '.......................................................'
+  slots:
+  - {id: p4_1, span: [0, 55], type: text, context: ▢}
+- p: 5
+  role: blank_line
+  layout: {size: 10.0}
+  text: '.......................................................'
+  slots:
+  - {id: dane_pracownika_imie_i_nazwisko_adres_zamieszkan, span: [0, 55], type: text, hint: 'dane pracownika – imię i nazwisko, adres zamieszkania'}
+- p: 6
+  role: hint
+  layout: {size: 10.0}
+  text: (dane pracownika – imię i nazwisko,
+  hint_for: 5
+  hint_kind: label
+- p: 7
+  role: hint
+  layout: {size: 10.0}
+  text: ' adres zamieszkania)'
+  hint_for: 5
+  hint_kind: label
+- {p: 8, role: spacer}
+- p: 9
+  role: blank_line
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: '......................................................'
+  slots:
+  - {id: p9_1, span: [0, 54], type: text, context: ▢}
+- p: 10
+  role: blank_line
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: ……………………………………………………
+  slots:
+  - {id: p10_1, span: [0, 20], type: text, context: ▢}
+- p: 11
+  role: blank_line
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: '......................................................'
+  slots:
+  - {id: dane_pracodawcy_firma_siedziba, span: [0, 54], type: address, hint: 'dane pracodawcy – firma, siedziba'}
+- p: 12
+  role: hint
+  layout: {indent: {left: 4820}, size: 10.0, italic: true}
+  text: ' (dane pracodawcy – firma, siedziba)'
+  hint_for: 11
+  hint_kind: label
+- {p: 13, role: spacer}
+- {p: 14, role: spacer}
+- p: 15
+  role: body
+  layout: {align: center, size: 14.0, bold: true}
+  text: 'WNIOSEK O UDZIELENIE URLOPU MACIERZYŃSKIEGO '
+- {p: 16, role: spacer}
+- {p: 17, role: spacer}
+- p: 18
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 48, end: 73, italic: true}, {start: 93, end: 108, italic: true}]}
+  text: W związku z urodzeniem dziecka ………………………………………… (imię i nazwisko dziecka) w dniu …………………………… (data urodzin), na podstawie art. 180 § 1
+    pkt 1 ustawy z dnia 26 czerwca 1974 r. - Kodeks pracy, zwracam się z wnioskiem o udzielenie mi urlopu macierzyńskiego w wymiarze ..........................
+    tygodni, począwszy od dnia .......................... do dnia ..............................
+  slots:
+  - {id: imie_i_nazwisko_dziecka, span: [31, 47], type: person, hint: imię i nazwisko dziecka}
+  - {id: data_urodzin, span: [81, 92], type: date, hint: data urodzin}
+  - {id: p18_3, span: [264, 290], type: text, context: urlopu macierzyńskiego w wymiarze ▢ tygodni począwszy}
+  - {id: p18_4, span: [318, 344], type: date, context: tygodni począwszy od dnia ▢ do dnia}
+  - {id: p18_5, span: [353, 383], type: date, context: od dnia do dnia ▢}
+  inline_hints:
+  - {span: [48, 73], text: imię i nazwisko dziecka}
+  - {span: [93, 107], text: data urodzin}
+- {p: 19, role: spacer}
+- p: 20
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: Oświadczam, że do tej pory wykorzystałam z tego tytułu .............................. tygodni urlopu macierzyńskiego.
+  slots:
+  - {id: p20_1, span: [55, 85], type: text, context: wykorzystałam z tego tytułu ▢ tygodni urlopu}
+- {p: 21, role: spacer}
+- {p: 22, role: spacer}
+- {p: 23, role: spacer}
+- p: 24
+  role: blank_line
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: …………………………………
+  slots:
+  - {id: podpis_pracownika, span: [0, 13], type: signature, hint: podpis pracownika}
+- p: 25
+  role: hint
+  layout: {align: right, indent: {first: 708}, size: 10.0, italic: true, tabs: 1}
+  text: "(podpis pracownika)\t"
+  hint_for: 24
+  hint_kind: label
+- {p: 26, role: spacer}
+- {p: 27, role: spacer}

@@ -1,0 +1,471 @@
+template: umowa o współpracy (B2B) między magistrem farmacji a aptece.docx
+category: umowa_uslug
+label_pl: Umowa o współpracy (B2B) między magistrem farmacji a apteką
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: UMOWA O WSPÓŁPRACY
+- {p: 1, role: spacer}
+- {p: 2, role: spacer}
+- p: 3
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 33, end: 46, italic: true}]}
+  text: 'Zawarta w dniu ………………… w ………………… (miejscowość) , '
+  slots:
+  - {id: p3_1, span: [15, 22], type: date, context: Zawarta w dniu ▢ w}
+  - {id: miejscowosc, span: [25, 32], type: place, hint: miejscowość}
+  inline_hints:
+  - {span: [33, 46], text: miejscowość}
+- {p: 4, role: spacer}
+- p: 5
+  role: party_connector
+  layout: {align: justify, size: 10.0}
+  text: 'pomiędzy:'
+- {p: 6, role: spacer}
+- p: 7
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ………………………………………………………………………………………………………………………………………………
+  slots:
+  - {id: p7_1, span: [0, 54], type: text, context: ▢}
+- p: 8
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: …………………………………………………………………………………………………………………………………………………
+  slots:
+  - {id: p8_1, span: [0, 55], type: text, context: ▢}
+- p: 9
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: …………………………………………………………………………………………………………………………………………………
+  slots:
+  - {id: oznaczenie_apteki, span: [0, 55], type: text, hint: oznaczenie apteki}
+- p: 10
+  role: hint
+  layout: {align: justify, size: 10.0, italic: true}
+  text: (oznaczenie apteki)
+  hint_for: 9
+  hint_kind: label
+- {p: 11, role: spacer}
+- p: 12
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 30, end: 42, bold: true}]}
+  text: zwanym w dalszej części umowy Usługobiorcą,
+  alias: Usługobiorcą
+- {p: 13, role: spacer}
+- p: 14
+  role: party_connector
+  layout: {align: justify, size: 10.0}
+  text: a
+- {p: 15, role: spacer}
+- p: 16
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 13, end: 41, italic: true}, {start: 67, end: 80, italic: true}]}
+  text: ……………………………… (imię i nazwisko farmaceuty) zamieszkałym w ……………………. (miejscowość), legitymującym się dowodem osobistym seria   i nr ………………………
+    wydanym przez ………………………, prowadzącym działalność gospodarczą pod firmą …………………………………, pod adresem …………………………, na podstawie wpisu do Centralnej
+    Ewidencji i Informacji o Działalności Gospodarczej, posiadającym numer PESEL ………………………, NIP ……………, REGON ………………………
+  slots:
+  - {id: imie_i_nazwisko_farmaceuty, span: [0, 12], type: person, hint: imię i nazwisko farmaceuty}
+  - {id: miejscowosc_2, span: [57, 66], type: place, hint: miejscowość}
+  - {id: p16_3, span: [131, 140], type: text, context: osobistym seria i nr ▢ wydanym przez}
+  - {id: p16_4, span: [155, 164], type: person, context: i nr wydanym przez ▢ prowadzącym działalność}
+  - {id: p16_5, span: [212, 225], type: company, context: działalność gospodarczą pod firmą ▢ pod adresem}
+  - {id: p16_6, span: [239, 249], type: address, context: pod firmą pod adresem ▢ na podstawie}
+  - {id: p16_7, span: [361, 370], type: pesel, context: Gospodarczej posiadającym numer PESEL ▢ NIP REGON}
+  - {id: p16_8, span: [376, 381], type: id_number, context: posiadającym numer PESEL NIP ▢ REGON}
+  - {id: p16_9, span: [389, 398], type: id_number, context: numer PESEL NIP REGON ▢}
+  inline_hints:
+  - {span: [13, 41], text: imię i nazwisko farmaceuty}
+  - {span: [67, 80], text: miejscowość}
+- {p: 17, role: spacer}
+- p: 18
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 30, end: 41, bold: true}]}
+  text: zwanym w dalszej części umowy Usługodawcą,
+  alias: Usługodawcą
+- {p: 19, role: spacer}
+- p: 20
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 22, end: 30, bold: true}]}
+  text: zwanymi dalej łącznie Stronami.
+  alias: Stronami
+- {p: 21, role: spacer}
+- p: 22
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+  text: § 1
+- p: 23
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 11, bold: true}, {start: 103,
+        end: 115, bold: true}, {start: 196, end: 208, bold: true}]}
+  text: 'Usługodawca zobowiązuje się, w zakresie prowadzonej działalności gospodarczej, do świadczenia na rzecz Usługobiorcy usług polegających
+    na wykonywaniu usług farmaceutycznych realizowanych w aptece Usługobiorcy (zwanej dalej Apteką), polegających w szczególności na:'
+- p: 24
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+  text: 'wydawaniu produktów leczniczych i wyrobów medycznych; '
+- p: 25
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+  text: sporządzaniu leków recepturowych, w terminie nie dłuższym niż 48 godzin od złożenia recepty przez pacjenta, a w przypadku recepty na lek
+    recepturowy zawierający środki odurzające lub oznaczonej "wydać natychmiast" - w ciągu 4 godzin;
+- p: 26
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}}
+  text: sporządzeniu leków aptecznych;
+- p: 27
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 4), kind: decimal, src: auto, level: 0}}
+  text: udzielaniu informacji o produktach leczniczych i wyrobach medycznych;
+- p: 28
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 5), kind: decimal, src: auto, level: 0}}
+  text: …………………………………………………………
+  slots:
+  - {id: p28_1, span: [0, 22], type: text, context: ▢}
+- p: 29
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 6), kind: decimal, src: auto, level: 0}}
+  text: …………………………………………………………
+  slots:
+  - {id: p29_1, span: [0, 22], type: text, context: ▢}
+- p: 30
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 12, bold: true}, {start: 78,
+        end: 91, bold: true}]}
+  text: Usługodawca zobowiązuje się do wykonywania czynności określonych w umowie dla Usługobiorcy w lokalu Apteki usytuowanym przy ul. ………………
+    w …………………… .
+  slots:
+  - {id: p30_1, span: [128, 134], type: address, context: Apteki usytuowanym przy ul. ▢ w}
+  - {id: p30_2, span: [137, 145], type: place, context: usytuowanym przy ul. w ▢}
+- {p: 31, role: spacer}
+- {p: 32, role: spacer}
+- p: 33
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+  text: § 2
+- p: 34
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 11, bold: true}]}
+  text: Usługodawca oświadcza, iż posiada kwalifikacje uprawniające do pełnienia funkcji farmaceuty zgodnie z przepisami ustawy o izbach aptekarskich.
+- p: 35
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 11, bold: true}, {start: 40,
+        end: 52, bold: true}]}
+  text: Usługodawca zobowiązany jest przedłożyć Usługobiorcy dokumenty potwierdzające kwalifikacje zawodowe o których mowa w § 2 ust. 1 przed
+    zawarciem niniejszej umowy.
+- p: 36
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Czynności wskazane w § 1 ust. 1 będą wykonywane w dni i godziny ustalone w miesięcznym harmonogramie, uzgodnionym przez Strony.
+- p: 37
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 14, end: 25, bold: true}]}
+  text: '[opcjonalnie] Usługodawca w zakresie funkcji farmaceuty pełnionej w Aptece może wykonywać umowę wyłącznie osobiście, z zastrzeżeniem
+    § 2 ust. 5.'
+- p: 38
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}, spans: [{start: 46, end: 57, bold: true}, {start: 230,
+        end: 241, bold: true}, {start: 266, end: 280, bold: true}, {start: 324, end: 337, bold: true}]}
+  text: '[opcjonalnie] Na czas planowanej nieobecności Usługodawca obowiązany jest wyznaczyć zastępcę, spełniającego warunki wymagane do pełnienia
+    funkcji farmaceuty zgodnie z przepisami ustawy Prawo farmaceutyczne. O wyznaczeniu zastępcy Usługodawca powiadamia niezwłocznie Usługobiorcę.
+    Ustanowienie zastępstwa odbywa się na koszt Usługobiorcy.'
+- p: 39
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}}
+  text: 'Strony mogą określić dodatkowe zasady wykonywania umowy, w drodze aneksu zawartego
+
+    w formie pisemnej pod rygorem nieważności.'
+- p: 40
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '7.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 11, bold: true}]}
+  text: Usługodawcy przysługuje możliwość nieświadczenia usług objętych niniejszą umową przez okres do ……………………… dni roboczych rocznie z zachowaniem
+    prawa do wynagrodzenia w wysokości odpowiadającej……… godzinom świadczenia usług (według wynagrodzenia z § 6 ust. 1 umowy) za jeden dzień możliwości
+    nieświadczenia usług.
+  slots:
+  - {id: p40_1, span: [95, 104], type: date, context: umową przez okres do ▢ dni roboczych}
+  - {id: p40_2, span: [190, 193], type: text, context: wynagrodzenia w wysokości odpowiadającej ▢ godzinom świadczenia}
+- p: 41
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '8.', kind: decimal, src: auto, level: 0}, spans: [{start: 43, end: 54, bold: true}, {start: 101,
+        end: 113, bold: true}, {start: 292, end: 303, bold: true}, {start: 364, end: 376, bold: true}, {start: 378, end: 390, bold: true}]}
+  text: W celu ustalenia dni nieświadczenia usług, Usługodawca jest zobowiązany złożyć pisemną informację do Usługobiorcy ze wskazaniem, w jakich
+    dniach dni nieświadczenia usług miałyby przypadać, co najmniej na 14 dni przed planowaną datą ich wykorzystania. Ustalenie dni nieświadczenia
+    usług przez Usługodawcę w sposób określony w zdaniu poprzedzającym jest wiążące dla Usługobiorcy. Usługobiorca może wedle swobodnego uznania
+    wyrazić zgodę na dni wolne jedynie w przypadku, gdy wniosek zostanie złożony z naruszeniem 14-dniowego terminu określonego w zdaniu pierwszym.
+- p: 42
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '9.', kind: decimal, src: auto, level: 0}, spans: [{start: 88, end: 99, bold: true}]}
+  text: '[opcjonalnie] Za niewykorzystane w danym roku kalendarzowym dni wskazanych w § 2 ust. 7 Usługodawcy nie przysługuje ekwiwalent pieniężny.'
+- {p: 43, role: spacer}
+- p: 44
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+  text: '§ 3 '
+- p: 45
+  role: field_header
+  layout: {align: justify, size: 10.0, spans: [{start: 0, end: 11, bold: true}]}
+  text: 'Usługodawca zobowiązuje się:'
+- p: 46
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+  text: do rzetelnego wykonywania usług z wykorzystaniem aktualnej wiedzy farmaceutycznej oraz zgodnie z zasadami etyki zawodowej i przepisami
+    prawa;
+- p: 47
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}, spans: [{start: 52, end: 65, bold: true}, {start: 115,
+        end: 127, bold: true}]}
+  text: przestrzegać przepisów BHP i ppoż. obowiązujących u Usługobiorcy oraz innych przepisów porządkowych wydanych przez Usługobiorcę;
+- p: 48
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}}
+  text: do odbycia na swój koszt wszelkich szkoleń oraz przeprowadzenia wszelkich badań, które okażą się niezbędne do wykonywania niniejszej umowy;
+- p: 49
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 4), kind: decimal, src: auto, level: 0}}
+  text: korzystać ze sprzętu i pomieszczeń w sposób odpowiadający ich właściwościom i przeznaczeniu;
+- p: 50
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 5), kind: decimal, src: auto, level: 0}}
+  text: utrzymywać pomieszczenia Apteki w czystości oraz w należytym stanie sanitarnym i epidemiologicznym;
+- p: 51
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 6), kind: decimal, src: auto, level: 0}}
+  text: ………………………………… .
+  slots:
+  - {id: p51_1, span: [0, 13], type: text, context: ▢}
+- {p: 52, role: spacer}
+- p: 53
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+  text: § 4
+- p: 54
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 12, bold: true}, {start: 128,
+        end: 141, bold: true}]}
+  text: Usługodawca ponosi odpowiedzialność z tytułu zawinionego przez siebie nienależytego wykonywania niniejszej umowy, zarówno wobec Usługobiorcy
+    jak i organów kontroli oraz organów nadzoru nad działalnością Apteki.
+- p: 55
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 12, bold: true}, {start: 314,
+        end: 328, bold: true}]}
+  text: Usługodawca ponosi odpowiedzialność za powierzone mienie i wykonane usługi oraz zobowiązuje się do utrzymywania ważnego ubezpieczenia
+    OC w zakresie świadczonych usług i niezmniejszania jego sumy gwarancyjnej (minimum ……………) przez cały okres obowiązywania umowy. Dowód zawarcia
+    umowy ubezpieczenia (polisa) stanowi załącznik nr 1 do niniejszej umowy.
+  slots:
+  - {id: p55_1, span: [217, 222], type: text, context: jego sumy gwarancyjnej minimum ▢ przez cały}
+- p: 56
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 13, bold: true}, {start: 78,
+        end: 90, bold: true}, {start: 182, end: 194, bold: true}]}
+  text: Usługobiorca ponosi odpowiedzialność za należyty stan techniczny powierzonych Usługodawcy składników majątkowych, o ile nieprawidłowości
+    w tym zakresie nie powstały z wyłącznej winy Usługodawcy.
+- {p: 57, role: spacer}
+- p: 58
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+  text: § 5
+- p: 59
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 139, end: 219, italic: true}]}
+  text: 'Umowa zostaje zawarta na czas nieokreślony i wchodzi w życie w dniu ………………………… / na czas określony, tj. w okresie od …………………. do …………………
+    . (należy wskazać terminy dotyczące umowy – od kiedy ma obowiązywać, na jaki czas) '
+  slots:
+  - {id: p59_1, span: [68, 78], type: date, context: w życie w dniu ▢ na czas}
+  - {id: p59_2, span: [117, 125], type: date, context: tj. w okresie od ▢ do}
+  - {id: nalezy_wskazac_terminy_dotyczace_umowy_od_kiedy, span: [129, 136], type: date, hint: 'należy wskazać terminy dotyczące umowy – od kiedy
+      ma obowiązywać, na jaki czas'}
+  inline_hints:
+  - {span: [139, 219], text: 'należy wskazać terminy dotyczące umowy – od kiedy ma obowiązywać, na jaki czas'}
+- p: 60
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 13, bold: true}]}
+  text: 'Usługobiorca może rozwiązać niniejszą umowę ze skutkiem natychmiastowym, w sytuacji:'
+- p: 61
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}, spans: [{start: 13, end: 25, bold: true}]}
+  text: utraty przez Usługodawcę kwalifikacji do wykonywania zawodu farmaceuty lub zawieszenia prawa wykonywania zawodu farmaceuty;
+- p: 62
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}, spans: [{start: 17, end: 29, bold: true}]}
+  text: 'naruszenia przez Usługodawcę przepisów prawa w zakresie wyznaczenia zastępstwa
+
+    w pełnieniu funkcji farmaceuty;'
+- p: 63
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}, spans: [{start: 17, end: 29, bold: true}]}
+  text: naruszenia przez Usługodawcę zasad etyki obowiązujących farmaceutę;
+- p: 64
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 4), kind: decimal, src: auto, level: 0}, spans: [{start: 21, end: 33, bold: true}]}
+  text: niedopełnienia przez Usługodawcę obowiązku ubezpieczenia się od odpowiedzialności cywilnej w zakresie usług objętych niniejszą umową.
+- p: 65
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 11, bold: true}, {start: 101,
+        end: 113, bold: true}]}
+  text: 'Usługodawca może rozwiązać umowę ze skutkiem natychmiastowym z ważnych przyczyn,
+
+    w szczególności gdy Usługobiorca jest w zwłoce z wypłatą wynagrodzenia za okres …… miesięcy.'
+  slots:
+  - {id: p65_1, span: [161, 163], type: text, context: wypłatą wynagrodzenia za okres ▢ miesięcy.}
+- p: 66
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: Umowa może być rozwiązana przez każdą ze Stron z zachowaniem ……………… okresu wypowiedzenia, ze skutkiem na koniec miesiąca kalendarzowego.
+  slots:
+  - {id: p66_1, span: [61, 67], type: text, context: ze Stron z zachowaniem ▢ okresu wypowiedzenia}
+- p: 67
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+  text: Oświadczenia o rozwiązaniu lub wypowiedzeniu umowy wymagają zachowania formy pisemnej pod rygorem nieważności.
+- {p: 68, role: spacer}
+- p: 69
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 6, kind: paragraph, src: manual, level: 0}}
+  text: § 6
+- p: 70
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 12, bold: true}, {start: 88,
+        end: 99, bold: true}, {start: 204, end: 215, bold: true}, {start: 259, end: 270, bold: true}]}
+  text: 'Usługobiorca zobowiązuje się za wykonywanie czynności wskazanych w § 1 ust. 1, zapłacić Usługodawcy wynagrodzenie w kwocie ……………… (słownie:
+    …………………………) złotych brutto za każdą przepracowaną godzinę przez Usługodawcę, na podstawie prawidłowo wystawionej przez Usługodawcę faktury
+    VAT.'
+  slots:
+  - {id: p70_1, span: [123, 129], type: text, context: Usługodawcy wynagrodzenie w kwocie ▢ złotych brutto}
+  - {id: p70_2, span: [140, 150], type: amount, context: wynagrodzenie w kwocie słownie ▢ złotych brutto}
+- p: 71
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Strony ustalają miesiąc kalendarzowy jako okres rozliczeniowy.
+- p: 72
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: 'Wynagrodzenie, o którym mowa w § 6 ust. 1 płatne będzie do ……… dnia każdego miesiąca,
+
+    za miesiąc poprzedni.'
+  slots:
+  - {id: p72_1, span: [59, 62], type: date, context: 1 płatne będzie do ▢ dnia każdego}
+- p: 73
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 86, end: 97, bold: true}]}
+  text: Płatność wynagrodzenia, o którym mowa w § 6 ust. 3 nastąpi przelewem na konto bankowe Usługodawcy o numerze …………………………………………………………… .
+  slots:
+  - {id: p73_1, span: [108, 131], type: text, context: bankowe Usługodawcy o numerze ▢}
+- p: 74
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}, spans: [{start: 76, end: 88, bold: true}]}
+  text: Zapłata jest uważana za dokonaną z chwilą zaksięgowania środków na rachunku Usługodawcy.
+- {p: 75, role: spacer}
+- p: 76
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 7, kind: paragraph, src: manual, level: 0}}
+  text: § 7
+- p: 77
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 31, end: 42, bold: true}, {start: 119,
+        end: 133, bold: true}, {start: 269, end: 280, bold: true}]}
+  text: W trakcie obowiązywania umowy, Usługodawca zobowiązany jest do zachowania w tajemnicy wszelkich informacji dotyczących Usługobiorcy, jego
+    organizacji, działalności handlowej, finansów, transakcji, tajemnic handlowych, służbowych oraz wszelkich innych danych, o których Usługodawca
+    dowiedział się w związku ze świadczeniem usług.
+- p: 78
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 30, end: 41, bold: true}, {start: 68,
+        end: 80, bold: true}]}
+  text: W przypadku rozwiązania umowy Usługodawca zobowiązuje się do zwrotu Usługobiorcy najpóźniej w dniu rozwiązania umowy wszelkich dokumentów
+    i innych materiałów dotyczących tajemnicy przedsiębiorstwa, jakie sporządził, zebrał, opracował lub otrzymał w czasie trwania umowy albo w
+    związku lub przy okazji jej wykonywania.
+- {p: 79, role: spacer}
+- p: 80
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 8, kind: paragraph, src: manual, level: 0}}
+  text: § 8
+- p: 81
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Strony zgodnie oświadczają, że ich wolą nie jest nawiązanie stosunku pracy.
+- p: 82
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 11, bold: true}]}
+  text: Usługodawca zobowiązuje się wykonywać powierzone czynności z należytą starannością.
+- p: 83
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 51, end: 62, bold: true}, {start: 109,
+        end: 122, bold: true}]}
+  text: W razie niemożności dokonania określonej czynności Usługodawca obowiązany jest niezwłocznie powiadomić o tym Usługobiorcę.
+- {p: 84, role: spacer}
+- p: 85
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 9, kind: paragraph, src: manual, level: 0}}
+  text: § 9
+- p: 86
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 11, bold: true}, {start: 121,
+        end: 133, bold: true}]}
+  text: 'Usługodawca wyraża zgodę na przetwarzanie jego danych osobowych, określonych w komparycji  umowy oraz w jej treści przez Usługobiorcę,
+    w celu i na okres realizacji umowy, zgodnie
+
+    z postanowieniami niniejszego paragrafu.'
+- p: 87
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: "Przetwarzanie danych osobowych z tytułu niniejszej umowy odbywać się będzie w zgodzie \ni w oparciu o przepisy rozporządzenia Parlamentu\
+    \ Europejskiego i Rady (EU) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych\
+    \ i w sprawie swobodnego przepływu takich danych oraz uchylenia dyrektywy 95/46/WE (ogólne rozporządzenie o ochronie danych), zwane dalej\
+    \ „RODO”."
+- p: 88
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: 'Cel i zakres powierzenia przetwarzania danych osobowych wynika bezpośrednio i ogranicza się wyłącznie do zdań wynikających z umowy. Na
+    powyższych danych będą wykonywane
+
+    w szczególności operacje: przechowywanie, transfer, utrwalanie, analizowanie, a także czynności polegające na tworzeniu kopii bezpieczeństwa
+    oraz czynności związane z odtwarzaniem z kopii bezpieczeństwa.'
+- p: 89
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: Do przetwarzania danych osobowych mogą być dopuszczone wyłącznie osoby posiadające upoważnienie, o których mowa w art. 29 RODO oraz przeszkolone
+    z zakresu przepisów dotyczących ochrony danych osobowych.
+- {p: 90, role: spacer}
+- p: 91
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 10, kind: paragraph, src: manual, level: 0}}
+  text: § 10
+- p: 92
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Wszelkie zmiany niniejszej umowy wymagają zachowania formy pisemnej pod rygorem nieważności.
+- p: 93
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Umowa została sporządzona w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze Stron. '
+- p: 94
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: W sprawach nieuregulowanych umową będą miały zastosowanie przepisy ustawy z dnia 23 kwietnia 1964 r. – Kodeks cywilny, ustawy z dnia 6
+    września 2001 r. – Prawo farmaceutyczne oraz inne przepisy powszechnie obowiązującego prawa.
+- p: 95
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 135, end: 147, bold: true}]}
+  text: Wszelkie spory, jakie mogą wyniknąć w związku z niniejszą umową będą rozpatrywane przez sąd powszechny właściwy ze względu na siedzibę
+    Usługodawcy.
+- {p: 96, role: spacer}
+- {p: 97, role: spacer}
+- {p: 98, role: spacer}
+- p: 99
+  role: signature_line
+  layout: {align: justify, size: 10.0, tabs: 8}
+  text: "…………………………\t\t\t\t\t\t\t\t…………………………"
+  slots:
+  - {id: p99_1, span: [0, 10], type: signature, context: ▢}
+  - {id: p99_2, span: [18, 28], type: signature, context: ▢}
+- p: 100
+  role: body
+  layout: {align: justify, size: 10.0, bold: true, tabs: 7}
+  text: "   Usługobiorca\t\t\t\t\t\t\t              Usługodawca"
+- {p: 101, role: spacer}
+- {p: 102, role: spacer}
+- {p: 103, role: spacer}
+- {p: 104, role: spacer}

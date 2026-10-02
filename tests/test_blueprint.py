@@ -11,11 +11,14 @@ from humanize_pl.blueprint import (
     DocumentBlueprint,
     Section,
     _load,
+    _load_template,
     blueprint_for,
     blueprints,
     check,
     check_category,
     is_heading,
+    match_template,
+    templates,
 )
 from humanize_pl.categories import catalogue
 
@@ -347,3 +350,123 @@ def test_a_section_is_found_regardless_of_grammatical_gender() -> None:
     ):
         report = check_category(f"§ 1. Postanowienia ogólne\n{phrase}\n", "regulamin")
         assert "oznaczenie usługodawcy" not in report.missing_required, phrase
+
+
+def test_a_numbered_sentence_is_a_clause_not_a_heading() -> None:
+    """Read as a heading, a short first clause left the section above it empty."""
+    assert is_heading("1. Zmiany Umowy wymagają formy pisemnej pod rygorem nieważności.") is False
+    assert is_heading("§ 3.") is True
+    text = "§ 8. Postanowienia końcowe\n1. Zmiany Umowy wymagają formy pisemnej.\n"
+    blueprint = DocumentBlueprint(
+        category="test",
+        label_pl="test",
+        sections=(Section("koncowe", "postanowienia końcowe", ("postanowienia końcowe",)),),
+    )
+    assert check(text, blueprint).empty_sections == []
+
+
+def _filled(
+    document: dict, *, skip: set[int] | frozenset[int] = frozenset(), blank: frozenset[str] = frozenset()
+) -> str:
+    """A template the way a user hands it back: blanks filled, captions kept."""
+    lines = []
+    for block in document["blocks"]:
+        if block["role"] in ("spacer", "pagebreak") or block["p"] in skip:
+            continue
+        text = block["text"]
+        for slot in sorted(block["slots"], key=lambda row: -row["start"]):
+            if slot["id"] not in blank:
+                text = text[: slot["start"]] + "Anna Nowak" + text[slot["end"] :]
+        lines.append(text)
+    return "\n".join(lines)
+
+
+def _template(template_id: str):
+    return next(row for row in templates() if row.id == template_id)
+
+
+def test_every_general_document_passes_its_own_checklist() -> None:
+    """The general document is what a user fills when nothing more precise
+    fits; one that fails its own category's checklist teaches nothing.
+
+    Checked as written: once filled, the document matches itself as a template,
+    and the template's findings decide."""
+    for category, blueprint in blueprints().items():
+        if blueprint.document is None:
+            continue
+        text = "\n".join(block["text"] for block in blueprint.document["blocks"])
+        report = check(text, blueprint)
+        assert report.missing_required == [], category
+        assert report.empty_sections == [], category
+
+
+def test_every_template_belongs_to_a_known_category_with_unique_fields() -> None:
+    known = set(catalogue())
+    assert len(templates()) > len(blueprints())
+    for row in templates():
+        assert row.category in known, row.id
+        ids = [slot["id"] for block in row.document["blocks"] for slot in block["slots"]]
+        assert len(ids) == len(set(ids)), row.id
+
+
+def test_every_template_is_recognised_from_its_own_filled_text() -> None:
+    """Near-twins included: the six wypowiedzenia and five uchwały differ by a
+    clause or two, and each must still be told apart from the others."""
+    for row in templates():
+        found = match_template(_filled(row.document))
+        assert found is not None and found[0].id == row.id, row.id
+
+
+def test_text_written_without_a_template_matches_none() -> None:
+    for path in sorted(FIXTURES.glob("*.txt")):
+        assert match_template(path.read_text(encoding="utf-8")) is None, path.name
+
+
+def test_an_annex_does_not_outrank_the_contract_it_is_appended_to() -> None:
+    contract = _template("umowa_najmu/umowa_najmu_okazjonalnego_lokalu")
+    annex = _template(
+        "umowa_najmu/umowa_najmu_okazjonalnego_lokalu_oswiadczenie_o_poddaniu_sie_egzekucji"
+    )
+    combined = _filled(contract.document) + "\n" + _filled(annex.document)
+    assert match_template(combined)[0].id == contract.id
+    assert match_template(_filled(annex.document))[0].id == annex.id
+
+
+def test_a_precise_template_decides_over_the_general_checklist() -> None:
+    """A porozumienie stron is filed under wypowiedzenie, whose checklist wants
+    a notice period and a justification. The agreement has neither, rightly;
+    its own template knows that and the checklist does not."""
+    row = _template("wypowiedzenie/rozwiazanie_umowy_o_prace_za_porozumieniem_stron")
+    report = check_category(_filled(row.document), "wypowiedzenie")
+    assert report.missing_required, "checklist still reports, as context"
+    assert report.template["id"] == row.id
+    assert report.blocking is False
+    assert not any(issue.startswith("brak wymaganej sekcji") for issue in report.issues)
+
+
+def test_a_dropped_clause_and_an_unfilled_blank_are_reported_against_the_template() -> None:
+    lease = blueprint_for("umowa_najmu").document
+    deposit = {
+        block["p"]
+        for block in lease["blocks"]
+        if block["text"].startswith("§ 4.") or "kaucję" in block["text"]
+    }
+    report = check_category(
+        _filled(lease, skip=deposit, blank=frozenset({"kwota_czynszu_w_zl"})), "umowa_najmu"
+    )
+    assert report.template["id"] == "umowa_najmu"
+    assert any("§ 4. Kaucja" in row for row in report.template["missing"])
+    assert report.template["unfilled"] == ["kwota czynszu w zł"]
+    assert report.blocking is True
+    assert "niewypełnione pole: kwota czynszu w zł" in report.issues
+
+
+def test_template_loader_rejects_a_file_filed_under_the_wrong_category(tmp_path) -> None:
+    path = tmp_path / "umowa_najmu" / "wzor.yaml"
+    path.parent.mkdir()
+    path.write_text(
+        yaml.safe_dump({"category": "pozew", "label_pl": "Wzór", "blocks": [{"p": 0}]}),
+        encoding="utf-8",
+    )
+    with pytest.raises(BlueprintError, match="katalogu"):
+        _load_template(path)

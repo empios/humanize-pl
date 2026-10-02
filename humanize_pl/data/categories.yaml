@@ -31,9 +31,9 @@ categories:
   - id: umowa_zlecenia
     label_pl: umowa zlecenia
     family: contract
-    signals_strong: ["umowa zlecenia", "zleceniobiorca"]
+    signals_strong: ["umowa zlecenia", "umowa zlecenie", "umowa o zlecenie", "zleceniobiorca"]
     signals: ["zleceniodawca", "starannego działania", "art. 734"]
-    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa zlecenia"]
+    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa zlecenia", "umowa zlecenie", "umowa o zlecenie"]
 
   - id: umowa_o_dzielo
     label_pl: umowa o dzieło

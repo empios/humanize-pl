@@ -30,3 +30,245 @@ sections:
   severity: required
   matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
       formy pisemnej, wymagają zachowania formy pisemnej]
+
+# Dokument ogólny: realny wzór tej kategorii. Przy użyciu wypełnia się wyłącznie
+# pola (`slots`); treść, kolejność i układ zostają jak we wzorze.
+document:
+  template: umowa poręczenia.docx
+  label_pl: Umowa poręczenia
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+  blocks:
+  - p: 0
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: UMOWA PORĘCZENIA
+  - {p: 1, role: spacer}
+  - {p: 2, role: spacer}
+  - p: 3
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: 'zawarta w .................... w dniu .................... r. pomiędzy:'
+    slots:
+    - {id: p3_1, span: [10, 30], type: place, context: zawarta w ▢ w dniu}
+    - {id: p3_2, span: [38, 58], type: date, context: zawarta w w dniu ▢ r. pomiędzy}
+  - {p: 4, role: spacer}
+  - p: 5
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: …………………..................................................................................................................................
+    slots:
+    - {id: p5_1, span: [0, 137], type: text, context: ▢}
+  - p: 6
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: '..........................................................................................................................................................................................................................................................................................................'
+    slots:
+    - {id: imie_i_nazwisko_firma_miejsce_zamieszkania_siedz, span: [0, 298], type: text, hint: 'imię i nazwisko/firma; miejsce zamieszkania/siedziba;
+        Nr i seria dokumentu tożsamości/Nr we właściwym rejestrze oraz nazwa rejestru, kapitał zakładowy/CEIDG; PESEL/REGON, NIP'}
+  - p: 7
+    role: hint
+    layout: {align: justify, size: 10.0, italic: true}
+    text: (imię i nazwisko/firma; miejsce zamieszkania/siedziba; Nr i seria dokumentu tożsamości/Nr we właściwym rejestrze oraz nazwa rejestru,
+      kapitał zakładowy/CEIDG; PESEL/REGON, NIP)
+    hint_for: 6
+    hint_kind: instruction
+  - {p: 8, role: spacer}
+  - {p: 9, role: spacer}
+  - p: 10
+    role: field_header
+    layout: {align: justify, size: 10.0}
+    text: 'reprezentowanym przez:'
+  - {p: 11, role: spacer}
+  - p: 12
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: '..........................................................................................................................................................................................................................................................................................................'
+    slots:
+    - {id: reprezentowanym_przez, span: [0, 298], type: person, hint: 'imię i nazwisko, uprawnienie do reprezentacji', label: reprezentowanym przez}
+  - p: 13
+    role: hint
+    layout: {align: justify, size: 10.0, italic: true}
+    text: (imię i nazwisko, uprawnienie do reprezentacji)
+    hint_for: 12
+    hint_kind: label
+  - {p: 14, role: spacer}
+  - {p: 15, role: spacer}
+  - p: 16
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 30, end: 46, bold: true}]}
+    text: zwanym w dalszej części umowy „Poręczycielem”,
+    alias: Poręczycielem
+  - {p: 17, role: spacer}
+  - p: 18
+    role: party_connector
+    layout: {align: justify, size: 10.0}
+    text: a
+  - {p: 19, role: spacer}
+  - p: 20
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: …………………............................................................................................................................................................................................................................................................................................................................................................................................................................................
+    slots:
+    - {id: imie_i_nazwisko_firma_miejsce_zamieszkania_siedz_2, span: [0, 435], type: text, hint: 'imię i nazwisko/firma; miejsce zamieszkania/siedziba;
+        Nr i seria dokumentu tożsamości/Nr we właściwym rejestrze oraz nazwa rejestru, kapitał zakładowy/CEIDG; PESEL/REGON, NIP'}
+  - p: 21
+    role: hint
+    layout: {align: justify, size: 10.0, italic: true}
+    text: (imię i nazwisko/firma; miejsce zamieszkania/siedziba; Nr i seria dokumentu tożsamości/Nr we właściwym rejestrze oraz nazwa rejestru,
+      kapitał zakładowy/CEIDG; PESEL/REGON, NIP)
+    hint_for: 20
+    hint_kind: instruction
+  - {p: 22, role: spacer}
+  - p: 23
+    role: field_header
+    layout: {align: justify, size: 10.0}
+    text: 'reprezentowanym przez:'
+  - {p: 24, role: spacer}
+  - p: 25
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: '..........................................................................................................................................................................................................................................................................................................'
+    slots:
+    - {id: reprezentowanym_przez_2, span: [0, 298], type: person, hint: 'imię i nazwisko, uprawnienie do reprezentacji', label: reprezentowanym
+        przez}
+  - p: 26
+    role: hint
+    layout: {align: justify, size: 10.0, italic: true}
+    text: (imię i nazwisko, uprawnienie do reprezentacji)
+    hint_for: 25
+    hint_kind: label
+  - {p: 27, role: spacer}
+  - {p: 28, role: spacer}
+  - p: 29
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 30, end: 44, bold: true}]}
+    text: zwanym w dalszej części umowy „Wierzycielem”,
+    alias: Wierzycielem
+  - {p: 30, role: spacer}
+  - p: 31
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 22, end: 32, bold: true}]}
+    text: zwanymi dalej łącznie „Stronami”,
+    alias: Stronami
+  - {p: 32, role: spacer}
+  - p: 33
+    role: field_header
+    layout: {align: justify, size: 10.0}
+    text: 'o następującej treści:'
+  - {p: 34, role: spacer}
+  - {p: 35, role: spacer}
+  - p: 36
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+    text: § 1
+  - {p: 37, role: spacer}
+  - p: 38
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 10, bold: true}]}
+    text: Wierzyciel oświadcza, iż jest stroną umowy najmu zawartej w ................................. dnia ......................., której przedmiotem
+      jest lokal znajdujący się przy ulicy ................................. w .............................. .
+    slots:
+    - {id: p38_1, span: [60, 93], type: place, context: umowy najmu zawartej w ▢ dnia której}
+    - {id: p38_2, span: [99, 122], type: date, context: najmu zawartej w dnia ▢ której przedmiotem}
+    - {id: p38_3, span: [180, 213], type: text, context: znajdujący się przy ulicy ▢ w}
+    - {id: p38_4, span: [216, 246], type: place, context: się przy ulicy w ▢}
+  - p: 39
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 42, end: 54, bold: true}]}
+    text: "Przedmiotem poręczenia jest zapłata przez poręczyciela czynszu oraz innych należności \nz tytułu umowy najmu, o której mowa w ust. 1,\
+      \ wraz z odsetkami (zobowiązanie)."
+  - {p: 40, role: spacer}
+  - {p: 41, role: spacer}
+  - p: 42
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+    text: § 2
+  - {p: 43, role: spacer}
+  - p: 44
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Poręczyciel zobowiązuje się spełnić Zobowiązanie na wypadek, gdyby ……………..….  najemca tego nie uczynił.
+    slots:
+    - {id: p44_1, span: [67, 76], type: text, context: Zobowiązanie na wypadek gdyby ▢ najemca tego}
+  - p: 45
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 120, end: 131, bold: true}]}
+    text: Poręczenie jest terminowe i obowiązuje od dnia zawarcia niniejszej umowy do dnia ……………….. . Strony zgodnie ustalają, że Poręczyciel odpowiada
+      jedynie za dług, który powstał w powyższym terminie.
+    slots:
+    - {id: p45_1, span: [81, 89], type: date, context: niniejszej umowy do dnia ▢ Strony zgodnie}
+  - p: 46
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 11, bold: true}]}
+    text: 'Poręczyciel udziela poręczenia zobowiązania do kwoty ……………. (słownie: ………………………). '
+    slots:
+    - {id: p46_1, span: [53, 59], type: amount, context: poręczenia zobowiązania do kwoty ▢}
+    - {id: p46_2, span: [70, 79], type: amount, context: zobowiązania do kwoty słownie ▢}
+  - {p: 47, role: spacer}
+  - {p: 48, role: spacer}
+  - p: 49
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+    text: § 3
+  - {p: 50, role: spacer}
+  - p: 51
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 10, bold: true}, {start: 38,
+          end: 50, bold: true}]}
+    text: 'Wierzyciel zobowiązuje się zawiadomić Poręczyciela o nieregulowaniu płatności z tytułu umowy najmu przez najemcę w terminie 14 dni od
+      upływu terminu płatności. '
+  - p: 52
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 54, end: 65, bold: true}, {start: 84,
+          end: 94, bold: true}, {start: 115, end: 127, bold: true}]}
+    text: W wypadku zwłoki najemcy w wykonaniu zobowiązań wobec Wierzyciela, opisanych w § 1, Wierzyciel może zwrócić się do Poręczyciela o spełnienie
+      świadczenia, po uprzednim wezwaniu najemcy do dokonania zapłaty.
+  - p: 53
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 35, end: 45, bold: true}, {start: 90,
+          end: 104, bold: true}]}
+    text: W sytuacji określonej w § 4 ust. 1 Wierzyciel wezwie do spełnienia świadczenia, wysyłając Poręczycielowi list polecony na adres wskazany
+      w niniejszej umowie.
+  - {p: 54, role: spacer}
+  - {p: 55, role: spacer}
+  - p: 56
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+    text: § 4
+  - {p: 57, role: spacer}
+  - p: 58
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: "W sprawach nieuregulowanych w niniejszej umowie zastosowanie mają przepisy ustawy \nz dnia 23 kwietnia 1964 r. Kodeks cywilny."
+  - p: 59
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Wszelkie zmiany umowy wymagają formy pisemnej pod rygorem nieważności.
+  - p: 60
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: Wszelkie spory wynikające z niniejszej umowy będą rozpatrywane przez sąd .................. .
+    slots:
+    - {id: p60_1, span: [73, 91], type: text, context: będą rozpatrywane przez sąd ▢}
+  - p: 61
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+    text: Umowa została sporządzona w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze stron.
+  - {p: 62, role: spacer}
+  - {p: 63, role: spacer}
+  - {p: 64, role: spacer}
+  - p: 65
+    role: blank_line
+    layout: {align: justify, indent: {left: 714}, size: 10.0}
+    text: '.........................................                                               ............................................'
+    slots:
+    - {id: p65_1, span: [0, 41], type: signature, context: ▢}
+    - {id: p65_2, span: [88, 132], type: signature, context: ▢}
+  - p: 66
+    role: body
+    layout: {align: justify, indent: {left: 714}, size: 10.0, bold: true, tabs: 8}
+    text: "\tWierzyciel \t\t\t\t   \t\t\tPoręczyciel"
+  - {p: 67, role: spacer}
+  - {p: 68, role: spacer}
+  - {p: 69, role: spacer}

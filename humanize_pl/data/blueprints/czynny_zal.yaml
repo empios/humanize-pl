@@ -33,3 +33,153 @@ sections:
   label_pl: podpis
   severity: required
   matches: [podpis, własnoręczny]
+
+# Dokument ogólny: realny wzór tej kategorii. Przy użyciu wypełnia się wyłącznie
+# pola (`slots`); treść, kolejność i układ zostają jak we wzorze.
+document:
+  template: Czynny żal (k.p.a.).docx
+  label_pl: Czynny żal (k.k.s.)
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+  blocks:
+  - p: 0
+    role: body
+    layout: {align: right, indent: {first: 708}, size: 10.0, spans: [{start: 12, end: 23, italic: true}]}
+    text: …………………………… miejscowość, dnia ……………………r.
+    slots:
+    - {id: p0_1, span: [0, 11], type: text, context: ▢ miejscowość dnia}
+    - {id: p0_2, span: [30, 38], type: date, context: miejscowość dnia ▢ r.}
+  - {p: 1, role: spacer}
+  - p: 2
+    role: blank_line
+    layout: {indent: {left: 4820}, size: 10.0}
+    text: …………………………………………
+    slots:
+    - {id: p2_1, span: [0, 16], type: text, context: ▢}
+  - p: 3
+    role: blank_line
+    layout: {indent: {left: 4820}, size: 10.0}
+    text: …………………………………………
+    slots:
+    - {id: p3_1, span: [0, 16], type: text, context: ▢}
+  - p: 4
+    role: blank_line
+    layout: {indent: {left: 4820}, size: 10.0}
+    text: …………………………………………
+    slots:
+    - {id: dane_wnoszacego_zawiadomienie, span: [0, 16], type: text, hint: dane wnoszącego zawiadomienie}
+  - p: 5
+    role: hint
+    layout: {indent: {left: 4820}, size: 10.0, italic: true}
+    text: (dane wnoszącego zawiadomienie)
+    hint_for: 4
+    hint_kind: label
+  - {p: 6, role: spacer}
+  - p: 7
+    role: body
+    layout: {indent: {left: 4820}, size: 10.0}
+    text: Naczelnik Urzędu Skarbowego
+  - p: 8
+    role: body
+    layout: {indent: {left: 4820}, size: 10.0}
+    text: w …………………………………………………
+    slots:
+    - {id: p8_1, span: [2, 21], type: place, context: w ▢}
+  - p: 9
+    role: blank_line
+    layout: {indent: {left: 4820}, size: 10.0}
+    text: …………………………………………………….................................................
+    slots:
+    - {id: dane_organu_do_ktorego_wnoszone_jest_zawiadomien, span: [0, 69], type: text, hint: dane organu do którego wnoszone jest zawiadomienie}
+  - p: 10
+    role: hint
+    layout: {indent: {left: 4820}, size: 10.0, italic: true}
+    text: (dane organu do którego wnoszone jest zawiadomienie)
+    hint_for: 9
+    hint_kind: label
+  - {p: 11, role: spacer}
+  - {p: 12, role: spacer}
+  - p: 13
+    role: body
+    layout: {align: center, size: 14.0, bold: true}
+    text: 'ZAWIADOMIENIE O POPEŁNIENIU CZYNU ZABRONIONEGO '
+  - p: 14
+    role: hint
+    layout: {align: center, size: 14.0, bold: true}
+    text: (CZYNNY ŻAL)
+    hint_for: 13
+    hint_kind: label
+  - {p: 15, role: spacer}
+  - p: 16
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 377, end: 429, italic: true}, {start: 442, end: 443, italic: true}]}
+    text: 'Na podstawie art. 16 § 1 ustawy z dnia 10 września 1999 r. - Kodeks karny skarbowy (dalej jako k.k.s.) w celu skorzystania z przewidzianej
+      w tym przepisie instytucji przyznania się do popełnienia czynu zabronionego (tzw. czynnego żalu), niniejszym zawiadamiam o popełnieniu przeze
+      mnie czynu zabronionego polegającego na tym, że ............................................... (należy wskazać czyn zabroniony, będący przedmiotem
+      zawiadomienia). '
+    slots:
+    - {id: nalezy_wskazac_czyn_zabroniony_bedacy_przedmiote, span: [329, 376], type: text, hint: 'należy wskazać czyn zabroniony, będący przedmiotem
+        zawiadomienia'}
+    inline_hints:
+    - {span: [377, 443], text: 'należy wskazać czyn zabroniony, będący przedmiotem zawiadomienia'}
+  - {p: 17, role: spacer}
+  - p: 18
+    role: body
+    layout: {align: center, size: 12.0, bold: true}
+    text: Uzasadnienie
+  - p: 19
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 1036, end: 1417, italic: true}]}
+    text: '............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................(należy
+      przytoczyć szczegółowo stan faktyczny sprawy, w szczególności powód z tytułu jakiego składający zawiadomienie nie dopełnił obowiązku uregulowania
+      należności podatkowej, a także czy składający zawiadomienie współdziałał z innymi osobami. Ponadto należy wskazać, iż należność podatkowa
+      została stosownie uregulowana w późniejszym terminie - wskazać termin uiszczenia podatku)'
+    slots:
+    - {id: nalezy_przytoczyc_szczegolowo_stan_faktyczny_spr, span: [0, 1036], type: text, hint: 'należy przytoczyć szczegółowo stan faktyczny sprawy,
+        w szczególności powód z tytułu jakiego składający zawiadomienie nie dopełnił obowiązku uregulowania należności podatkowej, a także czy składający
+        zawiadomienie współdziałał z innymi osobami. Ponadto należy wskazać, iż należność podatkowa została stosownie uregulowana w późniejszym
+        terminie - wskazać termin uiszczenia podatku'}
+    inline_hints:
+    - {span: [1036, 1417], text: 'należy przytoczyć szczegółowo stan faktyczny sprawy, w szczególności powód z tytułu jakiego składający zawiadomienie
+        nie dopełnił obowiązku uregulowania należności podatkowej, a także czy składający zawiadomienie współdziałał z innymi osobami. Ponadto należy
+        wskazać, iż należność podatkowa została stosownie uregulowana w późniejszym terminie - wskazać termin uiszczenia podatku'}
+  - {p: 20, role: spacer}
+  - {p: 21, role: spacer}
+  - p: 22
+    role: body
+    layout: {align: right, indent: {first: 708}, size: 10.0}
+    text: '       Z poważaniem '
+  - p: 23
+    role: blank_line
+    layout: {align: right, indent: {first: 708}, size: 10.0}
+    text: '        ...……………………………'
+    slots:
+    - {id: wlasnoreczny_podpis, span: [8, 22], type: signature, hint: własnoręczny podpis}
+  - p: 24
+    role: hint
+    layout: {align: right, indent: {first: 708}, size: 10.0}
+    text: (własnoręczny podpis)
+    hint_for: 23
+    hint_kind: label
+  - {p: 25, role: spacer}
+  - {p: 26, role: spacer}
+  - p: 27
+    role: field_header
+    layout: {align: justify, size: 10.0, bold: true}
+    text: 'Załączniki:'
+  - p: 28
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: '............................ (należy wymienić wszystkie dokumenty będące dowodem w sprawie – wskazane w uzasadnieniu);'
+    slots:
+    - {id: nalezy_wymienic_wszystkie_dokumenty_bedace_dowod, span: [0, 28], type: text, hint: należy wymienić wszystkie dokumenty będące dowodem
+        w sprawie – wskazane w uzasadnieniu}
+    inline_hints:
+    - {span: [29, 117], text: należy wymienić wszystkie dokumenty będące dowodem w sprawie – wskazane w uzasadnieniu}
+  - p: 29
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: '............................'
+    slots:
+    - {id: p29_1, span: [0, 28], type: text, context: ▢}
+  - {p: 30, role: spacer}

@@ -1,0 +1,169 @@
+template: Rozwiązanie umowy o pracę za porozumieniem stron.docx
+category: wypowiedzenie
+label_pl: Rozwiązanie umowy o pracę za porozumieniem stron
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: 'POROZUMIENIE '
+- p: 1
+  role: body
+  layout: {align: center, size: 14.0, bold: true}
+  text: 'W PRZEDMIOCIE ROZWIĄZANIA UMOWY O PRACĘ
+
+    '
+- p: 2
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 61, end: 67, italic: true}]}
+  text: 'Zawarte dnia ………………………………… (miejscowość) w dniu ……………………………. (data) pomiędzy:'
+  slots:
+  - {id: miejscowosc, span: [13, 26], type: date, hint: miejscowość}
+  - {id: data, span: [48, 60], type: date, hint: data}
+  inline_hints:
+  - {span: [27, 40], text: miejscowość}
+  - {span: [61, 67], text: data}
+- {p: 3, role: spacer}
+- {p: 4, role: spacer}
+- p: 5
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 118, end: 136, italic: true},
+      {start: 262, end: 293, italic: true}]}
+  text: '..................................... (imię i nazwisko pracownika), zamieszkałym przy ul. …………………….…….. w ..-… ……………… (adres pracownika),
+    PESEL: …………………………………………….., legitymującym się dowodem osobistym seria i numer: ……………………………………, wydanym przez …………………………………… (organ, który
+    wydał dokument), '
+  slots:
+  - {id: imie_i_nazwisko_pracownika, span: [0, 37], type: person, hint: imię i nazwisko pracownika}
+  - {id: p5_2, span: [90, 103], type: address, context: zamieszkałym przy ul. ▢ w PESEL}
+  - {id: adres_pracownika, span: [106, 117], type: address, hint: adres pracownika}
+  - {id: p5_4, span: [145, 164], type: pesel, context: przy ul. w PESEL ▢ legitymującym się}
+  - {id: p5_5, span: [217, 231], type: text, context: osobistym seria i numer ▢ wydanym przez}
+  - {id: organ_ktory_wydal_dokument, span: [247, 261], type: id_number, hint: 'organ, który wydał dokument'}
+  inline_hints:
+  - {span: [38, 66], text: imię i nazwisko pracownika}
+  - {span: [118, 136], text: adres pracownika}
+  - {span: [262, 291], text: 'organ, który wydał dokument'}
+- p: 6
+  role: party_alias
+  layout: {align: justify, indent: {left: 360}, size: 10.0, spans: [{start: 13, end: 26, bold: true}]}
+  text: zwanym dalej Pracownikiem,
+  alias: Pracownikiem
+- {p: 7, role: spacer}
+- p: 8
+  role: party_connector
+  layout: {align: justify, size: 10.0}
+  text: a
+- {p: 9, role: spacer}
+- p: 10
+  role: item
+  layout: {size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 150, end: 167, italic: true}, {start: 182, end: 192,
+        bold: true}, {start: 194, end: 281, italic: true}]}
+  text: '............................................ (oznaczenie pracodawcy – imię i nazwisko lub firma), z siedzibą przy ul.................................  (adres
+    siedziby), zwanym dalej Pracodawcą, (jeżeli pracodawcą nie jest osoba fizyczna, należy podać NIP oraz osobę reprezentującą)'
+  slots:
+  - {id: oznaczenie_pracodawcy_imie_i_nazwisko_lub_firma, span: [0, 44], type: text, hint: oznaczenie pracodawcy – imię i nazwisko lub firma}
+  - {id: adres_siedziby, span: [116, 149], type: address, hint: adres siedziby}
+  inline_hints:
+  - {span: [45, 96], text: oznaczenie pracodawcy – imię i nazwisko lub firma}
+  - {span: [151, 167], text: adres siedziby}
+- {p: 11, role: spacer}
+- p: 12
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '-', kind: bullet, src: manual, level: 2}, spans: [{start: 48, end: 56, bold: true}]}
+  text: '- w dalszej części porozumienia zwanymi łącznie Stronami.'
+- {p: 13, role: spacer}
+- p: 14
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+  text: § 1
+- p: 15
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 67, end: 98, italic: true}, {start: 110, end: 153, italic: true}, {start: 174, end: 199,
+        italic: true}, {start: 216, end: 244, italic: true}, {start: 334, end: 364, italic: true}, {start: 419, end: 454, italic: true}]}
+  text: Strony zgodnie ustalają, że umowa o pracę zawarta w dniu ………………….. (data podpisania umowy o pracę) w …………………. (miejscowość gdzie została
+    podpisana umowa) pomiędzy ………………………. (pełna nazwa pracodawcy), a …………………………….. (imię i nazwisko pracownika)  - dalej jako Umowa, ulega rozwiązaniu
+    na mocy porozumienia stron po upływie …………………………. (długość okresu wypowiedzenia) okresu wypowiedzenia. Umowa ulega rozwiązaniu z dniem (data
+    upływu okresu wypowiedzenia).
+  slots:
+  - {id: data_podpisania_umowy_o_prace, span: [57, 66], type: date, hint: data podpisania umowy o pracę}
+  - {id: miejscowosc_gdzie_zostala_podpisana_umowa, span: [101, 109], type: place, hint: miejscowość gdzie została podpisana umowa}
+  - {id: pelna_nazwa_pracodawcy, span: [163, 173], type: text, hint: pełna nazwa pracodawcy}
+  - {id: imie_i_nazwisko_pracownika_2, span: [202, 215], type: person, hint: imię i nazwisko pracownika}
+  - {id: dlugosc_okresu_wypowiedzenia, span: [322, 333], type: text, hint: długość okresu wypowiedzenia}
+  inline_hints:
+  - {span: [67, 98], text: data podpisania umowy o pracę}
+  - {span: [110, 153], text: miejscowość gdzie została podpisana umowa}
+  - {span: [174, 198], text: pełna nazwa pracodawcy}
+  - {span: [216, 244], text: imię i nazwisko pracownika}
+  - {span: [334, 364], text: długość okresu wypowiedzenia}
+- {p: 16, role: spacer}
+- p: 17
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+  text: § 2
+- p: 18
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 156, end: 270, italic: true}]}
+  text: Strony zgodnie ustalają, że z dniem rozwiązania umowy o pracę wskazanej w § 1, wygasają wszelkie zobowiązania wynikające z Umowy, w szczególności
+    ……………………. (w tym miejscu należy wskazać, zobowiązania, jakie zostały nałożone na pracownika w wyniku zawarcia umowy o pracę)
+  slots:
+  - {id: w_tym_miejscu_nalezy_wskazac_zobowiazania_jakie, span: [146, 155], type: text, hint: 'w tym miejscu należy wskazać, zobowiązania, jakie
+      zostały nałożone na pracownika w wyniku zawarcia umowy o pracę'}
+  inline_hints:
+  - {span: [156, 270], text: 'w tym miejscu należy wskazać, zobowiązania, jakie zostały nałożone na pracownika w wyniku zawarcia umowy o pracę'}
+- {p: 19, role: spacer}
+- p: 20
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+  text: § 3
+- p: 21
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: …………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………….
+  slots:
+  - {id: fakultatywnie_w_niniejszym_porozumieniu_mozna_za, span: [0, 111], type: text, hint: 'fakultatywnie, w niniejszym porozumieniu można zawrzeć
+      kwestię dotyczącą urlopu wypoczynkowego, w tym zobligować pracownika do skorzystania z urlopu wypoczynkowego we wskazanym okresie lub zamieścić
+      wzmiankę o obowiązku pracodawcy do wypłaty ekwiwalentu pracownikowi za niewykorzystany urlop wypoczynkowy'}
+  optional: true
+  condition: fakultatywnie, w niniejszym porozumieniu można zawrzeć kwestię dotyczącą urlopu wypoczynkowego, w tym zobligować pracownika do skorzystania
+    z urlopu wypoczynkowego we wskazanym okresie lub zamieścić wzmiankę o obowiązku pracodawcy do wypłaty ekwiwalentu pracownikowi za niewykorzystany
+    urlop wypoczynkowy
+- p: 22
+  role: hint
+  layout: {align: justify, size: 10.0, italic: true}
+  text: (fakultatywnie, w niniejszym porozumieniu można zawrzeć kwestię dotyczącą urlopu wypoczynkowego, w tym zobligować pracownika do skorzystania
+    z urlopu wypoczynkowego we wskazanym okresie lub zamieścić wzmiankę o obowiązku pracodawcy do wypłaty ekwiwalentu pracownikowi za niewykorzystany
+    urlop wypoczynkowy)
+  hint_for: 21
+  hint_kind: instruction
+- {p: 23, role: spacer}
+- p: 24
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+  text: § 4
+- p: 25
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Porozumienie sporządzono w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze Stron.
+- p: 26
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Wszelkie zmiany niniejszego porozumienia wymagają zachowania formy pisemnej pod rygorem nieważności.
+- {p: 27, role: spacer}
+- {p: 28, role: spacer}
+- p: 29
+  role: signature_line
+  layout: {align: justify, indent: {first: 360}, size: 10.0, tabs: 4}
+  text: "…………………….....                             \t\t\t\t        ……………………....."
+  slots:
+  - {id: p29_1, span: [0, 13], type: signature, context: ▢}
+  - {id: p29_2, span: [54, 67], type: signature, context: ▢}
+- p: 30
+  role: body
+  layout: {align: justify, indent: {first: 360}, size: 10.0, bold: true, tabs: 4}
+  text: "    Pracodawca                                            \t\t\t\t   Pracownik"
+- {p: 31, role: spacer}
+- {p: 32, role: spacer}
+- {p: 33, role: spacer}
+- {p: 34, role: spacer}

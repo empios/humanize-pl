@@ -70,7 +70,11 @@ Działa warstwowo:
   pracy, z doczytaniem brakujących pomiarów ze starszych przebiegów DOCX
   i odtworzeniem obu stron pomiaru z gotowego arkusza XLSX,
 - przepływ XLSX zapisuje raport JSON domyślnie, tak jak DOCX (wcześniej tylko
-  po podaniu `--report`, więc zwykły przebieg nie zostawiał czego odtworzyć).
+  po podaniu `--report`, więc zwykły przebieg nie zostawiał czego odtworzyć),
+- kontrola struktury oparta na realnych wzorach: 40 blueprintów ogólnych (lista
+  sekcji kategorii i ogólny dokument do wypełnienia) oraz 67 wzorów
+  precyzyjnych; dokument jest sprawdzany najpierw według blueprintu kategorii,
+  potem według wzoru, z którego powstał (zob. „Kontrola struktury”).
 
 ## Co nowego w 0.2.2
 
@@ -492,6 +496,48 @@ Najsilniejszym pojedynczym dyskryminatorem okazała się **burstiness**: CV
 długości zdań wynosi u ludzi 0,83, a w tekstach AI 0,45–0,53. Podobnie działa
 **kształt akapitu**: CV liczby zdań na akapit to u ludzi 0,92, w tekstach AI
 0,42 — teksty AI trzymają się stałego rozmiaru akapitu.
+
+## Kontrola struktury: blueprinty i wzory
+
+Dokument z rozpoznaną kategorią prawną jest sprawdzany w dwóch krokach.
+
+1. **Blueprint ogólny** (`humanize_pl/data/blueprints/<kategoria>.yaml`) — lista
+   sekcji, które dokument tej kategorii powinien zawierać (`required` blokuje
+   gotowość, `expected` tylko odnotowuje), z kontrolą numeracji i — tam, gdzie
+   realne wzory trzymają jedną kolejność — kolejności. Działa na każdym
+   dokumencie, także napisanym bez naszego wzoru. Blueprint zawiera też
+   `document`: ogólny dokument kategorii, w którym wypełnia się wyłącznie pola
+   (`slots`); treść, kolejność i układ zostają jak we wzorze.
+2. **Wzór precyzyjny** (`humanize_pl/data/templates/<kategoria>/*.yaml`) —
+   realne warianty, np. najem pokoju, oświadczenie o poddaniu się egzekucji przy
+   najmie okazjonalnym, porozumienie stron. Silnik szuka wzoru, z którego tekst
+   powstał: najpierw wspólne pary słów, potem porównanie blok po bloku w
+   kolejności wzoru (próg: 60% słów wzoru). Szuka we wszystkich kategoriach, bo
+   klasyfikator bywa mniej precyzyjny niż wzór.
+
+Gdy wzór pasuje, to on rozstrzyga: raport wskazuje brakujące fragmenty wzoru
+i niewypełnione pola, a lista sekcji blueprintu zostaje jako kontekst. Realny
+dokument danego rodzaju jest lepszą miarą niż ogólna lista — porozumienie stron
+nie ma uzasadnienia i nie jest to brak. Miejsce na podpis z kropkami nie jest
+niewypełnionym polem. Rozpoznaje je opis („(podpis Najemcy)”, sam rzeczownik,
+nie „data podpisania”) albo nazwy stron przy kropkach po ostatnim paragrafie
+(„Wynajmujący ⇥ Najemca”, „Z poważaniem”).
+
+Wzór to jeden blok na akapit: rola (`title`, `clause_heading`, `item`,
+`blank_line`, `hint`…), układ (wyrównanie, wcięcia, numeracja, pogrubienia),
+tekst dosłowny i pola z dokładnym zakresem znaków oraz opisem. Nowy wzór
+z własnego pliku DOCX:
+
+```bash
+python -m humanize_pl.layout_ir extract wzor.docx --category umowa_najmu -o wzor.yaml
+python -m humanize_pl.layout_ir check wzor.yaml
+```
+
+`check` porównuje plik YAML z DOCX leżącym obok (klucz `template`). Gotowy plik
+trafia do `humanize_pl/data/templates/<kategoria>/` z kluczem `label_pl`; pola
+z identyfikatorem `pNN_k` warto nazwać. Pliki DOCX, z których powstały
+dostarczone wzory, nie są częścią repozytorium.
+
 
 ## Sygnały strukturalne
 

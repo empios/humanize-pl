@@ -1,0 +1,390 @@
+template: Umowa sprzedaży przedsiębiorstwa (praktyki lekarskiej).docx
+category: umowa_sprzedazy
+label_pl: Umowa sprzedaży przedsiębiorstwa (praktyki lekarskiej)
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: UMOWA SPRZEDAŻY PRZEDSIĘBIORSTWA
+- {p: 1, role: spacer}
+- {p: 2, role: spacer}
+- p: 3
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 19, end: 38, italic: true}, {start: 53, end: 66, italic: true}]}
+  text: W dniu …………………………… (dzień/miesiąc/rok) w …..…………………… (miejscowość)
+  slots:
+  - {id: dzien_miesiac_rok, span: [7, 18], type: date, hint: dzień/miesiąc/rok}
+  - {id: miejscowosc, span: [41, 52], type: place, hint: miejscowość}
+  inline_hints:
+  - {span: [19, 38], text: dzień/miesiąc/rok}
+  - {span: [53, 66], text: miejscowość}
+- {p: 4, role: spacer}
+- p: 5
+  role: party_connector
+  layout: {align: justify, size: 10.0}
+  text: 'pomiędzy:'
+- p: 6
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: "…………………………. zamieszkałą w ………………………., legitymującą się dowodem osobistym seria \ni nr ………………………., prowadzącą działalność gospodarczą\
+    \ pod firmą ………………., pod adresem ………………………….., na podstawie wpisu do Centralnej Ewidencji i Informacji o Działalności Gospodarczej oraz wpisu\
+    \ do Rejestru Praktyk Zawodowych prowadzonego przez ………………. nr księgi rejestrowej ……………….., posiadającą numer PESEL …………………………., NIP ……………."
+  slots:
+  - {id: p6_1, span: [0, 11], type: text, context: ▢ zamieszkałą w}
+  - {id: p6_2, span: [26, 36], type: place, context: zamieszkałą w ▢ legitymującą się}
+  - {id: p6_3, span: [85, 95], type: text, context: osobistym seria i nr ▢ prowadzącą działalność}
+  - {id: p6_4, span: [142, 149], type: company, context: działalność gospodarczą pod firmą ▢ pod adresem}
+  - {id: p6_5, span: [163, 175], type: address, context: pod firmą pod adresem ▢ na podstawie}
+  - {id: p6_6, span: [322, 329], type: person, context: Praktyk Zawodowych prowadzonego przez ▢ nr księgi}
+  - {id: p6_7, span: [352, 360], type: text, context: przez nr księgi rejestrowej ▢ posiadającą numer}
+  - {id: p6_8, span: [386, 397], type: pesel, context: rejestrowej posiadającą numer PESEL ▢ NIP}
+  - {id: p6_9, span: [403, 409], type: id_number, context: posiadającą numer PESEL NIP ▢}
+- {p: 7, role: spacer}
+- p: 8
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 21, end: 31, bold: true}]}
+  text: zwaną w treści umowy Sprzedawcą
+  alias: Sprzedawcą
+- {p: 9, role: spacer}
+- p: 10
+  role: party_connector
+  layout: {align: justify, size: 10.0}
+  text: a
+- {p: 11, role: spacer}
+- p: 12
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: "…………………………. zamieszkałym w ………………………., legitymującym się dowodem osobistym seria \ni nr ………………………., prowadzącym działalność gospodarczą\
+    \ pod firmą ………………., pod adresem ………………………….., na podstawie wpisu do Centralnej Ewidencji i Informacji o Działalności Gospodarczej oraz wpisu\
+    \ do Rejestru Praktyk Zawodowych prowadzonego przez ………………. nr księgi rejestrowej ………………., posiadającym numer PESEL …………………………., NIP ……………."
+  slots:
+  - {id: p12_1, span: [0, 11], type: text, context: ▢ zamieszkałym w}
+  - {id: p12_2, span: [27, 37], type: place, context: zamieszkałym w ▢ legitymującym się}
+  - {id: p12_3, span: [87, 97], type: text, context: osobistym seria i nr ▢ prowadzącym działalność}
+  - {id: p12_4, span: [145, 152], type: company, context: działalność gospodarczą pod firmą ▢ pod adresem}
+  - {id: p12_5, span: [166, 178], type: address, context: pod firmą pod adresem ▢ na podstawie}
+  - {id: p12_6, span: [325, 332], type: person, context: Praktyk Zawodowych prowadzonego przez ▢ nr księgi}
+  - {id: p12_7, span: [355, 362], type: text, context: przez nr księgi rejestrowej ▢ posiadającym numer}
+  - {id: p12_8, span: [389, 400], type: pesel, context: rejestrowej posiadającym numer PESEL ▢ NIP}
+  - {id: p12_9, span: [406, 412], type: id_number, context: posiadającym numer PESEL NIP ▢}
+- p: 13
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 22, end: 32, bold: true}]}
+  text: 'zwanym w treści umowy Kupującym, '
+  alias: Kupującym
+- {p: 14, role: spacer}
+- p: 15
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 31, end: 40, bold: true}]}
+  text: 'zwanymi łącznie w treści umowy Stronami, '
+  alias: Stronami
+- {p: 16, role: spacer}
+- p: 17
+  role: field_header
+  layout: {align: justify, size: 10.0}
+  text: 'została zawarta Umowa następującej treści:'
+- {p: 18, role: spacer}
+- p: 19
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+  text: § 1
+- {p: 20, role: spacer}
+- p: 21
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'Przedmiotem Umowy jest sprzedaż przedsiębiorstwa prowadzonego w ramach jednoosobowej działalności gospodarczej (indywidualnej praktyki
+    lekarskiej) pod firmą  ………………………. (dalej jako Przedsiębiorstwo).  '
+  slots:
+  - {id: dalej_jako_przedsiebiorstwo, span: [158, 168], type: company, hint: dalej jako Przedsiębiorstwo}
+  inline_hints:
+  - {span: [169, 198], text: dalej jako Przedsiębiorstwo}
+- p: 22
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: W skład Przedsiębiorstwa wchodzi zespół składników materialnych i niematerialnych, w tym rzeczy oraz prawa, za pomocą których Sprzedawca
+    prowadzi działalność leczniczą.
+- p: 23
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: 'Sprzedawca oświadcza ponadto, że opisane w ust. 1 przedsiębiorstwo jest wolne od jakichkolwiek wad prawnych, w tym wszelkich praw osób
+    trzecich i jakichkolwiek innych obciążeń
+
+    i zabezpieczeń.'
+- {p: 24, role: spacer}
+- p: 25
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+  text: § 2
+- {p: 26, role: spacer}
+- p: 27
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'Sprzedawca oświadcza, że przenosi na Kupującego własność Przedsiębiorstwa wskazanego w § 1 Umowy, a Kupujący nabywa to Przedsiębiorstwo
+    i zobowiązuje się do zapłaty umówionej ceny. Przedsiębiorstwo obejmuje:'
+- p: 28
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+  text: ……………………………………………….
+  slots:
+  - {id: p28_1, span: [0, 19], type: text, context: ▢}
+- p: 29
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+  text: ……………………………………………….
+  slots:
+  - {id: p29_1, span: [0, 19], type: text, context: ▢}
+- p: 30
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}}
+  text: ……………………………………………….
+  slots:
+  - {id: p30_1, span: [0, 19], type: text, context: ▢}
+- p: 31
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Szczegółowy spis praw majątkowych i niemajątkowych, wchodzących w skład Przedsiębiorstwa stanowi Załącznik nr 1 do niniejszej Umowy.
+- p: 32
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Kupujący zobowiązuje się do zawarcia z …………………  umowy najmu lokalu wykorzystywanego w ramach działalności przedsiębiorstwa, którego prawo
+    własności nie przysługuje Sprzedawcy, znajdującego się w ………………………………………  od dnia …………… oraz zobowiązuje się ponieść koszty związane z zawarciem
+    umowy najmu. Wynajmujący został poinformowany o zmianie podmiotu prowadzącego dotychczasową działalność i wyraził zgodę na zmianę po stronie
+    podmiotu najmującego lokal.
+  slots:
+  - {id: p32_1, span: [39, 46], type: text, context: się do zawarcia z ▢ umowy najmu}
+  - {id: p32_2, span: [195, 210], type: place, context: Sprzedawcy znajdującego się w ▢ od dnia}
+  - {id: p32_3, span: [220, 225], type: date, context: się w od dnia ▢ oraz zobowiązuje}
+- p: 33
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: Kupujący przejmuje od Sprzedającego również dokumentację medyczną pacjentów w trybie art. 30a ust. 2 ustawy o prawach pacjenta i Rzeczniku
+    Praw Pacjenta.
+- p: 34
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+  text: 'Sprzedawca oświadcza, że do dnia zawarcia niniejszej Umowy nie zbył Przedsiębiorstwa ani żadnego z jej składników na rzecz innego podmiotu
+    niż Kupujący. '
+- {p: 35, role: spacer}
+- p: 36
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+  text: § 3
+- {p: 37, role: spacer}
+- p: 38
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: Kupujący oświadcza, że dokonał oględzin przedsiębiorstwa określonego w § 1 Umowy, a także oświadcza, że nie wnosi jakichkolwiek zastrzeżeń
+    zarówno do jego ogólnego stanu jak i właściwości poszczególnych jego składników.
+- {p: 39, role: spacer}
+- p: 40
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+  text: § 4
+- {p: 41, role: spacer}
+- p: 42
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'Sprzedawca sprzedaje, a Kupujący nabywa przedsiębiorstwo opisane w § 1 Umowy za cenę ......................... zł (słownie: ………………………………….
+    zł). '
+  slots:
+  - {id: p42_1, span: [85, 110], type: text, context: 1 Umowy za cenę ▢ zł}
+  - {id: p42_2, span: [124, 138], type: amount, context: za cenę zł słownie ▢ zł}
+- p: 43
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Zapłata ceny nastąpi w dniu podpisania niniejszej Umowy na rachunek bankowy Sprzedawcy prowadzony w banku ………………………… o numerze ………………………………….
+    .
+  slots:
+  - {id: p43_1, span: [106, 116], type: text, context: Sprzedawcy prowadzony w banku ▢ o numerze}
+  - {id: p43_2, span: [127, 141], type: text, context: w banku o numerze ▢}
+- p: 44
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Za datę zapłaty uważa się dzień zaksięgowania płatności na rachunku bankowym Sprzedawcy
+- p: 45
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: W razie braku zapłaty ceny sprzedaży określonej w § 3 ust. 1 Umowy, Sprzedawca może bez wyznaczenia terminu dodatkowego od Umowy odstąpić.
+    Prawo do odstąpienia Sprzedawca może wykonać w terminie 3 miesięcy od dnia spełnienia się przesłanek do odstąpienia.
+- p: 46
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+  text: Kupujący zapłaci Sprzedawcy odsetki za opóźnienie w transakcjach handlowych z tytułu opóźnienia w zapłacie ceny sprzedaży.
+- {p: 47, role: spacer}
+- p: 48
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+  text: § 5
+- {p: 49, role: spacer}
+- p: 50
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Wydanie Przedsiębiorstwa nastąpi w dniu .........................., pod warunkiem otrzymania przez Sprzedawcę całości ceny określonej
+    w § 4 ust. 1 Umowy.
+  slots:
+  - {id: p50_1, span: [40, 66], type: date, context: Przedsiębiorstwa nastąpi w dniu ▢ pod warunkiem}
+- p: 51
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Od momentu wydania na Kupującym ciąży niebezpieczeństwo utraty lub uszkodzenia przedmiotu sprzedaży.
+- p: 52
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Wraz z wydaniem przedmiotu umowy Sprzedawca przekaże Kupującemu wszelkie posiadane przez niego rzeczy służące do korzystania z Przedsiębiorstwa.
+- p: 53
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: 'Sprzedawca wyda także Kupującemu pełną dokumentację Przedsiębiorstwa. '
+- {p: 54, role: spacer}
+- p: 55
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 6, kind: paragraph, src: manual, level: 0}}
+  text: § 6
+- {p: 56, role: spacer}
+- p: 57
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Strony wyłączają uprawnienia Kupującego z tytułu rękojmi za wady.
+- p: 58
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Obowiązki Sprzedawcy wynikające z bieżących faktur zostaną przeniesione na Kupującego, jeżeli dany kontrahent Sprzedającego wyrazi zgodę
+    na ich przeniesienie w terminie 14 dni od otrzymania zawiadomienia o sprzedaży przedsiębiorstwa.
+- p: 59
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: W razie nieuzyskania wyraźnej zgody kontrahenta, Kupujący dokona spłaty zobowiązań Sprzedawcy istniejących na dzień wydania przedsiębiorstwa
+    wskazany w § 5 ust. 1, które zostały ujawnione przez Sprzedającego w Załączniku nr 1 do Umowy według stanu na dzień wydania przedsiębiorstwa
+    wskazany w § 5 ust. 1 pod warunkiem, że w dniu wydania przedsiębiorstwa Sprzedający przekaże Kupującemu faktury dla tych zobowiązań.
+- p: 60
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: 'W sytuacji, w której jakakolwiek osoba trzecia zgłosi wobec Kupującego roszczenie, które będzie skutkiem okoliczności zaistniałych do
+    dnia zawarcia niniejszej Umowy, Strony zgodnie postanawiają, iż:  '
+- p: 61
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 4), kind: decimal, src: auto, level: 0}}
+  text: niezwłocznie po uzyskaniu informacji, że przeciwko Kupującemu skierowane zostało roszczenie osoby trzeciej, ale nie później jednak niż
+    w ciągu 5 dni roboczych – Kupujący zawiadomi Sprzedawcę o tym fakcie w formie co najmniej dokumentowej oraz
+- p: 62
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 5), kind: decimal, src: auto, level: 0}}
+  text: Strony będą współpracować ze sobą w dobrej wierze w celu umożliwienia sobie nawzajem skutecznej obrony przed roszczeniem osoby trzeciej.
+- {p: 63, role: spacer}
+- p: 64
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 7, kind: paragraph, src: manual, level: 0}}
+  text: § 7
+- {p: 65, role: spacer}
+- p: 66
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'Strony zobowiązują się do zachowania w poufności treść Umowy oraz informacje poufne dotyczące drugiej Strony umowy pozyskane w związku
+    z jej zawarciem przez okres 5 (pięciu) lat od dnia zawarcia niniejszej umowy. '
+- p: 67
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Za informacje poufne uważa się w szczególności wszelkie informacje o charakterze niepublicznym, tj. nieujawnione do wiadomości publicznej:'
+- p: 68
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+  text: informacje finansowe na temat podmiotu i pacjentów, w tym dane o płatnościach, faktury, historia opłat;
+- p: 69
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+  text: dane biznesowe, w tym zasady organizacji i funkcjonowania, regulaminy, zasady bezpieczeństwa, polityki ochrony danych osobowych, dane
+    kontrahentów i dostawców;
+- p: 70
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}}
+  text: dane techniczne, w tym dostęp do systemów komputerowych, loginy i hasła, procedury bezpieczeństwa, stosowane rozwiązania organizacyjne.
+- p: 71
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: 'Powyższy obowiązek nie dotyczy informacji:'
+- p: 72
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: które są lub stają się publicznie znane lub dostępne w sposób inny niż w wyniku naruszenia zobowiązania do zachowania poufności;
+- p: 73
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+  text: na których ujawnienie Strona otrzymała pisemną zgodę drugiej strony pod rygorem nieważności.
+- p: 74
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}}
+  text: muszą być ujawnione z mocy prawa.
+- p: 75
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '7.', kind: decimal, src: auto, level: 0}}
+  text: 'W przypadku naruszenia przez którąkolwiek ze Stron obowiązku zachowania poufności określonego w niniejszej umowie, drugiej Stronie należy
+    się kara umowna w wysokości ……………………. zł (słownie: ……………… złotych) za każde naruszenie. '
+  slots:
+  - {id: p75_1, span: [166, 175], type: amount, context: kara umowna w wysokości ▢ zł za}
+  - {id: p75_2, span: [189, 195], type: amount, context: w wysokości zł słownie ▢ złotych za}
+- p: 76
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '8.', kind: decimal, src: auto, level: 0}}
+  text: Strony zastrzegają możliwość dochodzenia odszkodowania przewyższającego wysokość kary umownej.
+- {p: 77, role: spacer}
+- p: 78
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 8, kind: paragraph, src: manual, level: 0}}
+  text: § 8
+- {p: 79, role: spacer}
+- p: 80
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'Wszelkie zmiany niniejszej Umowy pod rygorem nieważności wymagają formy pisemnej
+
+    z podpisami notarialnie poświadczonymi.'
+- p: 81
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: W sprawach nieuregulowanych zastosowanie znajdą przepisy ustawy z dnia 23 kwietnia 1964 r. – Kodeks cywilny.
+- p: 82
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Dla sporów wynikłych na tle niniejszej Umowy właściwy będzie Sąd właściwy dla miejsca zamieszkania Sprzedawcy.
+- p: 83
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: Umowę sporządzono w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze Stron.
+- {p: 84, role: spacer}
+- {p: 85, role: spacer}
+- p: 86
+  role: blank_line
+  layout: {align: center, size: 10.0}
+  text: '...........................................................                              ...........................................................'
+  slots:
+  - {id: p86_1, span: [0, 59], type: signature, context: ▢}
+  - {id: p86_2, span: [89, 148], type: signature, context: ▢}
+- p: 87
+  role: body
+  layout: {align: center, size: 10.0, bold: true}
+  text: KUPUJĄCY                                                                         SPRZEDAWCA
+- {p: 88, role: spacer}
+- {p: 89, role: spacer}
+- {p: 90, role: spacer}
+- p: 91
+  role: field_header
+  layout: {align: justify, size: 10.0, bold: true}
+  text: 'Załączniki:'
+- p: 92
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+  text: Załącznik nr 1 – Spis praw majątkowych i niemajątkowych wchodzących w skład Przedsiębiorstwa;
+- p: 93
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+  text: Załącznik nr 2 – aktualny wydruk z CEIDG Sprzedawcy;
+- p: 94
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}}
+  text: Załącznik nr 3 – aktualny wydruk z CEIDG Kupującego.
+- {p: 95, role: spacer}
+- {p: 96, role: spacer}
+- {p: 97, role: spacer}
+- {p: 98, role: spacer}

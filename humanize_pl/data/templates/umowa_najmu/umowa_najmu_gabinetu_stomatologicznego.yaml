@@ -1,0 +1,364 @@
+template: umowa najmu gabinetu stomatologicznego.docx
+category: umowa_najmu
+label_pl: Umowa najmu gabinetu stomatologicznego
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: UMOWA NAJMU LOKALU UŻYTKOWEGO - GABINETU STOMATOLOGICZNEGO
+- {p: 1, role: spacer}
+- {p: 2, role: spacer}
+- p: 3
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 50, end: 63, italic: true}]}
+  text: 'zawarta dnia ......................... w …………………. (miejscowość) pomiędzy:'
+  slots:
+  - {id: p3_1, span: [13, 38], type: date, context: zawarta dnia ▢ w pomiędzy}
+  - {id: miejscowosc, span: [41, 49], type: place, hint: miejscowość}
+  inline_hints:
+  - {span: [50, 63], text: miejscowość}
+- {p: 4, role: spacer}
+- p: 5
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: …………………………………………………………………………………………………...........……………………………………
+  slots:
+  - {id: p5_1, span: [0, 62], type: text, context: ▢}
+- p: 6
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: …………………………………………………………………………………………………...........…………………………………………………………………………………………...............................................................................................
+  slots:
+  - {id: dane_wynajmujacego, span: [0, 177], type: text, hint: dane wynajmującego}
+- p: 7
+  role: hint
+  layout: {align: center, size: 10.0, italic: true}
+  text: (dane wynajmującego)
+  hint_for: 6
+  hint_kind: label
+- p: 8
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 13, end: 25, bold: true}]}
+  text: zwanym dalej Wynajmującym,
+  alias: Wynajmującym
+- {p: 9, role: spacer}
+- p: 10
+  role: party_connector
+  layout: {align: justify, size: 10.0}
+  text: a
+- {p: 11, role: spacer}
+- p: 12
+  role: blank_line
+  layout: {align: center, size: 10.0}
+  text: …………………………………………………………………………………………………...........……………………………………
+  slots:
+  - {id: p12_1, span: [0, 62], type: text, context: ▢}
+- p: 13
+  role: blank_line
+  layout: {align: center, size: 10.0}
+  text: …………………………………………………………………………………………………...........……………………………………
+  slots:
+  - {id: p13_1, span: [0, 62], type: text, context: ▢}
+- p: 14
+  role: body
+  layout: {align: center, size: 10.0, spans: [{start: 63, end: 77, italic: true}]}
+  text: …………………………………………………………………………………………………...........…………………………………… (dane najemcy)
+  slots:
+  - {id: dane_najemcy, span: [0, 62], type: text, hint: dane najemcy}
+  inline_hints:
+  - {span: [63, 77], text: dane najemcy}
+- p: 15
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 13, end: 20, bold: true}]}
+  text: zwanym dalej Najemcą,
+  alias: Najemcą
+- p: 16
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 22, end: 30, bold: true}]}
+  text: zwanymi dalej łącznie Stronami.
+  alias: Stronami
+- {p: 17, role: spacer}
+- p: 18
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+  text: § 1
+- p: 19
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 68, end: 151, italic: true},
+      {start: 246, end: 258, italic: true}]}
+  text: Wynajmujący oddaje w najem Najemcy lokal (gabinet stomatologiczny) (jeżeli wynajmowana jest tylko część lokalu np. jeden pokój opisać,
+    który to z pokoi) wyposażony zgodnie z przeznaczeniem, o powierzchni …….………, znajdujący się w ……………………………………. (adres lokalu), na potrzeby
+    prowadzenia działalności leczniczej przez Najemcę.
+  slots:
+  - {id: p19_1, span: [204, 210], type: text, context: z przeznaczeniem o powierzchni ▢ znajdujący się}
+  - {id: adres_lokalu, span: [229, 244], type: address, hint: adres lokalu}
+  inline_hints:
+  - {span: [245, 259], text: adres lokalu}
+- p: 20
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Wynajmujący oświadcza, że jest jedynym właścicielem przedmiotu najmu.
+- p: 21
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: 'Wynajmujący umożliwi Najemcy prawidłowe korzystanie z przedmiotu najmu, a w szczególności nieodpłatne korzystanie z energii elektrycznej,
+    bieżącej wody, telefonów, centralnego ogrzewania, wywóz nieczystości stałych, sterylizacja narzędzi oraz sprzątania pomieszczeń. '
+- p: 22
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 99, end: 260, italic: true}]}
+  text: Wraz z lokalem oddane zostaną przedmioty będące na wyposażeniu lokalu zgodnie z Załącznikiem nr 1 (zasadnym byłoby stworzenie załącznika,
+    w którym zostałyby wymienione wszelkie przedmioty znajdujące się w lokalu, które również będą wykorzystywane przez Najemcę) stanowiącym integralną
+    część umowy.
+- p: 23
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+  text: Wynajmujący oświadcza, że gabinet oraz jego wyposażenie spełnia wymogi ogólnobudowlane, sanitarne i instalacyjne określone przepisami
+    rozporządzenia Ministra Zdrowia z dnia z dnia 26 marca 2019 r. w sprawie szczegółowych wymagań, jakim powinny odpowiadać pomieszczenia i urządzenia
+    podmiotu wykonującego działalność leczniczą (t.j. Dz.U.2022.402).
+- {p: 24, role: spacer}
+- p: 25
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+  text: § 2
+- p: 26
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 238, end: 475, italic: true}]}
+  text: "Najemca będzie mógł świadczyć usługi w wymienionym wyżej lokalu w dniach …………. w godzinach od………………... lub zapis alternatywny:  Najemca\
+    \ będzie mógł świadczyć usługi \nw wymienionym wyżej lokalu bez ograniczeń czasowych [24h/365 dni w roku] (wskazanie, kiedy Najemca będzie\
+    \ świadczył usługi w wynajmowanym lokalu, można tutaj wpisać, inny przedział czasowy. Wskazać, czy korzystanie z lokalu będzie się odbywało\
+    \ jednocześnie w tych samych godzinach przez właściciela i najemcę). "
+  slots:
+  - {id: p26_1, span: [73, 78], type: text, context: wyżej lokalu w dniach ▢ w godzinach}
+  - {id: p26_2, span: [93, 102], type: date, context: dniach w godzinach od ▢ lub zapis}
+- p: 27
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Wskazany w ust. 1 przedział czasowy jest jedynym przedziałem czasowym, w którym Najemca może korzystać z lokalu. [zapis alternatywny]
+- p: 28
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Faktyczne rozliczenie godzin, w których Najemca korzysta z lokalu będzie następowało na koniec każdego miesiąca. [zapis alternatywny]
+- {p: 29, role: spacer}
+- p: 30
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+  text: § 3
+- p: 31
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 75, end: 103, italic: true}]}
+  text: 'Najemca płacić będzie Wynajmującemu czynsz najmu w wysokości ………………………….. (tutaj należy wpisać stawkę) miesięcznie lub zapis alternatywny:
+    za każdą godzinę, w której Najemca faktycznie korzystał z lokalu. Podstawą do ustalenia wymiaru godzin jest rozliczenie, o którym mowa w §
+    2 ust. 3 niniejszej umowy.'
+  slots:
+  - {id: tutaj_nalezy_wpisac_stawke, span: [61, 73], type: amount, hint: tutaj należy wpisać stawkę}
+  inline_hints:
+  - {span: [74, 102], text: tutaj należy wpisać stawkę}
+- p: 32
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 134, end: 150, italic: true}]}
+  text: Czynsz płatny będzie w terminie do 14 dni od daty wystawienia faktury, na rachunek bankowy Wynajmującego o numerze ……………………………….………..
+    (numer rachunku).
+  slots:
+  - {id: numer_rachunku, span: [115, 133], type: text, hint: numer rachunku}
+  inline_hints:
+  - {span: [134, 150], text: numer rachunku}
+- p: 33
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Za dzień zapłaty należy uznać datę zaksięgowania środków pieniężnych na rachunku bankowym Wynajmującego.
+- {p: 34, role: spacer}
+- p: 35
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+  text: § 4
+- p: 36
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: 'Pisemnej zgody Wynajmującego wymagają następujące czynności Najemcy: podnajem oraz oddanie lokalu do bezpłatnego używania osobom trzecim,
+    wszystkie zmiany i ulepszenia przedmiotu najmu. '
+- {p: 37, role: spacer}
+- p: 38
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+  text: § 5
+- p: 39
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: Wynajmujący będzie dokonywał konserwacji lokalu oraz napraw bieżących.
+- {p: 40, role: spacer}
+- p: 41
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 6, kind: paragraph, src: manual, level: 0}}
+  text: § 6
+- p: 42
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'Umowa zostaje zawarta na czas nieokreślony/określony, czyli od dnia ………….. do dnia ………….. (jeżeli umowa będzie zawarta na czas określony
+    należy podać od kiedy do kiedy, bądź np. wskazać, iż umowa będzie zawarta na okres 6 miesięcy od dnia zawarcia niniejszej umowy). '
+  slots:
+  - {id: p42_1, span: [68, 74], type: date, context: określony czyli od dnia ▢ do dnia}
+  - {id: jezeli_umowa_bedzie_zawarta_na_czas_okreslony_na, span: [83, 89], type: date, hint: 'jeżeli umowa będzie zawarta na czas określony należy
+      podać od kiedy do kiedy, bądź np. wskazać, iż umowa będzie zawarta na okres 6 miesięcy od dnia zawarcia niniejszej umowy'}
+  inline_hints:
+  - {span: [90, 265], text: 'jeżeli umowa będzie zawarta na czas określony należy podać od kiedy do kiedy, bądź np. wskazać, iż umowa będzie zawarta
+      na okres 6 miesięcy od dnia zawarcia niniejszej umowy'}
+  optional: true
+  condition: jeżeli umowa będzie zawarta na czas określony należy podać od kiedy do kiedy, bądź np. wskazać, iż umowa będzie zawarta na okres
+    6 miesięcy od dnia zawarcia niniejszej umowy
+- p: 43
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Po okresie, na który zawarta jest umowa, Najemca opuści lokal oraz opróżni go na swój koszt z własnych rzeczy tam wniesionych. '
+- p: 44
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Najemca zda Wynajmującemu również przedmioty, o których mowa w Załączniku nr 1 do niniejszej umowy w stanie niepogorszonym, z uwzględnieniem
+    ich zwykłego zużycia.
+- {p: 45, role: spacer}
+- p: 46
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 7, kind: paragraph, src: manual, level: 0}}
+  text: § 7
+- p: 47
+  role: hint
+  layout: {align: justify, size: 10.0, bold: true, italic: true}
+  text: (zapis dotyczący wyłącznie umowy zawartej na czas nieokreślony)
+  hint_for: 46
+  hint_kind: label
+- p: 48
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: Każda ze stron może umowę wypowiedzieć z zachowaniem 3-miesięcznego okresu wypowiedzenia ze skutkiem na koniec miesiąca kalendarzowego.
+- {p: 49, role: spacer}
+- p: 50
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 8, kind: paragraph, src: manual, level: 0}}
+  text: § 8
+- p: 51
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 127, end: 147, italic: true},
+      {start: 149, end: 178, italic: true}, {start: 491, end: 527, italic: true}]}
+  text: "Wynajmujący może rozwiązać umowę bez zachowania terminów wypowiedzenia, jeżeli Najemca zalega z należnym czynszem za ……………….. (Należy\
+    \ wskazać okres, np. 2 pełne okresy płatności.). Przed rozwiązaniem umowy Wynajmujący powinien uprzedzić Najemcę na piśmie, udzielając mu\
+    \ dodatkowego terminu miesięcznego do zapłaty zaległego czynszu. \nW przypadku zaistnienia okoliczności, o których mowa wyżej, Najemca obowiązany\
+    \ jest rozliczyć się z Wynajmującym i opuścić przedmiot najmu w terminie …….……… (Należy wskazać termin, np. 7 dni.)."
+  slots:
+  - {id: nalezy_wskazac_okres_np_2_pelne_okresy_platnosci, span: [117, 125], type: text, hint: 'Należy wskazać okres, np. 2 pełne okresy płatności.'}
+  - {id: nalezy_wskazac_termin_np_7_dni, span: [484, 490], type: text, hint: 'Należy wskazać termin, np. 7 dni.'}
+  inline_hints:
+  - {span: [126, 179], text: 'Należy wskazać okres, np. 2 pełne okresy płatności.'}
+  - {span: [491, 526], text: 'Należy wskazać termin, np. 7 dni.'}
+- p: 52
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Wynajmujący może wypowiedzieć Najemcy, bez zachowania terminów wypowiedzenia, umowę również wtedy, gdy Najemca przez swoje niewłaściwe
+    zachowanie czyni uciążliwym korzystanie z innych lokali znajdujących się w jego sąsiedztwie.
+- p: 53
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Wynajmujący może też wypowiedzieć umowę bez zachowania terminów wypowiedzenia, jeżeli stwierdzi, że Najemca używa przedmiotów wymienionych
+    w Załączniku nr 1 do niniejszej umowy niezgodnie z ich przeznaczeniem, bądź też dewastuje je.
+- {p: 54, role: spacer}
+- p: 55
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 9, kind: paragraph, src: manual, level: 0}}
+  text: § 9
+- p: 56
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: W przypadku opóźnienia Najemcy w uiszczeniu czynszu najmu lub innych opłat określonych w niniejszej umowie, Wynajmujący ma prawo naliczyć
+    odsetki ustawowe za opóźnienie oraz karę umowną w wysokości ___% miesięcznego czynszu za każdy rozpoczęty tydzień zwłoki.
+- p: 57
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: W razie rozwiązania umowy z przyczyn leżących po stronie Najemcy przed upływem okresu najmu, Najemca zobowiązuje się do zapłaty kary umownej
+    w wysokości równowartości ___-krotności miesięcznego czynszu, chyba że wypowiedzenie nastąpiło zgodnie z warunkami określonymi w umowie.
+- p: 58
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: W przypadku naruszenia przez Najemcę postanowień dotyczących użytkowania lokalu, w tym jego podnajmu bez zgody Wynajmującego, Najemca
+    zapłaci karę umowną w wysokości ___ zł za każde naruszenie.
+- p: 59
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: Zapłata kary umownej nie wyłącza prawa Wynajmującego do dochodzenia odszkodowania przewyższającego jej wysokość, jeżeli poniesiona szkoda
+    będzie większa.
+- {p: 60, role: spacer}
+- p: 61
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 10, kind: paragraph, src: manual, level: 0}}
+  text: § 10
+- p: 62
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: Zmiany umowy będą dokonywane w formie pisemnej pod rygorem nieważności.
+- {p: 63, role: spacer}
+- p: 64
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 11, kind: paragraph, src: manual, level: 0}}
+  text: § 11
+- p: 65
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: W sprawach nieuregulowanych w niniejszej umowie będą miały zastosowanie przepisy ustawy z dnia 23 kwietnia 1964 r.  - Kodeks cywilny (t.j.
+    Dz.U.2025.1071).
+- {p: 66, role: spacer}
+- p: 67
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 12, kind: paragraph, src: manual, level: 0}}
+  text: § 12
+- p: 68
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: Ewentualne spory powstałe na tle niniejszej umowy będą rozstrzygane przez sąd powszechny właściwy ze względu na miejsce zamieszkania Wynajmującego.
+- {p: 69, role: spacer}
+- p: 70
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 13, kind: paragraph, src: manual, level: 0}}
+  text: § 13
+- p: 71
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: Umowa zostaje sporządzona w dwóch jednakowych egzemplarzach, po jednym dla każdej ze stron.
+- {p: 72, role: spacer}
+- {p: 73, role: spacer}
+- {p: 74, role: spacer}
+- p: 75
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: '...........................................................                      ...........................................................'
+  slots:
+  - {id: p75_1, span: [0, 59], type: signature, context: ▢}
+  - {id: p75_2, span: [81, 140], type: signature, context: ▢}
+- {p: 76, role: spacer}
+- p: 77
+  role: body
+  layout: {align: justify, size: 10.0, bold: true}
+  text: '               Wynajmujący                                                                      Najemca '
+- {p: 78, role: spacer}
+- {p: 79, role: spacer}
+- p: 80
+  role: body
+  layout: {align: justify, size: 10.0, bold: true}
+  text: Załączniki
+- p: 81
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+  text: Wyposażenie gabinetu.
+- p: 82
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}}
+  text: …………………………………………….
+  slots:
+  - {id: p82_1, span: [0, 18], type: text, context: ▢}
+- p: 83
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '7.', kind: decimal, src: auto, level: 0}}
+  text: …………………………………………….
+  slots:
+  - {id: p83_1, span: [0, 18], type: text, context: ▢}
+- {p: 84, role: spacer}
+- {p: 85, role: spacer}
+- {p: 86, role: spacer}

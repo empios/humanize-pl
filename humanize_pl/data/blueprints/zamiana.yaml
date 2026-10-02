@@ -26,3 +26,247 @@ sections:
   severity: required
   matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
       formy pisemnej, wymagają zachowania formy pisemnej]
+
+# Dokument ogólny: realny wzór tej kategorii. Przy użyciu wypełnia się wyłącznie
+# pola (`slots`); treść, kolejność i układ zostają jak we wzorze.
+document:
+  template: Umowa zamiany rzeczy ruchomej.docx
+  label_pl: Umowa zamiany rzeczy ruchomej
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+  blocks:
+  - p: 0
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: UMOWA ZAMIANY
+  - p: 1
+    role: body
+    layout: {size: 10.0}
+    text: 'zawarta dnia ................... r. w ................... pomiędzy:'
+    slots:
+    - {id: p1_1, span: [13, 32], type: date, context: zawarta dnia ▢ r. w}
+    - {id: p1_2, span: [38, 57], type: place, context: zawarta dnia r. w ▢ pomiędzy}
+  - p: 2
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 33, end: 70, italic: true}, {start: 164, end: 192, italic: true}, {start: 366, end: 408,
+          italic: true}, {start: 423, end: 441, bold: true}]}
+    text: '................................ (imię i nazwisko Zamieniającego nr 1), PESEL ..................., zamieszkałym w ...................,
+      przy ul. ................... (adres miejsca zamieszkania), legitymującym się dowodem osobistym seria i numer ...............................................
+      wydanym przez ........................................................... (nazwa organu, który wydał dowód osobisty), zwanym dalej Zamieniającym
+      nr 1'
+    slots:
+    - {id: imie_i_nazwisko_zamieniajacego_nr_1, span: [0, 32], type: person, hint: imię i nazwisko Zamieniającego nr 1}
+    - {id: p2_2, span: [78, 97], type: pesel, context: PESEL ▢ zamieszkałym w}
+    - {id: p2_3, span: [114, 133], type: place, context: PESEL zamieszkałym w ▢ przy ul.}
+    - {id: adres_miejsca_zamieszkania, span: [144, 163], type: address, hint: adres miejsca zamieszkania}
+    - {id: p2_5, span: [244, 291], type: text, context: osobistym seria i numer ▢ wydanym przez}
+    - {id: nazwa_organu_ktory_wydal_dowod_osobisty, span: [306, 365], type: person, hint: 'nazwa organu, który wydał dowód osobisty'}
+    inline_hints:
+    - {span: [33, 70], text: imię i nazwisko Zamieniającego nr 1}
+    - {span: [164, 192], text: adres miejsca zamieszkania}
+    - {span: [366, 408], text: 'nazwa organu, który wydał dowód osobisty'}
+    alias: Zamieniającym nr 1
+  - p: 3
+    role: party_connector
+    layout: {align: justify, size: 10.0}
+    text: a
+  - p: 4
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 33, end: 70, italic: true}, {start: 164, end: 192, italic: true}, {start: 366, end: 408,
+          italic: true}, {start: 423, end: 441, bold: true}]}
+    text: '................................ (imię i nazwisko Zamieniającego nr 2), PESEL ..................., zamieszkałym w ...................,
+      przy ul. ................... (adres miejsca zamieszkania), legitymującym się dowodem osobistym seria i numer ...............................................
+      wydanym przez ........................................................... (nazwa organu, który wydał dowód osobisty), zwanym dalej Zamieniającym
+      nr 2'
+    slots:
+    - {id: imie_i_nazwisko_zamieniajacego_nr_2, span: [0, 32], type: person, hint: imię i nazwisko Zamieniającego nr 2}
+    - {id: p4_2, span: [78, 97], type: pesel, context: PESEL ▢ zamieszkałym w}
+    - {id: p4_3, span: [114, 133], type: place, context: PESEL zamieszkałym w ▢ przy ul.}
+    - {id: adres_miejsca_zamieszkania_2, span: [144, 163], type: address, hint: adres miejsca zamieszkania}
+    - {id: p4_5, span: [244, 291], type: text, context: osobistym seria i numer ▢ wydanym przez}
+    - {id: nazwa_organu_ktory_wydal_dowod_osobisty_2, span: [306, 365], type: person, hint: 'nazwa organu, który wydał dowód osobisty'}
+    inline_hints:
+    - {span: [33, 70], text: imię i nazwisko Zamieniającego nr 2}
+    - {span: [164, 192], text: adres miejsca zamieszkania}
+    - {span: [366, 408], text: 'nazwa organu, który wydał dowód osobisty'}
+    alias: Zamieniającym nr 2
+  - {p: 5, role: spacer}
+  - p: 6
+    role: field_header
+    layout: {align: justify, size: 10.0}
+    text: 'o następującej treści:'
+  - p: 7
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+    text: § 1
+  - p: 8
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 91, end: 104, italic: true}]}
+    text: 'Zamieniający nr 1 oświadcza, że jest właścicielem rzeczy ruchomej, tj. ................... (opis rzeczy) o wartości ...................
+      zł (słownie: ..................................................... złotych), dalej jako "Przedmiot zamiany nr 1".'
+    slots:
+    - {id: opis_rzeczy, span: [71, 90], type: text, hint: opis rzeczy}
+    - {id: p8_2, span: [116, 135], type: text, context: ruchomej tj. o wartości ▢ zł dalej}
+    - {id: p8_3, span: [149, 202], type: amount, context: o wartości zł słownie ▢ złotych dalej}
+    inline_hints:
+    - {span: [91, 104], text: opis rzeczy}
+  - p: 9
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 91, end: 104, italic: true}]}
+    text: 'Zamieniający nr 2 oświadcza, że jest właścicielem rzeczy ruchomej, tj. ................... (opis rzeczy) o wartości ...................
+      zł (słownie: ................................................... złotych), dalej jako "Przedmiot zamiany nr 2".'
+    slots:
+    - {id: opis_rzeczy_2, span: [71, 90], type: text, hint: opis rzeczy}
+    - {id: p9_2, span: [116, 135], type: text, context: ruchomej tj. o wartości ▢ zł dalej}
+    - {id: p9_3, span: [149, 200], type: amount, context: o wartości zł słownie ▢ złotych dalej}
+    inline_hints:
+    - {span: [91, 104], text: opis rzeczy}
+  - p: 10
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: 'Strony oświadczają, każda we własnym imieniu i w odniesieniu do Przedmiotu zamiany stanowiącego jej własność, że:'
+  - p: 11
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: Przedmiot zamiany jest wolny od wad fizycznych i prawnych;
+  - p: 12
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+    text: Nie występują ograniczenia w rozporządzeniu Przedmiotem zamiany.
+  - {p: 13, role: spacer}
+  - p: 14
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+    text: § 2
+  - p: 15
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Zamieniający  nr 1 zobowiązuje się przenieść Przedmiot zamiany nr 1 na własność Zamieniającego nr 2.
+  - p: 16
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Zamieniający nr 2 zobowiązuje się przenieść Przedmiot zamiany nr 2 na własność Zamieniającego nr 1.
+  - p: 17
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: Strony zgodnie oświadczają, że wydanie i objęcie Przedmiotów zamiany w posiadanie nastąpi w terminie ........................ dni od daty
+      zawarcia niniejszej umowy.
+    slots:
+    - {id: zapis_alternatywny_ust_3_wydanie_przedmiotow_zam, span: [101, 125], type: text, hint: 'zapis alternatywny ust. 3: Wydanie Przedmiotów
+        zamiany następuje wraz z zawarciem niniejszej umowy.'}
+  - p: 18
+    role: hint
+    layout: {align: justify, indent: {left: 720}, size: 10.0, spans: [{start: 1, end: 100, italic: true}]}
+    text: '(zapis alternatywny ust. 3: Wydanie Przedmiotów zamiany następuje wraz z zawarciem niniejszej umowy.) '
+    hint_for: 17
+    hint_kind: instruction
+  - {p: 19, role: spacer}
+  - p: 20
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+    text: § 3 (w przypadku zamiany z dopłatą)
+  - p: 21
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: 'Strony ustalają, że Zamieniający nr 1/Zamieniający nr 2 (należy wybrać odpowiednią opcję) dokona dopłaty na rzecz Zamieniającego nr 1/Zamieniającego
+      nr 2 (należy wybrać odpowiednią opcję) w wysokości ................... zł (słownie: ................................................. złotych)
+      z tytułu różnicy między wartością Przedmiotu zamiany nr 1 i Przedmiotu zamiany nr 2.'
+    slots:
+    - {id: p21_1, span: [200, 219], type: amount, context: nr 2 w wysokości ▢ zł z}
+    - {id: p21_2, span: [233, 282], type: amount, context: w wysokości zł słownie ▢ złotych z}
+  - p: 22
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 112, end: 145, italic: true}]}
+    text: Zapłata kwoty określonej w ust. 1 zostanie dokonana na rachunek bankowy Zamieniającego nr 1/Zamieniającego nr 2 (należy wybrać odpowiednią
+      opcję) o numerze ..................., prowadzony przez ................... z chwilą zawarcia niniejszej Umowy.
+    slots:
+    - {id: p22_1, span: [156, 175], type: text, context: nr 2 o numerze ▢ prowadzony przez}
+    - {id: p22_2, span: [194, 213], type: person, context: o numerze prowadzony przez ▢ z chwilą}
+  - {p: 23, role: spacer}
+  - p: 24
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+    text: § 3 (w przypadku zamiany bez dopłaty)
+  - p: 25
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: Strony zgodnie oświadczają, że nie kwestionują podanych w § 1 i 2 wartości rzeczy podlegających zamianie i dokonają zamiany bez żadnych
+      dopłat.
+  - {p: 26, role: spacer}
+  - p: 27
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+    text: § 4
+  - p: 28
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Koszty związane z wydaniem i objęciem Przedmiotów zamiany ponosi każda ze stron w równej części.
+  - p: 29
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: 'Podatek od czynności cywilnoprawnych związany z zawarciem niniejszej Umowy obciąża Zamieniającego nr 1 i Zamieniającego nr 2 w równej
+      części. '
+  - {p: 30, role: spacer}
+  - p: 31
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+    text: § 5
+  - p: 32
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: Wszelkie doręczenia związane z wykonaniem niniejszej Umowy dokonywane będą na adresy stron wypisane w komparycji.
+  - p: 33
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+    text: Strony zobowiązują się pisemnie informować o wszelkich zmianach danych adresowych. W razie zaniechania tego obowiązku korespondencja wysłana
+      na adres zgodnie z ust. 1 będzie traktowana jako skutecznie doręczona.
+  - {p: 34, role: spacer}
+  - p: 35
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 6, kind: paragraph, src: manual, level: 0}}
+    text: § 6
+  - p: 36
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: W sprawach nieuregulowanych niniejszą Umową zastosowanie mają przepisy ustawy z dnia 23 kwietnia 1964 r. - Kodeks cywilny.
+  - {p: 37, role: spacer}
+  - p: 38
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 7, kind: paragraph, src: manual, level: 0}}
+    text: § 7
+  - p: 39
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Niniejsza Umowa stanowi całość uzgodnień pomiędzy stronami i uchyla wszelkie poprzedzające je umowy, porozumienia i uzgodnienia, pisemne
+      i ustne, dotyczące przedmiotów Umowy.
+  - p: 40
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 176, end: 209, italic: true}]}
+    text: Ewentualne spory powstałe na tle wykonania niniejszej Umowy rozstrzygać będzie sąd właściwy ze względu na miejsce zamieszkania/siedzibę
+      Zamieniającego nr 1/Zamieniającego nr 2 (należy wybrać odpowiednią opcję).
+  - p: 41
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: Wszelkie zmiany niniejszej Umowy wymagają formy pisemnej pod rygorem nieważności.
+  - p: 42
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+    text: Umowę sporządzono w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze stron.
+  - p: 43
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+    text: Koszy zawarcia niniejszej Umowy ponoszą obie strony po połowie.
+  - {p: 44, role: spacer}
+  - {p: 45, role: spacer}
+  - p: 46
+    role: signature_line
+    layout: {align: justify, size: 10.0, tabs: 3}
+    text: "………………………………………………………\t\t\t         ………………………………………………………"
+    slots:
+    - {id: p46_1, span: [0, 21], type: signature, context: ▢}
+    - {id: p46_2, span: [33, 54], type: signature, context: ▢}
+  - p: 47
+    role: body
+    layout: {align: justify, size: 10.0, bold: true, tabs: 6}
+    text: "Zamieniający nr 1\t\t\t\t\t              \tZamieniający nr 2"
+  - {p: 48, role: spacer}

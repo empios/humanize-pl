@@ -1,0 +1,225 @@
+template: odwołanie od decyzji ubezpieczyciela.docx
+category: odwolanie_od_decyzji
+label_pl: Odwołanie od decyzji ubezpieczyciela
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: body
+  layout: {align: right, indent: {first: 708}, size: 10.0, spans: [{start: 12, end: 26, italic: true}, {start: 46, end: 52, italic: true}]}
+  text: …………………………… (miejscowość), dnia …………… 2025 r. (data)
+  slots:
+  - {id: miejscowosc, span: [0, 11], type: place, hint: miejscowość}
+  - {id: p0_2, span: [32, 37], type: date, context: dnia ▢ 2025 r.}
+  inline_hints:
+  - {span: [12, 25], text: miejscowość}
+- {p: 1, role: spacer}
+- p: 2
+  role: blank_line
+  layout: {size: 10.0}
+  text: '……………………………………
+
+    …………………………………….
+
+    …………………………………….'
+  slots:
+  - {id: imie_i_nazwisko_adres_lub_okreslenie_firmy_nip_a, span: [0, 14], type: text, hint: 'imię i nazwisko, adres lub określenie firmy, NIP,
+      adres siedziby działalności ubezpieczonego'}
+  - {id: imie_i_nazwisko_adres_lub_okreslenie_firmy_nip_a_2, span: [15, 30], type: text, hint: 'imię i nazwisko, adres lub określenie firmy, NIP,
+      adres siedziby działalności ubezpieczonego'}
+  - {id: imie_i_nazwisko_adres_lub_okreslenie_firmy_nip_a_3, span: [31, 46], type: text, hint: 'imię i nazwisko, adres lub określenie firmy, NIP,
+      adres siedziby działalności ubezpieczonego'}
+- p: 3
+  role: hint
+  layout: {size: 10.0, italic: true}
+  text: (imię i nazwisko, adres lub określenie firmy, NIP,
+  hint_for: 2
+  hint_kind: instruction
+- p: 4
+  role: hint
+  layout: {size: 10.0, italic: true}
+  text: adres siedziby działalności ubezpieczonego)
+  hint_for: 2
+  hint_kind: instruction
+- p: 5
+  role: blank_line
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: '…………………………………….
+
+    …………………………………….
+
+    ……………………………………..'
+  slots:
+  - {id: oznaczenie_ubezpieczyciela_nazwa_nip_adres_siedz, span: [0, 15], type: text, hint: 'oznaczenie ubezpieczyciela, nazwa, NIP, adres siedziby'}
+  - {id: oznaczenie_ubezpieczyciela_nazwa_nip_adres_siedz_2, span: [16, 31], type: text, hint: 'oznaczenie ubezpieczyciela, nazwa, NIP, adres
+      siedziby'}
+  - {id: oznaczenie_ubezpieczyciela_nazwa_nip_adres_siedz_3, span: [32, 48], type: text, hint: 'oznaczenie ubezpieczyciela, nazwa, NIP, adres
+      siedziby'}
+- p: 6
+  role: hint
+  layout: {align: right, indent: {first: 708}, size: 10.0, italic: true}
+  text: '(oznaczenie ubezpieczyciela, nazwa, NIP, adres siedziby)
+
+    '
+  hint_for: 5
+  hint_kind: label
+- {p: 7, role: spacer}
+- p: 8
+  role: field
+  layout: {align: justify, size: 10.0, spans: [{start: 0, end: 11, bold: true}, {start: 21, end: 55, italic: true}]}
+  text: 'Nr szkody: ……………………. (należy podać nadany numer szkody)'
+  slots:
+  - {id: nr_szkody, span: [11, 20], type: text, hint: należy podać nadany numer szkody, label: Nr szkody}
+  inline_hints:
+  - {span: [21, 55], text: należy podać nadany numer szkody}
+- p: 9
+  role: field
+  layout: {align: justify, size: 10.0, spans: [{start: 0, end: 16, bold: true}, {start: 27, end: 50, italic: true}]}
+  text: 'Data zdarzenia: …………………….. (data powstania szkody)'
+  slots:
+  - {id: data_powstania_szkody, span: [16, 26], type: date, hint: data powstania szkody, label: Data zdarzenia}
+  inline_hints:
+  - {span: [27, 50], text: data powstania szkody}
+- p: 10
+  role: field
+  layout: {align: justify, size: 10.0, spans: [{start: 0, end: 14, bold: true}, {start: 22, end: 55, italic: true}]}
+  text: 'Numer polisy: ………………. (seria i numer posiadanej polisy)'
+  slots:
+  - {id: seria_i_numer_posiadanej_polisy, span: [14, 21], type: text, hint: seria i numer posiadanej polisy, label: Numer polisy}
+  inline_hints:
+  - {span: [22, 55], text: seria i numer posiadanej polisy}
+- {p: 11, role: spacer}
+- {p: 12, role: spacer}
+- p: 13
+  role: body
+  layout: {align: center, size: 14.0, bold: true}
+  text: ODWOŁANIE OD DECYZJI UBEZPIECZYCIELA
+- {p: 14, role: spacer}
+- p: 15
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 85, end: 130, italic: true}, {start: 191, end: 213, italic: true}, {start: 245, end: 277,
+        italic: true}]}
+  text: Niniejszym, działając w imieniu własnym, wnoszę odwołanie od decyzji z dnia ……………….. (data wydania decyzji przez ubezpieczyciela) w sprawie
+    odszkodowania dotyczącego szkody o numerze ………………… (nadany numer szkody)  z tytułu ……………………………………………………… (wskazanie czego dotyczy szkoda)
+  slots:
+  - {id: data_wydania_decyzji_przez_ubezpieczyciela, span: [76, 84], type: date, hint: data wydania decyzji przez ubezpieczyciela}
+  - {id: nadany_numer_szkody, span: [183, 190], type: text, hint: nadany numer szkody}
+  - {id: wskazanie_czego_dotyczy_szkoda, span: [223, 244], type: text, hint: wskazanie czego dotyczy szkoda}
+  inline_hints:
+  - {span: [85, 129], text: data wydania decyzji przez ubezpieczyciela}
+  - {span: [191, 212], text: nadany numer szkody}
+  - {span: [245, 277], text: wskazanie czego dotyczy szkoda}
+  optional: true
+  condition: wskazanie czego dotyczy szkoda
+- {p: 16, role: spacer}
+- p: 17
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 162, end: 188, italic: true}, {start: 220, end: 233, italic: true}]}
+  text: 'W związku z powyższym, wnoszę o przyznanie odszkodowania na kwotę ………………….. zł (słownie: ………………….. zł).  Kwotę proszę wpłacić na rachunek
+    bankowy ……………………………………… (numer rachunku bankowego), prowadzonego w banku …………………… (nazwa banku) w terminie 30 dni od dnia otrzymania niniejszego
+    pisma.'
+  slots:
+  - {id: p17_1, span: [66, 75], type: amount, context: przyznanie odszkodowania na kwotę ▢ zł Kwotę}
+  - {id: p17_2, span: [89, 98], type: amount, context: na kwotę zł słownie ▢ zł Kwotę}
+  - {id: numer_rachunku_bankowego, span: [146, 161], type: text, hint: numer rachunku bankowego}
+  - {id: nazwa_banku, span: [211, 219], type: text, hint: nazwa banku}
+  inline_hints:
+  - {span: [162, 188], text: numer rachunku bankowego}
+  - {span: [220, 233], text: nazwa banku}
+- {p: 18, role: spacer}
+- p: 19
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: UZASADNIENIE
+- {p: 20, role: spacer}
+- p: 21
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: 'Należy podkreślić, że ubezpieczyciel poprzez zawarcie umowy ubezpieczenia zobowiązuje się do wypłaty odszkodowania, gdy zajdzie określone
+    w polisie zdarzenie ubezpieczeniowe. '
+- {p: 22, role: spacer}
+- p: 23
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 32, end: 77, italic: true}, {start: 155, end: 249, italic: true}]}
+  text: Na mocy decyzji z dnia ……………….. (data wydania decyzji przez ubezpieczyciela), odmówili Państwo wypłaty odszkodowania z uwagi na ………………………………………………………………….
+    (należy wskazać powód odmowy wypłaty odszkodowania przez ubezpieczyciela, wskazany w decyzji).
+  slots:
+  - {id: data_wydania_decyzji_przez_ubezpieczyciela_2, span: [23, 31], type: date, hint: data wydania decyzji przez ubezpieczyciela}
+  - {id: nalezy_wskazac_powod_odmowy_wyplaty_odszkodowani, span: [128, 154], type: text, hint: 'należy wskazać powód odmowy wypłaty odszkodowania
+      przez ubezpieczyciela, wskazany w decyzji'}
+  inline_hints:
+  - {span: [32, 76], text: data wydania decyzji przez ubezpieczyciela}
+  - {span: [155, 248], text: 'należy wskazać powód odmowy wypłaty odszkodowania przez ubezpieczyciela, wskazany w decyzji'}
+- {p: 24, role: spacer}
+- p: 25
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: Działając na podstawie art. 3 ust. 1 i 2 ustawy z dnia 5 sierpnia 2015 r. o rozpatrywaniu reklamacji przez podmioty rynku finansowego,
+    o Rzeczniku Finansowy i o Funduszu Edukacji Finansowej, wnoszę reklamacje od wydanej decyzji
+- {p: 26, role: spacer}
+- p: 27
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ……………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………….
+  slots:
+  - {id: nalezy_sprecyzowac_zarzuty_dotyczace_wydanej_dec, span: [0, 166], type: text, hint: 'Należy sprecyzować zarzuty dotyczące wydanej decyzji,
+      wskazując oraz udowadniając zaistnienie okoliczności, wedle których ubezpieczyciel winien wypłacić odszkodowanie, w szczególności wskazując
+      odpowiednie postanowienia Ogólnych Warunków Ubezpieczenia'}
+- p: 28
+  role: hint
+  layout: {align: justify, size: 10.0, italic: true}
+  text: (Należy sprecyzować zarzuty dotyczące wydanej decyzji, wskazując oraz udowadniając zaistnienie okoliczności, wedle których ubezpieczyciel
+    winien wypłacić odszkodowanie, w szczególności wskazując odpowiednie postanowienia Ogólnych Warunków Ubezpieczenia)
+  hint_for: 27
+  hint_kind: instruction
+- {p: 29, role: spacer}
+- p: 30
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: Zgodnie z art. 361 Kodeksu cywilnego, zobowiązany do odszkodowania ponosi odpowiedzialność tylko za normalne następstwa działania lub
+    zaniechania, z którego szkoda wynikła. W powyższych granicach, w braku odmiennego przepisu ustawy lub postanowienia umowy, naprawienie szkody
+    obejmuje straty, które poszkodowany poniósł, oraz korzyści, które mógłby osiągnąć, gdyby mu szkody nie wyrządzono.
+- {p: 31, role: spacer}
+- p: 32
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: Mając na uwadze powyższe, wnoszę o ponowne rozpatrzenie mojej sprawy oraz wypłatę odszkodowania w wysokości pozwalającej na pełną kompensację
+    poniesionej szkody.
+- {p: 33, role: spacer}
+- p: 34
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: Jednocześnie pragnę wskazać, iż nieuwzględnienie niniejszego odwołania, skutkować będzie koniecznością skierowania sprawy na drogę postępowania
+    sądowego, co narazi Państwa na dodatkowe koszty. Dodatkowo jako konieczne jawić się będzie również dokonanie zgłoszenia do Rzecznika Finansowego.
+    Wobec powyższego, liczę na pozytywne rozpatrzenie niniejszego odwołania.
+- {p: 35, role: spacer}
+- {p: 36, role: spacer}
+- p: 37
+  role: blank_line
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: …………………………………………
+  slots:
+  - {id: wlasnoreczny_podpis_ubezpieczonego, span: [0, 16], type: signature, hint: własnoręczny podpis ubezpieczonego}
+- p: 38
+  role: hint
+  layout: {align: right, indent: {first: 708}, size: 10.0, italic: true}
+  text: (własnoręczny podpis ubezpieczonego)
+  hint_for: 37
+  hint_kind: label
+- {p: 39, role: spacer}
+- {p: 40, role: spacer}
+- p: 41
+  role: field_header
+  layout: {align: justify, size: 10.0}
+  text: 'Załączniki:'
+- p: 42
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: ……………………….. (dokumenty stanowiące dowód)
+  slots:
+  - {id: dokumenty_stanowiace_dowod, span: [0, 11], type: id_number, hint: dokumenty stanowiące dowód}
+  inline_hints:
+  - {span: [12, 40], text: dokumenty stanowiące dowód}
+- {p: 43, role: spacer}
+- {p: 44, role: spacer}
+- {p: 45, role: spacer}

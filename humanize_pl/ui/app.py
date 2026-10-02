@@ -417,6 +417,13 @@ def structure_label(item: ItemOutcome) -> str:
     row = item.blueprint or {}
     if not row.get("checked"):
         return "nie sprawdzono"
+    template = row.get("template")
+    if template:
+        name = f"wzór: {template['label_pl']}"
+        missing = len(template["missing"]) + len(template["unfilled"])
+        if missing:
+            return f"braki: {missing} ({name})"
+        return f"uwagi ({name})" if row.get("issues") else f"kompletna ({name})"
     missing = len(row.get("missing_required") or []) + len(row.get("empty_sections") or [])
     if missing:
         return f"braki: {missing}"

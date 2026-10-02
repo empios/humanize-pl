@@ -3,6 +3,8 @@
 
 category: umowa_przedwstepna
 label_pl: umowa przedwstępna
+# Kolejności sekcji nie sprawdzamy: realne wzory tej kategorii układają je różnie.
+check_order: false
 numbering: paragraph
 sections:
 - id: komparycja
@@ -34,3 +36,281 @@ sections:
   severity: required
   matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
       formy pisemnej, wymagają zachowania formy pisemnej]
+
+# Dokument ogólny: realny wzór tej kategorii. Przy użyciu wypełnia się wyłącznie
+# pola (`slots`); treść, kolejność i układ zostają jak we wzorze.
+document:
+  template: umowa przedwstępna sprzedaży.docx
+  label_pl: Umowa przedwstępna sprzedaży
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+  blocks:
+  - p: 0
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: 'UMOWA PRZEDWSTĘPNA '
+  - {p: 1, role: spacer}
+  - {p: 2, role: spacer}
+  - p: 3
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 23, end: 43, italic: true}, {start: 44, end: 57, italic: true}]}
+    text: 'Zawarta dnia ……………………… (data) w …………………………. (miejscowość) pomiędzy:'
+    slots:
+    - {id: data, span: [13, 22], type: date, hint: data}
+    - {id: miejscowosc, span: [32, 43], type: place, hint: miejscowość}
+    inline_hints:
+    - {span: [23, 29], text: data}
+    - {span: [44, 57], text: miejscowość}
+  - {p: 4, role: spacer}
+  - p: 5
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: ' ……………………………………………………………………………………………………………..'
+    slots:
+    - {id: imie_nazwisko_adres_lub_firma_dzialalnosci_adres, span: [1, 44], type: text, hint: 'imię, nazwisko, adres lub firma działalności, adres
+        siedziby, NIP'}
+  - p: 6
+    role: hint
+    layout: {align: justify, size: 10.0, italic: true}
+    text: (imię, nazwisko, adres lub firma działalności, adres siedziby, NIP)
+    hint_for: 5
+    hint_kind: label
+  - {p: 7, role: spacer}
+  - p: 8
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 13, end: 24, bold: true}]}
+    text: 'zwanym dalej Sprzedawcą, '
+    alias: Sprzedawcą
+  - {p: 9, role: spacer}
+  - p: 10
+    role: party_connector
+    layout: {align: justify, size: 10.0}
+    text: a
+  - {p: 11, role: spacer}
+  - p: 12
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: ' ……………………………………………………………………………………………………………..'
+    slots:
+    - {id: imie_nazwisko_adres_lub_firma_dzialalnosci_adres_2, span: [1, 44], type: text, hint: 'imię, nazwisko, adres lub firma działalności, adres
+        siedziby, NIP'}
+  - p: 13
+    role: hint
+    layout: {align: justify, size: 10.0, italic: true}
+    text: (imię, nazwisko, adres lub firma działalności, adres siedziby, NIP)
+    hint_for: 12
+    hint_kind: label
+  - {p: 14, role: spacer}
+  - p: 15
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 13, end: 24, bold: true}]}
+    text: 'zwanym dalej Kupującym, '
+    alias: Kupującym
+  - {p: 16, role: spacer}
+  - p: 17
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 22, end: 30, bold: true}]}
+    text: zwanymi dalej łącznie Stronami,
+    alias: Stronami
+  - {p: 18, role: spacer}
+  - p: 19
+    role: field_header
+    layout: {align: justify, size: 10.0}
+    text: 'o następującej treści:'
+  - {p: 20, role: spacer}
+  - {p: 21, role: spacer}
+  - p: 22
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+    text: § 1
+  - {p: 23, role: spacer}
+  - p: 24
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Sprzedawca oświadcza, iż jest właścicielem ………………………………. (należy wskazać przedmiot umowy sprzedaży, np. samochód), …………………………………... (należy
+      określić cechy przedmiotu umowy, np. marka samochodu, rok produkcji itp.)
+    slots:
+    - {id: nalezy_wskazac_przedmiot_umowy_sprzedazy_np_samo, span: [43, 56], type: text, hint: 'należy wskazać przedmiot umowy sprzedaży, np. samochód'}
+    - {id: nalezy_okreslic_cechy_przedmiotu_umowy_np_marka, span: [115, 131], type: text, hint: 'należy określić cechy przedmiotu umowy, np. marka
+        samochodu, rok produkcji itp.'}
+    inline_hints:
+    - {span: [57, 113], text: 'należy wskazać przedmiot umowy sprzedaży, np. samochód'}
+    - {span: [132, 213], text: 'należy określić cechy przedmiotu umowy, np. marka samochodu, rok produkcji itp.'}
+  - p: 25
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Sprzedawca oświadcza, że ……….. (należy wskazać przedmiot umowy sprzedaży) jest wolny od jakichkolwiek obciążeń i praw osób trzecich oraz
+      wszelkich innych wad prawnych.
+    slots:
+    - {id: nalezy_wskazac_przedmiot_umowy_sprzedazy, span: [25, 30], type: text, hint: należy wskazać przedmiot umowy sprzedaży}
+    inline_hints:
+    - {span: [31, 73], text: należy wskazać przedmiot umowy sprzedaży}
+  - p: 26
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: Kupujący oświadcza, iż dokonał oględzin ……………………………. (należy wskazać przedmiot umowy sprzedaży) i nie wnosi żadnych zastrzeżeń, co do
+      jego stanu technicznego.
+    slots:
+    - {id: nalezy_wskazac_przedmiot_umowy_sprzedazy_2, span: [40, 52], type: text, hint: należy wskazać przedmiot umowy sprzedaży}
+    inline_hints:
+    - {span: [53, 95], text: należy wskazać przedmiot umowy sprzedaży}
+  - {p: 27, role: spacer}
+  - p: 28
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+    text: § 2
+  - {p: 29, role: spacer}
+  - p: 30
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 80, end: 122, italic: true}]}
+    text: Przedmiotem umowy jest zobowiązanie się Stron do zawarcia umowy sprzedaży ……….. (należy wskazać przedmiot umowy sprzedaży)
+    slots:
+    - {id: nalezy_wskazac_przedmiot_umowy_sprzedazy_3, span: [74, 79], type: text, hint: należy wskazać przedmiot umowy sprzedaży}
+    inline_hints:
+    - {span: [80, 122], text: należy wskazać przedmiot umowy sprzedaży}
+  - p: 31
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 71, end: 113, italic: true},
+        {start: 131, end: 216, italic: true}, {start: 249, end: 256, italic: true}, {start: 298, end: 313, italic: true}]}
+    text: Strony zobowiązują się do zawarcia przyrzeczonej umowy sprzedaży ……….. (należy wskazać przedmiot umowy sprzedaży), w formie ………….. (należy
+      wskazać formę zawarcia umowy przyrzeczonej, np. pisemnej, aktu notarialnego) w terminie do dnia …………………..………. (data) za cenę ………………. (wskazać
+      kwotę) (słownie ………………. złotych)
+    slots:
+    - {id: nalezy_wskazac_przedmiot_umowy_sprzedazy_4, span: [65, 70], type: text, hint: należy wskazać przedmiot umowy sprzedaży}
+    - {id: nalezy_wskazac_forme_zawarcia_umowy_przyrzeczone, span: [124, 130], type: text, hint: 'należy wskazać formę zawarcia umowy przyrzeczonej,
+        np. pisemnej, aktu notarialnego'}
+    - {id: data_2, span: [235, 248], type: date, hint: data}
+    - {id: wskazac_kwote, span: [264, 271], type: amount, hint: wskazać kwotę}
+    - {id: p31_5, span: [297, 304], type: amount, context: dnia za cenę słownie ▢ złotych}
+    inline_hints:
+    - {span: [71, 113], text: należy wskazać przedmiot umowy sprzedaży}
+    - {span: [131, 215], text: 'należy wskazać formę zawarcia umowy przyrzeczonej, np. pisemnej, aktu notarialnego'}
+    - {span: [249, 255], text: data}
+    - {span: [272, 287], text: wskazać kwotę}
+  - p: 32
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 31, end: 122, italic: true}]}
+    text: ……………………………………………………………………………… (należy określić warunki umowy przyrzeczonej, np. czy sprzedaż samochodu za milion złotych)
+    slots:
+    - {id: nalezy_okreslic_warunki_umowy_przyrzeczonej_np_c, span: [0, 30], type: text, hint: 'należy określić warunki umowy przyrzeczonej, np.
+        czy sprzedaż samochodu za milion złotych'}
+    inline_hints:
+    - {span: [31, 122], text: 'należy określić warunki umowy przyrzeczonej, np. czy sprzedaż samochodu za milion złotych'}
+  - {p: 33, role: spacer}
+  - p: 34
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+    text: § 3
+  - {p: 35, role: spacer}
+  - p: 36
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: ……………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: w_tresci_niniejszej_umowy_mozna_okreslic_inne_ob, span: [0, 110], type: text, hint: 'W treści niniejszej umowy można określić inne obowiązki
+        stron w związku z zawarciem niniejszej umowy, które zależne będą od przedmiotu umowy'}
+  - p: 37
+    role: hint
+    layout: {align: justify, size: 10.0, italic: true}
+    text: (W treści niniejszej umowy można określić inne obowiązki stron w związku z zawarciem niniejszej umowy, które zależne będą od przedmiotu
+      umowy)
+    hint_for: 36
+    hint_kind: instruction
+  - {p: 38, role: spacer}
+  - {p: 39, role: spacer}
+  - p: 40
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+    text: § 4
+    optional: true
+    condition: fakultatywne
+  - p: 41
+    role: hint
+    layout: {align: center, size: 10.0, italic: true}
+    text: (fakultatywne)
+    hint_for: 40
+    hint_kind: label
+  - {p: 42, role: spacer}
+  - p: 43
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 119, end: 125, italic: true},
+        {start: 147, end: 223, italic: true}, {start: 283, end: 295, italic: true}]}
+    text: 'Sprzedawcy przysługuje prawo odstąpienia od umowy, jeżeli do czasu zawarcia umowy przyrzeczonej, tj. do dnia ………………….. (data), ……………………………………………..
+      (należy określić przesłanki umożliwiające odstąpienie od niniejszej umowy).  Prawo do odstąpienia przysługuje Sprzedawcy w terminie ……. (liczba
+      dni) dni od uzyskania wiedzy o wspomnianych przesłankach odstąpienia. '
+    slots:
+    - {id: data_3, span: [109, 118], type: date, hint: data}
+    - {id: nalezy_okreslic_przeslanki_umozliwiajace_odstapi, span: [127, 146], type: text, hint: należy określić przesłanki umożliwiające odstąpienie
+        od niniejszej umowy}
+    - {id: liczba_dni, span: [279, 282], type: text, hint: liczba dni}
+    inline_hints:
+    - {span: [119, 125], text: data}
+    - {span: [147, 221], text: należy określić przesłanki umożliwiające odstąpienie od niniejszej umowy}
+    - {span: [283, 295], text: liczba dni}
+  - p: 44
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 119, end: 125, italic: true},
+        {start: 147, end: 223, italic: true}, {start: 283, end: 295, italic: true}]}
+    text: 'Kupującemu przysługuje prawo odstąpienia od umowy, jeżeli do czasu zawarcia umowy przyrzeczonej, tj. do dnia ………………….. (data), ……………………………………………..
+      (należy określić przesłanki umożliwiające odstąpienie od niniejszej umowy).  Prawo do odstąpienia przysługuje Kupującemu w terminie ……. (liczba
+      dni) dni od uzyskania wiedzy o wspomnianych przesłankach odstąpienia. '
+    slots:
+    - {id: data_4, span: [109, 118], type: date, hint: data}
+    - {id: nalezy_okreslic_przeslanki_umozliwiajace_odstapi_2, span: [127, 146], type: text, hint: należy określić przesłanki umożliwiające odstąpienie
+        od niniejszej umowy}
+    - {id: liczba_dni_2, span: [279, 282], type: text, hint: liczba dni}
+    inline_hints:
+    - {span: [119, 125], text: data}
+    - {span: [147, 221], text: należy określić przesłanki umożliwiające odstąpienie od niniejszej umowy}
+    - {span: [283, 295], text: liczba dni}
+  - {p: 45, role: spacer}
+  - p: 46
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+    text: § 5
+  - {p: 47, role: spacer}
+  - p: 48
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 93, end: 115, italic: true}]}
+    text: Wszelkie zmiany niniejszej umowy pod rygorem nieważności wymagają zachowania formy ………………….. (należy wskazać formę)
+    slots:
+    - {id: nalezy_wskazac_forme, span: [83, 92], type: text, hint: należy wskazać formę}
+    inline_hints:
+    - {span: [93, 115], text: należy wskazać formę}
+  - p: 49
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: 'Umowa została sporządzona w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze Stron. '
+  - p: 50
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: 'W sprawach nieuregulowanych niniejszą umową będą miały zastosowanie przepisy ustawy
+
+      z dnia 23 kwietnia 1964 r. - Kodeks cywilny.'
+  - p: 51
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 143, end: 162, italic: true}]}
+    text: 'Wszelkie spory wynikłe z tytułu niniejszej umowy będą rozpatrywane przez sąd właściwy ze względu na miejsce zamieszkania Sprzedawcy/Kupującego
+      (wybrać właściwe). '
+  - {p: 52, role: spacer}
+  - {p: 53, role: spacer}
+  - {p: 54, role: spacer}
+  - {p: 55, role: spacer}
+  - {p: 56, role: spacer}
+  - p: 57
+    role: body
+    layout: {align: justify, size: 10.0, bold: true, tabs: 7}
+    text: "             Sprzedawca\t\t\t\t           \t\t \t   Kupujący"
+  - {p: 58, role: spacer}
+  - p: 59
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: '       …………………………………..                                                     ……………………………………'
+    slots:
+    - {id: p59_1, span: [7, 22], type: signature, context: ▢}
+    - {id: p59_2, span: [75, 89], type: signature, context: ▢}
+  - {p: 60, role: spacer}
+  - {p: 61, role: spacer}
+  - {p: 62, role: spacer}
+  - {p: 63, role: spacer}
+  - {p: 64, role: spacer}

@@ -33,3 +33,106 @@ sections:
   label_pl: podpis
   severity: required
   matches: [podpis, niżej podpisana, niżej podpisany, własnoręczny]
+
+# Dokument ogólny: realny wzór tej kategorii. Przy użyciu wypełnia się wyłącznie
+# pola (`slots`); treść, kolejność i układ zostają jak we wzorze.
+document:
+  template: zgoda na przetwarzanie danych osobowych.docx
+  label_pl: Zgoda na przetwarzanie danych osobowych
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+  blocks:
+  - {p: 0, role: spacer}
+  - p: 1
+    role: body
+    layout: {align: right, indent: {first: 708}, size: 10.0}
+    text: ………………., dnia …………………
+    slots:
+    - {id: miejscowosc_data, span: [0, 7], type: date, hint: 'miejscowość, data'}
+    - {id: miejscowosc_data_2, span: [14, 21], type: date, hint: 'miejscowość, data'}
+  - p: 2
+    role: hint
+    layout: {align: right, indent: {first: 708}, size: 10.0, italic: true}
+    text: (miejscowość, data)
+    hint_for: 1
+    hint_kind: label
+  - {p: 3, role: spacer}
+  - {p: 4, role: spacer}
+  - {p: 5, role: spacer}
+  - p: 6
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: Oświadczenie
+  - p: 7
+    role: body
+    layout: {align: center, size: 14.0, bold: true}
+    text: w sprawie wyrażenia zgody na przetwarzanie danych osobowych
+  - {p: 8, role: spacer}
+  - {p: 9, role: spacer}
+  - p: 10
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 172, end: 372, italic: true}]}
+    text: 'Ja niżej popisana/podpisany na podstawie art. 6 ust. 1 lit. a, art. 9 ust. 2 lit. a rozporządzenia Parlamentu Europejskiego i Rady (UE)
+      2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu
+      takich danych oraz uchylenia dyrektywy 95/46/WE (ogólne rozporządzenie o ochronie danych) (Dz.U.UE.L.2016.119.1 ze zm.), zwanego dalej „RODO”
+      wyrażam zgodę na przetwarzanie następujących kategorii moich danych osobowych (imię, nazwisko, telefon, mail, adres, dane dotyczące zdrowia)
+      przez Administratora, którym jest …………………………………………………………… z siedzibą w ………………………………………………………, '
+    slots:
+    - {id: p10_1, span: [600, 623], type: text, context: przez Administratora którym jest ▢ z siedzibą}
+    - {id: p10_2, span: [637, 658], type: place, context: jest z siedzibą w ▢}
+    alias: RODO
+  - p: 11
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: 'Podanie przeze mnie danych osobowych jest dobrowolne. '
+  - {p: 12, role: spacer}
+  - p: 13
+    role: field_header
+    layout: {align: justify, size: 10.0}
+    text: 'Jest mi wiadomym, że posiadam  prawo do:'
+  - p: 14
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+    text: żądania od Administratora dostępu do Pani/Pana danych osobowych;
+  - p: 15
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+    text: żądania od Administratora sprostowania Pani/Pana danych osobowych;
+  - p: 16
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
+    text: żądania od Administratora usunięcia Pani/Pana danych osobowych;
+  - p: 17
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: d), kind: lowerLetter, src: auto, level: 0}}
+    text: żądania od Administratora ograniczenia przetwarzania Pani/Pana danych osobowych;
+  - p: 18
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: e), kind: lowerLetter, src: auto, level: 0}}
+    text: wniesienia sprzeciwu wobec przetwarzania Pani/Pana danych osobowych;
+  - p: 19
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: f), kind: lowerLetter, src: auto, level: 0}}
+    text: przenoszenia Pani/Pana danych osobowych;
+  - p: 20
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: g), kind: lowerLetter, src: auto, level: 0}}
+    text: wniesienia skargi do organu nadzorczego – Prezesa Urzędu Ochrony Danych Osobowych.
+  - {p: 21, role: spacer}
+  - {p: 22, role: spacer}
+  - {p: 23, role: spacer}
+  - p: 24
+    role: blank_line
+    layout: {align: right, indent: {first: 708}, size: 10.0}
+    text: ………………………………………
+    slots:
+    - {id: podpis_farmaceuty_ktory_chce_wpisac_sie_na_liste, span: [0, 15], type: signature, hint: 'podpis farmaceuty, który chce wpisać się na
+        listę'}
+  - p: 25
+    role: hint
+    layout: {align: right, indent: {first: 708}, size: 10.0, italic: true}
+    text: (podpis farmaceuty, który chce wpisać się na listę)
+    hint_for: 24
+    hint_kind: label
+  - {p: 26, role: spacer}
+  - {p: 27, role: spacer}

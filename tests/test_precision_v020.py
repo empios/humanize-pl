@@ -53,7 +53,8 @@ def test_formal_legal_candidates_are_precise():
     assert "Duże znaczenie ma sposób wykonywania pracy." in result.text
     assert "Oznacza to, że pracownik wykonuje zadania pod kierownictwem." in result.text
     assert "Zależność widać także w obowiązku stosowania poleceń" in result.text
-    assert "w znacznym stopniu" in result.text
+    # "w znacznym stopniu" is a style frame the detector counts as an AI signal
+    assert "w dużej mierze" in result.text
 
 
 def test_przejawia_sie_rewrite_depends_on_sentence_position():

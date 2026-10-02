@@ -42,7 +42,6 @@ def legal_style_candidates(sentence: str, *, mode: Mode) -> list[Candidate]:
         (r"\bnie jest jednak nieograniczone\b", "ma jednak swoje granice", "legal_style:ma_granice", 0.78),
         (r"\bpolega ona na tym, że\b", "oznacza to, że", "legal_style:oznacza_to", 0.72),
         (r"\bpolega on na tym, że\b", "oznacza to, że", "legal_style:oznacza_to", 0.72),
-        (r"\bw dużej mierze\b", "w znacznym stopniu", "legal_style:w_znacznym_stopniu", 0.58),
     ]
 
     if mode in {Mode.standard, Mode.strong}:

@@ -7,6 +7,7 @@ import regex as re
 from .anchors import content_anchor_retention, content_anchor_tokens
 from .protectors import ProtectedText
 from .deontic import extract_deontic_profile, DeonticModality
+from .parties import parties_swapped
 from humanize_pl.nlp.morfeusz import try_load_morfeusz
 from humanize_pl.rules.finite_verbs import has_finite_verb
 from humanize_pl.rules.legal_features import (
@@ -292,6 +293,10 @@ def validate_candidate(
     if not negation_kept and rule not in DOUBLE_NEGATION_RULES:
         return _failed("negation_preserved", "negation changed", checks)
     _passed("negation_preserved", checks)
+
+    if parties_swapped(restored_original, restored_candidate):
+        return _failed("party_roles_preserved", "parties swapped roles", checks)
+    _passed("party_roles_preserved", checks)
 
     anchor_tokens = content_anchor_tokens(protected.restore(original))
     if len(anchor_tokens) >= 4:

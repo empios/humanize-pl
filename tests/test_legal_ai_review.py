@@ -87,6 +87,42 @@ def test_money_and_dates_count_as_legal_risk():
     assert features.money_or_date_count == 2
 
 
+def test_validator_rejects_parties_swapping_roles():
+    for original, candidate in [
+        (
+            "Najemca zapłaci Wynajmującemu czynsz w terminie siedmiu dni.",
+            "Wynajmujący zapłaci Najemcy czynsz w terminie siedmiu dni.",
+        ),
+        (
+            "Zamawiający zapłaci Wykonawcy wynagrodzenie w terminie siedmiu dni.",
+            "Wykonawca zapłaci Zamawiającemu wynagrodzenie w terminie siedmiu dni.",
+        ),
+    ]:
+        validation = validate_candidate(
+            original, candidate, protected=protect_text(original), max_length_ratio=2.0
+        )
+        assert validation.reason == "parties swapped roles", candidate
+
+
+def test_parties_keeping_their_roles_pass_the_swap_check():
+    from humanize_pl.safety.parties import parties_swapped
+
+    for original, candidate in [
+        # Same subject, restated
+        ("Najemca jest zobowiązany do zapłaty na rzecz Wynajmującego.", "Najemca płaci Wynajmującemu."),
+        # Passive to active: a subject appears, none is lost
+        ("Czynsz jest płacony przez Najemcę Wynajmującemu.", "Najemca płaci Wynajmującemu czynsz."),
+        # Clauses reordered, each party keeps its verb
+        (
+            "Najemca płaci czynsz, a Wynajmujący wydaje lokal.",
+            "Wynajmujący wydaje lokal, a Najemca płaci czynsz.",
+        ),
+        # The contract is not a party
+        ("Umowa określa obowiązki Najemcy.", "Najemca ma obowiązki określone w Umowie."),
+    ]:
+        assert not parties_swapped(original, candidate), candidate
+
+
 def test_validator_rejects_changed_code_abbreviation():
     original = "Do szkody stosuje się art. 471 k.c. i strony to akceptują bez zastrzeżeń."
     validation = validate_candidate(

@@ -316,6 +316,7 @@ SAFETY_LABELS = {
     "numbers_preserved": "liczby",
     "deontic_modality_preserved": "normatywność (np. może/musi)",
     "negation_preserved": "przeczenia (nie/brak/bez)",
+    "party_roles_preserved": "role stron",
     "legal_anchor_retention": "podstawy i kotwice prawne",
     "content_anchor_retention": "kluczowe pojęcia",
     "protected_fragments": "fragmenty chronione",

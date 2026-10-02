@@ -16,6 +16,7 @@ from humanize_pl.results import HumanizeResult
 from humanize_pl.rules.engine import RuleEngine
 from humanize_pl.nlp.stanza_engine import SentenceAnalysis, TokenInfo
 from humanize_pl.safety.protectors import protect_text
+from humanize_pl.safety.syntax import stanza_finite_verb_gate
 
 
 FIXTURE_PATH = Path(__file__).parent / "fixtures" / "legal_docs" / "isap_samples.json"
@@ -125,6 +126,15 @@ def test_stanza_gate_rejects_split_without_finite_verb():
         gate["name"] == "stanza_finite_verb" and not gate["ok"]
         for gate in result.traces[0].gate_results
     )
+
+
+def test_stanza_gate_ignores_abbreviation_periods():
+    checks = stanza_finite_verb_gate(
+        "Pracownik wykonuje pracę od 2024 r. w siedzibie pracodawcy i chroni jego mienie.",
+        "Pracownik wykonuje pracę od 2024 r. w siedzibie pracodawcy. Pracownik chroni jego mienie.",
+        FakeStanzaEngine(),
+    )
+    assert all(check.ok for check in checks)
 
 
 def test_stanza_dependency_summary_detects_sentence_roles():

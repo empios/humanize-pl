@@ -8,7 +8,7 @@ from humanize_pl.config import HumanizeConfig, LegalReviewProfile, Mode
 from humanize_pl.core import humanize_text
 from humanize_pl.reports.report import write_json_report
 from humanize_pl.safety.protectors import protect_text
-from humanize_pl.safety.validators import validate_candidate
+from humanize_pl.safety.validators import legal_sensitive_inventory, validate_candidate
 
 
 FIXTURE_PATH = Path(__file__).parent / "fixtures" / "ai_legal_samples.json"
@@ -78,6 +78,14 @@ def test_validator_rejects_changed_code_abbreviation():
     )
     assert not validation.ok
     assert validation.reason == "legally sensitive inventory changed: legal_references"
+
+
+def test_inventory_tracks_percent_section_and_journal_reference():
+    inventory = legal_sensitive_inventory(
+        "Zgodnie z § 5 kara wynosi 10% kwoty (Dz. U. z 2023 r. poz. 1610)."
+    )
+    assert inventory["amounts"] == {"10%": 1}
+    assert {"§ 5", "dz. u. z 2023 r"} <= set(inventory["legal_references"])
 
 
 def test_ai_artifact_reduction_preserves_legal_content():

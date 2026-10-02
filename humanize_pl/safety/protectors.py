@@ -6,14 +6,16 @@ import regex as re
 PROTECTED_PATTERNS = [
     # Legal references
     r"\bart\.\s*\d+[a-zA-Z]?\b(?:\s*§\s*\d+[a-zA-Z]?)?",
-    r"\b§\s*\d+[a-zA-Z]?\b",
+    r"§\s*\d+[a-zA-Z]?\b",
     r"\bust\.\s*\d+[a-zA-Z]?\b",
     r"\bpkt\s*\d+[a-zA-Z]?\b",
-    r"\bDz\.\s*U\.\b[^,.;)]*",
-    # Dates and money
+    r"\bDz\.\s*U\.[^,.;)]*",
+    # Dates and money. The period after "r" stays outside the placeholder, so the
+    # sentence splitter still sees a sentence that ends with a year.
     r"\b\d{1,2}[./-]\d{1,2}[./-]\d{2,4}\b",
-    r"\b\d{4}\s*r\.\b",
-    r"\b\d+(?:[,.]\d+)?\s*(?:zł|PLN|EUR|USD|%)\b",
+    r"\b\d{4}\s*r(?=\.)",
+    r"\b(?:\d{1,3}(?:[   .]\d{3})+(?:,\d+)?|\d+(?:[,.]\d+)?)\s*"
+    r"(?:%|(?:zł(?:ot(?:ych|e|y|ego|ym|ymi))?|PLN|EUR|USD)\b)",
     # Quoted text
     r"„[^”]+”",
     r"\"[^\"]+\"",

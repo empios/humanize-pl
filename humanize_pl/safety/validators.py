@@ -12,6 +12,7 @@ from humanize_pl.rules.legal_features import (
     legal_anchor_retention,
     lost_legal_anchors,
 )
+from humanize_pl.sentence_splitter import split_sentences
 
 BANNED_WORDS = {
     "surprisingly",
@@ -63,8 +64,9 @@ SENTENCE_TRANSITIONS = (
 SENSITIVE_INVENTORY_PATTERNS = {
     "legal_references": (
         r"\bart\.\s*\d+[a-zA-Z]?(?:\s*§\s*\d+[a-zA-Z]?)?",
+        r"§\s*\d+[a-zA-Z]?",
         r"\b(?:ust\.|pkt)\s*\d+[a-zA-Z]?",
-        r"\bDz\.\s*U\.\b[^,.;)]*",
+        r"\bDz\.\s*U\.[^,.;)]*",
         # Code abbreviations: k.c., k.p.c., k.p.a., k.k.w., k.r.o., k.s.h., ...
         r"\bk\.(?:p\.[ckaw]|k\.[ws]|r\.o|s\.h|[ckpwm])\.",
     ),
@@ -72,7 +74,10 @@ SENSITIVE_INVENTORY_PATTERNS = {
         r"\b\d{1,2}[./-]\d{1,2}[./-]\d{2,4}\b",
         r"\b\d{4}\s*r\.",
     ),
-    "amounts": (r"\b\d+(?:[,.]\d+)?\s*(?:zł|PLN|EUR|USD|%)\b",),
+    "amounts": (
+        r"\b(?:\d{1,3}(?:[   .]\d{3})+(?:,\d+)?|\d+(?:[,.]\d+)?)\s*"
+        r"(?:%|(?:zł(?:ot(?:ych|e|y|ego|ym|ymi))?|PLN|EUR|USD)\b)",
+    ),
     "identifiers": (
         r"\b(?:PESEL|NIP|REGON|KRS)\s*[:#]?\s*[A-Z0-9 -]{6,20}\b",
         r"\bPL\d{26}\b",
@@ -114,14 +119,6 @@ def legal_sensitive_inventory(text: str) -> dict[str, Counter[str]]:
     return inventory
 
 
-def _sentence_count(text: str) -> int:
-    return len([p for p in re.split(r"(?<=[.!?])\s+", text.strip()) if p])
-
-
-def _split_sentence_like(text: str) -> list[str]:
-    return [p.strip() for p in re.split(r"(?<=[.!?])\s+", text.strip()) if p.strip()]
-
-
 def _without_transition(sentence: str) -> str:
     body = sentence.strip()
     for transition in SENTENCE_TRANSITIONS:
@@ -130,16 +127,13 @@ def _without_transition(sentence: str) -> str:
     return body
 
 
-def _balanced_pairs(text: str) -> bool:
+def _pair_imbalance(text: str) -> tuple[int, ...]:
+    """Unclosed marks per pair; a mark that opens and closes alike counts by parity."""
     pairs = [("(", ")"), ("[", "]"), ("„", "”"), ('"', '"')]
-    for left, right in pairs:
-        if left == right:
-            if text.count(left) % 2:
-                return False
-            continue
-        if text.count(left) != text.count(right):
-            return False
-    return True
+    return tuple(
+        text.count(left) % 2 if left == right else text.count(left) - text.count(right)
+        for left, right in pairs
+    )
 
 
 def _word_count(text: str) -> int:
@@ -151,11 +145,11 @@ def has_stranded_relative_clause(text: str) -> bool:
 
 
 def _sentence_has_required_predication(original: str, candidate: str) -> bool:
-    original_parts = _split_sentence_like(original)
+    original_parts = split_sentences(original)
     original_has_predication = any(has_finite_verb(_without_transition(part)) for part in original_parts)
     if not original_has_predication:
         return True
-    for part in _split_sentence_like(candidate):
+    for part in split_sentences(candidate):
         checked = _without_transition(part)
         if _word_count(checked) >= 4 and not has_finite_verb(checked):
             return False
@@ -213,7 +207,9 @@ def validate_candidate(
         return _failed("no_dangling_connectors", "dangling connector detected", checks)
     _passed("no_dangling_connectors", checks)
 
-    if not _balanced_pairs(candidate):
+    # Relative to the original: inline lists ("1) …, 2) …") and „…“ quotes are
+    # unbalanced on purpose; only an imbalance the candidate adds is an error.
+    if _pair_imbalance(candidate) != _pair_imbalance(original):
         return _failed("balanced_punctuation", "unbalanced punctuation", checks)
     _passed("balanced_punctuation", checks)
 
@@ -292,7 +288,8 @@ def validate_candidate(
         return _failed("legal_anchor_retention", reason, checks)
     _passed("legal_anchor_retention", checks)
 
-    if _sentence_count(candidate) > _sentence_count(original):
+    parts = split_sentences(candidate)
+    if len(parts) > len(split_sentences(original)):
         if re.search(r"\boraz\b", original, re.IGNORECASE):
             return _failed(
                 "sentence_split_safety",
@@ -301,7 +298,6 @@ def validate_candidate(
             )
 
         # Reject sentence split if any new sentence is only a complement/list item.
-        parts = _split_sentence_like(candidate)
         for idx, part in enumerate(parts):
             checked = _without_transition(part)
             if idx > 0 and not has_finite_verb(checked):

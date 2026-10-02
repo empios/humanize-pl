@@ -1,6 +1,26 @@
 from humanize_pl.core import humanize_text
 from humanize_pl.safety.protectors import protect_text
 from humanize_pl.safety.validators import validate_candidate
+from humanize_pl.sentence_splitter import split_sentences
+
+
+def test_boundary_values_are_protected():
+    cases = {
+        "Zgodnie z § 5 umowy.": "§ 5",
+        "Kara wynosi 10% kwoty.": "10%",
+        "Kara wynosi 10 000 zł.": "10 000 zł",
+        "Kara wynosi 1.000,00 zł.": "1.000,00 zł",
+        "Kara wynosi 100 złotych.": "100 złotych",
+        "(Dz. U. z 2023 r. poz. 1610)": "Dz. U. z 2023 r",
+    }
+    for text, fragment in cases.items():
+        assert fragment in protect_text(text).mapping.values(), text
+
+
+def test_year_placeholder_keeps_sentence_end_visible():
+    protected = protect_text("Umowę zawarto w 2024 r. Strony ją podpisały.")
+    assert list(protected.mapping.values()) == ["2024 r"]
+    assert len(split_sentences(protected.text)) == 2
 
 
 def test_quote_with_reference_is_one_placeholder():

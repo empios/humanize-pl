@@ -195,6 +195,51 @@ def test_validator_rejects_numbers_dates_english_and_placeholder_leaks():
     assert "placeholder" in placeholder.reason
 
 
+def test_validator_accepts_edits_near_lists_quotes_and_abbreviations():
+    edits = [
+        # Inline list: ")" without "(" in both versions
+        (
+            "Najemca zobowiązuje się do: 1) terminowej zapłaty czynszu, 2) dbania o lokal.",
+            "Najemca jest zobowiązany do: 1) terminowej zapłaty czynszu, 2) dbania o lokal.",
+        ),
+        # „…“ quotes as Word types them
+        (
+            "Wynajmujący, zwany dalej „Właścicielem“, oddaje lokal w najem na czas nieokreślony.",
+            "Wynajmujący, zwany dalej „Właścicielem“, oddaje lokal w najem na czas "
+            "bliżej nieokreślony.",
+        ),
+        # Abbreviation periods inside a sentence
+        (
+            "Strony podpisują umowę w dniu 5 maja 2024 r. w Krakowie przy ulicy Długiej.",
+            "Strony podpisują umowę dnia 5 maja 2024 r. w Krakowie przy ulicy Długiej.",
+        ),
+        (
+            "Strony stosują art. 471 k.c. do szkody wyrządzonej przez Najemcę.",
+            "Strony stosują przepis art. 471 k.c. do szkody wyrządzonej przez Najemcę.",
+        ),
+    ]
+    for original, candidate in edits:
+        protected = protect_text(original)
+        validation = validate_candidate(
+            protected.text,
+            protected.re_protect(candidate),
+            protected=protected,
+            max_length_ratio=1.5,
+        )
+        assert validation.ok, (candidate, validation.reason)
+
+
+def test_validator_rejects_added_imbalance():
+    original = "Strona (Najemca) płaci czynsz co miesiąc w kwocie ustalonej w umowie."
+    validation = validate_candidate(
+        original,
+        "Strona (Najemca płaci czynsz co miesiąc w kwocie ustalonej w umowie.",
+        protected=protect_text(original),
+        max_length_ratio=1.5,
+    )
+    assert validation.reason == "unbalanced punctuation"
+
+
 def test_validator_rejects_length_outliers():
     original = " ".join(["pracownik"] * 20)
     too_long = original + " " + " ".join(["dodatkowo"] * 30)

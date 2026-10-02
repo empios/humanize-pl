@@ -5,6 +5,16 @@ import regex as re
 from .base import Candidate
 
 
+def _normalize_spacing(text: str) -> str:
+    # Typo-length runs of plain spaces collapse. Longer runs and spaces next to a
+    # tab line up signature columns; a non-breaking space keeps "§ 1" together.
+    text = re.sub(r"(?<![ \t]) {2,3}(?![ \t])", " ", text).strip()
+    # No space before punctuation, unless a fill-in blank ("w ......") is involved.
+    text = re.sub(r"(?<![.…]) +([,;:!?]|\.(?![.…]))", r"\1", text)
+    # A space after punctuation before a letter only, so "12:00" and "1,5" stay.
+    return re.sub(r"([,;:!?])(?=\p{L})", r"\1 ", text)
+
+
 def cleanup_candidates(sentence: str) -> list[Candidate]:
     out: list[Candidate] = []
     
@@ -18,17 +28,13 @@ def cleanup_candidates(sentence: str) -> list[Candidate]:
         out.append(Candidate(no_em_dash, "ai_artifact:em_dash", 0.5, risk=0.0))
         
     # 2. General spacing cleanup
-    cleaned = re.sub(r"\s+", " ", sentence).strip()
-    cleaned = re.sub(r"\s+([,.;:!?])", r"\1", cleaned)
-    cleaned = re.sub(r"([,;:!?])(?=[\p{L}\p{N}])", r"\1 ", cleaned)
+    cleaned = _normalize_spacing(sentence)
     if cleaned != sentence:
         out.append(Candidate(cleaned, "cleanup_spacing", 0.1, risk=0.0))
-        
+
     # If both applied, offer the combined version
     if no_em_dash != sentence:
-        cleaned_both = re.sub(r"\s+", " ", no_em_dash).strip()
-        cleaned_both = re.sub(r"\s+([,.;:!?])", r"\1", cleaned_both)
-        cleaned_both = re.sub(r"([,;:!?])(?=[\p{L}\p{N}])", r"\1 ", cleaned_both)
+        cleaned_both = _normalize_spacing(no_em_dash)
         if cleaned_both != cleaned and cleaned_both != no_em_dash and cleaned_both != sentence:
             out.append(Candidate(cleaned_both, "cleanup_spacing_and_em_dash", 0.5, risk=0.0))
 

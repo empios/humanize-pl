@@ -3,7 +3,8 @@ from __future__ import annotations
 import regex as re
 
 from humanize_pl.config import Mode
-from .base import Candidate
+from humanize_pl.nlp.morfeusz import genitive_noun_phrase
+from .base import COORDINATION_RE, Candidate
 
 # `niniejszy → ten` lives in lemma_swaps.yaml + lemma_engine.py and is the
 # preferred path whenever Stanza is available. The regex entries below are a
@@ -37,10 +38,36 @@ CONSERVATIVE_REPLACEMENTS: list[tuple[str, str]] = [
     (r"\bdokonywać weryfikacji\b", "weryfikować"),
     (r"\bdokonać weryfikacji\b", "zweryfikować"),
     (r"\bdokonano weryfikacji\b", "zweryfikowano"),
-    # Classic incorrect construction; "na podstawie" is the correct form
-    (r"\bw oparciu o\b", "na podstawie"),
     (r"\bw chwili obecnej\b", "obecnie"),
 ]
+
+# Classic incorrect construction; "na podstawie" is the correct form. It takes
+# the genitive where "w oparciu o" took the accusative, so the noun phrase after
+# it is re-inflected; a placeholder (a reference such as "art. 5") reads the same
+# after both. A phrase Morfeusz cannot inflect is left as it is.
+W_OPARCIU_O = r"\bw oparciu o\b"
+_W_OPARCIU_O_NP = re.compile(
+    W_OPARCIU_O + r"(?P<gap>\s+)(?P<np>__PROTECTED_\d+__|\p{L}+(?:\s+\p{L}+){0,3})",
+    re.IGNORECASE,
+)
+
+
+def _na_podstawie(text: str) -> str:
+    def repl(match: re.Match) -> str:
+        np = match.group("np")
+        if not np.startswith("__PROTECTED_"):
+            parts = re.split(r"(\s+)", np)  # words at even indexes, whitespace between
+            genitive = genitive_noun_phrase(parts[::2])
+            if genitive is None:
+                return match.group(0)
+            phrase_end = 2 * len(genitive) - 1
+            if COORDINATION_RE.match("".join(parts[phrase_end:]) + text[match.end() :]):
+                return match.group(0)
+            parts[:phrase_end:2] = genitive
+            np = "".join(parts)
+        return _preserve_case(match.group(0), "na podstawie") + match.group("gap") + np
+
+    return _W_OPARCIU_O_NP.sub(repl, text)
 
 STANDARD_REPLACEMENTS: list[tuple[str, str]] = [
     (r"\bco do zasady\b", "zasadniczo"),
@@ -150,8 +177,13 @@ def kancelaryzm_candidates(
             continue
         combined = regex.sub(lambda m: _preserve_case(m.group(0), replacement), combined)
         applied.append(pattern)
+    combined = _na_podstawie(combined)
     if combined != sentence:
         candidates.append(Candidate(combined, "kancelaryzm:combined", 0.65))
+
+    na_podstawie = _na_podstawie(sentence)
+    if na_podstawie != sentence:
+        candidates.append(Candidate(na_podstawie, f"kancelaryzm:{W_OPARCIU_O}", 0.55))
 
     for pattern, replacement in replacements:
         regex = re.compile(pattern, re.IGNORECASE)

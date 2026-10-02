@@ -3,6 +3,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
+import regex as re
+
+# The rest of a clause goes on to coordinate ("dane udostępnione i wytyczne").
+# A rule that changes the case of the first conjunct would have to change the
+# others too, so it leaves such a clause alone.
+COORDINATION_RE = re.compile(r"[^,;:.!?]*?\b(?:i|oraz|lub|albo|bądź|ani|a także)\b", re.IGNORECASE)
+
 
 @dataclass(frozen=True)
 class Candidate:

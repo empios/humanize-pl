@@ -47,6 +47,8 @@ def test_passive_accusative_morfeusz():
     assert accusative_form_for_noun("raport") == "raport"
     assert accusative_form_for_noun("badanie") == "badanie"
     assert accusative_form_for_noun("wyrok") == "wyrok"
+    # Masc personal: acc == gen, tagged "gen.acc"
+    assert accusative_form_for_noun("prezes") == "prezesa"
 
 
 def test_passive_np_adj_agreement():
@@ -56,12 +58,21 @@ def test_passive_np_adj_agreement():
 
     cases = [
         # prenominal adj + feminine noun
-        ("Zostało podpisane ważna umowa.", "Podpisano ważną umowę."),
+        ("Została podpisana ważna umowa.", "Podpisano ważną umowę."),
         # postnominal adj after feminine noun (key legal pattern: "decyzja administracyjna")
         ("Została zatwierdzona decyzja administracyjna.", "Zatwierdzono decyzję administracyjną."),
         # prenominal adj + noun + postnominal adj (full NP)
         ("Została przygotowana obszerna analiza finansowa.", "Przygotowano obszerną analizę finansową."),
         ("Została przygotowana ważna ustawa budżetowa.", "Przygotowano ważną ustawę budżetową."),
+        # masculine personal: acc == gen for both noun and adj
+        ("Został powołany nowy prezes zarządu.", "Powołano nowego prezesa zarządu."),
+        # Morfeusz reads "umowa" and "nowa" as nouns and adjectives
+        ("Została zawarta umowa następującej treści.", "Zawarto umowę następującej treści."),
+        ("Została zawarta nowa umowa handlowa.", "Zawarto nową umowę handlową."),
+        # Subject before the verb that reads the same in the accusative
+        ("Raport został sporządzony zgodnie z umową.", "Raport sporządzono zgodnie z umową."),
+        ("Towar odebrano, co zostało potwierdzone protokołem.",
+         "Towar odebrano, co potwierdzono protokołem."),
         # neuter: nom == acc for both noun and adj — must stay unchanged
         ("Zostało wydane orzeczenie administracyjne.", "Wydano orzeczenie administracyjne."),
         ("Zostało wdrożone nowe rozwiązanie techniczne.", "Wdrożono nowe rozwiązanie techniczne."),
@@ -70,6 +81,35 @@ def test_passive_np_adj_agreement():
         cands = passive_candidates(sentence, mode=Mode.standard)
         assert cands, f"No candidate for: {sentence}"
         assert cands[0].text == expected, f"Got: {cands[0].text!r}"
+
+
+def test_passive_needs_an_agreeing_subject_after_the_participle(monkeypatch):
+    """With the subject before the verb, conversion would leave it nominative
+    ("Umowa sporządzono"), so no candidate is offered."""
+    from humanize_pl.rules import passive_voice
+    from humanize_pl.config import Mode
+
+    for sentence in [
+        "Umowa została sporządzona w dwóch jednobrzmiących egzemplarzach.",
+        "Fundacja została ustanowiona przez fundatora aktem notarialnym.",
+        "Uchwała została podjęta jednogłośnie.",
+        # "poza" also reads as a noun ("pose"); the preposition reading wins
+        "Ta umowa została zawarta poza lokalem przedsiębiorstwa.",
+        # Coordination: "umowa użyczenia" would stay nominative
+        "Została zawarta umowa najmu i umowa użyczenia.",
+        "Raport został sporządzony i przekazany zarządowi.",
+        # An impersonal form takes no agent
+        "Została podpisana umowa przez obie strony.",
+        # Masculine personal subject before the verb: "prezesa" would be needed
+        "Prezes został powołany uchwałą zarządu.",
+    ]:
+        assert passive_voice.passive_candidates(sentence, mode=Mode.standard) == [], sentence
+
+    # Without Morfeusz the subject cannot be checked or inflected
+    monkeypatch.setattr(passive_voice, "try_load_morfeusz", lambda: None)
+    assert passive_voice.passive_candidates(
+        "Została przeprowadzona analiza danych.", mode=Mode.standard
+    ) == []
 
 
 def test_passive_accusative_adj_morfeusz():
@@ -316,6 +356,59 @@ def test_kancelaryzmy_b_additions():
         assert any(expected_frag in c.text for c in cands), (
             f"Expected {expected_frag!r} in candidates for {sentence!r}; got: {[c.text for c in cands]}"
         )
+
+
+def test_w_oparciu_o_takes_the_genitive():
+    from humanize_pl.rules.kancelaryzmy import kancelaryzm_candidates
+    from humanize_pl.safety.protectors import protect_text
+    from humanize_pl.config import Mode
+
+    cases = {
+        "Administrator przetwarza dane w oparciu o przepisy rozporządzenia.":
+            "Administrator przetwarza dane na podstawie przepisów rozporządzenia.",
+        "Decyzję wydano w oparciu o obowiązujące przepisy prawa.":
+            "Decyzję wydano na podstawie obowiązujących przepisów prawa.",
+        "W oparciu o umowę Wykonawca wystawia fakturę.":
+            "Na podstawie umowy Wykonawca wystawia fakturę.",
+        "Spółka działa w oparciu o dane udostępnione przez Klienta.":
+            "Spółka działa na podstawie danych udostępnionych przez Klienta.",
+        # A protected reference ("art. 104") reads the same after both phrases
+        protect_text("Decyzję wydano w oparciu o art. 104 k.p.a.").text:
+            "Decyzję wydano na podstawie __PROTECTED_0000__ k.p.a.",
+    }
+    for sentence, expected in cases.items():
+        texts = [c.text for c in kancelaryzm_candidates(sentence, mode=Mode.standard)]
+        assert expected in texts, texts
+
+    for sentence in [
+        # A word Morfeusz cannot inflect
+        "Działamy w oparciu o insighty klientów.",
+        # Coordination: every conjunct would need the genitive
+        "Spółka działa w oparciu o dane udostępnione i wytyczne udzielone przez Klienta.",
+    ]:
+        texts = [c.text for c in kancelaryzm_candidates(sentence, mode=Mode.standard)]
+        assert not any("na podstawie" in text for text in texts), texts
+
+
+def test_cleanup_spacing_keeps_layout_and_numbers():
+    from humanize_pl.rules.cleanup import cleanup_candidates
+
+    for sentence in [
+        "Zamieszkały w Krakowie przy ul. Długiej.",  # non-breaking space
+        "DARCZYŃCA\tOBDAROWANY",  # signature columns
+        "Zamieszkały w ................... (adres).",  # fill-in blank
+        "Kwota ……………… zł zostanie zapłacona w terminie ................ .",
+        "Rodzaj pracy .……………………………",
+        "Wynajmujący                    Najemca",  # aligned signature columns
+        "............\t\t   ............",
+        "Spotkanie o godz. 12:00, kwota 1,5 tys. zł.",  # time and decimal comma
+    ]:
+        assert cleanup_candidates(sentence) == [], sentence
+
+    cands = cleanup_candidates("Strony ustalają  , że umowa obowiązuje.Od dziś.")
+    assert cands[0].text == "Strony ustalają, że umowa obowiązuje.Od dziś."
+    cands = cleanup_candidates("Strony ustalają,że umowa obowiązuje.")
+    assert cands[0].text == "Strony ustalają, że umowa obowiązuje."
 
 
 def test_split_przy_czym_long_sentence():

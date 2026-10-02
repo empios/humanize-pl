@@ -141,10 +141,10 @@ _GENDER_TO_UD = {
 class MorfeuszAnalyzer:
     """Thin wrapper over the morfeusz2 Python binding.
 
-    Only used for two purposes inside the engine: (1) confirming that a
-    surface form exists in the SGJP/Morfeusz dictionary and (2) reading its
-    inflection tag for cross-checks against Stanza features. We never use it
-    to *generate* forms — the engine is rule-based and we keep it that way.
+    Used inside the engine to (1) confirm that a surface form exists in the
+    SGJP/Morfeusz dictionary, (2) read its inflection tag for cross-checks
+    against Stanza features, and (3) generate the case forms a rule needs when
+    it changes a word's syntactic role (accusative subject, genitive object).
     """
 
     def __init__(self) -> None:
@@ -385,9 +385,10 @@ def accusative_form_for_adj(adj_form: str, noun_form: str) -> str:
 def accusative_form_for_noun(word: str) -> str:
     """Return the singular accusative form of a nominative noun.
 
-    For feminine singular nouns the accusative differs (analiza → analizę).
-    For masculine inanimate (m3) and neuter nouns nom=acc — the original
-    word is returned unchanged.  Preserves the capitalisation of `word`.
+    For feminine and masculine personal nouns the accusative differs
+    (analiza → analizę, prezes → prezesa). For masculine inanimate (m3) and
+    neuter nouns nom=acc — the original word is returned unchanged.
+    Preserves the capitalisation of `word`.
     Falls back to `word` when Morfeusz is unavailable or the form is unknown.
     """
     morfeusz = try_load_morfeusz()
@@ -401,11 +402,85 @@ def accusative_form_for_noun(word: str) -> str:
             continue
         for form in morfeusz.generate(a.lemma):
             fparts = form.tag.split(":")
-            # Accept only an explicit singular accusative (not "nom.acc" compound).
-            if form.tag.startswith("subst") and "sg" in fparts and "acc" in fparts:
+            cases = fparts[2].split(".") if len(fparts) > 2 else []
+            # A singular accusative distinct from the nominative: "umowę", or
+            # "prezesa" (tagged "gen.acc"). A "nom.acc" form is the nominative.
+            if form.tag.startswith("subst") and "sg" in fparts and "acc" in cases and "nom" not in cases:
                 acc = form.form
                 if word[:1].isupper():
                     return acc[:1].upper() + acc[1:]
                 return acc
     # nom == acc for this noun type (m3, neut, etc.)
     return word
+
+
+def _genitive_forms(
+    morfeusz: MorfeuszAnalyzer,
+    word: str,
+    heads: set[str],
+    numbers: set[str],
+    genders: set[str],
+) -> set[str]:
+    """Genitives of *word* read as an accusative agreeing with *numbers* and
+    *genders*: none when no reading agrees, several when the readings differ."""
+    forms: set[str] = set()
+    for a in morfeusz.analyses(word):
+        parts = a.tag.split(":")
+        if parts[0] not in heads or len(parts) < 4 or "acc" not in parts[2].split("."):
+            continue
+        if not numbers & set(parts[1].split(".")) or not genders & set(parts[3].split(".")):
+            continue
+        for form in morfeusz.generate(a.lemma):
+            fparts = form.tag.split(":")
+            if (
+                fparts[0] == parts[0]
+                and len(fparts) >= 4
+                and numbers & set(fparts[1].split("."))
+                and "gen" in fparts[2].split(".")
+                and genders & set(fparts[3].split("."))
+                and fparts[4:] == parts[4:]
+            ):
+                forms.add(form.form)
+    return forms
+
+
+def genitive_noun_phrase(words: list[str]) -> list[str] | None:
+    """Put an accusative noun phrase in the genitive: the head noun and the
+    adjectives on either side of it ("obowiązujące przepisy" → "obowiązujących
+    przepisów", "dane udostępnione" → "danych udostępnionych").
+
+    Returns the words of the phrase, from the first. None when Morfeusz is
+    unavailable, no word is an accusative noun, or a form is ambiguous.
+    """
+    morfeusz = try_load_morfeusz()
+    if morfeusz is None:
+        return None
+    for index, word in enumerate(words):
+        heads = [
+            parts
+            for parts in (a.tag.split(":") for a in morfeusz.analyses(word))
+            if parts[0] in {"subst", "ger"} and len(parts) >= 4 and "acc" in parts[2].split(".")
+        ]
+        if heads:
+            break
+    else:
+        return None
+    numbers = {number for parts in heads for number in parts[1].split(".")}
+    genders = {gender for parts in heads for gender in parts[3].split(".")}
+    adjectives = {"adj", "pact", "ppas"}
+    phrase = [(w, _genitive_forms(morfeusz, w, adjectives, numbers, genders)) for w in words[:index]]
+    phrase.append(
+        (words[index], _genitive_forms(morfeusz, words[index], {"subst", "ger"}, numbers, genders))
+    )
+    for word in words[index + 1 :]:
+        forms = _genitive_forms(morfeusz, word, adjectives, numbers, genders)
+        if not forms:
+            break
+        phrase.append((word, forms))
+    if any(len(forms) != 1 for _, forms in phrase):
+        return None
+    out = []
+    for word, forms in phrase:
+        genitive = forms.pop()
+        out.append(genitive[:1].upper() + genitive[1:] if word[:1].isupper() else genitive)
+    return out

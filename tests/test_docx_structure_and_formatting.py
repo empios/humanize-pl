@@ -10,8 +10,13 @@ from docx.shared import Mm
 from humanize_pl.config import Engine
 from humanize_pl.document import DocumentType, FormatPolicy
 from humanize_pl.flows import FlowSettings, run_docx_flow
-from humanize_pl.io.docx_io import docx_text
-from humanize_pl.io.docx_structure import inventory_docx
+from humanize_pl.io.docx_io import docx_text, process_docx
+from humanize_pl.io.docx_structure import (
+    inventory_docx,
+    iter_text_units,
+    load_document,
+    replace_unit_text,
+)
 
 
 def _settings(**kwargs) -> FlowSettings:
@@ -77,6 +82,69 @@ def _complex_docx(path: Path) -> None:
     end.set(qn("w:fldCharType"), "end")
     field_run._r.append(end)
     document.save(path)
+
+
+def _signature_block() -> Document:
+    document = Document()
+    paragraph = document.add_paragraph()
+    paragraph.add_run("Wynajmujący:").add_tab()
+    paragraph.add_run("Jan Kowalski").add_break()
+    paragraph.add_run("Najemca:").add_tab()
+    paragraph.add_run("Anna Nowak")
+    return document
+
+
+def test_text_units_show_tabs_and_line_breaks() -> None:
+    unit = next(iter_text_units(_signature_block()))
+    assert unit.text == "Wynajmujący:\tJan Kowalski\vNajemca:\tAnna Nowak"
+
+
+def test_edits_keep_unchanged_text_in_its_run() -> None:
+    document = Document()
+    paragraph = document.add_paragraph()
+    paragraph.add_run("Strona ").bold = True
+    paragraph.add_run("zapłaci karę")
+    paragraph.add_run(" niezwłocznie.").italic = True
+    unit = next(iter_text_units(document))
+    assert replace_unit_text(unit, "Strona zapłaci karę umowną niezwłocznie!")
+    assert [run.text for run in paragraph.runs] == ["Strona ", "zapłaci karę umowną", " niezwłocznie!"]
+
+
+def test_edits_never_cross_a_line_break_or_hyperlink_edge() -> None:
+    document = _signature_block()
+    paragraph = document.paragraphs[0]
+    unit = next(iter_text_units(document))
+    before = paragraph._p.xml
+    assert not replace_unit_text(unit, "Wynajmujący:\tJan Kowalski Najemca:\tAnna Nowak")
+    assert paragraph._p.xml == before
+
+    document = Document()
+    paragraph = document.add_paragraph("Materiał znajduje się na ")
+    _add_hyperlink(paragraph, "stronie kancelarii", "https://example.test")
+    unit = next(iter_text_units(document))
+    before = paragraph._p.xml
+    assert not replace_unit_text(unit, "Materiał znajduje się naXtronie kancelarii")
+    assert paragraph._p.xml == before
+
+
+def test_edited_text_keeps_its_edge_spaces() -> None:
+    document = Document()
+    paragraph = document.add_paragraph()
+    paragraph.add_run("Strona")
+    paragraph.add_run("zapłaci.")
+    unit = next(iter_text_units(document))
+    assert replace_unit_text(unit, "Strona zapłaci.")
+    first = paragraph.runs[0]._r.find(qn("w:t"))
+    assert first.text == "Strona "
+    assert first.get("{http://www.w3.org/XML/1998/namespace}space") == "preserve"
+
+
+def test_signature_block_survives_processing(tmp_path) -> None:
+    source, target = tmp_path / "input.docx", tmp_path / "output.docx"
+    _signature_block().save(source)
+    process_docx(source, target, mode="standard")
+    assert Document(target).paragraphs[0]._p.xml == Document(source).paragraphs[0]._p.xml
+    assert load_document(target) is not None
 
 
 def test_docx_text_includes_tables_but_not_headers(tmp_path) -> None:

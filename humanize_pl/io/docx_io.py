@@ -111,9 +111,14 @@ def process_docx(
         all_skipped.extend(result.skipped)
         all_candidates.extend(result.all_candidates)
         if result.text != original:
-            replace_unit_text(unit, result.text.replace("\n", " "))
-            changed += 1
-            all_changes.extend(result.changes)
+            if replace_unit_text(unit, result.text.replace("\n", " ")):
+                changed += 1
+                all_changes.extend(result.changes)
+            else:
+                warnings.append(
+                    f"Pominięto redakcję, która przeniosłaby tekst przez tabulator, "
+                    f"podział wiersza lub granicę odnośnika: {unit.location}."
+                )
 
     inventory_differences = save_with_inventory_guard(doc, input_path, output_path)
     if inventory_differences:

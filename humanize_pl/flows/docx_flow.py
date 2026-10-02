@@ -245,7 +245,11 @@ def _write_docx(
                     f"Odrzucono zmianę w chronionym elemencie: {unit.location}."
                 )
             continue
-        replace_unit_text(unit, replacement)
+        if not replace_unit_text(unit, replacement):
+            report.warnings.append(
+                f"Pominięto redakcję, która przeniosłaby tekst przez tabulator, "
+                f"podział wiersza lub granicę odnośnika: {unit.location}."
+            )
 
     if settings.format_policy == FormatPolicy.normalize:
         report.fixes.extend(normalize_document(document, document_type))

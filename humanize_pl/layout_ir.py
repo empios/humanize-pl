@@ -1313,24 +1313,7 @@ def _patch(p, start: int, end: int, value: str) -> None:
         first = False
 
 
-def _set_text(p, text: str) -> None:
-    """Replace the visible text of a paragraph, keeping the first run's formatting."""
-    first = True
-    for kind, element, _t in paragraph_segments(p):
-        if kind == "t":
-            element.text = text if first else ""
-            element.set(XML_SPACE, "preserve")
-            first = False
-
-
-def fill(
-    source: bytes | str,
-    ir: dict[str, Any],
-    values: dict[str, str],
-    *,
-    drop: set[int] | None = None,
-    text_overrides: dict[int, str] | None = None,
-) -> bytes:
+def fill(source: bytes | str, ir: dict[str, Any], values: dict[str, str]) -> bytes:
     """Write values into the blanks of the ORIGINAL docx: only text nodes inside
     a slot change; every run, indent, tab, style and page break stays."""
     data = source if isinstance(source, bytes) else Path(source).read_bytes()
@@ -1338,9 +1321,6 @@ def fill(
     root = etree.fromstring(zin.read("word/document.xml"))
     paragraphs = list(root.find(q("body")).iter(q("p")))
     for block in ir["blocks"]:
-        if text_overrides and block["p"] in text_overrides:
-            _set_text(paragraphs[block["p"]], text_overrides[block["p"]])
-            continue
         todo = [(s["start"], s["end"], values[s["id"]]) for s in block["slots"] if s["id"] in values]
         if not todo:
             continue
@@ -1349,9 +1329,6 @@ def fill(
             raise ValueError(f"akapit {block['p']} nie zgadza się z blueprintem")
         for start, end, value in sorted(todo, reverse=True):
             _patch(p, start, end, value)
-    for index in sorted(drop or (), reverse=True):
-        node = paragraphs[index]
-        node.getparent().remove(node)
     out = io.BytesIO()
     with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as zout:
         for item in zin.infolist():

@@ -531,6 +531,65 @@ def test_split_keeps_coordinated_objects_together():
     assert sentence_flow_candidates(sentence, mode=Mode.strong) == []
 
 
+def test_split_needs_a_comma_before_the_connector():
+    """"ale jednak" is one connector; splitting at "jednak" left "…, ale."."""
+    from humanize_pl.rules.sentence_flow import sentence_flow_candidates
+    from humanize_pl.config import Mode
+
+    sentence = (
+        "Dziewczęta również czasami nie spały spokojnie i długo rozmawiały o wydarzeniach dnia, "
+        "naprawdę rzadko, ale jednak — nie czuły się dość pewnie, gdy matka wracała bardzo późno "
+        "wieczorem z ciężkiej pracy w miejskiej fabryce."
+    )
+    assert len(sentence.split()) >= 32
+    assert sentence_flow_candidates(sentence, mode=Mode.strong) == []
+
+
+def test_drop_wlasnie_keeps_the_case_it_found():
+    from humanize_pl.rules.legal_ai_style import _drop_empty_emphasis
+
+    texts = [c.text for c in _drop_empty_emphasis("Nogi, to właśnie najsłabsza jego strona.", nlp_confidence=None)]
+    assert texts == ["Nogi, to najsłabsza jego strona."]
+    texts = [c.text for c in _drop_empty_emphasis("To właśnie ono odróżnia te umowy.", nlp_confidence=None)]
+    assert texts == ["To ono odróżnia te umowy."]
+
+
+def test_repeated_opening_is_not_dropped_before_punctuation():
+    """Dropping "Osiemdziesiąt rubli" left "! – powtórzyła z naciskiem."."""
+    from humanize_pl.rules.redundancy import _inter_sentence_redundancy
+    from humanize_pl.config import Mode
+
+    cands = _inter_sentence_redundancy(
+        "Osiemdziesiąt rubli! – powtórzyła z naciskiem.",
+        previous_sentence="Za pokój żądał osiemdziesiąt rubli miesięcznie.",
+        mode=Mode.strong,
+        paragraph_features=None,
+    )
+    assert cands == []
+
+
+def test_repeated_opening_drops_only_a_shared_subject():
+    from humanize_pl.rules.redundancy import _inter_sentence_redundancy
+    from humanize_pl.config import Mode
+
+    def drops(sentence: str, previous: str) -> list[str]:
+        cands = _inter_sentence_redundancy(
+            sentence, previous_sentence=previous, mode=Mode.strong, paragraph_features=None
+        )
+        return [c.text for c in cands]
+
+    # An object before a first-person verb: "Proszę wpłacić" lost the amount
+    assert drops("Kwotę proszę wpłacić na rachunek bankowy.", "Kwotę należy wpłacić w terminie.") == []
+    # Mentioned before, but not the subject the previous sentence opened with
+    assert drops("Zmiana może dotyczyć celów przetwarzania.", "Strony mogą wprowadzić zmianę umowy.") == []
+    # Not subjects even where Morfeusz also knows a noun or adjective reading
+    assert drops("Można było zbudować tysiące szkół.", "Można było założyć setki kół.") == []
+    assert drops("Niechaj spoczywają w pokoju popioły.", "Niechaj żyją wiecznie bohaterowie.") == []
+    assert drops("Wykonawca jest odpowiedzialny za szkody.", "Wykonawca wykona dzieło w terminie.") == [
+        "Jest odpowiedzialny za szkody."
+    ]
+
+
 def test_no_split_przy_czym_short_sentence():
     from humanize_pl.rules.sentence_flow import sentence_flow_candidates
     from humanize_pl.config import Mode

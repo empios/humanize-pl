@@ -449,6 +449,21 @@ def test_tautological_adj_inflected_forms():
     assert "koniecznych" not in cands[0].text
 
 
+def test_tautological_adj_uses_wordnet_pairs_only_in_strong_mode():
+    """Słowosieć pairs every member of a synset, so "zielony"/"szary" or the
+    statutory "jasny i zrozumiały" count as doublets. Standard mode trusts only
+    the curated formulas."""
+    from humanize_pl.rules.redundancy import _tautological_adj_candidates
+    from humanize_pl.config import Mode
+
+    for sentence in (
+        "Zostałam poinformowana w sposób jasny i zrozumiały o celach przetwarzania.",
+        "Widać było tylko zieloną i szarą równinę.",
+    ):
+        assert _tautological_adj_candidates(sentence, mode=Mode.standard) == [], sentence
+        assert _tautological_adj_candidates(sentence, mode=Mode.strong), sentence
+
+
 def test_tautological_adj_not_fired_for_non_pair():
     from humanize_pl.rules.redundancy import _tautological_adj_candidates
     from humanize_pl.config import Mode

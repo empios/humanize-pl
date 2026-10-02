@@ -43,6 +43,10 @@ def _safe_split_candidate(
     idx = lower.find(marker)
     if idx <= 0:
         return None
+    # A connector opening a clause follows a comma (", jednak"); without one it
+    # belongs to a phrase ("ale jednak") and the split would leave "…, ale.".
+    if not body[:idx].rstrip().endswith(","):
+        return None
 
     left = body[:idx].strip(" ,;")
     right = body[idx + len(marker):].strip(" ,;")

@@ -34,7 +34,14 @@ SENSITIVE_PATTERNS = [
     r"\b[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+(?:[- ][A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]+)+\b",
 ]
 
-_COMPILED = [re.compile(p, re.IGNORECASE | re.MULTILINE) for p in PROTECTED_PATTERNS]
+# All patterns match in one pass, so a fragment never contains another
+# placeholder: the leftmost match wins (a quote takes the references inside it),
+# ties go to the earlier pattern, and placeholders are numbered in text order.
+_LEGAL_ALTERNATIVES = [f"(?i:{p})" for p in PROTECTED_PATTERNS]
+_PROTECTED_RE = re.compile("|".join(_LEGAL_ALTERNATIVES), re.MULTILINE)
+_SENSITIVE_RE = re.compile(
+    "|".join([f"(?:{p})" for p in SENSITIVE_PATTERNS] + _LEGAL_ALTERNATIVES), re.MULTILINE
+)
 
 
 @dataclass
@@ -52,32 +59,27 @@ class ProtectedText:
 
         Safe as long as the fragments in value are exactly those from the original
         protect_text call — i.e., only Polish words were changed, not legal references.
-        Longest fragments are substituted first to avoid partial-match collisions.
+        Longest fragments are substituted first to avoid partial-match collisions, and
+        the n-th occurrence of a repeated fragment gets the n-th of its placeholders.
         """
+        placeholders: dict[str, list[str]] = {}
+        for placeholder, fragment in self.mapping.items():
+            placeholders.setdefault(fragment, []).append(placeholder)
         result = value
-        for placeholder, fragment in sorted(
-            self.mapping.items(), key=lambda kv: len(kv[1]), reverse=True
-        ):
-            result = result.replace(fragment, placeholder)
+        for fragment in sorted(placeholders, key=len, reverse=True):
+            keys = iter(placeholders[fragment])
+            pieces = result.split(fragment)
+            result = pieces[0] + "".join(next(keys, fragment) + piece for piece in pieces[1:])
         return result
 
 
 def protect_text(text: str, *, include_sensitive: bool = False) -> ProtectedText:
     mapping: dict[str, str] = {}
-    counter = 0
 
     def repl(match: re.Match) -> str:
-        nonlocal counter
-        key = f"__PROTECTED_{counter:04d}__"
+        key = f"__PROTECTED_{len(mapping):04d}__"
         mapping[key] = match.group(0)
-        counter += 1
         return key
 
-    protected = text
-    patterns = list(_COMPILED)
-    if include_sensitive:
-        patterns = [re.compile(p, re.MULTILINE) for p in SENSITIVE_PATTERNS] + patterns
-    for pattern in patterns:
-        protected = pattern.sub(repl, protected)
-
-    return ProtectedText(text=protected, mapping=mapping)
+    pattern = _SENSITIVE_RE if include_sensitive else _PROTECTED_RE
+    return ProtectedText(text=pattern.sub(repl, text), mapping=mapping)

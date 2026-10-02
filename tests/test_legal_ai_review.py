@@ -7,6 +7,11 @@ from humanize_pl.cli import app
 from humanize_pl.config import HumanizeConfig, LegalReviewProfile, Mode
 from humanize_pl.core import humanize_text
 from humanize_pl.reports.report import write_json_report
+from humanize_pl.rules.legal_features import (
+    analyze_legal_review_features,
+    legal_anchor_retention,
+    lost_legal_anchors,
+)
 from humanize_pl.safety.protectors import protect_text
 from humanize_pl.safety.validators import legal_sensitive_inventory, validate_candidate
 
@@ -66,6 +71,20 @@ def test_validator_rejects_loss_of_legal_party_or_obligation():
     )
     assert not validation.ok
     assert validation.reason.startswith("legal anchors removed")
+
+
+def test_legal_anchors_survive_a_change_of_case():
+    # "umowa" -> "umowę", "sąd" -> "sądu": same anchor in another case
+    assert legal_anchor_retention(
+        "Została zawarta umowa, a sąd ją zatwierdził.",
+        "Zawarto umowę, którą zatwierdziło orzeczenie sądu.",
+    ) == 1.0
+    assert lost_legal_anchors("Strona zapłaci karę umowną.", "Zapłaci karę umowną.")
+
+
+def test_money_and_dates_count_as_legal_risk():
+    features = analyze_legal_review_features("Kara wynosi 10% ceny i jest płatna do 2024 r.")
+    assert features.money_or_date_count == 2
 
 
 def test_validator_rejects_changed_code_abbreviation():

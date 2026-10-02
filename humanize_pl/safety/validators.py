@@ -11,7 +11,6 @@ from humanize_pl.rules.finite_verbs import has_finite_verb
 from humanize_pl.rules.legal_features import (
     legal_anchor_retention,
     lost_legal_anchors,
-    normativity_signature,
 )
 
 BANNED_WORDS = {

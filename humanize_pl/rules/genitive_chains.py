@@ -7,7 +7,6 @@ from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 
-import regex as re
 import yaml
 
 from humanize_pl.config import Mode
@@ -47,7 +46,6 @@ def _load_chain_entries() -> list[ChainEntry]:
 
 def _get_genitive_chains(analysis: SentenceAnalysis) -> list[list[TokenInfo]]:
     """Traverse the dependency tree to find chains of Genitive modifiers."""
-    tokens = {tok.id: tok for tok in analysis.tokens}
     children = {tok.id: [] for tok in analysis.tokens}
     for tok in analysis.tokens:
         if tok.head and tok.head > 0:
@@ -59,7 +57,6 @@ def _get_genitive_chains(analysis: SentenceAnalysis) -> list[list[TokenInfo]]:
     # to avoid yielding overlapping sub-chains.
     for tok in analysis.tokens:
         if tok.head and tok.head > 0:
-            head_tok = tokens.get(tok.head)
             # If this token is a genitive modifier of its head, it's not the start of a chain
             if tok.deprel in ("nmod", "nmod:arg", "obj", "iobj") and "Case=Gen" in (tok.feats or ""):
                 continue

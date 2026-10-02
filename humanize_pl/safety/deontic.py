@@ -38,6 +38,7 @@ _BASE_MARKERS = {
         r"\buprawnion[yiae]\b",
         r"\bzezwala\s+się\b",
         r"\bdozwolon[yiae]\b",
+        r"\bwolno\b",
     ],
     # recommendation (should)
     "re": [
@@ -50,7 +51,6 @@ _BASE_MARKERS = {
     # explicit prohibition (must not)
     "pr": [
         r"\bzabrania\s+się\b",
-        r"\bnie\s+wolno\b",
         r"\bzakazuje\s+się\b",
         r"\bzakaz\b",
         r"\bniedozwolon[yiae]\b",
@@ -58,15 +58,19 @@ _BASE_MARKERS = {
 }
 
 # Pre-compile the regexes.
-# To detect negation properly in a fast way without AST parsing, we look up to two 
-# words backward for the word "nie".
-_NEGATION_LOOKBEHIND = r"(?P<neg>\bnie\b\s+(?:\w+\s+){0,2})?"
+# To detect negation properly in a fast way without AST parsing, we look up to two
+# words backward for the word "nie". A conjunction ends the window ("nie pali i może"
+# negates only "pali"), and "nie tylko" does not negate at all.
+_NEGATION_LOOKBEHIND = (
+    r"(?P<neg>\bnie\b\s+(?!tylko\b)"
+    r"(?:(?!(?:i|oraz|lub|albo|a|ale|lecz|że)\b)\w+\s+){0,2})?"
+)
 
 _COMPILED_PATTERNS = {
     "ob": re.compile(_NEGATION_LOOKBEHIND + r"(?P<match>" + "|".join(_BASE_MARKERS["ob"]) + r")", re.IGNORECASE),
     "pe": re.compile(_NEGATION_LOOKBEHIND + r"(?P<match>" + "|".join(_BASE_MARKERS["pe"]) + r")", re.IGNORECASE),
     "re": re.compile(_NEGATION_LOOKBEHIND + r"(?P<match>" + "|".join(_BASE_MARKERS["re"]) + r")", re.IGNORECASE),
-    "pr": re.compile(r"(?P<match>" + "|".join(_BASE_MARKERS["pr"]) + r")", re.IGNORECASE),
+    "pr": re.compile(_NEGATION_LOOKBEHIND + r"(?P<match>" + "|".join(_BASE_MARKERS["pr"]) + r")", re.IGNORECASE),
 }
 
 def extract_deontic_profile(text: str) -> dict[DeonticModality, Counter[str]]:
@@ -83,21 +87,27 @@ def extract_deontic_profile(text: str) -> dict[DeonticModality, Counter[str]]:
     DISCOURSE_VERBS_RE = re.compile(r"^\s*(?:wskazać|zauważyć|podkreślić|zaznaczyć|odnotować|przypomnieć|mieć na uwadze|dodać)\b", re.IGNORECASE)
 
     
-    # 1. Check explicit prohibitions (zabrania się, nie wolno, itp.)
+    # 1. Check explicit prohibitions (zabrania się, zakaz); a negated one permits
     for match in _COMPILED_PATTERNS["pr"].finditer(text):
-        profile[DeonticModality.PROHIBITION][match.group("match").lower()] += 1
-        
+        val = match.group("match").lower()
+        if match.group("neg"):
+            profile[DeonticModality.PERMISSION][f"nie {val}"] += 1
+        else:
+            profile[DeonticModality.PROHIBITION][val] += 1
+
     # 2. Check obligations (musi, zobowiązuje się, należy)
     for match in _COMPILED_PATTERNS["ob"].finditer(text):
         val = match.group("match").lower()
         if "należy" in val and DISCOURSE_VERBS_RE.search(text[match.end():]):
             continue
         if match.group("neg"):
-            profile[DeonticModality.PERMISSION][f"nie {val}"] += 1
+            # "nie musi" leaves a choice, "nie należy" forbids
+            negated = DeonticModality.PROHIBITION if val == "należy" else DeonticModality.PERMISSION
+            profile[negated][f"nie {val}"] += 1
         else:
             profile[DeonticModality.OBLIGATION][val] += 1
-            
-    # 3. Check permissions (może, ma prawo, jest uprawniony)
+
+    # 3. Check permissions (może, ma prawo, wolno); negated ones forbid
     for match in _COMPILED_PATTERNS["pe"].finditer(text):
         val = match.group("match").lower()
         if match.group("neg"):

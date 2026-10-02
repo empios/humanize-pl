@@ -226,7 +226,8 @@ def _safety_summary(change: dict[str, Any]) -> str:
     """Explain which concrete safety checks an accepted change passed."""
     labels = {
         "numbers_preserved": "liczby",
-        "normativity_preserved": "normatywność (np. może/musi)",
+        "deontic_modality_preserved": "normatywność (np. może/musi)",
+        "negation_preserved": "przeczenia (nie/brak/bez)",
         "legal_anchor_retention": "kotwice prawne",
         "content_anchor_retention": "kluczowe pojęcia",
         "protected_fragments": "fragmenty chronione",

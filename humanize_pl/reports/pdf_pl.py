@@ -314,7 +314,8 @@ CHANGE_RATIONALES = {
 
 SAFETY_LABELS = {
     "numbers_preserved": "liczby",
-    "normativity_preserved": "normatywność (np. może/musi)",
+    "deontic_modality_preserved": "normatywność (np. może/musi)",
+    "negation_preserved": "przeczenia (nie/brak/bez)",
     "legal_anchor_retention": "podstawy i kotwice prawne",
     "content_anchor_retention": "kluczowe pojęcia",
     "protected_fragments": "fragmenty chronione",

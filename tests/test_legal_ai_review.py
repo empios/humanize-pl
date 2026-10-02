@@ -68,6 +68,18 @@ def test_validator_rejects_loss_of_legal_party_or_obligation():
     assert validation.reason.startswith("legal anchors removed")
 
 
+def test_validator_rejects_changed_code_abbreviation():
+    original = "Do szkody stosuje się art. 471 k.c. i strony to akceptują bez zastrzeżeń."
+    validation = validate_candidate(
+        original,
+        "Do szkody stosuje się art. 471 k.p.c. i strony to akceptują bez zastrzeżeń.",
+        protected=protect_text(original),
+        max_length_ratio=2.0,
+    )
+    assert not validation.ok
+    assert validation.reason == "legally sensitive inventory changed: legal_references"
+
+
 def test_ai_artifact_reduction_preserves_legal_content():
     text = (
         "Warto wskazać, że pracownik wykonuje pracę pod kierownictwem pracodawcy. "

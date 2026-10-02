@@ -43,6 +43,12 @@ STRANDED_RELATIVE_CLAUSE_RE = re.compile(
     re.IGNORECASE,
 )
 
+# Polarity markers. "brak" counts together with "nie", so "w przypadku braku"
+# -> "gdy nie ma" keeps the count.
+NEGATION_RE = re.compile(r"\bnie\b|\bbrak\p{L}*|\bbez\b", re.IGNORECASE)
+# Rules that resolve a double negation, dropping "nie" without flipping polarity.
+DOUBLE_NEGATION_RULES = {"legal_style:ma_granice"}
+
 SENTENCE_TRANSITIONS = (
     "Ponadto",
     "Z kolei",
@@ -59,6 +65,8 @@ SENSITIVE_INVENTORY_PATTERNS = {
         r"\bart\.\s*\d+[a-zA-Z]?(?:\s*§\s*\d+[a-zA-Z]?)?",
         r"\b(?:ust\.|pkt)\s*\d+[a-zA-Z]?",
         r"\bDz\.\s*U\.\b[^,.;)]*",
+        # Code abbreviations: k.c., k.p.c., k.p.a., k.k.w., k.r.o., k.s.h., ...
+        r"\bk\.(?:p\.[ckaw]|k\.[ws]|r\.o|s\.h|[ckpwm])\.",
     ),
     "dates": (
         r"\b\d{1,2}[./-]\d{1,2}[./-]\d{2,4}\b",
@@ -254,6 +262,15 @@ def validate_candidate(
     if sum(source_deontic[DeonticModality.RECOMMENDATION].values()) != sum(candidate_deontic[DeonticModality.RECOMMENDATION].values()):
         return _failed("deontic_modality_preserved", "deontic drift in recommendation", checks)
     _passed("deontic_modality_preserved", checks)
+
+    # Polarity can flip with no modal in sight: "odpowiada" -> "nie odpowiada",
+    # "bez wypowiedzenia" -> "z zachowaniem wypowiedzenia".
+    negation_kept = len(NEGATION_RE.findall(restored_original)) == len(
+        NEGATION_RE.findall(restored_candidate)
+    )
+    if not negation_kept and rule not in DOUBLE_NEGATION_RULES:
+        return _failed("negation_preserved", "negation changed", checks)
+    _passed("negation_preserved", checks)
 
     anchor_tokens = content_anchor_tokens(protected.restore(original))
     if len(anchor_tokens) >= 4:

@@ -414,7 +414,8 @@ def _legal_review_summary(result: HumanizeResult) -> dict:
         "average_candidate_risk": round(mean(risks), 4) if risks else 0.0,
         "ai_artifact_reductions": accepted_ops.get("ai_artifact_reduction", 0),
         "redundancy_reductions": accepted_ops.get("redundancy_reduction", 0),
-        "normativity_changes_blocked": gate_rejections.get("normativity_preserved", 0),
+        "normativity_changes_blocked": gate_rejections.get("deontic_modality_preserved", 0)
+        + gate_rejections.get("negation_preserved", 0),
         "anchor_loss_blocked": gate_rejections.get("content_anchor_retention", 0)
         + gate_rejections.get("legal_anchor_retention", 0),
         "sentence_completeness_blocked": gate_rejections.get("finite_verb_presence", 0)

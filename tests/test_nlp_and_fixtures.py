@@ -10,7 +10,7 @@ from humanize_pl.config import Engine, HumanizeConfig, Mode
 from humanize_pl.core import humanize_text
 from humanize_pl.io.docx_io import process_docx
 from humanize_pl.pipeline import LegalPipeline
-from humanize_pl.reports.report import write_json_report
+from humanize_pl.reports.report import build_json_report, write_json_report
 from humanize_pl.rules.base import Candidate
 from humanize_pl.results import HumanizeResult
 from humanize_pl.rules.engine import RuleEngine
@@ -211,6 +211,24 @@ def test_quality_gate_cannot_be_bypassed_by_transformer_scores():
     assert result.text == original
     assert result.rejected[0].reason == "deontic drift in category obligation"
     assert not any(gate["name"] == "semantic_similarity" for gate in result.traces[0].gate_results)
+
+
+def test_report_counts_blocked_normativity_changes():
+    session = core.HumanizerSession(
+        HumanizeConfig(mode=Mode.standard),
+        rule_engine=OneCandidateRuleEngine(
+            Candidate(
+                "Strona musi złożyć oświadczenie w terminie 7 dni.",
+                "test:normativity_drift",
+                0.99,
+            )
+        ),
+    )
+    result = session.humanize(
+        "Strona może złożyć oświadczenie w terminie 7 dni.", include_candidates=True
+    )
+    payload = build_json_report(result)
+    assert payload["legal_review"]["normativity_changes_blocked"] == 1
 
 
 def test_report_contains_hybrid_model_metadata(tmp_path):

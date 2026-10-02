@@ -31,6 +31,31 @@ def test_extract_deontic_profile():
     assert sum(profile[DeonticModality.OBLIGATION].values()) == 0
 
 
+def test_negation_scope_in_deontic_profile():
+    # "nie należy" forbids; it does not leave a choice like "nie musi"
+    profile = extract_deontic_profile("Najemcy nie należy wnosić zwierząt.")
+    assert sum(profile[DeonticModality.PROHIBITION].values()) == 1
+    assert sum(profile[DeonticModality.PERMISSION].values()) == 0
+
+    # Negated prohibition -> Permission
+    profile = extract_deontic_profile("Najemcy nie zabrania się trzymania zwierząt.")
+    assert sum(profile[DeonticModality.PERMISSION].values()) == 1
+    assert sum(profile[DeonticModality.PROHIBITION].values()) == 0
+
+    profile = extract_deontic_profile("Najemcy wolno podnajmować lokal.")
+    assert sum(profile[DeonticModality.PERMISSION].values()) == 1
+
+    # A conjunction ends the reach of "nie"
+    profile = extract_deontic_profile("Najemca nie pali i może trzymać psa.")
+    assert sum(profile[DeonticModality.PERMISSION].values()) == 1
+    assert sum(profile[DeonticModality.PROHIBITION].values()) == 0
+
+    # "nie tylko" does not negate the modal
+    profile = extract_deontic_profile("Najemca nie tylko może, ale i musi zapłacić.")
+    assert sum(profile[DeonticModality.PERMISSION].values()) == 1
+    assert sum(profile[DeonticModality.OBLIGATION].values()) == 1
+
+
 def test_validator_rejects_deontic_drift():
     protected = ProtectedText(text="", mapping={})
     
@@ -66,3 +91,42 @@ def test_validator_rejects_deontic_drift():
         protected=protected, max_length_ratio=1.5
     )
     assert not res.ok
+
+
+def test_validator_rejects_negation_flips():
+    protected = ProtectedText(text="", mapping={})
+    flips = [
+        # Modal category unchanged before the fix, polarity reversed
+        ("Najemcy nie zabrania się trzymania w lokalu zwierząt domowych.",
+         "Najemcy zabrania się trzymania w lokalu zwierząt domowych."),
+        ("Najemca nie pali i może trzymać w lokalu zwierzęta domowe.",
+         "Najemca nie pali i nie może trzymać w lokalu zwierząt domowych."),
+        ("Najemcy nie należy wnosić do lokalu zwierząt domowych.",
+         "Najemca może nie wnosić do lokalu zwierząt domowych."),
+        # No modal at all
+        ("Najemca odpowiada za szkody wyrządzone w lokalu przez osoby trzecie.",
+         "Najemca nie odpowiada za szkody wyrządzone w lokalu przez osoby trzecie."),
+        ("Wynajmujący może rozwiązać umowę bez wypowiedzenia w razie zaległości z zapłatą czynszu.",
+         "Wynajmujący może rozwiązać umowę z zachowaniem wypowiedzenia w razie zaległości "
+         "z zapłatą czynszu."),
+        ("Najemca odpowiada nie tylko za szkody wyrządzone przez siebie.",
+         "Najemca odpowiada tylko za szkody wyrządzone przez siebie."),
+    ]
+    for original, candidate in flips:
+        res = validate_candidate(original, candidate, protected=protected, max_length_ratio=1.5)
+        failed = next((check.name for check in res.checks if not check.ok), "accepted")
+        assert failed in {"deontic_modality_preserved", "negation_preserved"}, candidate
+
+
+def test_validator_counts_brak_as_negation():
+    # The rule "przypadek wystąpić brak możliwość" -> "gdy nie ma możliwości"
+    # swaps "brak" for "nie ma" without reversing polarity.
+    protected = ProtectedText(text="", mapping={})
+    res = validate_candidate(
+        "W przypadku braku możliwości wykonania umowy Strona niezwłocznie zawiadamia drugą Stronę.",
+        "Gdy nie ma możliwości wykonania umowy, Strona niezwłocznie zawiadamia drugą Stronę.",
+        protected=protected, max_length_ratio=1.5,
+    )
+    assert res.ok
+    assert any(check.name == "negation_preserved" for check in res.checks)
+

@@ -505,7 +505,17 @@ ich słownictwo: zawiera zwrot, którym sąd mówi we własnym imieniu („zważ
 następuje”), albo opowiada w czasie przeszłym (ponad 60% czasowników, z
 Morfeuszem2) i ani razu nie działa w pierwszej osobie czasu teraźniejszego
 („wnoszę”, „wzywam”). Na próbie orzeczeń SAOS odsetek błędnie przypisanych
-kategorii spadł z 50% do 5%, bez straty na wzorach i dokumentach AI.
+kategorii spadł z 50% do poniżej 1%.
+
+Poza sygnałami kategorię wskazują też wzory. Dokument, który dzieli z
+dostarczonym wzorem co najmniej połowę par sąsiednich słów, dostaje kategorię
+tego wzoru, niezależnie od słownictwa (wniosek o urlop pełen zwrotów pisma
+urzędowego nadal jest wnioskiem o urlop). Dokument, którego nie rozpoznał
+żaden sygnał, dostaje kategorię najbliższego wzoru, jeśli dzieli z nim co
+najmniej jedną czwartą par; orzeczenia nie przekraczają 0,08, a swobodnie
+pisane dokumenty AI 0,2. Mierzone z pominięciem własnego wzoru dokumentu:
+trafność na wzorach wzrosła z 74 do 80 na 107, a na wzorach bez tytułu z 45
+do 67.
 
 Dokument z rozpoznaną kategorią prawną jest sprawdzany w dwóch krokach.
 

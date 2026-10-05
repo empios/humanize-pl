@@ -125,6 +125,30 @@ def test_a_topic_word_alone_does_not_claim_a_contract() -> None:
         assert classify_category(about).category.id == UNSPECIFIED, about
 
 
+def test_a_document_written_from_a_template_takes_its_category() -> None:
+    from humanize_pl import layout_ir
+    from humanize_pl.blueprint import nearest_template, templates
+
+    for template in templates():
+        text = "\n".join(b["text"] for b in layout_ir.text_lines(template.document)["blocks"])
+        assert classify_category(text).category.id == template.category, template.id
+        found = nearest_template(text, leave_out=template.id)
+        assert found is None or found[0].id != template.id
+
+
+def test_a_document_no_signal_recognises_takes_the_closest_template() -> None:
+    from humanize_pl import layout_ir
+    from humanize_pl.blueprint import templates
+
+    # Without its title this claim has none of the pozew phrases, but it
+    # follows the general claim template closely enough
+    template = next(t for t in templates() if t.id == "pozew/pozew_o_ochrone_dobr_osobistych")
+    lines = [b["text"] for b in layout_ir.text_lines(template.document)["blocks"] if b["text"].strip()]
+    guess = classify_category("\n".join(lines[3:]), leave_out=template.id)
+    assert guess.category.id == "pozew"
+    assert guess.evidence[0].startswith("podobieństwo do wzoru")
+
+
 def test_contract_vocabulary_alone_does_not_claim_a_category() -> None:
     about = (
         "Wynagrodzenie i czynsz to pojęcia, które wynajmujący i najemca "

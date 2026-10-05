@@ -325,29 +325,46 @@ def _template_pairs() -> tuple[set[tuple[str, str]], ...]:
     return tuple(_pairs(layout_ir.fixed_words(row.document)) for row in templates())
 
 
-def match_template(text: str) -> tuple[Template, dict[str, Any]] | None:
-    """The template `text` was evidently written from, with the comparison.
-
-    Candidates are ranked by shared word pairs, balancing both directions: a
-    one-page annex is wholly contained in the contract it is appended to, and
-    must not outrank the contract itself. The first that also carries the
-    template's words in order wins; None when no template is close enough.
-    """
+def _ranked(text: str, *, min_recall: float = 0.0) -> list[tuple[float, Template]]:
+    """Templates sharing word pairs with `text`, best first, by the balanced
+    share of pairs (F1 over both directions): a one-page annex is wholly
+    contained in the contract it is appended to, and must not outrank the
+    contract itself. `min_recall` drops templates with less of their own
+    pairs in the text."""
     pairs = _pairs(layout_ir.tokens(text))
-    if not pairs:
-        return None
     ranked: list[tuple[float, Template]] = []
     for row, own in zip(templates(), _template_pairs(), strict=True):
         shared = len(own & pairs)
-        if not own or shared / len(own) < _TEMPLATE_PREFILTER:
+        if not shared or shared / len(own) < min_recall:
             continue
         recall, precision = shared / len(own), shared / len(pairs)
         ranked.append((2 * recall * precision / (recall + precision), row))
+    return sorted(ranked, key=lambda pair: pair[0], reverse=True)
+
+
+def nearest_template(text: str, *, leave_out: str | None = None) -> tuple[Template, float] | None:
+    """The template sharing the most word pairs with `text`, and that share;
+    None when none shares any. `leave_out` names a template to pass over, so
+    a template's own text can be placed as if it were a new document."""
+    for share, row in _ranked(text):
+        if row.id != leave_out:
+            return row, share
+    return None
+
+
+def match_template(text: str) -> tuple[Template, dict[str, Any]] | None:
+    """The template `text` was evidently written from, with the comparison.
+
+    Candidates are ranked by shared word pairs (`_ranked`). The first that
+    also carries the template's words in order wins; None when no template
+    is close enough.
+    """
+    ranked = _ranked(text, min_recall=_TEMPLATE_PREFILTER)
     if not ranked:
         return None
     candidate = layout_ir.from_text(text)
     size = sum(1 for b in candidate["blocks"] if b["role"] not in ("spacer", "pagebreak"))
-    for _score, row in sorted(ranked, key=lambda pair: pair[0], reverse=True)[:_TEMPLATE_SHORTLIST]:
+    for _score, row in ranked[:_TEMPLATE_SHORTLIST]:
         own_size = sum(1 for b in row.document["blocks"] if b["role"] not in ("spacer", "pagebreak"))
         if size > 4 * own_size + 40:
             # Far longer than the template: not a copy of it, and the in-order

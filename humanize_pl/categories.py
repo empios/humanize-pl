@@ -44,6 +44,16 @@ SIGNAL_WEIGHT = 1
 # common words, and the document is left unspecified.
 MIN_SCORE = 3
 
+# A document sharing half of its word pairs with a shipped template (balanced
+# over both directions) is that template whatever its vocabulary suggests: a
+# leave request full of official-letter phrases is still a leave request.
+# Below a quarter it shares only the register of legal Polish: court rulings
+# stay under 0.08 and freely written AI drafts under 0.2. In between, the
+# template decides only when no signal does. Measured leaving each template's
+# own text out of the search.
+TEMPLATE_OVERRIDE = 0.5
+TEMPLATE_FALLBACK = 0.25
+
 # A text that narrates in the past tense reports on events instead of
 # performing an act: rulings run at about two thirds past-tense verbs, while no
 # shipped template or AI-drafted document goes above one half. A filing that
@@ -215,30 +225,25 @@ def categories_for(family: DocumentType) -> list[LegalCategory]:
     return [row for row in catalogue().values() if row.family is family]
 
 
-def classify_category(text: str) -> CategoryGuess:
-    """Assign the document to exactly one category.
+def _nearest_template(text: str, leave_out: str | None):
+    try:
+        # Imported here because this module also ships standalone, without
+        # the templates; there the search is skipped.
+        from humanize_pl.blueprint import nearest_template
+    except ImportError:
+        return None
+    return nearest_template(text, leave_out=leave_out)
 
-    An unrecognised document is reported as `nieokreslony` rather than pushed
-    into the closest-looking bucket. A blueprint chosen from a guessed category
-    would report missing sections the document was never supposed to have,
-    which is worse than admitting the category is unknown.
 
-    A text in which a court speaks for itself ("Sąd zważył, co następuje"), or
-    one that narrates in the past tense without ever acting in the first
-    person, reports on documents rather than being one. It stays unspecified
-    however much of a contract or a statement of claim it quotes.
-    """
-    lowered = text.casefold()
-    reported = next(
-        (phrase for phrase, pattern in _reporting_markers() if pattern.search(lowered)), None
+def _from_template(template, share: float) -> CategoryGuess:
+    return CategoryGuess(
+        get(template.category),
+        round(min(0.98, share), 2),
+        (f"podobieństwo do wzoru „{template.label_pl}” ({share:.0%} wspólnych par słów)",),
     )
-    if reported is not None:
-        return CategoryGuess(get(UNSPECIFIED), 0.0, (reported,))
-    past = _past_tense_share(text)
-    if past is not None and past > NARRATIVE_SHARE:
-        return CategoryGuess(
-            get(UNSPECIFIED), 0.0, (f"relacja w czasie przeszłym ({past:.0%} czasowników)",)
-        )
+
+
+def _by_signals(lowered: str) -> CategoryGuess:
     scored: list[tuple[int, LegalCategory, list[str]]] = []
     for row in catalogue().values():
         if row.id == UNSPECIFIED:
@@ -260,3 +265,41 @@ def classify_category(text: str) -> CategoryGuess:
     margin = best_score - runner_up
     confidence = min(0.98, 0.45 + 0.05 * best_score + 0.06 * margin)
     return CategoryGuess(winner, round(confidence, 2), tuple(evidence[:5]))
+
+
+def classify_category(text: str, *, leave_out: str | None = None) -> CategoryGuess:
+    """Assign the document to exactly one category.
+
+    An unrecognised document is reported as `nieokreslony` rather than pushed
+    into the closest-looking bucket. A blueprint chosen from a guessed category
+    would report missing sections the document was never supposed to have,
+    which is worse than admitting the category is unknown.
+
+    A text in which a court speaks for itself ("Sąd zważył, co następuje"), or
+    one that narrates in the past tense without ever acting in the first
+    person, reports on documents rather than being one. It stays unspecified
+    however much of a contract or a statement of claim it quotes.
+
+    A document that closely follows a shipped template takes its category; one
+    that no signal recognises takes the category of the template it resembles,
+    if it resembles one enough. `leave_out` names a template to pass over, to
+    measure how this does on documents it has not seen.
+    """
+    lowered = text.casefold()
+    reported = next(
+        (phrase for phrase, pattern in _reporting_markers() if pattern.search(lowered)), None
+    )
+    if reported is not None:
+        return CategoryGuess(get(UNSPECIFIED), 0.0, (reported,))
+    past = _past_tense_share(text)
+    if past is not None and past > NARRATIVE_SHARE:
+        return CategoryGuess(
+            get(UNSPECIFIED), 0.0, (f"relacja w czasie przeszłym ({past:.0%} czasowników)",)
+        )
+    nearest = _nearest_template(text, leave_out)
+    if nearest is not None and nearest[1] >= TEMPLATE_OVERRIDE:
+        return _from_template(*nearest)
+    guess = _by_signals(lowered)
+    if not guess.specified and nearest is not None and nearest[1] >= TEMPLATE_FALLBACK:
+        return _from_template(*nearest)
+    return guess

@@ -117,10 +117,12 @@ def structure_metrics(ai: list[tuple[str, str]], rulings: list[str] | None) -> d
     for template in rows:
         lines = _template_lines(template.document)
         text = "\n".join(lines)
-        guess = classify_category(text)
+        # Each template is placed as a new document would be: its own entry is
+        # left out of the template search, which would otherwise find itself.
+        guess = classify_category(text, leave_out=template.id)
         counts["category_exact"] += guess.category.id == template.category
         counts["category_family"] += guess.category.family == families[template.category]
-        untitled = classify_category("\n".join(lines[TITLE_LINES:]))
+        untitled = classify_category("\n".join(lines[TITLE_LINES:]), leave_out=template.id)
         counts["category_exact_untitled"] += untitled.category.id == template.category
         blueprint = blueprint_for(template.category)
         counts["checklist_false_blocks"] += blueprint is not None and check(text, blueprint).blocking

@@ -163,6 +163,24 @@ def test_inventory_tracks_percent_section_and_journal_reference():
     assert {"§ 5", "dz. u. z 2023 r"} <= set(inventory["legal_references"])
 
 
+def test_only_a_repeated_additive_opener_is_dropped():
+    # The first "Dodatkowo" adds a cumulative condition; it is not overuse
+    single = (
+        "Powodowie wykazali posiadanie nieruchomości. "
+        "Dodatkowo powinni udowodnić, że korzystali z trwałego i widocznego urządzenia."
+    )
+    assert humanize_text(single, mode="standard").text == single
+
+    repeated = (
+        "Pozwany nie zapłacił czynszu. Ponadto pozwany nie wydał lokalu. "
+        "Ponadto pozwany nie oddał kluczy."
+    )
+    assert humanize_text(repeated, mode="standard").text == (
+        "Pozwany nie zapłacił czynszu. Ponadto pozwany nie wydał lokalu. "
+        "Pozwany nie oddał kluczy."
+    )
+
+
 def test_ai_artifact_reduction_preserves_legal_content():
     text = (
         "Warto wskazać, że pracownik wykonuje pracę pod kierownictwem pracodawcy. "

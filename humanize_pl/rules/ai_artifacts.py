@@ -1,11 +1,15 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
+
 import regex as re
 
 from humanize_pl.config import Mode
 from humanize_pl.rules.finite_verbs import has_finite_verb
 from .base import Candidate
 
+
+REPETITIVE_TRANSITION = "ai_artifact:drop_repetitive_transition"
 
 DISCOURSE_INTRO_PATTERNS: list[tuple[str, str, float, float]] = [
     (
@@ -17,7 +21,7 @@ DISCOURSE_INTRO_PATTERNS: list[tuple[str, str, float, float]] = [
     ),
     (
         r"^\s*(?:ponadto|co więcej|dodatkowo)\s*,?\s+",
-        "ai_artifact:drop_repetitive_transition",
+        REPETITIVE_TRANSITION,
         0.53,
         0.17,
     ),
@@ -33,8 +37,13 @@ STRONG_PATTERNS: list[tuple[str, str, float, float]] = [
 ]
 
 
-def ai_artifact_candidates(sentence: str, *, mode: Mode) -> list[Candidate]:
-    """Remove deterministic, low-information AI-style legal discourse markers."""
+def ai_artifact_candidates(
+    sentence: str, *, mode: Mode, earlier: Sequence[str] = ()
+) -> list[Candidate]:
+    """Remove deterministic, low-information AI-style legal discourse markers.
+
+    `earlier` holds the paragraph's sentences before this one.
+    """
     if mode == Mode.conservative:
         return []
 
@@ -47,6 +56,11 @@ def ai_artifact_candidates(sentence: str, *, mode: Mode) -> list[Candidate]:
         regex = re.compile(pattern, re.IGNORECASE)
         match = regex.match(sentence)
         if not match:
+            continue
+        # An additive opener is overuse only once the paragraph has had one: the
+        # first "Ponadto" or "Dodatkowo" adds an argument or a cumulative
+        # condition, the ones after it repeat the move.
+        if rule == REPETITIVE_TRANSITION and not any(regex.match(row) for row in earlier):
             continue
         removed = match.group(0)
         if "__PROTECTED_" in removed:

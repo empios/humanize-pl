@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 
 from humanize_pl.config import Mode
@@ -30,12 +31,15 @@ class RuleEngine:
         features: SentenceFeatures | None = None,
         paragraph_features: ParagraphFeatures | None = None,
         intensity: int | None = None,
+        earlier_sentences: Sequence[str] = (),
     ) -> list[Candidate]:
         features = features or analyze_sentence_features(sentence)
         candidates: list[Candidate] = []
         candidates.extend(cleanup_candidates(sentence))
         candidates.extend(legal_style_candidates(sentence, mode=self.mode))
-        candidates.extend(ai_artifact_candidates(sentence, mode=self.mode))
+        candidates.extend(
+            ai_artifact_candidates(sentence, mode=self.mode, earlier=earlier_sentences)
+        )
         candidates.extend(
             legal_ai_style_candidates(
                 sentence,

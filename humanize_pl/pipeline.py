@@ -196,6 +196,7 @@ class LegalPipeline:
                 features=features_before,
                 paragraph_features=context.paragraph_features,
                 intensity=context.intensity,
+                earlier_sentences=paragraph_sentences[:sentence_index],
             )
             candidates.extend(
                 self._redundancy_candidates(

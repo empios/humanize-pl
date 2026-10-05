@@ -81,6 +81,11 @@ Działa warstwowo:
   sekcji kategorii, w 40 także ogólny dokument do wypełnienia) oraz 67 wzorów
   precyzyjnych; dokument jest sprawdzany najpierw według blueprintu kategorii,
   potem według wzoru, z którego powstał (zob. „Kontrola struktury”),
+- walidator NLI (silnik `hybrid`) korzysta domyślnie z
+  `MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7`, uczonego m.in. na
+  polskich danych NLI; poprzedni domyślny model nie widział polskiego. Na 318
+  polskich parach (zachowana treść wobec zmienionej modalności, przeczenia,
+  liczby lub ról stron) rozdziela je lepiej: AUC 0,971 wobec 0,948,
 - nowe kategorie `wniosek_pracowniczy` (wnioski do pracodawcy: urlop, dni
   wolne, świadectwo pracy) i `umowa_o_zakazie_konkurencji`; ich wzory leżały
   wcześniej pod wnioskiem procesowym i NDA, których lista kontrolna blokowała

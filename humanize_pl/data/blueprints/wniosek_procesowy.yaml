@@ -2,8 +2,7 @@
 # wniosek wszczynający, np. o uchylenie mandatu karnego).
 #
 # Wnioski kadrowe (urlop, świadectwo pracy) nie są kierowane do sądu i nie mają
-# tej struktury. Leżą jako wzory w templates/wniosek_procesowy/ i są rozpoznawane
-# dopasowaniem do wzoru, nie tym szkieletem.
+# tej struktury: mają własną kategorię, wniosek_pracowniczy.
 
 category: wniosek_procesowy
 label_pl: wniosek procesowy

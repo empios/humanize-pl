@@ -71,10 +71,14 @@ Działa warstwowo:
   i odtworzeniem obu stron pomiaru z gotowego arkusza XLSX,
 - przepływ XLSX zapisuje raport JSON domyślnie, tak jak DOCX (wcześniej tylko
   po podaniu `--report`, więc zwykły przebieg nie zostawiał czego odtworzyć),
-- kontrola struktury oparta na realnych wzorach: 40 blueprintów ogólnych (lista
-  sekcji kategorii i ogólny dokument do wypełnienia) oraz 67 wzorów
+- kontrola struktury oparta na realnych wzorach: 42 blueprinty ogólne (lista
+  sekcji kategorii, w 40 także ogólny dokument do wypełnienia) oraz 67 wzorów
   precyzyjnych; dokument jest sprawdzany najpierw według blueprintu kategorii,
-  potem według wzoru, z którego powstał (zob. „Kontrola struktury”).
+  potem według wzoru, z którego powstał (zob. „Kontrola struktury”),
+- nowe kategorie `wniosek_pracowniczy` (wnioski do pracodawcy: urlop, dni
+  wolne, świadectwo pracy) i `umowa_o_zakazie_konkurencji`; ich wzory leżały
+  wcześniej pod wnioskiem procesowym i NDA, których lista kontrolna blokowała
+  je niesłusznie (wymagała m.in. oznaczenia sądu),
 
 ## Co nowego w 0.2.2
 

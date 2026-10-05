@@ -524,8 +524,8 @@ def check_category(text: str, category: str) -> BlueprintReport:
     A category with no blueprint, or an unrecognised document, produces a
     report that says so rather than a pass. "Nothing was checked" and "nothing
     was wrong" must not look the same in a report someone signs off on. The
-    template search is not limited to `category`: a leave request read as a
-    procedural motion still finds its own template.
+    template search is not limited to `category`: a document read as another
+    category still finds its own template.
     """
     blueprint = blueprint_for(category)
     if blueprint is None:

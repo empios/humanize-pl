@@ -57,6 +57,8 @@ def test_unspecified_category_exists_and_has_no_signals() -> None:
         ("ai_legal_06_wezwanie_do_zaplaty.txt", "wezwanie_do_zaplaty"),
         ("ai_legal_07_pozew_zaplate.txt", "pozew"),
         ("ai_legal_08_polityka_rodo.txt", "polityka_prywatnosci"),
+        # An opinion about a non-compete agreement names it, but does not conclude it
+        ("ai_legal_10_opinia_zakaz_konkurencji.txt", "opinia_prawna"),
     ],
 )
 def test_known_documents_land_in_their_category(fixture: str, expected: str) -> None:
@@ -302,6 +304,26 @@ def test_two_close_findings_leave_the_document_unspecified() -> None:
     )
     assert strong.category.id == "umowa_zlecenia"
     assert strong.confidence == CONFIDENCE_STRONG_SIGNALS
+
+
+def test_a_leave_request_is_an_employee_request_not_a_court_motion() -> None:
+    from humanize_pl.blueprint import blueprint_for, check
+
+    text = (
+        "Kraków, dnia 3 marca 2026 r.\n"
+        "Jan Kowalski\n"
+        "Do pracodawcy: Alfa sp. z o.o.\n"
+        "WNIOSEK O UDZIELENIE URLOPU BEZPŁATNEGO\n"
+        "Na podstawie art. 174 § 1 Kodeksu pracy zwracam się z wnioskiem o udzielenie mi "
+        "urlopu bezpłatnego w okresie od 1 do 30 kwietnia 2026 r.\n"
+        "(podpis pracownika)"
+    )
+    guess = classify_category(text)
+    assert guess.category.id == "wniosek_pracowniczy"
+    assert "wniosek o udzielenie urlopu" in guess.evidence
+    report = check(text, blueprint_for("wniosek_pracowniczy"))
+    assert not report.blocking
+    assert not any("sądu" in issue for issue in report.issues)
 
 
 def test_a_phrase_listed_as_both_gate_and_signal_scores_once() -> None:

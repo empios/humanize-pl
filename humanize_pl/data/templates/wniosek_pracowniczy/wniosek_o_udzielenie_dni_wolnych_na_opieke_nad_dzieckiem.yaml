@@ -1,6 +1,6 @@
-template: Wniosek o udzielenie urlopu macierzyńskiego.docx
-category: wniosek_procesowy
-label_pl: Wniosek o udzielenie urlopu macierzyńskiego
+template: Wniosek o udzielenie dni wolnych na opiekę nad dzieckiem.docx
+category: wniosek_pracowniczy
+label_pl: Wniosek o udzielenie dni wolnych na opiekę nad dzieckiem
 default_size: 11.0
 page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
 blocks:
@@ -38,13 +38,13 @@ blocks:
   - {id: dane_pracownika_imie_i_nazwisko_adres_zamieszkan, span: [0, 55], type: text, hint: 'dane pracownika – imię i nazwisko, adres zamieszkania'}
 - p: 6
   role: hint
-  layout: {size: 10.0}
+  layout: {size: 10.0, italic: true}
   text: (dane pracownika – imię i nazwisko,
   hint_for: 5
   hint_kind: label
 - p: 7
   role: hint
-  layout: {size: 10.0}
+  layout: {size: 10.0, italic: true}
   text: ' adres zamieszkania)'
   hint_for: 5
   hint_kind: label
@@ -78,45 +78,46 @@ blocks:
 - p: 15
   role: body
   layout: {align: center, size: 14.0, bold: true}
-  text: 'WNIOSEK O UDZIELENIE URLOPU MACIERZYŃSKIEGO '
+  text: WNIOSEK O UDZIELENIE DNI WOLNYCH NA OPIEKĘ NAD DZIECKIEM
 - {p: 16, role: spacer}
-- {p: 17, role: spacer}
-- p: 18
+- p: 17
   role: body
-  layout: {align: justify, size: 10.0, spans: [{start: 48, end: 73, italic: true}, {start: 93, end: 108, italic: true}]}
-  text: W związku z urodzeniem dziecka ………………………………………… (imię i nazwisko dziecka) w dniu …………………………… (data urodzin), na podstawie art. 180 § 1
-    pkt 1 ustawy z dnia 26 czerwca 1974 r. - Kodeks pracy, zwracam się z wnioskiem o udzielenie mi urlopu macierzyńskiego w wymiarze ..........................
-    tygodni, począwszy od dnia .......................... do dnia ..............................
+  layout: {align: justify, size: 10.0, spans: [{start: 147, end: 153, italic: true}, {start: 178, end: 184, italic: true}, {start: 198, end: 233,
+        italic: true}, {start: 285, end: 304, italic: true}, {start: 324, end: 343, italic: true}]}
+  text: 'Na podstawie art. 188 ustawy z dnia 26 czerwca 1974 r. - Kodeks pracy, zwracam się z wnioskiem o udzielenie mi zwolnienia od pracy w
+    dniu …………………… (data) / w dniach od ……………………… (data) do ……………………… (data) (należy wybrać odpowiednie) w celu sprawowania opieki nad dzieckiem
+    ……………………………… (imię i nazwisko) urodzonym ………………………… (data urodzenia). '
   slots:
-  - {id: imie_i_nazwisko_dziecka, span: [31, 47], type: person, hint: imię i nazwisko dziecka}
-  - {id: data_urodzin, span: [81, 92], type: date, hint: data urodzin}
-  - {id: p18_3, span: [264, 290], type: text, context: urlopu macierzyńskiego w wymiarze ▢ tygodni począwszy}
-  - {id: p18_4, span: [318, 344], type: date, context: tygodni począwszy od dnia ▢ do dnia}
-  - {id: p18_5, span: [353, 383], type: date, context: od dnia do dnia ▢}
+  - {id: data, span: [138, 146], type: date, hint: data}
+  - {id: data_2, span: [168, 177], type: date, hint: data}
+  - {id: data_3, span: [188, 197], type: date, hint: data}
+  - {id: imie_i_nazwisko, span: [273, 285], type: person, hint: imię i nazwisko}
+  - {id: data_urodzenia, span: [314, 324], type: date, hint: data urodzenia}
   inline_hints:
-  - {span: [48, 73], text: imię i nazwisko dziecka}
-  - {span: [93, 107], text: data urodzin}
-- {p: 19, role: spacer}
-- p: 20
+  - {span: [147, 153], text: data}
+  - {span: [178, 184], text: data}
+  - {span: [198, 204], text: data}
+  - {span: [286, 303], text: imię i nazwisko}
+  - {span: [325, 341], text: data urodzenia}
+- {p: 18, role: spacer}
+- p: 19
   role: body
   layout: {align: justify, size: 10.0}
-  text: Oświadczam, że do tej pory wykorzystałam z tego tytułu .............................. tygodni urlopu macierzyńskiego.
-  slots:
-  - {id: p20_1, span: [55, 85], type: text, context: wykorzystałam z tego tytułu ▢ tygodni urlopu}
+  text: 'Jednocześnie informuję, że w bieżącym roku nie korzystałam(em) / korzystałam(em) ze zwolnienia od pracy na opiekę nad wymienionym dzieckiem.
+    Drugi rodzic dziecka w bieżącym roku nie korzystał i nie będzie korzystał ze zwolnienia od pracy z tytułu opieki nad wymienionym dzieckiem. '
+- {p: 20, role: spacer}
 - {p: 21, role: spacer}
-- {p: 22, role: spacer}
-- {p: 23, role: spacer}
-- p: 24
+- p: 22
   role: blank_line
   layout: {align: right, indent: {first: 708}, size: 10.0}
   text: …………………………………
   slots:
   - {id: podpis_pracownika, span: [0, 13], type: signature, hint: podpis pracownika}
-- p: 25
+- p: 23
   role: hint
   layout: {align: right, indent: {first: 708}, size: 10.0, italic: true, tabs: 1}
   text: "(podpis pracownika)\t"
-  hint_for: 24
+  hint_for: 22
   hint_kind: label
-- {p: 26, role: spacer}
-- {p: 27, role: spacer}
+- {p: 24, role: spacer}
+- {p: 25, role: spacer}

@@ -1,0 +1,36 @@
+# Szkielet struktury: umowa o zakazie konkurencji (do umowy o pracę albo
+# cywilnoprawna). Odszkodowanie jest oczekiwane, nie wymagane: obowiązkowe jest
+# tylko przy zakazie po ustaniu stosunku pracy (art. 101² k.p.). Ogólnego
+# dokumentu do wypełnienia nie ma: oba rodzaje mają własne wzory w
+# templates/umowa_o_zakazie_konkurencji/.
+
+category: umowa_o_zakazie_konkurencji
+label_pl: umowa o zakazie konkurencji
+check_order: false
+sections:
+- id: komparycja
+  label_pl: komparycja (strony)
+  severity: required
+  matches: [zawarta w dniu, zawarta dnia, zawarta pomiędzy, zawarta między, zawarto umowę,
+    zwanym dalej, zwaną dalej, zwanymi dalej, zwany dalej, zwana dalej, zwanego dalej,
+    zwanej dalej, zwani dalej, z siedzibą w, zamieszkał, pesel, 'nip:', 'nip ', krs, legitymując]
+- id: zakres
+  label_pl: zakres zakazu
+  severity: required
+  matches: [działalność konkurencyjn, działalności konkurencyjn, zakaz konkurencji, zakazu konkurencji]
+- id: czas
+  label_pl: czas obowiązywania zakazu
+  severity: expected
+  matches: [przez okres, w okresie trwania, po ustaniu, po rozwiązaniu]
+- id: odszkodowanie
+  label_pl: odszkodowanie
+  severity: expected
+  matches: [odszkodowani]
+- id: kara
+  label_pl: kara umowna
+  severity: expected
+  matches: [kar umown, karę umowną, kara umowna]
+- id: koncowe
+  label_pl: postanowienia końcowe
+  severity: expected
+  matches: [w sprawach nieuregulowanych, egzemplarzach, formy pisemnej]

@@ -1,6 +1,6 @@
-template: Umowa o zakazie konkurencji (cywilnoprawna).docx
-category: umowa_nda
-label_pl: Umowa o zakazie konkurencji (cywilnoprawna)
+template: Umowa o zakazie konkurencji do umowy o pracę.docx
+category: umowa_o_zakazie_konkurencji
+label_pl: Umowa o zakazie konkurencji do umowy o pracę
 default_size: 11.0
 page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
 blocks:
@@ -40,9 +40,9 @@ blocks:
 - {p: 8, role: spacer}
 - p: 9
   role: party_alias
-  layout: {align: justify, size: 10.0, spans: [{start: 13, end: 26, bold: true}]}
-  text: 'zwanym dalej Zleceniodawcą, '
-  alias: Zleceniodawcą
+  layout: {align: justify, size: 10.0, spans: [{start: 13, end: 23, bold: true}]}
+  text: 'zwanym dalej Pracodawcą, '
+  alias: Pracodawcą
 - p: 10
   role: party_connector
   layout: {align: justify, size: 10.0}
@@ -65,9 +65,9 @@ blocks:
 - {p: 13, role: spacer}
 - p: 14
   role: party_alias
-  layout: {align: justify, size: 10.0, spans: [{start: 13, end: 27, bold: true}]}
-  text: 'zwanym dalej Zleceniobiorcą, '
-  alias: Zleceniobiorcą
+  layout: {align: justify, size: 10.0, spans: [{start: 13, end: 25, bold: true}]}
+  text: 'zwanym dalej Pracownikiem, '
+  alias: Pracownikiem
 - {p: 15, role: spacer}
 - p: 16
   role: party_alias
@@ -87,8 +87,8 @@ blocks:
 - {p: 21, role: spacer}
 - p: 22
   role: body
-  layout: {align: justify, size: 10.0, spans: [{start: 56, end: 69, bold: true}]}
-  text: 'Za działalność konkurencyjną w stosunku do działalności Zleceniodawcy uznaje się:'
+  layout: {align: justify, size: 10.0, spans: [{start: 56, end: 66, bold: true}]}
+  text: 'Za działalność konkurencyjną w stosunku do działalności Pracodawcy uznaje się:'
 - p: 23
   role: item
   layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
@@ -107,12 +107,12 @@ blocks:
   text: ……………………………………………………………………………………………………………………………….. .
   slots:
   - {id: opisanie_dzialalnosci_konkurencyjnej_moze_polega, span: [0, 50], type: text, hint: opisanie działalności konkurencyjnej może polegać
-      w szczególności na wskazaniu świadczeń jakich Zleceniobiorca nie może udzielać w związku z zawartą umową o świadczenie usług}
+      w szczególności na wskazaniu prac jakich Pracownik nie może wykonywać w związku z zawartą umową o pracę}
 - p: 26
   role: hint
   layout: {align: justify, indent: {left: 360}, size: 10.0, italic: true}
-  text: (opisanie działalności konkurencyjnej może polegać w szczególności na wskazaniu świadczeń jakich Zleceniobiorca nie może udzielać w związku
-    z zawartą umową o świadczenie usług)
+  text: (opisanie działalności konkurencyjnej może polegać w szczególności na wskazaniu prac jakich Pracownik nie może wykonywać w związku z zawartą
+    umową o pracę)
   hint_for: 25
   hint_kind: instruction
 - {p: 27, role: spacer}
@@ -123,100 +123,116 @@ blocks:
 - {p: 29, role: spacer}
 - p: 30
   role: body
-  layout: {align: justify, size: 10.0, spans: [{start: 191, end: 331, italic: true}, {start: 332, end: 346, bold: true}]}
-  text: 'W okresie trwania stosunku prawnego między Stronami  zawartego na podstawie umowy o świadczenie usług z dnia ……………………………, a także w okresie
-    po zakończeniu trwania tego stosunku przez ………………. (np. miesięcy, lat – w orzecznictwie podkreśla się możliwość ustanowienia zakazu konkurencji
-    również na okres po zakończeniu trwania umowy). Zleceniobiorca powstrzyma się od działań konkurencyjnych, a w szczególności nie będzie:'
+  layout: {align: justify, size: 10.0, spans: [{start: 109, end: 118, bold: true}]}
+  text: 'W okresie trwania stosunku prawnego między Stronami  zawartego na podstawie umowy o pracę z dnia …………………………… Pracownik powstrzyma się
+    od działań konkurencyjnych, a w szczególności nie będzie:'
   slots:
-  - {id: p30_1, span: [109, 120], type: date, context: świadczenie usług z dnia ▢ a także}
-  - {id: np_miesiecy_lat_w_orzecznictwie_podkresla_sie_mo, span: [183, 190], type: person, hint: 'np. miesięcy, lat – w orzecznictwie podkreśla
-      się możliwość ustanowienia zakazu konkurencji również na okres po zakończeniu trwania umowy'}
-  inline_hints:
-  - {span: [191, 330], text: 'np. miesięcy, lat – w orzecznictwie podkreśla się możliwość ustanowienia zakazu konkurencji również na okres po
-      zakończeniu trwania umowy'}
+  - {id: p30_1, span: [97, 108], type: date, context: o pracę z dnia ▢ Pracownik powstrzyma}
 - p: 31
   role: item
-  layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}, spans: [{start: 143, end: 156, bold: true}]}
+  layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}, spans: [{start: 143, end: 153, bold: true}]}
   text: prowadził na własny rachunek pośrednio lub bezpośrednio działalności o charakterze konkurencyjnym w stosunku do działalności prowadzonej
-    przez Zleceniodawcę;
+    przez Pracodawcę;
 - p: 32
   role: item
-  layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}, spans: [{start: 190, end: 203, bold: true}]}
+  layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}, spans: [{start: 190, end: 200, bold: true}]}
   text: świadczył pracy w stosunku pracy lub usług na podstawie umowy o dzieło, zlecenia lub innej podobnej umowy na rzecz podmiotu prowadzącego
-    działalność konkurencyjną w stosunku do działalności Zleceniodawcy;
+    działalność konkurencyjną w stosunku do działalności Pracodawcy;
 - p: 33
   role: item
-  layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}, spans: [{start: 135, end: 148, bold: true}]}
+  layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}, spans: [{start: 135, end: 145, bold: true}]}
   text: obejmował lub nabywał udziałów lub akcji w spółkach prawa handlowego prowadzących działalność konkurencyjną w stosunku do działalności
-    Zleceniodawcy;
+    Pracodawcy;
 - p: 34
   role: item
-  layout: {align: justify, size: 10.0, marker: {text: d), kind: lowerLetter, src: auto, level: 0}, spans: [{start: 162, end: 175, bold: true}]}
+  layout: {align: justify, size: 10.0, marker: {text: d), kind: lowerLetter, src: auto, level: 0}, spans: [{start: 162, end: 172, bold: true}]}
   text: zajmował stanowisk we władzach zarządczych, nadzorczych lub kontrolnych spółek prawa handlowego prowadzących działalność konkurencyjną
-    w stosunku do działalności Zleceniodawcy.
-- p: 35
+    w stosunku do działalności Pracodawcy.
+- {p: 35, role: spacer}
+- p: 36
   role: clause_heading
   layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
   text: § 3
-- {p: 36, role: spacer}
-- p: 37
-  role: item
-  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 26, end: 40, bold: true}, {start: 123,
-        end: 136, bold: true}]}
-  text: 'Za każde naruszenie przez Zleceniobiorcę postanowień niniejszej umowy w zakresie podejmowania działalności konkurencyjnej, Zleceniodawcy
-    będzie przysługiwać kara umowna w wysokości ………….. zł (słownie: ……….. złotych).'
-  slots:
-  - {id: p37_1, span: [181, 187], type: amount, context: kara umowna w wysokości ▢ zł}
-  - {id: p37_2, span: [201, 206], type: amount, context: w wysokości zł słownie ▢ złotych}
+- {p: 37, role: spacer}
 - p: 38
   role: item
-  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 100, end: 113, bold: true}]}
-  text: 'Karma umowna, o której mowa w ust. 1 będzie płatna w ciągu …….. dni od dnia ……… na rachunek bankowy Zleceniodawcy: …….. .'
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 9, bold: true}, {start: 114,
+        end: 149, italic: true}]}
+  text: Pracownik zobowiązuje się powstrzymać od działań konkurencyjnych opisanych w § 2 umowy również przez okres ……………… (należy wskazać ilość
+    miesięcy/lat) po ustaniu stosunku pracy.
   slots:
-  - {id: p38_1, span: [59, 63], type: text, context: będzie płatna w ciągu ▢ dni od}
-  - {id: p38_2, span: [76, 79], type: date, context: ciągu dni od dnia ▢ na rachunek}
-  - {id: p38_3, span: [115, 119], type: text, context: na rachunek bankowy Zleceniodawcy ▢}
-- {p: 39, role: spacer}
-- p: 40
+  - {id: nalezy_wskazac_ilosc_miesiecy_lat, span: [107, 113], type: text, hint: należy wskazać ilość miesięcy/lat}
+  inline_hints:
+  - {span: [114, 149], text: należy wskazać ilość miesięcy/lat}
+- p: 39
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 74, end: 83, bold: true}, {start: 128,
+        end: 238, italic: true}, {start: 238, end: 248, bold: true}, {start: 248, end: 301, italic: true}, {start: 301, end: 311, bold: true},
+      {start: 311, end: 592, italic: true}]}
+  text: Za powstrzymanie się od działań konkurencyjnych po ustaniu stosunku pracy Pracownik otrzyma odszkodowanie w wysokości ……………… zł (przepisy
+    prawa pracy umożliwiają ustanowienie zakazu konkurencji również na okres po ustaniu stosunku pracy, Pracodawca powinien jednak określić wysokość
+    odszkodowania dla pracownika za powstrzymywanie się od działalności konkurencyjnej, może nastąpić to przykładowo w formie kwoty wypłacanej
+    za cały okres trwania okresu zakazu konkurencji, odszkodowanie nie może być jednak niższe niż 25% kwoty wynagrodzenia pomnożonego przez ilość
+    miesięcy trwającego zakazu).
+  slots:
+  - {id: p39_1, span: [118, 124], type: amount, context: otrzyma odszkodowanie w wysokości ▢ zł}
+- {p: 40, role: spacer}
+- p: 41
   role: clause_heading
   layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
   text: § 4
-- {p: 41, role: spacer}
-- p: 42
-  role: item
-  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
-  text: Wszelkie zmiany niniejszej umowy wymagają zachowania formy pisemnej pod rygorem nieważności.
+- {p: 42, role: spacer}
 - p: 43
   role: item
-  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
-  text: 'Umowa została sporządzona w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze stron. '
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 26, end: 36, bold: true}, {start: 119,
+        end: 129, bold: true}]}
+  text: Za każde naruszenie przez Pracownika postanowień niniejszej umowy w zakresie podejmowania działalności konkurencyjnej, Pracodawca może
+    dochodzić od niego naprawienia poniesionej szkody na zasadach określonych w art. 114–122 ustawy z dnia 26 czerwca 1974 r. – Kodeks pracy.
 - p: 44
   role: item
-  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
-  text: "W sprawach nieuregulowanych niniejszą umową będą miały zastosowanie przepisy ustawy \nz dnia 23 kwietnia 1964 r. - Kodeks cywilny."
-- p: 45
-  role: item
-  layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}, spans: [{start: 132, end: 163, italic: true},
-      {start: 163, end: 176, bold: true}, {start: 176, end: 177, italic: true}, {start: 177, end: 191, bold: true}, {start: 191, end: 192, italic: true}]}
-  text: 'Wszelkie spory, jakie mogą wyniknąć w związku z niniejszą umową będą rozpatrywane przez sąd powszechny właściwy ze względu na …………… (miejsce
-    zamieszkania/siedzibę Zleceniodawcy/Zleceniobiorcy). '
-  slots:
-  - {id: miejsce_zamieszkania_siedzibe_zleceniodawcy_zlec, span: [126, 131], type: text, hint: miejsce zamieszkania/siedzibę Zleceniodawcy/Zleceniobiorcy}
-  inline_hints:
-  - {span: [132, 192], text: miejsce zamieszkania/siedzibę Zleceniodawcy/Zleceniobiorcy}
-- {p: 46, role: spacer}
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 66, end: 76, bold: true}, {start: 99,
+        end: 109, bold: true}, {start: 273, end: 283, bold: true}]}
+  text: Niezależnie od odpowiedzialności materialnej określonej w ust. 1, Pracodawca może zastosować wobec Pracownika naruszającego postanowienia
+    umowy, odpowiedzialność porządkową, a w uzasadnionych przypadkach wypowiedzieć umowę o pracę lub rozwiązać ją bez wypowiedzenia z winy Pracownika.
+- {p: 45, role: spacer}
+- p: 46
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+  text: § 5
 - {p: 47, role: spacer}
-- {p: 48, role: spacer}
+- p: 48
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Wszelkie zmiany niniejszej umowy wymagają zachowania formy pisemnej pod rygorem nieważności.
 - p: 49
-  role: body
-  layout: {align: justify, size: 10.0, bold: true, tabs: 8}
-  text: "Zleceniodawca\t\t\t\t\t\t\t\tZleceniobiorca"
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Umowa została sporządzona w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze stron. '
 - p: 50
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: W sprawach nieuregulowanych niniejszą umową będą miały zastosowanie przepisy ustawy z dnia 26 czerwca 1974 r. – Kodeks pracy oraz ustawy
+    z dnia 23 kwietnia 1964 r. - Kodeks cywilny.
+- p: 51
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 132, end: 185, italic: true}]}
+  text: 'Wszelkie spory, jakie mogą wyniknąć w związku z niniejszą umową będą rozpatrywane przez sąd powszechny właściwy ze względu na …………… (miejsce
+    zamieszkania/siedzibę Pracodawcy/Pracownika). '
+  slots:
+  - {id: miejsce_zamieszkania_siedzibe_pracodawcy_pracown, span: [126, 131], type: text, hint: miejsce zamieszkania/siedzibę Pracodawcy/Pracownika}
+  inline_hints:
+  - {span: [132, 185], text: miejsce zamieszkania/siedzibę Pracodawcy/Pracownika}
+- {p: 52, role: spacer}
+- {p: 53, role: spacer}
+- {p: 54, role: spacer}
+- p: 55
+  role: body
+  layout: {align: justify, size: 10.0, bold: true, tabs: 9}
+  text: "Pracodawca\t\t\t\t\t\t\t\t\tPracownik"
+- p: 56
   role: signature_line
   layout: {align: justify, size: 10.0, tabs: 8}
   text: "………………………...\t\t\t\t\t\t\t\t……….……………………"
   slots:
-  - {id: p50_1, span: [0, 12], type: signature, context: ▢}
-  - {id: p50_2, span: [20, 32], type: signature, context: ▢}
-- {p: 51, role: spacer}
-- {p: 52, role: spacer}
+  - {id: p56_1, span: [0, 12], type: signature, context: ▢}
+  - {id: p56_2, span: [20, 32], type: signature, context: ▢}

@@ -1,5 +1,5 @@
 template: Wniosek o udzielenie urlopu wychowawczego lub jego części.docx
-category: wniosek_procesowy
+category: wniosek_pracowniczy
 label_pl: Wniosek o udzielenie urlopu wychowawczego lub jego części
 default_size: 11.0
 page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}

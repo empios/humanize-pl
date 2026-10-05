@@ -1,6 +1,6 @@
-template: Wniosek o udzielenie urlopu bezpłatnego.docx
-category: wniosek_procesowy
-label_pl: Wniosek o udzielenie urlopu bezpłatnego
+template: Wniosek o udzielenie urlopu macierzyńskiego.docx
+category: wniosek_pracowniczy
+label_pl: Wniosek o udzielenie urlopu macierzyńskiego
 default_size: 11.0
 page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
 blocks:
@@ -38,13 +38,13 @@ blocks:
   - {id: dane_pracownika_imie_i_nazwisko_adres_zamieszkan, span: [0, 55], type: text, hint: 'dane pracownika – imię i nazwisko, adres zamieszkania'}
 - p: 6
   role: hint
-  layout: {size: 10.0, italic: true}
+  layout: {size: 10.0}
   text: (dane pracownika – imię i nazwisko,
   hint_for: 5
   hint_kind: label
 - p: 7
   role: hint
-  layout: {size: 10.0, italic: true}
+  layout: {size: 10.0}
   text: ' adres zamieszkania)'
   hint_for: 5
   hint_kind: label
@@ -78,60 +78,45 @@ blocks:
 - p: 15
   role: body
   layout: {align: center, size: 14.0, bold: true}
-  text: WNIOSEK O UDZIELENIE URLOPU BEZPŁATNEGO
+  text: 'WNIOSEK O UDZIELENIE URLOPU MACIERZYŃSKIEGO '
 - {p: 16, role: spacer}
 - {p: 17, role: spacer}
 - p: 18
   role: body
-  layout: {align: justify, size: 10.0, spans: [{start: 156, end: 162, italic: true}, {start: 181, end: 188, italic: true}]}
-  text: Na podstawie art. 174 § 1 ustawy z dnia 26 czerwca 1974 r. - Kodeks pracy, zwracam się z wnioskiem o udzielenie mi urlopu bezpłatnego
-    w dniach od ……………………… (data) do dnia ……………………… (data).
+  layout: {align: justify, size: 10.0, spans: [{start: 48, end: 73, italic: true}, {start: 93, end: 108, italic: true}]}
+  text: W związku z urodzeniem dziecka ………………………………………… (imię i nazwisko dziecka) w dniu …………………………… (data urodzin), na podstawie art. 180 § 1
+    pkt 1 ustawy z dnia 26 czerwca 1974 r. - Kodeks pracy, zwracam się z wnioskiem o udzielenie mi urlopu macierzyńskiego w wymiarze ..........................
+    tygodni, począwszy od dnia .......................... do dnia ..............................
   slots:
-  - {id: data, span: [146, 155], type: date, hint: data}
-  - {id: data_2, span: [171, 180], type: date, hint: data}
+  - {id: imie_i_nazwisko_dziecka, span: [31, 47], type: person, hint: imię i nazwisko dziecka}
+  - {id: data_urodzin, span: [81, 92], type: date, hint: data urodzin}
+  - {id: p18_3, span: [264, 290], type: text, context: urlopu macierzyńskiego w wymiarze ▢ tygodni począwszy}
+  - {id: p18_4, span: [318, 344], type: date, context: tygodni począwszy od dnia ▢ do dnia}
+  - {id: p18_5, span: [353, 383], type: date, context: od dnia do dnia ▢}
   inline_hints:
-  - {span: [156, 162], text: data}
-  - {span: [181, 187], text: data}
+  - {span: [48, 73], text: imię i nazwisko dziecka}
+  - {span: [93, 107], text: data urodzin}
 - {p: 19, role: spacer}
 - p: 20
   role: body
-  layout: {align: center, size: 12.0, bold: true}
-  text: UZASADNIENIE
+  layout: {align: justify, size: 10.0}
+  text: Oświadczam, że do tej pory wykorzystałam z tego tytułu .............................. tygodni urlopu macierzyńskiego.
+  slots:
+  - {id: p20_1, span: [55, 85], type: text, context: wykorzystałam z tego tytułu ▢ tygodni urlopu}
 - {p: 21, role: spacer}
-- p: 22
-  role: body
-  layout: {align: justify, size: 10.0}
-  text: Niniejszy wniosek motywuję tym, że ……………………………………………………………………………………………
-  slots:
-  - {id: p22_1, span: [35, 70], type: text, context: wniosek motywuję tym że ▢}
-- p: 23
-  role: blank_line
-  layout: {align: justify, size: 10.0}
-  text: ……………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………
-  slots:
-  - {id: opcjonalnie_nalezy_sporzadzic_uzasadnienie_wnios, span: [0, 110], type: text, hint: 'opcjonalnie należy sporządzić uzasadnienie wniosku
-      i wskazać, z jakich przyczyn pracownik wnioskuje o udzielenie urlopu'}
-  optional: true
-  condition: opcjonalnie należy sporządzić uzasadnienie wniosku i wskazać, z jakich przyczyn pracownik wnioskuje o udzielenie urlopu
+- {p: 22, role: spacer}
+- {p: 23, role: spacer}
 - p: 24
-  role: hint
-  layout: {align: justify, size: 10.0, italic: true}
-  text: (opcjonalnie należy sporządzić uzasadnienie wniosku i wskazać, z jakich przyczyn pracownik wnioskuje o udzielenie urlopu)
-  hint_for: 23
-  hint_kind: instruction
-- {p: 25, role: spacer}
-- {p: 26, role: spacer}
-- p: 27
   role: blank_line
   layout: {align: right, indent: {first: 708}, size: 10.0}
   text: …………………………………
   slots:
   - {id: podpis_pracownika, span: [0, 13], type: signature, hint: podpis pracownika}
-- p: 28
+- p: 25
   role: hint
   layout: {align: right, indent: {first: 708}, size: 10.0, italic: true, tabs: 1}
   text: "(podpis pracownika)\t"
-  hint_for: 27
+  hint_for: 24
   hint_kind: label
-- {p: 29, role: spacer}
-- {p: 30, role: spacer}
+- {p: 26, role: spacer}
+- {p: 27, role: spacer}

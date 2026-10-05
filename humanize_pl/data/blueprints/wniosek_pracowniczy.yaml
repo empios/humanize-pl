@@ -1,0 +1,29 @@
+# Szkielet struktury: wniosek pracowniczy (do pracodawcy: urlop, dni wolne,
+# świadectwo pracy). Nie trafia do sądu, więc nie ma oznaczenia sądu ani stron
+# postępowania. Ogólnego dokumentu do wypełnienia nie ma: każdy rodzaj wniosku
+# ma własny wzór w templates/wniosek_pracowniczy/.
+
+category: wniosek_pracowniczy
+label_pl: wniosek pracowniczy
+check_order: false
+sections:
+- id: data_miejsce
+  label_pl: miejscowość i data
+  severity: required
+  matches: [dnia, ' r.', miejscowość, (data]
+- id: wnioskodawca
+  label_pl: dane wnioskodawcy
+  severity: expected
+  matches: [dane pracownika, dane wnioskodawcy, imię i nazwisko, 'imię, nazwisko', pesel]
+- id: pracodawca
+  label_pl: oznaczenie pracodawcy
+  severity: expected
+  matches: [dane pracodawcy, 'pracodawca:', do pracodawcy]
+- id: wniosek
+  label_pl: treść wniosku
+  severity: required
+  matches: [zwracam się z wnioskiem, zwracam się z prośbą, wnoszę o, proszę o, wnioskuję]
+- id: podpis
+  label_pl: podpis
+  severity: required
+  matches: [podpis]

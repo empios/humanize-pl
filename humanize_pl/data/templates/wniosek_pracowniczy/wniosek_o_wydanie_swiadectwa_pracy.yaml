@@ -1,5 +1,5 @@
 template: wniosek o wydanie swiadectwa pracy.docx
-category: wniosek_procesowy
+category: wniosek_pracowniczy
 label_pl: Wniosek o wydanie świadectwa pracy
 default_size: 11.0
 page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}

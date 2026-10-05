@@ -403,6 +403,31 @@ categories:
     signals: ["rękojmi", "prawach konsumenta", "niezgodność towaru", "wady"]
     requires_any: ["rękojmi", "składam reklamację"]
 
+  # ------------------------------------- wydzielone 05.10 z innych kategorii ---
+  #
+  # Wnioski do pracodawcy leżały pod wnioskiem procesowym, a umowy o zakazie
+  # konkurencji pod NDA. Nie mają ich struktury (sądu, stron postępowania,
+  # zakresu poufności), więc lista kontrolna tamtych kategorii blokowała je
+  # niesłusznie.
+
+  - id: wniosek_pracowniczy
+    label_pl: wniosek pracowniczy
+    family: filing_official
+    signals_strong: ["wniosek o udzielenie urlopu", "wniosek o wydanie świadectwa pracy", "dni wolnych", "urlopu"]
+    signals: ["pracodawc", "pracownik", "kodeks pracy", "kodeksu pracy", "świadectwa pracy"]
+    # Bez samego „wniosek o udzielenie”: sądowy bywa wnioskiem o udzielenie
+    # zabezpieczenia.
+    requires_any: ["wniosek o udzielenie urlopu", "o udzielenie mi urlopu", "wniosek o udzielenie dni wolnych", "wniosek o wydanie świadectwa pracy", "o wydanie mi świadectwa pracy", "zwolnienia od pracy"]
+
+  - id: umowa_o_zakazie_konkurencji
+    label_pl: umowa o zakazie konkurencji
+    family: contract
+    signals_strong: ["umowa o zakazie konkurencji", "działalność konkurencyjn", "zakazu konkurencji"]
+    signals: ["odszkodowani", "kar umown", "po ustaniu"]
+    # Bez tytułu w bramce: opinia o takiej umowie nazywa ją tak samo, a nie
+    # zawiera jej formuł zawarcia.
+    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają"]
+
   # ------------------------------------------------------------ bez decyzji ---
 
   # Zamyka listę i jest jedyną kategorią bez sygnałów: dostaje ją dokument,

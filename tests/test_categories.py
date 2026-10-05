@@ -83,8 +83,8 @@ def test_an_essay_about_employment_law_is_not_an_employment_contract() -> None:
 
 def test_a_ruling_quoting_a_contract_is_not_that_contract() -> None:
     quoted = (
-        "Strony zawarły umowę pożyczki, w której pożyczkodawca udzielił pożyczki "
-        "w kwocie 20 000 zł, a pożyczkobiorca zobowiązał się do jej spłaty z odsetkami."
+        "Umowa pożyczki zawarta w dniu 3 marca 2020 r. Pożyczkodawca udziela pożyczki "
+        "w kwocie 20 000 zł, a pożyczkobiorca zobowiązuje się do jej spłaty z odsetkami."
     )
     assert classify_category(quoted).category.id == "umowa_pozyczki"
 
@@ -112,6 +112,17 @@ def test_a_past_tense_account_is_not_the_document_it_describes() -> None:
     # A filing narrates its facts too, but acts in the first person present
     filing = account + " W imieniu powoda wnoszę o zasądzenie od pozwanego kwoty 20 000 zł."
     assert classify_category(filing).specified
+
+
+def test_a_topic_word_alone_does_not_claim_a_contract() -> None:
+    # Rulings write about "umowę pożyczki" and "remont"; a contract names itself
+    # in the nominative or uses a formula of conclusion
+    for about in (
+        "Strony zawarły umowę pożyczki, a pożyczkobiorca nie zwrócił pożyczki w terminie.",
+        "Powód zlecił remont lokalu, lecz wykonawca nie usunął wad.",
+        "Pozwany otrzymał samochód w zamian za spłatę długu.",
+    ):
+        assert classify_category(about).category.id == UNSPECIFIED, about
 
 
 def test_contract_vocabulary_alone_does_not_claim_a_category() -> None:

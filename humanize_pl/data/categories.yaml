@@ -225,13 +225,18 @@ categories:
     signals: ["rozważania", "przedmiotem niniejszego", "konkludując", "de lege ferenda"]
 
   # --------------------------------------------------- umowy (dopisane 28.09) ---
+  #
+  # `requires_any` to zwroty, którymi dokument działa (formuły zawarcia umowy)
+  # albo nazywa siebie w tytule, w mianowniku („umowa pożyczki”). Rdzenie
+  # tematyczne („pożyczk”, „remont”, „zamian”) są tylko sygnałami: orzeczenie
+  # o pożyczce pisze o „umowie pożyczki” i ma całe jej słownictwo.
 
   - id: umowa_pozyczki
     label_pl: umowa pożyczki
     family: contract
     signals_strong: ["umowa pożyczki", "pożyczkodawca", "pożyczkobiorca"]
-    signals: ["zwrot", "odsetki", "spłata", "kwota pożyczki"]
-    requires_any: ["pożyczk", "pożyczkodawc", "pożyczkobiorc"]
+    signals: ["zwrot", "odsetki", "spłata", "kwota pożyczki", "pożyczk"]
+    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa pożyczki"]
 
   - id: umowa_poreczenia
     label_pl: umowa poręczenia
@@ -258,36 +263,36 @@ categories:
     label_pl: umowa darowizny
     family: contract
     signals_strong: ["umowa darowizny", "darczyńca"]
-    signals: ["darowiznę", "przekazuje", "przyjmuje", "obdarowany"]
-    requires_any: ["darowizn", "darczyńc", "obdarowan"]
+    signals: ["darowiznę", "przekazuje", "przyjmuje", "obdarowany", "darowizn", "obdarowan"]
+    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa darowizny"]
 
   - id: zamiana
     label_pl: umowa zamiany
     family: contract
     signals_strong: ["umowa zamiany"]
     signals: ["równowartość", "dopłata", "w zamian", "przenosi własność"]
-    requires_any: ["zamian", "zamien"]
+    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa zamiany"]
 
   - id: umowa_posrednictwa
     label_pl: umowa pośrednictwa
     family: contract
     signals_strong: ["umowa pośrednictwa", "umowa o pośrednictwo"]
-    signals: ["prowizja", "wyłączność", "zamawiający", "czynności pośrednicze"]
-    requires_any: ["pośrednictw", "pośrednik"]
+    signals: ["prowizja", "wyłączność", "zamawiający", "czynności pośrednicze", "pośrednik"]
+    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa pośrednictwa", "umowa o pośrednictwo"]
 
   - id: umowa_praktyki
     label_pl: umowa o praktykę
     family: contract
     signals_strong: ["umowa o praktykę", "praktyki absolwenckie"]
     signals: ["praktykant", "stypendium", "ukończył", "przyjmujący na praktykę"]
-    requires_any: ["praktykant", "praktyki", "przyjmujący na praktykę"]
+    requires_any: ["praktykant", "przyjmujący na praktykę"]
 
   - id: umowa_remontu
     label_pl: umowa o wykonanie prac remontowych
     family: contract
     signals_strong: ["umowa o wykonanie prac remontowych"]
-    signals: ["zamawiający", "wykonawca", "zakres remontu", "projekt"]
-    requires_any: ["remont", "prac remontowych"]
+    signals: ["zamawiający", "wykonawca", "zakres remontu", "projekt", "prac remontowych"]
+    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa o wykonanie prac remontowych"]
 
   - id: umowa_serwisu
     label_pl: umowa o stworzenie i prowadzenie serwisu
@@ -365,8 +370,8 @@ categories:
     label_pl: zawiadomienie o przestępstwie
     family: filing_official
     signals_strong: ["zawiadomienie o podejrzeniu"]
-    signals: ["art. 304", "prokuratur", "policj", "przestępstwa"]
-    requires_any: ["zawiadomienie o podejrzeniu", "popełnienia przestępstwa"]
+    signals: ["art. 304", "prokuratur", "policj", "przestępstwa", "popełnienia przestępstwa"]
+    requires_any: ["zawiadomienie o podejrzeniu"]
 
   - id: kara_porzadkowa
     label_pl: kara porządkowa
@@ -380,7 +385,7 @@ categories:
     family: filing_official
     signals_strong: ["pełnomocnictwo"]
     signals: ["pełnomocnik", "mocodawca", "reprezentowania", "odwołuję"]
-    requires_any: ["pełnomocnictwo", "pełnomocnictwa"]
+    requires_any: ["pełnomocnictwo"]
 
   # ------------------------------------------------- klient (dopisane 28.09) ---
 

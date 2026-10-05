@@ -8,7 +8,7 @@
     "template_self_match": 1.0,
     "template_match_gapped": 0.9252,
     "ai_category_exact": 1.0,
-    "rulings_given_category": 0.1667,
+    "rulings_given_category": 0.0533,
     "edits_per_1k_ai": 30.3,
     "unsafe_outputs": 0,
     "edits_per_1k_rulings": 2.71,

@@ -17,6 +17,7 @@ from humanize_pl.categories import (
     get,
 )
 from humanize_pl.document import DocumentType
+from humanize_pl.nlp.morfeusz import try_load_morfeusz
 
 FIXTURES = Path("docs_tests/ai_generated")
 
@@ -93,6 +94,24 @@ def test_a_ruling_quoting_a_contract_is_not_that_contract() -> None:
         assert guess.evidence == ("zważył, co następuje",)
     # A word that merely contains a marker's first word does not count
     assert classify_category(quoted + " Nie rozważył, co następuje.").category.id == "umowa_pozyczki"
+
+
+@pytest.mark.skipif(try_load_morfeusz() is None, reason="morfeusz2 not installed")
+def test_a_past_tense_account_is_not_the_document_it_describes() -> None:
+    account = (
+        "Strony zawarły umowę pożyczki w dniu 3 marca 2020 r. Pożyczkodawca przekazał "
+        "pożyczkobiorcy kwotę 20 000 zł. Pożyczkobiorca zobowiązał się zwrócić pożyczkę do "
+        "końca roku, lecz jej nie zwrócił. Pożyczkodawca wezwał go do zapłaty, a pożyczkobiorca "
+        "odmówił. Pozwany podniósł zarzut przedawnienia i wniósł o oddalenie powództwa. Świadek "
+        "zeznał, że pieniądze przekazano. Pozwany przyznał, że otrzymał środki, ale twierdził, "
+        "że je oddał."
+    )
+    guess = classify_category(account)
+    assert guess.category.id == UNSPECIFIED
+    assert guess.evidence[0].startswith("relacja w czasie przeszłym")
+    # A filing narrates its facts too, but acts in the first person present
+    filing = account + " W imieniu powoda wnoszę o zasądzenie od pozwanego kwoty 20 000 zł."
+    assert classify_category(filing).specified
 
 
 def test_contract_vocabulary_alone_does_not_claim_a_category() -> None:

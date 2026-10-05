@@ -44,6 +44,16 @@ SIGNAL_WEIGHT = 1
 # common words, and the document is left unspecified.
 MIN_SCORE = 3
 
+# A text that narrates in the past tense reports on events instead of
+# performing an act: rulings run at about two thirds past-tense verbs, while no
+# shipped template or AI-drafted document goes above one half. A filing that
+# narrates its facts still speaks in the first person present ("wnoszę",
+# "wzywam"), and that keeps it a document.
+NARRATIVE_SHARE = 0.6
+# Below this many verbs the share is noise.
+NARRATIVE_MIN_VERBS = 10
+_WORD = re.compile(r"\p{L}+")
+
 
 class CategoryCatalogueError(RuntimeError):
     pass
@@ -167,6 +177,33 @@ def _reporting_markers() -> tuple[tuple[str, re.Pattern], ...]:
     )
 
 
+def _past_tense_share(text: str) -> float | None:
+    """The share of past-tense verbs in a text that never speaks in the first
+    person present; None for any other text, or without Morfeusz."""
+    try:
+        # Imported here because this module also ships standalone, without the
+        # NLP layer; there the check is skipped.
+        from humanize_pl.nlp.morfeusz import try_load_morfeusz
+    except ImportError:
+        return None
+    morfeusz = try_load_morfeusz()
+    if morfeusz is None:
+        return None
+    past = present = 0
+    for word in _WORD.findall(text):
+        tags = [row.tag.split(":") for row in morfeusz.analyses(word)]
+        heads = {tag[0] for tag in tags}
+        if heads == {"fin"} and any(tag[2] == "pri" for tag in tags):
+            return None
+        if "praet" in heads and "fin" not in heads:
+            past += 1
+        elif "fin" in heads and "praet" not in heads:
+            present += 1
+    if past + present < NARRATIVE_MIN_VERBS:
+        return None
+    return past / (past + present)
+
+
 def get(identifier: str) -> LegalCategory:
     try:
         return catalogue()[identifier]
@@ -186,9 +223,10 @@ def classify_category(text: str) -> CategoryGuess:
     would report missing sections the document was never supposed to have,
     which is worse than admitting the category is unknown.
 
-    A text in which a court speaks for itself ("Sąd zważył, co następuje")
-    reports on documents rather than being one. It stays unspecified however
-    much of a contract or a statement of claim it quotes.
+    A text in which a court speaks for itself ("Sąd zważył, co następuje"), or
+    one that narrates in the past tense without ever acting in the first
+    person, reports on documents rather than being one. It stays unspecified
+    however much of a contract or a statement of claim it quotes.
     """
     lowered = text.casefold()
     reported = next(
@@ -196,6 +234,11 @@ def classify_category(text: str) -> CategoryGuess:
     )
     if reported is not None:
         return CategoryGuess(get(UNSPECIFIED), 0.0, (reported,))
+    past = _past_tense_share(text)
+    if past is not None and past > NARRATIVE_SHARE:
+        return CategoryGuess(
+            get(UNSPECIFIED), 0.0, (f"relacja w czasie przeszłym ({past:.0%} czasowników)",)
+        )
     scored: list[tuple[int, LegalCategory, list[str]]] = []
     for row in catalogue().values():
         if row.id == UNSPECIFIED:

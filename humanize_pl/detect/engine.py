@@ -9,7 +9,7 @@ from humanize_pl.sentence_splitter import split_sentences
 from .base import DocumentDiagnosis, FamilySummary, Finding, ParagraphDiagnosis
 from .calibration import calibrate
 from .signals import WORD_RE, repeated_opening_findings, sentence_findings
-from .lexical import mtld, connective_density
+from .lexical import connective_density, fog_pl, mtld
 from .structural import paragraph_shape_cv, sentence_length_burstiness, sentence_length_entropy
 
 # Weighted findings per 1000 words at which `ai_signal_score` saturates to 1.0.
@@ -132,8 +132,9 @@ def _metrics(
     reference profile — several point the opposite way to the English-language
     literature for this genre pair.
     """
-    lengths = [len(WORD_RE.findall(sentence)) for _, _, sentence in indexed_sentences]
-    lengths = [length for length in lengths if length]
+    sentence_words = [WORD_RE.findall(sentence) for _, _, sentence in indexed_sentences]
+    sentence_words = [words for words in sentence_words if words]
+    lengths = [len(words) for words in sentence_words]
     if not lengths:
         return {}
 
@@ -152,5 +153,8 @@ def _metrics(
         "type_token_ratio": mtld(text),
         "connective_density": connective_density(text),
         "paragraph_shape_cv": paragraph_shape_cv(sentences_per_paragraph),
+        # Readability, not a signal of how the text was written: calibration
+        # gives it no weight.
+        "fog_pl": fog_pl(sentence_words),
         "words": float(word_count),
     }

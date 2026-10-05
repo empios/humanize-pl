@@ -54,6 +54,7 @@ def test_docx_flow_writes_the_pdf_next_to_the_json_report(tmp_path) -> None:
     assert "Raport zmian" in text
     assert "Wykaz zastosowanych zmian" in text
     assert "Uwagi bez automatycznej poprawki" in text
+    assert "Mglistość (FOG-PL)" in text
     assert "Podstawa i ograniczenia analizy" in text
     assert "Co się zmieniło w tekście" not in text
     assert "Jak to sprawdzaliśmy" not in text

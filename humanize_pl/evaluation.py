@@ -26,6 +26,7 @@ from humanize_pl.benchmark import safety_checks
 from humanize_pl.blueprint import blueprint_for, check, is_heading, match_template, templates
 from humanize_pl.categories import catalogue, classify_category
 from humanize_pl.core import humanize_text
+from humanize_pl.detect import detect_document
 from humanize_pl.nlp.morfeusz import try_load_morfeusz
 
 DEFAULT_BASELINE = Path("docs_tests/eval_baseline.json")
@@ -57,6 +58,7 @@ DIRECTION = {
     "template_self_match": 1,
     "template_match_gapped": 1,
     "edit_ratio_ai_to_rulings": 1,
+    "fog_change_ai": -1,
     "unsafe_outputs": -1,
     "unsafe_outputs_rulings": -1,
 }
@@ -75,6 +77,8 @@ LABELS = {
     "edits_per_1k_ai": "zmiany merytoryczne na 1000 słów (dokumenty AI)",
     "edits_per_1k_rulings": "zmiany merytoryczne na 1000 słów (orzeczenia)",
     "edit_ratio_ai_to_rulings": "ile razy więcej zmian w tekście AI niż w orzeczeniach",
+    "fog_change_ai": "zmiana mglistości FOG-PL po redakcji (dokumenty AI; poniżej 0 = prościej)",
+    "fog_change_rulings": "zmiana mglistości FOG-PL po redakcji (orzeczenia)",
     "unsafe_outputs": "wyniki naruszające bezpieczeństwo (wzory, dokumenty AI)",
     "unsafe_outputs_rulings": "wyniki naruszające bezpieczeństwo (orzeczenia)",
 }
@@ -83,6 +87,7 @@ RULING_METRICS = {
     "edits_per_1k_rulings",
     "edit_ratio_ai_to_rulings",
     "unsafe_outputs_rulings",
+    "fog_change_rulings",
 }
 
 app = typer.Typer(
@@ -183,16 +188,28 @@ def structure_metrics(ai: list[tuple[str, str]], rulings: list[str] | None) -> d
     return metrics
 
 
-def _rewrite(texts: list[str]) -> tuple[int, Counter[str], int]:
-    """Words, substantive edits by rule (spacing cleanup left out), unsafe outputs."""
-    words, rules, unsafe = 0, Counter(), 0
+def _rewrite(texts: list[str]) -> tuple[int, Counter[str], int, list[str]]:
+    """Words, substantive edits by rule (spacing cleanup left out), unsafe
+    outputs, and the outputs themselves."""
+    words, rules, unsafe, outputs = 0, Counter(), 0, []
     for text in texts:
         result = humanize_text(text, mode="standard")
         words += len(text.split())
         rules.update(c.rule for c in result.changes if not c.rule.startswith("cleanup"))
         checks = safety_checks(text, result.text)
         unsafe += not all(checks[name] for name in SAFETY_CHECKS)
-    return words, rules, unsafe
+        outputs.append(result.text)
+    return words, rules, unsafe, outputs
+
+
+def _fog_change(before: list[str], after: list[str]) -> float:
+    """Mean FOG-PL after rewriting minus before: below zero, easier to read."""
+    def mean_fog(texts: list[str]) -> float:
+        values = [detect_document(text, calibrate_against_default=False).metrics.get("fog_pl", 0.0)
+                  for text in texts]
+        return sum(values) / len(values)
+
+    return round(mean_fog(after) - mean_fog(before), 2)
 
 
 def rewrite_metrics(
@@ -200,15 +217,18 @@ def rewrite_metrics(
 ) -> tuple[dict[str, float], dict[str, dict[str, float]]]:
     """Edit rates on AI text and on rulings, plus edits per 1000 words by rule."""
     template_texts = ["\n".join(_template_lines(t.document)) for t in templates()]
-    _, _, unsafe_templates = _rewrite(template_texts)
-    ai_words, ai_rules, unsafe_ai = _rewrite([text for _category, text in ai])
+    _, _, unsafe_templates, _ = _rewrite(template_texts)
+    ai_texts = [text for _category, text in ai]
+    ai_words, ai_rules, unsafe_ai, ai_outputs = _rewrite(ai_texts)
     metrics = {
         "edits_per_1k_ai": round(1000 * sum(ai_rules.values()) / ai_words, 2),
+        "fog_change_ai": _fog_change(ai_texts, ai_outputs),
         "unsafe_outputs": unsafe_templates + unsafe_ai,
     }
     by_rule = {"ai": {rule: 1000 * n / ai_words for rule, n in ai_rules.items()}}
     if rulings is not None:
-        words, rules, unsafe = _rewrite(rulings)
+        words, rules, unsafe, outputs = _rewrite(rulings)
+        metrics["fog_change_rulings"] = _fog_change(rulings, outputs)
         per_1k = 1000 * sum(rules.values()) / words
         metrics["edits_per_1k_rulings"] = round(per_1k, 2)
         metrics["edit_ratio_ai_to_rulings"] = round(

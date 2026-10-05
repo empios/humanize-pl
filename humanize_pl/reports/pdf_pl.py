@@ -249,6 +249,15 @@ METRIC_GLOSSARY: dict[str, dict[str, str]] = {
         "direction": "low",
         "scored": True,
     },
+    "fog_pl": {
+        "label": "Mglistość (FOG-PL)",
+        "how": "Przybliżona liczba lat nauki potrzebna do zrozumienia tekstu; rośnie z długością "
+               "zdań i udziałem słów co najmniej czterosylabowych.",
+        "why": "Nie wliczamy: mierzy zrozumiałość, nie schematyczność. Pokazuje, czy poprawki "
+               "uprościły tekst.",
+        "direction": "low",
+        "scored": False,
+    },
 }
 
 SHAPE_METRIC_ORDER = (
@@ -260,9 +269,11 @@ SHAPE_METRIC_ORDER = (
     "opening_diversity",
     "type_token_ratio",
     "connective_density",
+    "fog_pl",
 )
 
-# Reference-profile attribute backing each metric, for the "human" column.
+# Reference-profile attribute backing each metric, for the "human" column; a
+# metric the profile does not measure has none.
 PROFILE_ATTRIBUTE = {
     "sentence_length_cv": "sentence_length_cv",
     "sentence_burstiness": "sentence_burstiness",
@@ -1487,7 +1498,7 @@ class _Report:
                 ]
             )
             human_value = None
-            if self.profile is not None:
+            if self.profile is not None and key in PROFILE_ATTRIBUTE:
                 distribution = getattr(self.profile, PROFILE_ATTRIBUTE[key])
                 human_value = distribution.p50 or None
 

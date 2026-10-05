@@ -24,3 +24,21 @@ def test_mtld_robustness():
     val = mtld(text)
     assert isinstance(val, float)
     assert val > 0.0
+
+
+def test_polish_syllables_skip_a_softening_i():
+    from humanize_pl.detect.lexical import syllables
+
+    assert [syllables(w) for w in ("nie", "się", "pierwszy", "umowa", "Wynagrodzenie")] == [
+        1, 1, 2, 3, 5
+    ]
+
+
+def test_fog_pl_rises_with_sentence_length_and_long_words():
+    from humanize_pl.detect.lexical import fog_pl
+
+    plain = [["Ala", "ma", "kota"], ["Kot", "ma", "Alę"]]
+    assert fog_pl(plain) == 1.2  # 0.4 x (3 words per sentence + no hard words)
+    legal = [["Odpowiedzialność", "odszkodowawcza", "przedsiębiorstwa", "obejmuje", "szkodę"]]
+    assert fog_pl(legal) == 34.0  # 0.4 x (5 + 100 x 4/5): only "szkodę" is short
+    assert fog_pl([]) == 0.0

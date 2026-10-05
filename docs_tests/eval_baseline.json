@@ -13,7 +13,9 @@
     "ai_category_exact": 1.0,
     "rulings_given_category": 0.0067,
     "edits_per_1k_ai": 28.88,
+    "fog_change_ai": 0.06,
     "unsafe_outputs": 0,
+    "fog_change_rulings": -0.02,
     "edits_per_1k_rulings": 2.13,
     "edit_ratio_ai_to_rulings": 13.58,
     "unsafe_outputs_rulings": 0

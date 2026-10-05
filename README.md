@@ -59,6 +59,12 @@ Działa warstwowo:
 - rodziny i metryki liczone po obu stronach redakcji (`family_counts_before/after`,
   `metrics_before/after` w raporcie JSON), bez czego nie dało się powiedzieć,
   *co* się zmieniło, a jedynie *czy*,
+- mglistość FOG-PL (`fog_pl` w `metrics_before/after` i wiersz w raporcie PDF):
+  0,4 × (słowa na zdanie + odsetek słów co najmniej czterosylabowych), czyli
+  przybliżona liczba lat nauki potrzebna do zrozumienia tekstu. Nie wpływa na
+  wynik sygnału AI. Pomiar pokazał, że obecna redakcja nie upraszcza tekstu:
+  na dokumentach AI FOG-PL zmienia się z 13,53 na 13,59, bo usunięte rozbiegi
+  („Warto wskazać, że”) to krótkie słowa, a zdania nie są przebudowywane,
 - przykłady „było → jest” w raporcie PDF (`examples` w raporcie JSON), z sklejaniem
   wieloetapowych poprawek tego samego zdania w jedną parę,
 - ocena słowna przy każdej metryce („w normie”, „wyraźnie poniżej normy”) —

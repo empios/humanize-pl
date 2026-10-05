@@ -23,7 +23,7 @@ from rich import print
 
 from humanize_pl import layout_ir
 from humanize_pl.benchmark import safety_checks
-from humanize_pl.blueprint import blueprint_for, check, match_template, templates
+from humanize_pl.blueprint import blueprint_for, check, is_heading, match_template, templates
 from humanize_pl.categories import catalogue, classify_category
 from humanize_pl.core import humanize_text
 from humanize_pl.nlp.morfeusz import try_load_morfeusz
@@ -117,21 +117,23 @@ def _matches(text: str, template_id: str) -> bool:
 
 
 def _section_spans(lines: list[str], blueprint) -> dict[str, tuple[int, int]]:
-    """Each section the checklist finds: from the line its phrase matched up to
-    the line where the next found section starts."""
+    """The lines holding each section the checklist finds: from a heading that
+    names it up to the next heading, or, with no such heading, from the first
+    line its phrases match up to the next found section."""
     lowered = [line.casefold() for line in lines]
-    joined = "\n".join(lowered)
-    starts: dict[str, int] = {}
+    headings = [index for index, line in enumerate(lines) if is_heading(line)]
+    starts: dict[str, tuple[int, bool]] = {}
     for section in blueprint.sections:
-        phrase = section.found_in(joined)
-        start = next((i for i, line in enumerate(lowered) if phrase and phrase in line), None)
-        if start is not None:
-            starts[section.id] = start
-    order = sorted(set(starts.values()))
-    return {
-        section_id: (start, next((row for row in order if row > start), len(lines)))
-        for section_id, start in starts.items()
-    }
+        hits = [i for i, line in enumerate(lowered) if any(p in line for p in section.matches)]
+        if hits:
+            heading = next((i for i in hits if i in headings), None)
+            starts[section.id] = (hits[0], False) if heading is None else (heading, True)
+    order = sorted({start for start, _ in starts.values()})
+    spans: dict[str, tuple[int, int]] = {}
+    for section_id, (start, by_heading) in starts.items():
+        following = headings if by_heading else order
+        spans[section_id] = (start, next((row for row in following if row > start), len(lines)))
+    return spans
 
 
 def structure_metrics(ai: list[tuple[str, str]], rulings: list[str] | None) -> dict[str, float]:

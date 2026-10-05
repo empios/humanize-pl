@@ -64,6 +64,7 @@ all = [
 humanize-pl = "humanize_pl.cli:app"
 humanize-pl-flow = "humanize_pl.flows.cli:app"
 humanize-pl-benchmark = "humanize_pl.benchmark:app"
+humanize-pl-eval = "humanize_pl.evaluation:app"
 humanize-pl-release-check = "humanize_pl.release_check:app"
 humanize-pl-ui = "humanize_pl.ui.app:main"
 

@@ -842,14 +842,35 @@ make benchmark-optional
 `--require-models` oraz `--fail-on-status`, więc nadaje się jako lokalna
 checklista przed wydaniem, ale nie zakłada dostępu do sieci w trakcie testu.
 
+Benchmark sprawdza, czy każdy wynik jest bezpieczny. Pomiar jakości sprawdza,
+czy silnik nie pogorszył się w dwóch zadaniach: rozpoznawaniu dokumentu i jego
+struktury oraz redagowaniu tekstu AI przy oszczędzaniu tekstu pisanego przez
+ludzi:
+
+```bash
+humanize-pl-eval            # porównanie z docs_tests/eval_baseline.json
+humanize-pl-eval --rules    # dodatkowo zmiany na 1000 słów według reguł
+```
+
+Mierzy m.in. trafność kategorii na wzorach (także bez tytułu), odsetek
+orzeczeń SAOS błędnie uznanych za dokument z katalogu, blokady listy
+kontrolnej na wzorach własnej kategorii, rozpoznawanie wzoru po usunięciu
+akapitów, stosunek liczby zmian w tekście AI do zmian w orzeczeniach oraz
+wyniki naruszające bezpieczeństwo. Każda bramkowana miara ma kierunek; ruch w
+złą stronę kończy się kodem `1`. Zamierzoną zmianę zapisuje się świadomie
+flagą `--update-baseline` (wymaga lokalnego korpusu orzeczeń
+`docs_tests/corpus/saos_holdout.jsonl`). Bez tego korpusu miary oparte na
+orzeczeniach są pomijane z ostrzeżeniem, a pozostałe nadal porównywane.
+
 Pełna lokalna kontrola przed wydaniem:
 
 ```bash
 humanize-pl-release-check
 ```
 
-Obejmuje testy, lint, podstawowy benchmark i budowę wheel w trybie
-`--no-isolation`, czyli z zależnościami zainstalowanymi przez `.[dev]`.
+Obejmuje testy, lint, podstawowy benchmark, pomiar jakości i budowę wheel w trybie
+`--no-isolation`, czyli z zależnościami zainstalowanymi przez `.[dev,morfeusz]`
+(baza pomiaru jakości jest zmierzona z Morfeuszem2, bez niego pomiar odmawia porównania).
 Jeżeli w systemie jest `make`, równoważnym skrótem jest `make release-check`.
 
 ## Ważne

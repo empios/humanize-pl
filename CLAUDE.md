@@ -10,9 +10,9 @@ README.md is in Polish and holds full feature docs.
 python -m pip install -e ".[dev]"   # setup (extras: nlp, transformers, morfeusz, xlsx, pdf, ui, all)
 pytest -q                           # tests
 ruff check .                        # lint (line-length 100, py310 target)
-make release-check                  # test + lint + benchmark-basic + build
+make release-check                  # test + lint + benchmark-basic + eval + build
 ```
-CLI entry points: `humanize-pl`, `humanize-pl-flow` (DOCX/XLSX batches), `humanize-pl-benchmark`,
+CLI entry points: `humanize-pl`, `humanize-pl-flow` (DOCX/XLSX batches), `humanize-pl-benchmark`, `humanize-pl-eval` (quality vs `docs_tests/eval_baseline.json`),
 `humanize-pl-release-check`, `humanize-pl-ui` (Gradio).
 
 ## Layout

@@ -1,0 +1,18 @@
+{
+  "morfeusz": true,
+  "metrics": {
+    "category_exact": 0.6822,
+    "category_family": 0.8785,
+    "category_exact_untitled": 0.4673,
+    "checklist_false_blocks": 0.1215,
+    "template_self_match": 1.0,
+    "template_match_gapped": 0.9252,
+    "ai_category_exact": 1.0,
+    "rulings_given_category": 0.5,
+    "edits_per_1k_ai": 30.3,
+    "unsafe_outputs": 0,
+    "edits_per_1k_rulings": 2.71,
+    "edit_ratio_ai_to_rulings": 11.17,
+    "unsafe_outputs_rulings": 0
+  }
+}

@@ -13,6 +13,7 @@ app = typer.Typer(add_completion=False, help="Run local release checks for human
 def main(
     skip_lint: bool = typer.Option(False, "--skip-lint", help="Skip ruff check"),
     skip_benchmark: bool = typer.Option(False, "--skip-benchmark", help="Skip basic benchmark gate"),
+    skip_eval: bool = typer.Option(False, "--skip-eval", help="Skip quality comparison with baseline"),
     skip_build: bool = typer.Option(False, "--skip-build", help="Skip wheel build"),
 ) -> None:
     commands: list[list[str]] = [[sys.executable, "-m", "pytest", "-q"]]
@@ -32,6 +33,8 @@ def main(
                 "--fail-on-status",
             ]
         )
+    if not skip_eval:
+        commands.append([sys.executable, "-m", "humanize_pl.evaluation"])
     if not skip_build:
         commands.append([sys.executable, "-m", "build", "--wheel", "--no-isolation"])
 

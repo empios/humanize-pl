@@ -881,8 +881,10 @@ humanize-pl-eval --rules    # dodatkowo zmiany na 1000 słów według reguł
 
 Mierzy m.in. trafność kategorii na wzorach (także bez tytułu), odsetek
 orzeczeń SAOS błędnie uznanych za dokument z katalogu, blokady listy
-kontrolnej na wzorach własnej kategorii, rozpoznawanie wzoru po usunięciu
-akapitów, stosunek liczby zmian w tekście AI do zmian w orzeczeniach oraz
+kontrolnej na wzorach własnej kategorii, to, czy lista kontrolna zauważa
+usuniętą sekcję (dziś w około 42% przypadków: ogólne zwroty, np. „dnia” w
+„ustawy z dnia”, utrzymują sekcję jako obecną), rozpoznawanie wzoru po
+usunięciu akapitów, stosunek liczby zmian w tekście AI do zmian w orzeczeniach oraz
 wyniki naruszające bezpieczeństwo. Każda bramkowana miara ma kierunek; ruch w
 złą stronę kończy się kodem `1`. Zamierzoną zmianę zapisuje się świadomie
 flagą `--update-baseline` (wymaga lokalnego korpusu orzeczeń

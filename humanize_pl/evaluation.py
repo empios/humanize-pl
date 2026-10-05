@@ -53,6 +53,7 @@ DIRECTION = {
     "ai_category_exact": 1,
     "rulings_given_category": -1,
     "checklist_false_blocks": -1,
+    "checklist_notices_removal": 1,
     "template_self_match": 1,
     "template_match_gapped": 1,
     "edit_ratio_ai_to_rulings": 1,
@@ -68,6 +69,7 @@ LABELS = {
     "ai_category_exact": "kategoria trafiona (dokumenty AI)",
     "rulings_given_category": "orzeczenia uznane za dokument z katalogu",
     "checklist_false_blocks": "wzory blokowane przez listę kontrolną własnej kategorii",
+    "checklist_notices_removal": "lista kontrolna zauważa usuniętą sekcję (wzory)",
     "template_self_match": "wzór rozpoznany we własnym tekście",
     "template_match_gapped": "wzór rozpoznany po usunięciu co piątego akapitu",
     "edits_per_1k_ai": "zmiany merytoryczne na 1000 słów (dokumenty AI)",
@@ -114,9 +116,28 @@ def _matches(text: str, template_id: str) -> bool:
     return found is not None and found[0].id == template_id
 
 
+def _section_spans(lines: list[str], blueprint) -> dict[str, tuple[int, int]]:
+    """Each section the checklist finds: from the line its phrase matched up to
+    the line where the next found section starts."""
+    lowered = [line.casefold() for line in lines]
+    joined = "\n".join(lowered)
+    starts: dict[str, int] = {}
+    for section in blueprint.sections:
+        phrase = section.found_in(joined)
+        start = next((i for i, line in enumerate(lowered) if phrase and phrase in line), None)
+        if start is not None:
+            starts[section.id] = start
+    order = sorted(set(starts.values()))
+    return {
+        section_id: (start, next((row for row in order if row > start), len(lines)))
+        for section_id, start in starts.items()
+    }
+
+
 def structure_metrics(ai: list[tuple[str, str]], rulings: list[str] | None) -> dict[str, float]:
     families = {row.id: row.family for row in catalogue().values()}
     counts: Counter[str] = Counter()
+    removals = noticed = 0
     rows = templates()
     for template in rows:
         lines = _template_lines(template.document)
@@ -137,11 +158,19 @@ def structure_metrics(ai: list[tuple[str, str]], rulings: list[str] | None) -> d
             untitled.specified and untitled.category.id != template.category
         )
         blueprint = blueprint_for(template.category)
-        counts["checklist_false_blocks"] += blueprint is not None and check(text, blueprint).blocking
+        if blueprint is not None:
+            counts["checklist_false_blocks"] += check(text, blueprint).blocking
+            # Would the checklist notice the section gone? A phrase that also
+            # occurs elsewhere ("dnia" in "ustawy z dnia") keeps it "present".
+            for section_id, (start, end) in _section_spans(lines, blueprint).items():
+                removed = "\n".join(lines[:start] + lines[end:])
+                removals += 1
+                noticed += section_id not in check(removed, blueprint).present_sections
         counts["template_self_match"] += _matches(text, template.id)
         gapped = "\n".join(line for index, line in enumerate(lines) if index % 5 != 2)
         counts["template_match_gapped"] += _matches(gapped, template.id)
     metrics = {key: round(value / len(rows), 4) for key, value in counts.items()}
+    metrics["checklist_notices_removal"] = round(noticed / removals, 4)
     metrics["ai_category_exact"] = round(
         sum(classify_category(text).category.id == category for category, text in ai) / len(ai), 4
     )

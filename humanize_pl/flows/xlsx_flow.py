@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import re
 import unicodedata
+from collections import Counter, defaultdict
 from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any
@@ -39,6 +40,10 @@ REWRITE_COLUMN = "tekst po redakcji"
 CHANGED_TEXT_COLOR = "FF008000"
 REMOVED_TEXT_COLOR = "FFC00000"
 ACCEPTANCE_SHEET_TITLE = "Do akceptacji"
+# What a reviewer may enter in the decision column, and what it counts as.
+DECISIONS = {"przyjmuję": "accepted", "odrzucam": "rejected"}
+DECISION_HEADER = "Decyzja"
+RULES_HEADER = "Reguły"
 UNRESOLVED_SHEET_TITLE = "Uwagi bez poprawki"
 BASIS_SHEET_TITLE = "Podstawa analizy"
 OUTPUT_COLUMN_WIDTHS = {
@@ -253,6 +258,7 @@ def _safety_summary(change: dict[str, Any]) -> str:
 def _write_acceptance_sheet(workbook, outcomes: list[ItemOutcome]) -> str:
     """Add a one-row-per-edit review queue for a lawyer or public official."""
     from openpyxl.styles import Alignment, Border, Font, PatternFill, Side  # type: ignore
+    from openpyxl.worksheet.datavalidation import DataValidation  # type: ignore
 
     sheet = workbook.create_sheet(_unique_sheet_title(workbook, ACCEPTANCE_SHEET_TITLE))
     sheet.sheet_properties.tabColor = CHANGED_TEXT_COLOR
@@ -267,19 +273,20 @@ def _write_acceptance_sheet(workbook, outcomes: list[ItemOutcome]) -> str:
     thin_gray = Side(style="thin", color="FFD9E2F3")
     row_border = Border(bottom=thin_gray)
 
-    sheet.merge_cells("A1:H1")
+    sheet.merge_cells("A1:J1")
     sheet["A1"] = "Zmiany do akceptacji"
     sheet["A1"].fill = title_fill
     sheet["A1"].font = Font(color="FFFFFFFF", bold=True, size=16)
     sheet["A1"].alignment = Alignment(vertical="center")
     sheet.row_dimensions[1].height = 30
 
-    sheet.merge_cells("A2:H2")
+    sheet.merge_cells("A2:J2")
     sheet["A2"] = (
         "Każdy wiersz poniżej to jedna automatycznie zastosowana poprawka. "
         "Czerwone przekreślenie pokazuje tekst usunięty lub zastąpiony, "
-        "a zielone pogrubienie — tekst dodany lub poprawiony. Raport jest statyczny "
-        "i nie zawiera pól do ręcznego wypełniania."
+        "a zielone pogrubienie — tekst dodany lub poprawiony. W kolumnie „Decyzja” "
+        "można wybrać „przyjmuję” albo „odrzucam”; komenda "
+        "„humanize-pl-flow decisions” zbiera te decyzje w statystykę reguł."
     )
     sheet["A2"].alignment = Alignment(wrap_text=True, vertical="center")
     sheet.row_dimensions[2].height = 42
@@ -291,7 +298,7 @@ def _write_acceptance_sheet(workbook, outcomes: list[ItemOutcome]) -> str:
         for item in outcomes
         if item.status == "ok" and item.findings_before and not item.changes_applied
     )
-    sheet.merge_cells("A3:H3")
+    sheet.merge_cells("A3:J3")
     sheet["A3"] = (
         f"Wykrycia: {findings}   |   Zastosowane poprawki: {changes}   |   "
         f"Wiersze z uwagami, ale bez automatycznej poprawki: {findings_without_changes}"
@@ -310,6 +317,8 @@ def _write_acceptance_sheet(workbook, outcomes: list[ItemOutcome]) -> str:
         "Jest po poprawce",
         "Uzasadnienie",
         "Kontrole bezpieczeństwa",
+        DECISION_HEADER,
+        RULES_HEADER,
     ]
     for column, header in enumerate(headers, start=1):
         cell = sheet.cell(row=5, column=column, value=header)
@@ -341,6 +350,8 @@ def _write_acceptance_sheet(workbook, outcomes: list[ItemOutcome]) -> str:
                     describe_visible_change(before, after),
                 ),
                 _safety_summary(change),
+                None,
+                ", ".join(dict.fromkeys(change.get("rules", []))),
             ]
             for column, value in enumerate(values, start=1):
                 cell = sheet.cell(row=row_index, column=column, value=value)
@@ -356,7 +367,7 @@ def _write_acceptance_sheet(workbook, outcomes: list[ItemOutcome]) -> str:
             row_index += 1
 
     if row_index == 6:
-        sheet.merge_cells("A6:H7")
+        sheet.merge_cells("A6:J7")
         sheet["A6"] = (
             "Nie zastosowano żadnej poprawki automatycznie. Wykrycia są uwagami "
             "do ręcznej redakcji i znajdują się w arkuszu „Uwagi bez poprawki”."
@@ -368,7 +379,14 @@ def _write_acceptance_sheet(workbook, outcomes: list[ItemOutcome]) -> str:
         last_row = 7
     else:
         last_row = row_index - 1
-        sheet.auto_filter.ref = f"A5:H{last_row}"
+        sheet.auto_filter.ref = f"A5:J{last_row}"
+        decision = DataValidation(
+            type="list", formula1=f'"{",".join(DECISIONS)}"', allow_blank=True
+        )
+        decision.add(f"I6:I{last_row}")
+        sheet.add_data_validation(decision)
+        for row in range(6, last_row + 1):
+            sheet.cell(row=row, column=10).font = Font(color="FF808080", size=8)
 
     widths = {
         "A": 15,
@@ -379,6 +397,8 @@ def _write_acceptance_sheet(workbook, outcomes: list[ItemOutcome]) -> str:
         "F": 56,
         "G": 42,
         "H": 46,
+        "I": 14,
+        "J": 22,
     }
     for column, width in widths.items():
         sheet.column_dimensions[column].width = width
@@ -388,7 +408,7 @@ def _write_acceptance_sheet(workbook, outcomes: list[ItemOutcome]) -> str:
     sheet.page_setup.fitToHeight = 0
     sheet.sheet_properties.pageSetUpPr.fitToPage = True
     sheet.print_title_rows = "1:5"
-    sheet.print_area = f"A1:H{last_row}"
+    sheet.print_area = f"A1:J{last_row}"
     workbook.active = sheet
     return sheet.title
 
@@ -665,6 +685,33 @@ def _write_basis_sheet(workbook, layers: dict[str, Any], settings: FlowSettings)
     sheet.print_title_rows = "1:4"
     sheet.print_area = f"A1:C{last_row}"
     return sheet.title
+
+
+def read_decisions(paths: list[Path]) -> dict[str, Counter[str]]:
+    """Reviewers' decisions on applied fixes, counted per rule: "accepted",
+    "rejected" and "undecided", from the „Do akceptacji” sheets of finished
+    runs. A fix made by several rules counts for each of them."""
+    openpyxl = _require_openpyxl()
+    by_rule: dict[str, Counter[str]] = defaultdict(Counter)
+    for path in paths:
+        workbook = openpyxl.load_workbook(str(path), read_only=True)
+        for sheet in workbook.worksheets:
+            if not sheet.title.startswith(ACCEPTANCE_SHEET_TITLE):
+                continue
+            header = next(sheet.iter_rows(min_row=5, max_row=5, values_only=True), ())
+            if DECISION_HEADER not in header or RULES_HEADER not in header:
+                continue
+            decision_at, rules_at = header.index(DECISION_HEADER), header.index(RULES_HEADER)
+            for row in sheet.iter_rows(min_row=6, values_only=True):
+                rules = row[rules_at] if rules_at < len(row) else None
+                if not rules:
+                    continue
+                decision = str(row[decision_at] or "").strip().casefold()
+                outcome = DECISIONS.get(decision, "undecided")
+                for rule in str(rules).split(","):
+                    by_rule[rule.strip()][outcome] += 1
+        workbook.close()
+    return dict(by_rule)
 
 
 def _require_openpyxl():

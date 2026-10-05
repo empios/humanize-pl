@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from collections import Counter
 from types import SimpleNamespace
 
 import pytest
@@ -91,6 +92,7 @@ def test_run_all_layers_keeps_all_changes_for_detailed_xlsx_report() -> None:
             original=f"Zdanie {index} przed.",
             rewritten=f"Zdanie {index} po.",
             targeted_issue="legal_ai_style_rewrite",
+            rule="legal_ai_style:important_frame",
             operation_type="legal_ai_style_rewrite",
             risk=0.1,
             semantic_similarity=None,
@@ -120,6 +122,7 @@ def test_run_all_layers_omits_changes_without_a_visible_difference() -> None:
             original="Sąd oddalił wniosek.",
             rewritten="Sąd oddalił wniosek.",
             targeted_issue="legal_ai_style_rewrite",
+            rule="legal_ai_style:important_frame",
             operation_type="legal_ai_style_rewrite",
             risk=0.1,
             semantic_similarity=None,
@@ -129,6 +132,7 @@ def test_run_all_layers_omits_changes_without_a_visible_difference() -> None:
             original="Sąd   oddalił wniosek.",
             rewritten="Sąd oddalił wniosek.",
             targeted_issue="legal_ai_style_rewrite",
+            rule="legal_ai_style:important_frame",
             operation_type="legal_ai_style_rewrite",
             risk=0.1,
             semantic_similarity=None,
@@ -138,6 +142,7 @@ def test_run_all_layers_omits_changes_without_a_visible_difference() -> None:
             original="Sąd oddalił wniosek.",
             rewritten="Sąd nie uwzględnił wniosku.",
             targeted_issue="legal_ai_style_rewrite",
+            rule="legal_ai_style:important_frame",
             operation_type="legal_ai_style_rewrite",
             risk=0.1,
             semantic_similarity=None,
@@ -334,7 +339,7 @@ def test_xlsx_flow_highlights_changed_fragments_in_rewritten_text(tmp_path) -> N
     assert sheet.cell(row=1, column=rewritten_column).font.bold is True
 
     changes = workbook["Do akceptacji"]
-    assert [changes.cell(row=5, column=column).value for column in range(1, 9)] == [
+    assert [changes.cell(row=5, column=column).value for column in range(1, 11)] == [
         "Wiersz",
         "Nr",
         "Rodzaj zmiany",
@@ -343,6 +348,8 @@ def test_xlsx_flow_highlights_changed_fragments_in_rewritten_text(tmp_path) -> N
         "Jest po poprawce",
         "Uzasadnienie",
         "Kontrole bezpieczeństwa",
+        "Decyzja",
+        "Reguły",
     ]
     assert changes.max_row == 8
     assert all(
@@ -361,11 +368,38 @@ def test_xlsx_flow_highlights_changed_fragments_in_rewritten_text(tmp_path) -> N
     assert added_runs[0].font.color.rgb == CHANGED_TEXT_COLOR
     assert added_runs[0].font.b is True
     assert changes["D6"].value == "umiarkowane"
+    # The reviewer's decision is left blank, with the two choices offered
     assert changes["I6"].value is None
-    assert len(changes.data_validations.dataValidation) == 0
+    (validation,) = changes.data_validations.dataValidation
+    assert validation.formula1 == '"przyjmuję,odrzucam"'
+    assert str(validation.sqref) == "I6:I8"
+    assert changes["J6"].value
     assert "Uwagi bez poprawki" in workbook.sheetnames
     assert "Podstawa analizy" in workbook.sheetnames
     assert "nie zastępuje oceny prawnej" in workbook["Podstawa analizy"]["A2"].value
+
+
+def test_reviewer_decisions_are_counted_per_rule(tmp_path) -> None:
+    from humanize_pl.flows.xlsx_flow import read_decisions
+
+    source = tmp_path / "in.xlsx"
+    write_xlsx(source, [("1", AI_TEXT)])
+    output = tmp_path / "out.xlsx"
+    run_xlsx_flow(source, output, column="B", settings=BASIC)
+
+    workbook = openpyxl.load_workbook(str(output))
+    changes = workbook["Do akceptacji"]
+    rules = [changes.cell(row=row, column=10).value for row in range(6, 9)]
+    changes["I6"] = "przyjmuję"
+    changes["I7"] = "Odrzucam"
+    workbook.save(str(output))
+
+    counts = read_decisions([output])
+    expected: dict[str, Counter] = {}
+    for row_rules, outcome in zip(rules, ["accepted", "rejected", "undecided"]):
+        for rule in row_rules.split(", "):
+            expected.setdefault(rule, Counter())[outcome] += 1
+    assert counts == expected
 
 
 def test_xlsx_flow_explains_findings_without_automatic_changes(tmp_path) -> None:

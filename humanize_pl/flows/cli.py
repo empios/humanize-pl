@@ -28,7 +28,7 @@ from .replay import (
     needs_backfill,
     payload_from_workbook,
 )
-from .xlsx_flow import run_xlsx_flow
+from .xlsx_flow import read_decisions, run_xlsx_flow
 
 app = typer.Typer(
     add_completion=False,
@@ -665,6 +665,31 @@ def report_command(
     if not payload.get("pdf_report"):
         raise typer.BadParameter(payload.get("pdf_error", "Nie udało się zapisać PDF."))
     print(f"[green]Zapisano:[/green] {payload['pdf_report']}")
+
+
+@app.command("decisions")
+def decisions_command(
+    sources: list[Path] = typer.Argument(
+        ..., help="Arkusze .xlsx z przejrzanym arkuszem „Do akceptacji”"
+    ),
+) -> None:
+    """Decyzje recenzentów zebrane według reguł: ile poprawek przyjęto, ile odrzucono."""
+    by_rule = read_decisions(sources)
+    if not by_rule:
+        raise typer.BadParameter(
+            "Nie znaleziono arkusza „Do akceptacji” z kolumnami „Decyzja” i „Reguły”.",
+            param_hint="sources",
+        )
+    print("reguła | przyjęte | odrzucone | bez decyzji | odsetek przyjętych")
+    for rule, counts in sorted(
+        by_rule.items(), key=lambda row: (-(row[1]["accepted"] + row[1]["rejected"]), row[0])
+    ):
+        decided = counts["accepted"] + counts["rejected"]
+        share = f"{counts['accepted'] / decided:.0%}" if decided else "—"
+        print(
+            f"{rule} | {counts['accepted']} | {counts['rejected']} | "
+            f"{counts['undecided']} | {share}"
+        )
 
 
 def _replay_payload(source: Path, *, column: str | None, sheet: str | None, header_row: int):

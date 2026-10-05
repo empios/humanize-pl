@@ -293,12 +293,13 @@ zamienione fragmenty są wyróżnione na zielono i pogrubione. Dopisane kolumny
 mają czytelne nagłówki, dobrane szerokości i zawijanie dłuższej treści; format
 kolumn źródłowych pozostaje bez zmian.
 
-Przy redakcji powstają trzy statyczne arkusze informacyjne:
+Przy redakcji powstają trzy arkusze informacyjne:
 
 - `Do akceptacji` — każda faktycznie zastosowana poprawka jako osobny wiersz:
   `Było`, `Jest po poprawce`, uzasadnienie, poziom ryzyka, wykonane kontrole,
-  bez pól do ręcznego wypełniania. Fragment usunięty lub zastąpiony jest
-  czerwony i przekreślony, a dodany lub poprawiony jest zielony i pogrubiony.
+  kolumna `Decyzja` (lista: „przyjmuję” / „odrzucam”) i identyfikatory reguł,
+  które dały poprawkę. Fragment usunięty lub zastąpiony jest czerwony i
+  przekreślony, a dodany lub poprawiony jest zielony i pogrubiony.
 - `Uwagi bez poprawki` — każde wykrycie nadal obecne po redakcji, z cytatem,
   zaleceniem i wyjaśnieniem, dlaczego pozostało nierozwiązane.
 - `Podstawa analizy` — prosty opis reguł, korpusu referencyjnego, przebiegu,
@@ -308,6 +309,16 @@ Przy redakcji powstają trzy statyczne arkusze informacyjne:
 Arkusz `Do akceptacji` otwiera się jako pierwszy widok. Raport rozróżnia
 wykrycie od poprawki, więc identyczne teksty źródłowy i wynikowy oznaczają
 jawnie „uwaga do ręcznej decyzji”, a nie niewidoczną zmianę.
+
+Decyzje z przejrzanych arkuszy zbiera komenda:
+
+```bash
+humanize-pl-flow decisions wyniki_1.xlsx wyniki_2.xlsx
+```
+
+Dla każdej reguły podaje liczbę przyjętych, odrzuconych i nierozstrzygniętych
+poprawek oraz odsetek przyjętych, czyli trafność reguły w ocenie recenzentów.
+Poprawka złożona z kilku reguł liczy się dla każdej z nich.
 
 Obok arkusza wynikowego powstają `<nazwa>_flow_raport.json` (pełny raport
 przebiegu, tak jak w przepływie DOCX) i `<nazwa>_flow_raport.pdf`. Ścieżkę

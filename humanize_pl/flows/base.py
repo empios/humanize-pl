@@ -126,6 +126,9 @@ def collapse_visible_changes(changes: list[dict[str, Any]]) -> list[dict[str, An
             index = len(collapsed) - 1
         else:
             collapsed[index]["after"] = after
+            # Every rule in the chain made the visible edit; a reviewer's
+            # decision on it speaks to all of them.
+            collapsed[index]["rules"] = collapsed[index].get("rules", []) + change.get("rules", [])
         if location is not None:
             by_location[location] = index
         else:
@@ -486,6 +489,7 @@ def run_all_layers(
                 "before": change.original,
                 "after": change.rewritten,
                 "issue": change.targeted_issue or change.operation_type or "",
+                "rules": [change.rule],
                 "risk": change.risk,
                 "semantic_similarity": change.semantic_similarity,
                 "gate_results": change.gate_results,
@@ -742,6 +746,7 @@ def _rewrite_remaining_with_llm(
                 "before": job["source"],
                 "after": result.text.replace("\n", " ").strip(),
                 "issue": "llm_rewrite",
+                "rules": ["llm_rewrite"],
                 "risk": 0.45,
                 "semantic_similarity": None,
                 "gate_results": result.validation_checks,

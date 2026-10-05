@@ -433,10 +433,10 @@ def test_an_annex_does_not_outrank_the_contract_it_is_appended_to() -> None:
 
 
 def test_a_precise_template_decides_over_the_general_checklist() -> None:
-    """A porozumienie stron is filed under wypowiedzenie, whose checklist wants
+    """A porozumienie stron read as a wypowiedzenie meets a checklist that wants
     a notice period and a justification. The agreement has neither, rightly;
     its own template knows that and the checklist does not."""
-    row = _template("wypowiedzenie/rozwiazanie_umowy_o_prace_za_porozumieniem_stron")
+    row = _template("umowa_o_prace/rozwiazanie_umowy_o_prace_za_porozumieniem_stron")
     report = check_category(_filled(row.document), "wypowiedzenie")
     assert report.missing_required, "checklist still reports, as context"
     assert report.template["id"] == row.id

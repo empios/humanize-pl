@@ -1,9 +1,11 @@
 {
   "morfeusz": true,
   "metrics": {
-    "category_exact": 0.7477,
-    "category_family": 0.9252,
-    "category_exact_untitled": 0.6262,
+    "category_exact": 0.7383,
+    "category_wrong": 0.1402,
+    "category_family": 0.8411,
+    "category_exact_untitled": 0.6075,
+    "category_wrong_untitled": 0.2056,
     "checklist_false_blocks": 0.1215,
     "template_self_match": 1.0,
     "template_match_gapped": 0.9252,

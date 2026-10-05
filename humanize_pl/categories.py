@@ -43,6 +43,12 @@ SIGNAL_WEIGHT = 1
 # Below this score the winner is not a finding, it is noise from a couple of
 # common words, and the document is left unspecified.
 MIN_SCORE = 3
+# A winner this close to a runner-up that is a finding in its own right is a
+# coin toss: on the shipped templates such guesses were right a third of the
+# time. The document is left unspecified with both candidates named; a wrong
+# checklist costs more than none. A runner-up below MIN_SCORE is incidental
+# vocabulary and does not hold the winner back.
+CLOSE_MARGIN = 2
 
 # A document sharing half of its word pairs with a shipped template (balanced
 # over both directions) is that template whatever its vocabulary suggests: a
@@ -53,6 +59,17 @@ MIN_SCORE = 3
 # own text out of the search.
 TEMPLATE_OVERRIDE = 0.5
 TEMPLATE_FALLBACK = 0.25
+
+# Confidence is how often each way of deciding was right on the shipped
+# templates (each placed without its own template) and the AI documents,
+# smoothed: signals scoring at least STRONG_SCORE were right 35 times of 37,
+# weaker ones 55 of 87; the closest template sharing half the pairs or more
+# 52 of 52, a quarter to a half 16 of 19.
+STRONG_SCORE = 9
+CONFIDENCE_STRONG_SIGNALS = 0.92
+CONFIDENCE_SIGNALS = 0.63
+CONFIDENCE_TEMPLATE = 0.98
+CONFIDENCE_CLOSE_TEMPLATE = 0.81
 
 # A text that narrates in the past tense reports on events instead of
 # performing an act: rulings run at about two thirds past-tense verbs, while no
@@ -238,7 +255,7 @@ def _nearest_template(text: str, leave_out: str | None):
 def _from_template(template, share: float) -> CategoryGuess:
     return CategoryGuess(
         get(template.category),
-        round(min(0.98, share), 2),
+        CONFIDENCE_TEMPLATE if share >= TEMPLATE_OVERRIDE else CONFIDENCE_CLOSE_TEMPLATE,
         (f"podobieństwo do wzoru „{template.label_pl}” ({share:.0%} wspólnych par słów)",),
     )
 
@@ -263,8 +280,13 @@ def _by_signals(lowered: str) -> CategoryGuess:
 
     runner_up = scored[1][0] if len(scored) > 1 else 0
     margin = best_score - runner_up
-    confidence = min(0.98, 0.45 + 0.05 * best_score + 0.06 * margin)
-    return CategoryGuess(winner, round(confidence, 2), tuple(evidence[:5]))
+    if runner_up >= MIN_SCORE and margin <= CLOSE_MARGIN:
+        second = scored[1][1]
+        return CategoryGuess(
+            get(UNSPECIFIED), 0.0, (f"niepewne: {winner.label_pl} albo {second.label_pl}",)
+        )
+    confidence = CONFIDENCE_STRONG_SIGNALS if best_score >= STRONG_SCORE else CONFIDENCE_SIGNALS
+    return CategoryGuess(winner, confidence, tuple(evidence[:5]))
 
 
 def classify_category(text: str, *, leave_out: str | None = None) -> CategoryGuess:

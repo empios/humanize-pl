@@ -285,6 +285,25 @@ def test_a_performative_marker_counts_toward_the_score() -> None:
     assert "zwracam się z wnioskiem" in guess.evidence
 
 
+def test_two_close_findings_leave_the_document_unspecified() -> None:
+    from humanize_pl.categories import CONFIDENCE_SIGNALS, CONFIDENCE_STRONG_SIGNALS
+
+    guess = classify_category("Niniejsza umowa zlecenia obejmuje świadczenie usług doradczych.")
+    assert guess.category.id == UNSPECIFIED
+    assert guess.evidence == ("niepewne: umowa o świadczenie usług albo umowa zlecenia",)
+
+    # Confidence is the measured share of right guesses for the way it was made
+    weak = classify_category("Niniejsza umowa zlecenia obejmuje doradztwo podatkowe.")
+    assert weak.category.id == "umowa_zlecenia"
+    assert weak.confidence == CONFIDENCE_SIGNALS
+    strong = classify_category(
+        "Umowa zlecenia zawarta w dniu 3 marca. Zleceniobiorca wykona zlecenie z "
+        "zachowaniem starannego działania, a zleceniodawca zapłaci wynagrodzenie."
+    )
+    assert strong.category.id == "umowa_zlecenia"
+    assert strong.confidence == CONFIDENCE_STRONG_SIGNALS
+
+
 def test_a_phrase_listed_as_both_gate_and_signal_scores_once() -> None:
     row = get("wezwanie_do_zaplaty")
     shared = set(row.requires_any) & set(row.signals_strong + row.signals)

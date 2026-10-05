@@ -517,6 +517,15 @@ pisane dokumenty AI 0,2. Mierzone z pominięciem własnego wzoru dokumentu:
 trafność na wzorach wzrosła z 74 do 80 na 107, a na wzorach bez tytułu z 45
 do 67.
 
+Gdy dwie kategorie mają zbliżony wynik (różnica do 2 punktów, a obie są
+znaleziskami, czyli mają co najmniej 3 punkty), dokument zostaje nieokreślony
+z uzasadnieniem „niepewne: A albo B”: takie rozstrzygnięcia były trafne w
+jednej trzeciej przypadków, a błędna lista kontrolna jest gorsza niż żadna.
+Pewność (`confidence`) to zmierzony odsetek trafnych rozstrzygnięć danej
+ścieżki: 0,92 dla silnych sygnałów (co najmniej 9 punktów), 0,63 dla
+słabszych, 0,98 dla wzoru dzielącego co najmniej połowę par słów i 0,81 dla
+bliskiego wzoru. Odsetek błędnych kategorii na wzorach spadł z 24% do 14%.
+
 Dokument z rozpoznaną kategorią prawną jest sprawdzany w dwóch krokach.
 
 1. **Blueprint ogólny** (`humanize_pl/data/blueprints/<kategoria>.yaml`) — lista

@@ -48,6 +48,8 @@ DIRECTION = {
     "category_exact": 1,
     "category_family": 1,
     "category_exact_untitled": 1,
+    "category_wrong": -1,
+    "category_wrong_untitled": -1,
     "ai_category_exact": 1,
     "rulings_given_category": -1,
     "checklist_false_blocks": -1,
@@ -61,6 +63,8 @@ LABELS = {
     "category_exact": "kategoria trafiona (wzory)",
     "category_family": "rodzina dokumentu trafiona (wzory)",
     "category_exact_untitled": "kategoria trafiona bez tytułu (wzory)",
+    "category_wrong": "kategoria błędna, nie nieokreślona (wzory)",
+    "category_wrong_untitled": "kategoria błędna bez tytułu (wzory)",
     "ai_category_exact": "kategoria trafiona (dokumenty AI)",
     "rulings_given_category": "orzeczenia uznane za dokument z katalogu",
     "checklist_false_blocks": "wzory blokowane przez listę kontrolną własnej kategorii",
@@ -121,9 +125,17 @@ def structure_metrics(ai: list[tuple[str, str]], rulings: list[str] | None) -> d
         # left out of the template search, which would otherwise find itself.
         guess = classify_category(text, leave_out=template.id)
         counts["category_exact"] += guess.category.id == template.category
-        counts["category_family"] += guess.category.family == families[template.category]
+        counts["category_wrong"] += guess.specified and guess.category.id != template.category
+        # "nieokreslony" has a family too; leaving a document unspecified is no
+        # claim about its family.
+        counts["category_family"] += (
+            guess.specified and guess.category.family == families[template.category]
+        )
         untitled = classify_category("\n".join(lines[TITLE_LINES:]), leave_out=template.id)
         counts["category_exact_untitled"] += untitled.category.id == template.category
+        counts["category_wrong_untitled"] += (
+            untitled.specified and untitled.category.id != template.category
+        )
         blueprint = blueprint_for(template.category)
         counts["checklist_false_blocks"] += blueprint is not None and check(text, blueprint).blocking
         counts["template_self_match"] += _matches(text, template.id)

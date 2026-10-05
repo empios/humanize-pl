@@ -470,3 +470,18 @@ def test_template_loader_rejects_a_file_filed_under_the_wrong_category(tmp_path)
     )
     with pytest.raises(BlueprintError, match="katalogu"):
         _load_template(path)
+
+
+def test_a_request_without_its_optional_justification_is_not_blocked() -> None:
+    text = (
+        "Kraków, dnia 3 marca 2026 r.\nJan Kowalski\nul. Długa 1, Kraków\n"
+        "Alfa sp. z o.o., Warszawa\n"
+        "WNIOSEK O UDZIELENIE URLOPU BEZPŁATNEGO\n"
+        "Na podstawie art. 174 § 1 ustawy z dnia 26 czerwca 1974 r. - Kodeks pracy, zwracam "
+        "się z wnioskiem o udzielenie mi urlopu bezpłatnego w okresie od dnia 1 kwietnia "
+        "2026 r. do dnia 30 kwietnia 2026 r.\n"
+        "Jan Kowalski"
+    )
+    report = check_category(text, "wniosek_pracowniczy")
+    assert report.template["id"] == "wniosek_pracowniczy/wniosek_o_udzielenie_urlopu_bezplatnego"
+    assert not report.blocking, report.issues

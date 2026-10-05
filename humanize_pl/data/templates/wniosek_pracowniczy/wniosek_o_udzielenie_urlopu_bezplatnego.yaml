@@ -97,6 +97,8 @@ blocks:
   role: body
   layout: {align: center, size: 12.0, bold: true}
   text: UZASADNIENIE
+  optional: true
+  condition: opcjonalnie należy sporządzić uzasadnienie wniosku i wskazać, z jakich przyczyn pracownik wnioskuje o udzielenie urlopu
 - {p: 21, role: spacer}
 - p: 22
   role: body
@@ -104,6 +106,8 @@ blocks:
   text: Niniejszy wniosek motywuję tym, że ……………………………………………………………………………………………
   slots:
   - {id: p22_1, span: [35, 70], type: text, context: wniosek motywuję tym że ▢}
+  optional: true
+  condition: opcjonalnie należy sporządzić uzasadnienie wniosku i wskazać, z jakich przyczyn pracownik wnioskuje o udzielenie urlopu
 - p: 23
   role: blank_line
   layout: {align: justify, size: 10.0}

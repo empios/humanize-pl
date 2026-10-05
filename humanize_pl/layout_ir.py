@@ -284,6 +284,10 @@ class Numbering:
 # "k.p." never reaches the threshold.
 _FILL_RUN = re.compile(r"(?:…|\.)+(?:[-–](?:…|\.)+)?|_{4,}")
 _FILL_MIN_WEIGHT = 4  # "…." and "...." are blanks: "w terminie …. dni"
+# A line ending in a blank, whose field may carry on to the next line.
+_FILL_TAIL = re.compile(r"(?:…|\.{3,}|_{3,})\s*$")
+# At most this many words for a line to read as a section heading ("UZASADNIENIE").
+_HEADING_WORDS = 5
 _PLACEHOLDER = re.compile(
     r"\[[^\]\n]{0,60}(?:uzupełnij|do uzupełnienia|wpisz|tbd)[^\]\n]{0,60}\]", re.IGNORECASE
 )
@@ -805,6 +809,7 @@ def classify(blocks: list[Block]) -> None:
 
     # bind hint blocks to the block they explain
     last: Block | None = None
+    last_pos = -1
     for pos, b in enumerate(content):
         if b.role == "hint":
             parts = split.get(pos, [pos])
@@ -825,14 +830,38 @@ def classify(blocks: list[Block]) -> None:
                             slot.hint = groups[0]
                     if b.condition:
                         last.optional, last.condition = True, b.condition
+                        _spread_optional(content, last_pos, b.condition)
             continue
-        last = b
+        last, last_pos = b, pos
 
     # alternatives: "a / b / c" where several parts carry blanks
     for b in blocks:
         if b.role in ("hint", "spacer", "pagebreak"):
             continue
         b.alternatives = _alternatives(b.text)
+
+
+def _spread_optional(content: list[Block], pos: int, condition: str) -> None:
+    """An optional blank line continues the field above it, so the field is
+    optional as a whole: the line it carries on from ("Niniejszy wniosek
+    motywuję tym, że ……"), any blank lines between, and a short heading right
+    above ("UZASADNIENIE"), which heads nothing once the text is left out."""
+    k = pos - 1
+    while k >= 0 and content[k].role == "blank_line":
+        content[k].optional, content[k].condition = True, condition
+        k -= 1
+    if k < 0 or content[k].role != "body" or not _FILL_TAIL.search(content[k].text):
+        return
+    content[k].optional, content[k].condition = True, condition
+    heading = content[k - 1] if k > 0 else None
+    if (
+        heading is not None
+        and heading.role in ("body", "clause_heading")
+        and not heading.slots
+        and len(heading.text.split()) <= _HEADING_WORDS
+        and not heading.text.rstrip().endswith((".", ",", ";", ":"))
+    ):
+        heading.optional, heading.condition = True, condition
 
 
 def _alternatives(text: str) -> int:

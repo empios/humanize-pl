@@ -176,3 +176,23 @@ def test_plain_text_is_compared_without_inventing_layout_differences() -> None:
     result = layout_ir.evaluate(template.document, layout_ir.from_text(text), layout=False)
     assert result["layout"] == []
     assert result["missing"] == []
+
+
+def test_an_optional_continuation_makes_its_whole_field_optional() -> None:
+    ir = layout_ir.from_text(
+        "Wnoszę o udzielenie urlopu.\n"
+        "UZASADNIENIE\n"
+        "Niniejszy wniosek motywuję tym, że ……………………………\n"
+        "……………………………………………………………\n"
+        "(opcjonalnie należy sporządzić uzasadnienie wniosku)\n"
+        "…………………\n"
+        "(podpis pracownika)"
+    )
+    optional = {b["text"][:12]: b["optional"] for b in ir["blocks"] if b["role"] != "hint"}
+    assert optional == {
+        "Wnoszę o udz": False,
+        "UZASADNIENIE": True,
+        "Niniejszy wn": True,
+        "………………………………": True,
+        "…………………": False,
+    }

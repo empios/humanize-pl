@@ -80,6 +80,21 @@ def test_an_essay_about_employment_law_is_not_an_employment_contract() -> None:
     assert not guess.specified
 
 
+def test_a_ruling_quoting_a_contract_is_not_that_contract() -> None:
+    quoted = (
+        "Strony zawarły umowę pożyczki, w której pożyczkodawca udzielił pożyczki "
+        "w kwocie 20 000 zł, a pożyczkobiorca zobowiązał się do jej spłaty z odsetkami."
+    )
+    assert classify_category(quoted).category.id == "umowa_pozyczki"
+
+    for court in ("Sąd Rejonowy zważył, co następuje:", "Sąd Okręgowy zważył co\nnastępuje."):
+        guess = classify_category(quoted + "\n" + court)
+        assert guess.category.id == UNSPECIFIED
+        assert guess.evidence == ("zważył, co następuje",)
+    # A word that merely contains a marker's first word does not count
+    assert classify_category(quoted + " Nie rozważył, co następuje.").category.id == "umowa_pozyczki"
+
+
 def test_contract_vocabulary_alone_does_not_claim_a_category() -> None:
     about = (
         "Wynagrodzenie i czynsz to pojęcia, które wynajmujący i najemca "

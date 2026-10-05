@@ -23,6 +23,7 @@ from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 
+import regex as re
 import yaml
 
 from humanize_pl.document import DocumentType
@@ -155,6 +156,17 @@ def catalogue() -> dict[str, LegalCategory]:
     return _load(CATALOGUE_PATH)
 
 
+@lru_cache(maxsize=1)
+def _reporting_markers() -> tuple[tuple[str, re.Pattern], ...]:
+    """Phrases in which a court speaks for itself, matched word by word so the
+    punctuation between the words does not matter."""
+    payload = yaml.safe_load(CATALOGUE_PATH.read_text(encoding="utf-8")) or {}
+    return tuple(
+        (phrase, re.compile(r"(?<!\w)" + r"\W+".join(re.findall(r"\w+", phrase)) + r"(?!\w)"))
+        for phrase in (str(row).casefold() for row in payload.get("reporting_markers") or ())
+    )
+
+
 def get(identifier: str) -> LegalCategory:
     try:
         return catalogue()[identifier]
@@ -173,8 +185,17 @@ def classify_category(text: str) -> CategoryGuess:
     into the closest-looking bucket. A blueprint chosen from a guessed category
     would report missing sections the document was never supposed to have,
     which is worse than admitting the category is unknown.
+
+    A text in which a court speaks for itself ("Sąd zważył, co następuje")
+    reports on documents rather than being one. It stays unspecified however
+    much of a contract or a statement of claim it quotes.
     """
     lowered = text.casefold()
+    reported = next(
+        (phrase for phrase, pattern in _reporting_markers() if pattern.search(lowered)), None
+    )
+    if reported is not None:
+        return CategoryGuess(get(UNSPECIFIED), 0.0, (reported,))
     scored: list[tuple[int, LegalCategory, list[str]]] = []
     for row in catalogue().values():
         if row.id == UNSPECIFIED:

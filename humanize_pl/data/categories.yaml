@@ -17,6 +17,21 @@
 
 version: 1
 
+# Zwroty, którymi sąd mówi we własnym imieniu. Tekst, który ich używa, opisuje
+# dokumenty, zamiast nimi być: uzasadnienie orzeczenia cytuje umowy, pozwy
+# i pełnomocnictwa i ma całe ich słownictwo, ale żadnym z nich nie jest.
+# Jeden taki zwrot wystarcza, by tekst został nieokreślony. Dobrane na części
+# treningowej korpusu SAOS; nie występują w żadnym wzorze ani dokumencie AI.
+# Interpunkcja między słowami nie ma znaczenia.
+reporting_markers:
+  - zważył, co następuje
+  - ustalił następujący stan faktyczny
+  - ustalił, co następuje
+  - powyższy stan faktyczny sąd
+  - orzeczono jak w sentencji
+  - orzekł jak w sentencji
+  - w imieniu rzeczypospolitej polskiej
+
 categories:
 
   # ---------------------------------------------------------------- umowy ---

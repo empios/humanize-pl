@@ -3,6 +3,7 @@ from __future__ import annotations
 import regex as re
 
 from humanize_pl.config import Mode
+from humanize_pl.nlp.morfeusz import try_load_morfeusz
 from .base import Candidate
 from .finite_verbs import has_finite_verb
 
@@ -26,6 +27,33 @@ def _legal_ref_near_split(left: str, right: str, window: int = 6) -> bool:
     left_tail = " ".join(left.split()[-window:])
     right_head = " ".join(right.split()[:window])
     return bool(_LEGAL_REF_RE.search(left_tail + " " + right_head))
+
+
+_WORD_RE = re.compile(r"\p{L}+")
+_NOT_ONLY_A_CONJUNCTION = {"subst", "adj", "prep", "pred"}
+
+
+def _opens_subordinate_clause(text: str) -> bool:
+    """True if *text* opens a subordinate clause ("że", "skoro", "ponieważ", a
+    relative "który") or Morfeusz is missing to tell.
+
+    A connector after such a clause may continue it: in "wskazał, że A,
+    ponieważ B" the reason is part of what was said, and a split would turn it
+    into the writer's own claim; "Skoro A, a także B, to C" would lose its
+    consequence. A word that can also be a pronoun or a preposition ("to",
+    "co do") is not taken for one.
+    """
+    morfeusz = try_load_morfeusz()
+    if morfeusz is None:
+        return True
+    for word in _WORD_RE.findall(text):
+        analyses = morfeusz.analyses(word)
+        heads = {row.tag.split(":")[0] for row in analyses}
+        if "comp" in heads and not heads & _NOT_ONLY_A_CONJUNCTION:
+            return True
+        if any(row.lemma == "który" for row in analyses):
+            return True
+    return False
 
 
 def _safe_split_candidate(
@@ -60,6 +88,8 @@ def _safe_split_candidate(
         return None
     # Do not split list complements starting with a bare preposition.
     if right.lower().startswith(("za ", "w ", "na ", "do ", "od ", "przy ", "bez ", "pod ")):
+        return None
+    if _opens_subordinate_clause(left):
         return None
     # Do not split if the left half introduces a list (ends with a colon).
     if ":" in left:

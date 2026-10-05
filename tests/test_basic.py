@@ -105,6 +105,12 @@ def test_passive_needs_an_agreeing_subject_after_the_participle(monkeypatch):
         "Została podpisana umowa przez obie strony.",
         # Masculine personal subject before the verb: "prezesa" would be needed
         "Prezes został powołany uchwałą zarządu.",
+        # Under negation the object takes the genitive: "nie wykonano prac"
+        "Podczas naprawy nie zostały wykonane prace ujęte w kosztorysie.",
+        # The modifier after the comma would stay nominative: "umowę, nazwana"
+        "W dniu 1 kwietnia została zawarta kolejna umowa, nazwana umową o dzieło.",
+        # "powód" is a reason (accusative "powód") or a plaintiff ("powoda")
+        "Po zakończeniu budowy powód został przeniesiony na inną budowę.",
     ]:
         assert passive_voice.passive_candidates(sentence, mode=Mode.standard) == [], sentence
 
@@ -277,8 +283,16 @@ def test_w_celu_ger_candidates():
         "W celu skorzystania z ulgi strona składa wniosek.",
         # An infinitive takes no agent: "aby usunąć przez Wynajmującego"
         "Najemca zgłasza usterkę w celu usunięcia przez Wynajmującego.",
+        # A transitive verb would be left without its object
+        "Oskarżona dokonała zaboru w celu przywłaszczenia na szkodę pokrzywdzonego.",
+        # The second of two coordinated purposes: "korzyści i, aby uzyskać"
+        "Działał w celu osiągnięcia korzyści i w celu uzyskania pożyczki.",
     ]:
         assert w_celu(sentence) == [], sentence
+    # A reflexive "się" takes the object's place
+    assert w_celu("Pracownik otrzymał dokumenty w celu zapoznania się z nimi.") == [
+        "Pracownik otrzymał dokumenty, aby zapoznać się z nimi."
+    ]
 
 
 def test_lix_in_sentence_features():
@@ -323,20 +337,27 @@ def test_ger_auto_detection_nlp_path():
     assert any("analizował" in c.text.lower() for c in nlp_cands)
 
 
-def test_co_do_zasady():
+def test_co_do_zasady_is_kept_as_a_term_of_art():
     from humanize_pl.rules.kancelaryzmy import kancelaryzm_candidates
     from humanize_pl.config import Mode
 
-    cases = [
-        ("Co do zasady wierzyciel może dochodzić naprawienia szkody.", "zasadniczo"),
-        ("co do zasady pracownik nie może decydować samodzielnie.", "zasadniczo"),
-    ]
-    for sentence, expected in cases:
+    for sentence in [
+        "Co do zasady wierzyciel może dochodzić naprawienia szkody.",
+        # The claim's basis, as opposed to its amount: "zasadniczo" means "mostly"
+        "Pozwany uznał roszczenie co do zasady, kwestionując jedynie jego wysokość.",
+    ]:
         cands = kancelaryzm_candidates(sentence, mode=Mode.standard)
-        assert cands, f"No candidate for: {sentence!r}"
-        assert any(expected in c.text.lower() for c in cands), (
-            f"Expected {expected!r} in {[c.text for c in cands]}"
-        )
+        assert not any("zasadniczo" in c.text.lower() for c in cands), sentence
+
+
+def test_w_odniesieniu_do_keeps_its_meaning():
+    from humanize_pl.rules.kancelaryzmy import kancelaryzm_candidates
+    from humanize_pl.config import Mode
+
+    cands = kancelaryzm_candidates(
+        "Wierzycielem w odniesieniu do kwoty 8 614 zł była spółka.", mode=Mode.standard
+    )
+    assert {c.text for c in cands} == {"Wierzycielem co do kwoty 8 614 zł była spółka."}
 
 
 def test_drop_intro_with_new_verbs():
@@ -529,6 +550,25 @@ def test_split_keeps_coordinated_objects_together():
         "przetwarzania danych osobowych przez Podmiot."
     )
     assert sentence_flow_candidates(sentence, mode=Mode.strong) == []
+
+
+def test_split_stays_out_of_a_subordinate_clause():
+    """A connector after "że" or "skoro" may continue that clause: split off,
+    a party's reason becomes the writer's claim, and a condition loses its
+    consequence."""
+    from humanize_pl.rules.sentence_flow import sentence_flow_candidates
+    from humanize_pl.config import Mode
+
+    for sentence in [
+        "Strona pozwana zakwestionowała argumentację zawartą w uzasadnieniu pozwu, podnosząc, "
+        "że akcjonariusze mają możliwość zbycia swoich akcji na rynku regulowanym w każdym "
+        "czasie, ponieważ mogą bez problemu zbyć je za pośrednictwem domu maklerskiego.",
+        "Skoro bowiem pozwany nie otrzymał od powoda żadnej umowy ani nawet jej projektu "
+        "w toku prowadzonych rozmów, a także nie zostały mu przedstawione do akceptacji "
+        "istotne postanowienia przyszłej umowy, to umowa nie została zawarta.",
+    ]:
+        assert len(sentence.split()) >= 32
+        assert sentence_flow_candidates(sentence, mode=Mode.standard) == [], sentence
 
 
 def test_split_needs_a_comma_before_the_connector():

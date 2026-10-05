@@ -27,7 +27,7 @@ CONSERVATIVE_REPLACEMENTS: list[tuple[str, str]] = [
     (r"\bnależy wskazać, że\b", "warto wskazać, że"),
     (r"\bwziąwszy pod uwagę\b", "biorąc pod uwagę"),
     (r"\bzważywszy na\b", "biorąc pod uwagę"),
-    (r"\bw odniesieniu do\b", "w przypadku"),
+    (r"\bw odniesieniu do\b", "co do"),
     (r"\bw zakresie dotyczącym\b", "w zakresie"),
     (r"\bdokonywać oceny\b", "oceniać"),
     (r"\bdokonać oceny\b", "ocenić"),
@@ -69,8 +69,10 @@ def _na_podstawie(text: str) -> str:
 
     return _W_OPARCIU_O_NP.sub(repl, text)
 
+# "co do zasady" is not here: in "uznał roszczenie co do zasady" it is a term
+# of art (the claim's basis, as opposed to its amount), which "zasadniczo"
+# would turn into "mostly".
 STANDARD_REPLACEMENTS: list[tuple[str, str]] = [
-    (r"\bco do zasady\b", "zasadniczo"),
     (r"\bw konsekwencji\b", "w rezultacie"),
     (r"\bw celu dokonania oceny\b", "aby ocenić"),
     (r"\bw celu przeprowadzenia analizy\b", "aby przeanalizować"),

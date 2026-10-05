@@ -53,6 +53,9 @@ _STRUCTURAL_TAGS = {"prep", "conj", "comp"}
 # An impersonal "-no/-to" form takes no agent: "ustanowiono przez fundatora"
 # is wrong, so a clause with "przez" keeps its passive.
 _AGENT_RE = re.compile(r"[^,;:.!?]*?\bprzez\b", re.IGNORECASE)
+# Under negation the object of an impersonal form takes the genitive: "nie
+# zostały wykonane prace" is "nie wykonano prac", never "nie wykonano prace".
+_NEGATED_RE = re.compile(r"\bnie\s*$", re.IGNORECASE)
 
 
 def _subject_roles(word: str, number: str, genders: set[str], morfeusz) -> set[str]:
@@ -78,22 +81,41 @@ def _subject_reads_as_accusative(prefix: str, aux: str, morfeusz) -> bool:
     """True if the noun right before *aux* is its subject and reads the same in
     the accusative: "raport został sporządzony" → "raport sporządzono", likewise
     "co" or "dokumenty". Feminine and masculine personal nouns change form
-    ("umowę", "prezesa"), so for them the sentence is left alone."""
+    ("umowę", "prezesa"), so for them the sentence is left alone. This must
+    hold in every gender the word can have: "powód" is "powód" in the
+    accusative as a reason, but "powoda" as a plaintiff."""
     last = re.search(rf"({_PL_WORD})\s*$", prefix)
     if last is None:
         return False
     number, genders = _AUX_AGREEMENT[aux.lower()]
-    cases: set[str] = set()
+    by_case: dict[str, set[str]] = {"nom": set(), "acc": set()}
     for analysis in morfeusz.analyses(last.group(1)):
         parts = analysis.tag.split(":")
+        if parts[0] in {"subst", "ger"} and len(parts) >= 4 and number in parts[1].split("."):
+            for case in by_case.keys() & set(parts[2].split(".")):
+                by_case[case] |= genders & set(parts[3].split("."))
+    return bool(by_case["nom"]) and by_case["nom"] <= by_case["acc"]
+
+
+def _modifier_follows(after: str, number: str, genders: set[str], morfeusz) -> bool:
+    """True if the subject is followed by a modifier set off by a comma and
+    agreeing with it ("umowa, nazwana umową o dzieło"), which would stay in
+    the nominative. A relative pronoun takes its case from its own clause."""
+    following = re.match(rf"\s*,\s*({_PL_WORD})", after)
+    if following is None:
+        return False
+    for analysis in morfeusz.analyses(following.group(1)):
+        parts = analysis.tag.split(":")
         if (
-            parts[0] in {"subst", "ger"}
+            parts[0] in {"adj", "ppas", "pact"}
+            and analysis.lemma != "który"
             and len(parts) >= 4
             and number in parts[1].split(".")
+            and "nom" in parts[2].split(".")
             and genders & set(parts[3].split("."))
         ):
-            cases.update(parts[2].split("."))
-    return {"nom", "acc"} <= cases
+            return True
+    return False
 
 
 def _split_punct(text: str) -> tuple[str, str]:
@@ -134,6 +156,8 @@ def _subject_to_accusative(obj: str, rest: str, aux: str, morfeusz) -> tuple[str
     nouns = [index for index, (_, _, roles) in enumerate(run) if "noun" in roles]
     if not nouns or COORDINATION_RE.match(after):
         return None
+    if _modifier_follows(after, number, genders, morfeusz):
+        return None
     head = nouns[-1]
     if any("adj" not in roles for index, (_, _, roles) in enumerate(run) if index != head):
         return None
@@ -164,7 +188,7 @@ def passive_candidates(sentence: str, *, analysis=None, mode: Mode) -> list[Cand
         verb = PARTICIPLE_TO_IMPERSONAL.get(part) or impersonal_form_for_participle(part)
         obj, rest, aux = m.group("obj"), m.group("rest") or "", m.group("aux")
         subject = None
-        if verb and not _AGENT_RE.match(obj + rest):
+        if verb and not _AGENT_RE.match(obj + rest) and not _NEGATED_RE.search(m.group("prefix")):
             subject = _subject_to_accusative(obj, rest, aux, morfeusz)
             if (
                 subject is None

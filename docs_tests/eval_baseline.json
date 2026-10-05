@@ -9,10 +9,10 @@
     "template_match_gapped": 0.9252,
     "ai_category_exact": 1.0,
     "rulings_given_category": 0.0067,
-    "edits_per_1k_ai": 30.3,
+    "edits_per_1k_ai": 28.88,
     "unsafe_outputs": 0,
-    "edits_per_1k_rulings": 2.71,
-    "edit_ratio_ai_to_rulings": 11.17,
+    "edits_per_1k_rulings": 2.13,
+    "edit_ratio_ai_to_rulings": 13.58,
     "unsafe_outputs_rulings": 0
   }
 }

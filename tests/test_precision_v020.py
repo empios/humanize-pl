@@ -71,7 +71,8 @@ def test_przejawia_sie_rewrite_depends_on_sentence_position():
 def test_legal_terms_are_preserved():
     text = "Co do zasady zgodnie z art. 22 § 1 Kodeksu pracy pracownik wykonuje pracę osobiście."
     result = humanize_text(text, mode="standard")
-    # "Co do zasady" is a bureaucratic filler → replaced with "zasadniczo"; legal citation preserved
+    # "Co do zasady" is a term of art and stays, as does the legal citation
+    assert result.text.startswith("Co do zasady")
     assert "art. 22 § 1 Kodeksu pracy" in result.text
 
 
@@ -107,8 +108,9 @@ def test_rejects_fragment_sentence_without_finite_verb():
 
 
 def test_report_contains_paragraph_sentence_and_rejection_reason(tmp_path):
+    # One main clause throughout, so the split is proposed and then rejected
     text = (
-        "To jest bardzo długie zdanie, które opisuje obowiązki pracownika, "
+        "Pracodawca opisuje obowiązki pracownika, "
         "wskazuje podstawy podporządkowania, przedstawia skutki organizacyjne, "
         "omawia zakres odpowiedzialności, pokazuje praktyczne znaczenie tej oceny, "
         "odnosi się do praktyki sądowej i opisuje typowe spory, "

@@ -243,6 +243,22 @@ def _reduction_leaves_dependents(analysis, noun_id: int | None) -> bool:
 # ─── Ger auto-detection helpers ──────────────────────────────────────────────
 
 _W_CELU_RE = re.compile(r"\bw\s+celu\s+(\p{L}+)", re.IGNORECASE)
+# "w celu A i w celu B": the second purpose is coordinated with the first, and
+# "…A i, aby B" would break the pair.
+_ENDS_IN_CONJUNCTION = re.compile(r"\b(?:i|oraz|lub|albo|bądź|ani|a także)\s*$", re.IGNORECASE)
+
+
+def _object_left_unfilled(infinitive: str, tail: str, morfeusz: MorfeuszAnalyzer) -> bool:
+    """True if *infinitive* takes an accusative object that nothing supplies.
+
+    A verb with a passive participle is transitive ("przywłaszczyć",
+    "przywłaszczony"). The gerund had no object here, or it would have been a
+    genitive and the rule would not run, so "dokonała zaboru, aby przywłaszczyć
+    na szkodę K." would lack one. A reflexive "się" fills the slot.
+    """
+    if re.match(r"\s+się\b", tail, re.IGNORECASE):
+        return False
+    return any(form.tag.startswith("ppas") for form in morfeusz.generate(infinitive))
 
 
 def _ger_auto_entry(
@@ -272,7 +288,7 @@ def _w_celu_ger_candidates(
     gerund's object is genitive ("w celu przeprowadzenia kontroli") and most
     infinitives take another case ("przeprowadzić kontrolę"), so a gerund
     followed by a possible genitive, an agent ("przez") or coordination is left
-    alone.
+    alone, and so is a transitive verb that would be left without an object.
     """
     if mode == Mode.conservative:
         return []
@@ -293,6 +309,8 @@ def _w_celu_ger_candidates(
             or not has_finite_verb(lead)
             or object_follows
             or COORDINATION_RE.match(tail)
+            or _ENDS_IN_CONJUNCTION.search(lead)
+            or _object_left_unfilled(infinitive, tail, morfeusz)
         ):
             continue
         separator = " " if lead.endswith(",") else ", "

@@ -8,7 +8,11 @@ sections:
 - id: komparycja
   label_pl: komparycja
   severity: required
-  matches: [zawarta, pomiędzy, pożyczkodawc, pożyczkobiorc]
+  # Formuły zawarcia i oznaczenia stron, nie nazwy ról: „najemca” czy „zawarta”
+  # powtarzają się w całej umowie i utrzymywały usuniętą komparycję jako obecną.
+  matches: [zawarta w dniu, zawarta dnia, zawarta pomiędzy, zawarta między, zawarto umowę,
+    zwanym dalej, zwaną dalej, zwanymi dalej, zwany dalej, zwana dalej, zwanego dalej,
+    zwanej dalej, zwani dalej, z siedzibą w, zamieszkał, pesel, 'nip:', 'nip ', krs, legitymując]
 - id: kwota
   label_pl: kwota pożyczki
   severity: required

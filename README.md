@@ -319,7 +319,17 @@ ustalenia terminu płatności” w wezwaniu, które o terminie nie mówiło) ora
 usunięte „Działając w imieniu własnym”. Nie wychwycił osłabienia „Wzywam do
 zapłaty” do „proszę dokonać”; tę zmianę odrzuca teraz kontrola czynności.
 Przegląd człowieka pozostaje potrzebny.
-Mglistość FOG-PL prawie się nie zmienia (13,7 → 13,6). Sprawdzony i
+Mglistość FOG-PL prawie się nie zmienia (13,7 → 13,6).
+
+Na 24 e-mailach, listach i notatkach napisanych przez Claude Haiku (zaproszenia,
+oferty, przypomnienia o płatności, reklamacje, rezygnacje, komunikaty)
+redakcję przeszło 50 z 86 akapitów, wszystkie 24 teksty zachowały wartości,
+modalność, czynności i strony, a FOG-PL spadł z 13,3 do 12,8. Polecenie
+nastawione wprost na krótsze zdania i krótsze słowa nie pomogło (12,7 przy
+46 z 86 przyjętych akapitów): zdania tych tekstów mają średnio 11 słów, a
+mglistość tworzą głównie długie wyrazy, których model 9B prawie nie zamienia.
+
+Sprawdzony i
 odrzucony wariant z tłumaczeniem PL → EN → PL (TranslateGemma 4B): już sam
 przekład w obie strony gubił liczby i przepisy we wszystkich 25 dokumentach.
 

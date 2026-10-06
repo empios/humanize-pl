@@ -85,7 +85,12 @@ Działa warstwowo:
   `MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7`, uczonego m.in. na
   polskich danych NLI; poprzedni domyślny model nie widział polskiego. Na 318
   polskich parach (zachowana treść wobec zmienionej modalności, przeczenia,
-  liczby lub ról stron) rozdziela je lepiej: AUC 0,971 wobec 0,948,
+  liczby lub ról stron) rozdziela je lepiej: AUC 0,971 wobec 0,948. Poza
+  werdyktem „sprzeczność” walidator wymaga, by redakcja i źródło wynikały z
+  siebie nawzajem z prawdopodobieństwem co najmniej 0,2: zmiana modalności
+  rzadko wygląda na sprzeczność, ale przestaje wynikać ze źródła (wykryte
+  zmiany modalności: 40 z 60 zamiast 17, odrzucone dobre redakcje: 3 ze 124
+  zamiast 1),
 - nowe kategorie `wniosek_pracowniczy` (wnioski do pracodawcy: urlop, dni
   wolne, świadectwo pracy) i `umowa_o_zakazie_konkurencji`; ich wzory leżały
   wcześniej pod wnioskiem procesowym i NDA, których lista kontrolna blokowała

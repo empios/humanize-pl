@@ -17,6 +17,12 @@ DEFAULT_FLUENCY_MODEL = "allegro/herbert-base-cased"
 # the two better (two-way entailment AUC 0.971 against 0.948) and its
 # contradiction verdict catches more of every kind.
 DEFAULT_NLI_MODEL = "MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7"
+# A rewrite must also entail its source and be entailed by it at least this
+# much. A changed modality rarely reads as an outright contradiction: on 124
+# kept rewrites and 194 changed ones, the contradiction verdict alone caught 17
+# of 60 changed modals; with this floor 40, for 3 rejected good rewrites in
+# 124 instead of 1.
+MIN_MUTUAL_ENTAILMENT = 0.2
 
 @dataclass(frozen=True)
 class TransformerValidationResult:
@@ -36,12 +42,19 @@ class NLIValidator:
         self._pipeline = _get_nli_pipeline(self.model_name, offline)
 
     def check_entailment(self, premise: str, hypothesis: str) -> bool:
-        """Returns True if hypothesis does not contradict the premise."""
-        # pipeline output for single pair: {'label': 'entailment'/'neutral'/'contradiction', 'score': ...}
-        # The model's labels: 'entailment', 'neutral', 'contradiction'
-        result = self._pipeline({"text": premise, "text_pair": hypothesis})
-        label = result["label"].lower()
-        return "contradiction" not in label
+        """True if the hypothesis keeps the premise's meaning: the model does not
+        call it a contradiction, and each entails the other at least
+        MIN_MUTUAL_ENTAILMENT."""
+        forward = self._scores(premise, hypothesis)
+        if max(forward, key=forward.get) == "contradiction":
+            return False
+        backward = self._scores(hypothesis, premise)
+        return min(forward["entailment"], backward["entailment"]) >= MIN_MUTUAL_ENTAILMENT
+
+    def _scores(self, premise: str, hypothesis: str) -> dict[str, float]:
+        """Label -> probability; the labels are entailment, neutral, contradiction."""
+        rows = self._pipeline({"text": premise, "text_pair": hypothesis}, top_k=None)
+        return {row["label"].lower(): row["score"] for row in rows}
 
 
 class EmbeddingSimilarityValidator:

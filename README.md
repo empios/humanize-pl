@@ -132,7 +132,8 @@ dokumentów, `raport.pdf`, `flow-report.json` i `summary.csv`, spakowanych też
 razem w `wyniki.zip`.
 
 Strona pokazuje wynik zdaniem, nie samą liczbą: ile pozycji wymaga przeglądu,
-czy średni sygnał AI spadł i o ile. Tabela z metrykami oraz log silnika —
+czy zachowano liczby, daty, kwoty, przepisy i nazwy, ile wprowadzono poprawek,
+a na końcu, orientacyjnie, jak zmienił się wskaźnik stylu. Tabela z metrykami oraz log silnika —
 łącznie z informacją o degradacji silnika do `basic` — są zwinięte pod
 wynikiem. Ustawienia mają domyślne wartości identyczne z CLI; wszystko, co
 dotyczy modeli i formatowania, siedzi w sekcji „Zaawansowane”.
@@ -216,14 +217,23 @@ humanize-pl-flow docx docs/ -o wyniki/ \
   --require-llm --require-renderer
 ```
 
+Tak wygląda wynik w terminalu (tu: przepływ XLSX, cztery teksty z
+`docs_tests/ai_generated`, same reguły bez modelu):
+
 ```
-do przeglądu ai_legal_03_esej_prawo_pracy.docx: sygnał 0.72 → 0.60, zmian 11
-do przeglądu claude_real_01.docx: sygnał 0.70 → 0.63, zmian 1
+do przeglądu wiersz 2: treść zachowana, zmian 7, zwroty 12 → 8, status ready_with_warnings, wskaźnik stylu (orientacyjnie) 1.00 → 0.74
+do przeglądu wiersz 3: treść zachowana, zmian 6, zwroty 8 → 7, status ready_with_warnings, wskaźnik stylu (orientacyjnie) 1.00 → 0.89
+do przeglądu wiersz 4: treść zachowana, zmian 8, zwroty 15 → 12, status ready_with_warnings, wskaźnik stylu (orientacyjnie) 1.00 → 1.00
+do przeglądu wiersz 5: treść zachowana, zmian 5, zwroty 6 → 4, status ready_with_warnings, wskaźnik stylu (orientacyjnie) 0.97 → 0.51
 
 Podsumowanie
-  pozycje: 5  poprawnie: 5  błędy: 0
-  do przeglądu: 5
-  średni sygnał: 0.52 → 0.46 (delta -0.06)
+  pozycje: 4  poprawnie: 4  błędy: 0
+  treść zachowana: 4 z 4
+  do przeglądu: 4
+  zastosowane zmiany: 26
+  wychwycone zwroty: 41 → 31
+  gotowe: 0  gotowe z ostrzeżeniami: 4
+  wskaźnik stylu (orientacyjnie): 0.99 → 0.78
 ```
 
 Powstaje: `<nazwa>_humanized.docx` dla każdego pliku, `summary.csv`,
@@ -433,9 +443,13 @@ Dlatego oba przepływy zapisują dodatkowo `raport.pdf` (DOCX) albo
 `<nazwa>_flow_raport.pdf` (XLSX) — po polsku, bez żargonu. Obie wersje mają ten
 sam układ i są statycznym raportem informacyjnym, a nie formularzem do wypełniania:
 
-1. **Najważniejsze liczby** — wskaźnik przed → po na narysowanej skali
-   z zaznaczonym progiem przeglądu, liczba zmian, ile pozycji zostaje do
-   przejrzenia, plus jedno zdanie podsumowania.
+1. **Najważniejsze liczby** — najpierw to, na czym można polegać: w ilu
+   pozycjach zachowano liczby, daty, kwoty, przepisy i nazwy, ile zwrotów
+   wychwycono przed i po, ile poprawek wprowadzono i ile pozycji zostaje do
+   przejrzenia; na końcu, drobnym drukiem, wskaźnik stylu „orientacyjnie”.
+   Zdanie podsumowania idzie w tej samej kolejności. Wskaźnik stylu nie
+   otwiera raportu, bo na współczesnych modelach słabo odróżnia tekst AI od
+   ludzkiego (zob. „Kalibracja”); jego skala z progiem jest w części 5.
 2. **Wykaz zastosowanych zmian** — komplet faktycznie zastosowanych poprawek.
    Każda ma własną kartę: czerwone przekreślenie pokazuje dokładnie tekst usunięty,
    zielone pogrubienie tekst dodany, a dalej są rodzaj zmiany, ryzyko,

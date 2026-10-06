@@ -970,6 +970,9 @@ def summarise(outcomes: list[ItemOutcome]) -> dict[str, Any]:
             for item in done
             if item.readiness_status == ReadinessStatus.ready_with_warnings.value
         ),
+        "content_kept": sum(
+            1 for item in done if item.legal_sensitive_check.get("passed")
+        ),
         "words": sum(item.words for item in done),
         "changes_applied": sum(item.changes_applied for item in done),
         "findings_before": sum(item.findings_before for item in done),

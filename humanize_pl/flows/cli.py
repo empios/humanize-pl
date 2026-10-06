@@ -132,10 +132,16 @@ def _print_item(item: ItemOutcome) -> None:
         print(f"[red]BŁĄD[/red] {item.name}: {item.error}")
         return
     flag = "[red]do przeglądu[/red]" if item.needs_review else "[green]ok[/green]"
-    arrow = f"{item.signal_before:.2f} → {item.signal_after:.2f}"
+    content = (
+        "treść zachowana"
+        if item.legal_sensitive_check.get("passed")
+        else "[red]treść ZMIENIONA[/red]"
+    )
     print(
-        f"{flag} {item.name}: sygnał {arrow}, zmian {item.changes_applied}, "
-        f"status {item.readiness_status}"
+        f"{flag} {item.name}: {content}, zmian {item.changes_applied}, "
+        f"zwroty {item.findings_before} → {item.findings_after}, "
+        f"status {item.readiness_status}, "
+        f"wskaźnik stylu (orientacyjnie) {item.signal_before:.2f} → {item.signal_after:.2f}"
     )
 
 
@@ -143,16 +149,17 @@ def _print_summary(summary: dict) -> None:
     print("\n[bold]Podsumowanie[/bold]")
     print(f"  pozycje: {summary['items']}  poprawnie: {summary['ok']}  błędy: {summary['failed']}")
     if summary["ok"]:
+        print(f"  treść zachowana: {summary['content_kept']} z {summary['ok']}")
         print(f"  do przeglądu: {summary['needs_review']}")
-        print(
-            f"  średni sygnał: {summary['mean_signal_before']:.2f} → "
-            f"{summary['mean_signal_after']:.2f} "
-            f"(delta {summary['mean_signal_delta']:+.2f})"
-        )
         print(f"  zastosowane zmiany: {summary['changes_applied']}")
+        print(f"  wychwycone zwroty: {summary['findings_before']} → {summary['findings_after']}")
         print(
             f"  gotowe: {summary.get('ready', 0)}  "
             f"gotowe z ostrzeżeniami: {summary.get('ready_with_warnings', 0)}"
+        )
+        print(
+            f"  wskaźnik stylu (orientacyjnie): {summary['mean_signal_before']:.2f} → "
+            f"{summary['mean_signal_after']:.2f}"
         )
 
 

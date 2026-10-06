@@ -627,3 +627,37 @@ def test_an_untouched_text_yields_no_examples() -> None:
     from humanize_pl.flows.replay import reconstruct_examples
 
     assert reconstruct_examples("Termin minął.", "Termin minął.") == []
+
+
+def test_the_headline_leads_with_the_content_check_and_ends_with_the_score() -> None:
+    """The style score barely tells today's AI drafts from human templates
+    (AUC 0.56), so it no longer opens the report; the content check does."""
+
+    def row(name: str, kept: bool) -> dict:
+        return {
+            "name": name,
+            "status": "ok",
+            "signal_before": 0.3,
+            "signal_after": 0.2,
+            "needs_review": False,
+            "changes_applied": 2,
+            "findings_before": 5,
+            "findings_after": 3,
+            "examples": [],
+            "legal_sensitive_check": {"passed": kept},
+        }
+
+    payload = _detail_payload([row("wiersz 2", True), row("wiersz 3", True)])
+    payload["summary"]["changes_applied"] = 4
+    sentence = pdf_pl._Report(payload, 400, pdf_pl._styles()).headline_sentence()
+    assert sentence.startswith(
+        "Liczby, daty, kwoty, przepisy i nazwy zachowano we wszystkich pozycjach (2 z 2)."
+    )
+    assert sentence.index("zachowano") < sentence.index("Automat wprowadził 4 poprawki")
+    assert sentence.index("Automat") < sentence.index("Wskaźnik stylu schematycznego, orientacyjnie")
+    assert sentence.endswith("(zob. część 5).")
+
+    report = pdf_pl._Report(_detail_payload([row("wiersz 2", True), row("wiersz 3", False)]), 400, pdf_pl._styles())
+    assert report.headline_sentence().startswith(
+        "Zapis liczb, dat, kwot, przepisów albo nazw zmienił się w 1 z 2 pozycji"
+    )

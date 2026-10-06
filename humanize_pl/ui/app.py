@@ -363,18 +363,25 @@ def item_line(item: ItemOutcome) -> str:
     """One readable line per document — the primary result view.
 
     A ten-column table of raw metrics answers questions nobody asked first.
-    What a reader wants is: did it get better, how much was changed, and does
-    anyone still have to look at it.
+    What a reader wants is: did the content survive, how much was changed, and
+    does anyone still have to look at it. The style score comes last: on
+    today's models it barely tells AI from human writing.
     """
     if item.status == "failed":
         return f"- ❌ **{item.name}** — nie udało się przetworzyć: {item.error}"
     icon = "⚠️" if item.needs_review else "✅"
+    content = (
+        "treść zachowana"
+        if item.legal_sensitive_check.get("passed")
+        else "**zmienił się zapis liczb, dat, kwot, przepisów albo nazw**"
+    )
     arrow = f"{item.signal_before:.2f} → {item.signal_after:.2f}"
     tail = " — **do przeglądu**" if item.needs_review else ""
     return (
-        f"- {icon} **{item.name}** — sygnał AI {arrow} "
-        f"({signal_word(item.signal_after, is_calibrated(item))}), "
-        f"poprawek: {item.changes_applied}{tail}"
+        f"- {icon} **{item.name}** — {content}, poprawek: {item.changes_applied}, "
+        f"zwroty {item.findings_before} → {item.findings_after}; wskaźnik stylu "
+        f"(orientacyjnie) {arrow} ({signal_word(item.signal_after, is_calibrated(item))})"
+        f"{tail}"
     )
 
 
@@ -481,13 +488,23 @@ def summary_markdown(payload: dict[str, Any]) -> str:
         if row.get("status") == "ok"
     }
     word = f" ({signal_word(after, states.pop())})" if len(states) == 1 else ""
+    kept, count = summary.get("content_kept"), summary["ok"]
+    if kept is None:
+        content = ""
+    elif kept == count:
+        content = "Liczby, daty, kwoty, przepisy i nazwy **zachowano** we wszystkich pozycjach. "
+    else:
+        content = (
+            f"Zapis liczb, dat, kwot, przepisów albo nazw **zmienił się w {count - kept} "
+            f"z {count}** pozycji — sprawdź je najpierw. "
+        )
     lines = [
         headline,
         "",
-        f"Średni sygnał AI **{direction}** z {before:.2f} do **{after:.2f}**"
-        f"{word}. Zastosowano **{summary['changes_applied']}** "
-        f"poprawek, znalezisk {summary['findings_before']} → "
-        f"{summary['findings_after']}.",
+        f"{content}Zastosowano **{summary['changes_applied']}** poprawek, znalezisk "
+        f"{summary['findings_before']} → {summary['findings_after']}.",
+        "",
+        f"Wskaźnik stylu (orientacyjnie) {direction} z {before:.2f} do {after:.2f}{word}.",
     ]
     if len(states) > 1:
         lines.append(

@@ -554,6 +554,10 @@ def _safety_summary(change: dict[str, Any]) -> str:
     return "Sprawdzono: " + ", ".join(checks) + "."
 
 
+def _kept_colour(kept: int, count: int) -> str:
+    return GOOD if kept == count else BAD
+
+
 def _scale_bar_class():
     from reportlab.lib import colors
     from reportlab.lib.units import mm
@@ -699,6 +703,13 @@ class _Report:
         )
         self.findings_after = int(
             self.summary.get("findings_after", sum(i.get("findings_after", 0) for i in self.items))
+        )
+        # Whether every item kept its numbers, dates, amounts, references and
+        # names: the one result here that holds whoever wrote the text.
+        checked = [item for item in self.items if item.get("legal_sensitive_check")]
+        self.content_known = bool(self.items) and len(checked) == len(self.items)
+        self.content_kept = sum(
+            1 for item in checked if item["legal_sensitive_check"].get("passed")
         )
         self.has_family_data = any("family_counts_before" in item for item in self.items)
         self.has_metric_data = any("metrics_before" in item for item in self.items)
@@ -855,70 +866,79 @@ class _Report:
         ]
 
     def headline(self) -> list:
-        from reportlab.platypus import Spacer
+        """What can be relied on first: the content check, then the work done.
 
+        The style score comes last and small. Re-measured on today's models,
+        it tells AI drafts from human templates at AUC 0.56 and its threshold
+        catches almost none of them; a headline led by it implied a verdict
+        the measurement cannot give. Its scale bar sits with its explanation.
+        """
         count = len(self.items)
-        changes_cell = (
-            f"<b>{self.changes}</b>"
-            if self.changes_known
-            else f"<font size='9' color='{MUTED}'>nie wiadomo</font>"
+        unknown = f"<font size='9' color='{MUTED}'>nie wiadomo</font>"
+        changes_cell = f"<b>{self.changes}</b>" if self.changes_known else unknown
+        content_cell = (
+            f"<font color='{_kept_colour(self.content_kept, count)}'>"
+            f"<b>{self.content_kept}</b> z {count}</font>"
+            if self.content_known
+            else unknown
         )
         tiles = [
             self.head(
-                "Wskaźnik stylu schematycznego",
+                "Treść zachowana",
                 "Wychwycone zwroty",
                 "Poprawki automatyczne",
                 f"{self.many.capitalize()} do przejrzenia",
+                "Wskaźnik stylu (orientacyjnie)",
             ),
             [
-                self.cell(
-                    f"<font size='13' color='{_verdict_colour(self.before)}'>"
-                    f"{_fmt(self.before)}</font> → "
-                    f"<font size='13' color='{_verdict_colour(self.after)}'><b>"
-                    f"{_fmt(self.after)}</b></font>"
-                ),
+                self.cell(f"<font size='13'>{content_cell}</font>"),
                 self.cell(f"<font size='13'>{self.findings_before} → "
                           f"<b>{self.findings_after}</b></font>"),
                 self.cell(f"<font size='13'>{changes_cell}</font>"),
                 self.cell(
                     f"<font size='13'><b>{self.needs_review}</b> z {count}</font>"
                 ),
+                self.cell(
+                    f"<font size='10' color='{MUTED}'>{_fmt(self.before)} → "
+                    f"{_fmt(self.after)}</font>"
+                ),
             ],
         ]
-        story = [
+        return [
             self.para("1. Najważniejsze liczby", "h1"),
-            self.table(tiles, [self.width / 4] * 4),
-            Spacer(1, 8),
-            _scale_bar_class()(self.before, self.after, self.width),
+            self.table(tiles, [self.width / 5] * 5),
             self.para(self.headline_sentence(), "lead"),
         ]
-        return story
 
     def headline_sentence(self) -> str:
         count = len(self.items)
         if count == 0:
             return "Nie przetworzono żadnej pozycji."
-        delta = self.before - self.after
+        sentences = []
+        if self.content_known:
+            changed = count - self.content_kept
+            if changed == 0:
+                scope = "" if count == 1 else f" we wszystkich pozycjach ({count} z {count})"
+                sentences.append(f"Liczby, daty, kwoty, przepisy i nazwy zachowano{scope}.")
+            else:
+                sentences.append(
+                    f"Zapis liczb, dat, kwot, przepisów albo nazw zmienił się w {changed} z "
+                    f"{count} pozycji: te trzeba sprawdzić najpierw."
+                )
+        found = (
+            f"Wychwyconych zwrotów było {self.findings_before}, zostało {self.findings_after}."
+        )
         if not self.changes_known:
-            moved = (
-                f"Po poprawkach tekst wypada na {_fmt(self.after)} w skali od 0 do 1."
-            )
-        elif delta > 0.005:
-            moved = (
-                f"Tekst ma mniej cech schematycznych niż przed poprawkami: wskaźnik spadł "
-                f"z {_fmt(self.before)} na {_fmt(self.after)}."
-            )
+            sentences.append(found)
         elif self.changes == 0:
-            moved = (
-                f"Wskaźnik został na poziomie {_fmt(self.after)}. Automat nie znalazł ani "
-                "jednej poprawki, którą mógłby wprowadzić bez ryzyka zmiany sensu."
+            sentences.append(
+                "Automat nie znalazł ani jednej poprawki, którą mógłby wprowadzić bez "
+                "ryzyka zmiany sensu. " + found
             )
         else:
-            moved = (
-                f"Wskaźnik został na poziomie {_fmt(self.after)} mimo {self.changes} "
-                f"{_plural(self.changes, 'poprawki', 'poprawek', 'poprawek')}. "
-                "Poprawione zwroty nie były tymi, które najmocniej ważą na wyniku. "
-                "Resztę trzeba przeredagować ręcznie."
+            sentences.append(
+                f"Automat wprowadził {self.changes} "
+                f"{_plural(self.changes, 'poprawkę', 'poprawki', 'poprawek')}. " + found
             )
         if self.needs_review == 0:
             verdict = "Kontrola końcowa nie wskazała żadnej pozycji do dalszego przeglądu."
@@ -933,7 +953,12 @@ class _Report:
                 f"Kontrola końcowa wskazała {self.needs_review} z {count} {self.many} "
                 "do dalszego przeglądu przez człowieka."
             )
-        return f"{moved} {verdict}"
+        sentences.append(verdict)
+        sentences.append(
+            f"Wskaźnik stylu schematycznego, orientacyjnie: {_fmt(self.before)} → "
+            f"{_fmt(self.after)} (zob. część 5)."
+        )
+        return " ".join(sentences)
 
     def _xlsx_change_entries(self) -> list[tuple[int, dict, int, dict]]:
         """All visible edits, including payloads created before the full register."""
@@ -1447,10 +1472,14 @@ class _Report:
                 "oznacza, że tekst napisał człowiek: teksty współczesnych modeli "
                 "przekraczają próg rzadko."
             )
+        from reportlab.platypus import Spacer
+
         story = [
             self.para(f"{section}. Co dokładnie mierzymy", "h1"),
             self.para(f"{section}.1. Wskaźnik stylu schematycznego", "h2"),
             self.para(signal_explanation, "body"),
+            _scale_bar_class()(self.before, self.after, self.width),
+            Spacer(1, 6),
         ]
         if self.profile is not None:
             story.append(

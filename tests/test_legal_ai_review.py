@@ -300,3 +300,40 @@ def test_standard_changes_more_than_conservative_without_relaxing_gates():
         if trace.status == "accepted"
         for gate in trace.gate_results
     )
+
+
+def test_general_text_skips_the_checks_written_for_legal_prose():
+    """A verbless sentence and a split after "oraz" are ordinary writing in an
+    email; the legal checks refused them, the facts and NLI still decide."""
+    from humanize_pl.safety.validators import GENERAL_TEXT_RULE
+
+    for original, candidate, legal_reason in [
+        (
+            "Hotel jest bardzo ładny i zadbany, a obsługa jest miła oraz bardzo pomocna.",
+            "Bardzo ładny, zadbany hotel. Miła i bardzo pomocna obsługa.",
+            "candidate sentence lacks finite verb",
+        ),
+        (
+            "Spotkanie odbędzie się w czwartek o 10:00 w sali 4 oraz potrwa około dwóch godzin.",
+            "Spotkanie odbędzie się w czwartek o 10:00 w sali 4. Potrwa około dwóch godzin.",
+            "sentence split after/around 'oraz' is disabled",
+        ),
+    ]:
+        protected = protect_text(original)
+        legal = validate_candidate(original, candidate, protected=protected, max_length_ratio=2.0)
+        assert legal.reason == legal_reason, candidate
+        general = validate_candidate(
+            original, candidate, protected=protected, max_length_ratio=2.0, rule=GENERAL_TEXT_RULE
+        )
+        assert general.ok, (candidate, general.reason)
+        # A check that did not run is not reported as passed
+        assert {"finite_verb_presence", "sentence_split_safety", "legal_anchor_retention"}.isdisjoint(
+            check.name for check in general.checks
+        )
+    # Facts still bind general text
+    original = "Spotkanie odbędzie się w czwartek o 10:00 w sali 4."
+    candidate = "Spotkanie odbędzie się w piątek o 11:00 w sali 4."
+    general = validate_candidate(
+        original, candidate, protected=protect_text(original), max_length_ratio=2.0, rule=GENERAL_TEXT_RULE
+    )
+    assert not general.ok

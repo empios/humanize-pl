@@ -309,9 +309,15 @@ tu przypadkiem. Różnice wobec rodzin prawnych:
 - do modelu trafia każdy akapit prozy w całości (krótsze niż 12 słów, jak
   nagłówki, adresy i podpisy, zostają bez zmian), z poleceniem przebudowy
   zdań, a nie tylko zdania z uwagami detektora,
-- obowiązują te same kontrole co zawsze: liczby, daty, kwoty, przepisy,
-  nazwy, modalność, przeczenia i strony; akapit, który ich nie przejdzie (także
-  po jednej próbie naprawy), zostaje bez zmian,
+- obowiązują te same kontrole treści co zawsze: liczby, daty, kwoty,
+  przepisy, nazwy, modalność, przeczenia, czynności i strony; akapit, który ich
+  nie przejdzie (także po jednej próbie naprawy), zostaje bez zmian,
+- nie obowiązują trzy kontrole pisane pod prozę prawniczą: obecność orzeczenia
+  w każdym zdaniu, zakaz dzielenia zdania z „oraz” i zachowanie pojęć
+  prawnych. Na 1573 parach „szkic AI → tekst człowieka” odrzucały naturalne
+  pisanie („Cena adekwatna do świadczonych usług.”, zdanie podzielone na dwa);
+  bez nich przechodzi 721 par zamiast 479, przy tych samych odrzuceniach za
+  wartości, modalność i przeczenia. Raport nie wymienia ich jako sprawdzonych,
 - dochodzi kontrola znaczenia NLI: akapit i redakcja muszą wynikać z siebie
   nawzajem. Ładowana jest sama, bez reszty silnika `hybrid`; bez dodatku
   `[transformers]` przebieg idzie dalej z ostrzeżeniem, a `--require-models`

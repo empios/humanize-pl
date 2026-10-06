@@ -19,7 +19,7 @@ import httpx
 
 from humanize_pl.document import GENRE_PROFILES, DocumentType, StyleProfile
 from humanize_pl.safety.protectors import protect_text
-from humanize_pl.safety.validators import validate_candidate
+from humanize_pl.safety.validators import GENERAL_TEXT_RULE, validate_candidate
 
 
 class LlmConfigurationError(RuntimeError):
@@ -465,7 +465,11 @@ class OpenAICompatibleRewriter:
                     proposal.proposal,
                     protected=protected,
                     max_length_ratio=1.60,
-                    rule="llm:legal_style",
+                    rule=(
+                        GENERAL_TEXT_RULE
+                        if document_type is DocumentType.general
+                        else "llm:legal_style"
+                    ),
                     operation_type="llm_rewrite",
                     nli=nli,
                 )

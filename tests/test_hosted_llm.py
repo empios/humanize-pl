@@ -916,3 +916,17 @@ def test_a_rewritten_fragment_keeps_its_opening_case() -> None:
     )
     result = rewriter.rewrite_fragment(source, fragment_id="p-2", document_type=DocumentType.general)
     assert result.text == "uprzejmie informujemy o zmianach w naszych usługach od listopada."
+
+
+def test_a_verbless_rewrite_passes_for_general_text_only() -> None:
+    source = "Hotel jest bardzo ładny i zadbany, a obsługa jest miła oraz bardzo pomocna."
+    proposal = "Bardzo ładny, zadbany hotel. Miła i bardzo pomocna obsługa."
+    outcomes = {}
+    for document_type in (DocumentType.general, DocumentType.client_communication):
+        rewriter = _repairing_rewriter([proposal], [])
+        outcomes[document_type] = rewriter.rewrite_fragment(
+            source, fragment_id="p1", document_type=document_type
+        )
+    assert outcomes[DocumentType.general].accepted
+    assert not outcomes[DocumentType.client_communication].accepted
+    assert "lacks finite verb" in outcomes[DocumentType.client_communication].reason

@@ -50,6 +50,9 @@ STRANDED_RELATIVE_CLAUSE_RE = re.compile(
 # Polarity markers. "brak" counts together with "nie", so "w przypadku braku"
 # -> "gdy nie ma" keeps the count.
 NEGATION_RE = re.compile(r"\bnie\b|\bbrak\p{L}*|\bbez\b", re.IGNORECASE)
+# The hosted model rewriting general text (DocumentType.general), which skips
+# the checks written for legal prose; see validate_candidate.
+GENERAL_TEXT_RULE = "llm:general_style"
 # Rules that resolve a double negation, dropping "nie" without flipping polarity.
 DOUBLE_NEGATION_RULES = {"legal_style:ma_granice"}
 
@@ -314,44 +317,50 @@ def validate_candidate(
             return _failed("content_anchor_retention", "content anchors changed too much", checks)
     _passed("content_anchor_retention", checks)
 
-    if not _sentence_has_required_predication(original, candidate):
-        return _failed("finite_verb_presence", "candidate sentence lacks finite verb", checks)
-    _passed("finite_verb_presence", checks)
+    # Written for legal prose, these three refuse ordinary writing: a verbless
+    # sentence ("Cena adekwatna do świadczonych usług."), a long sentence split
+    # in two, a paragraph without the terms a contract repeats. On the general
+    # route the fact checks and NLI decide instead, and a check that did not
+    # run is not reported as passed.
+    if rule != GENERAL_TEXT_RULE:
+        if not _sentence_has_required_predication(original, candidate):
+            return _failed("finite_verb_presence", "candidate sentence lacks finite verb", checks)
+        _passed("finite_verb_presence", checks)
 
-    legal_retention = legal_anchor_retention(restored_original, restored_candidate)
-    redundancy_drop = operation_type == "redundancy_reduction" or (rule or "").startswith("redundancy:")
-    legal_retention_floor = 0.50 if redundancy_drop else 0.85
-    if legal_retention < legal_retention_floor:
-        missing = ", ".join(sorted(lost_legal_anchors(restored_original, restored_candidate))[:4])
-        reason = f"legal anchors removed: {missing}" if missing else "legal anchors removed"
-        return _failed("legal_anchor_retention", reason, checks)
-    _passed("legal_anchor_retention", checks)
+        legal_retention = legal_anchor_retention(restored_original, restored_candidate)
+        redundancy_drop = operation_type == "redundancy_reduction" or (rule or "").startswith("redundancy:")
+        legal_retention_floor = 0.50 if redundancy_drop else 0.85
+        if legal_retention < legal_retention_floor:
+            missing = ", ".join(sorted(lost_legal_anchors(restored_original, restored_candidate))[:4])
+            reason = f"legal anchors removed: {missing}" if missing else "legal anchors removed"
+            return _failed("legal_anchor_retention", reason, checks)
+        _passed("legal_anchor_retention", checks)
 
-    parts = split_sentences(candidate)
-    if len(parts) > len(split_sentences(original)):
-        if re.search(r"\boraz\b", original, re.IGNORECASE):
-            return _failed(
-                "sentence_split_safety",
-                "sentence split after/around 'oraz' is disabled",
-                checks,
-            )
-
-        # Reject sentence split if any new sentence is only a complement/list item.
-        for idx, part in enumerate(parts):
-            checked = _without_transition(part)
-            if idx > 0 and not has_finite_verb(checked):
+        parts = split_sentences(candidate)
+        if len(parts) > len(split_sentences(original)):
+            if re.search(r"\boraz\b", original, re.IGNORECASE):
                 return _failed(
                     "sentence_split_safety",
-                    "split produced fragment without finite verb",
+                    "sentence split after/around 'oraz' is disabled",
                     checks,
                 )
-            if re.match(r"^(?:Ponadto|Z kolei|Przy czym)\b", part, re.IGNORECASE) and not has_finite_verb(checked):
-                return _failed(
-                    "sentence_split_safety",
-                    "transition sentence lacks finite verb",
-                    checks,
-                )
-    _passed("sentence_split_safety", checks)
+
+            # Reject sentence split if any new sentence is only a complement/list item.
+            for idx, part in enumerate(parts):
+                checked = _without_transition(part)
+                if idx > 0 and not has_finite_verb(checked):
+                    return _failed(
+                        "sentence_split_safety",
+                        "split produced fragment without finite verb",
+                        checks,
+                    )
+                if re.match(r"^(?:Ponadto|Z kolei|Przy czym)\b", part, re.IGNORECASE) and not has_finite_verb(checked):
+                    return _failed(
+                        "sentence_split_safety",
+                        "transition sentence lacks finite verb",
+                        checks,
+                    )
+        _passed("sentence_split_safety", checks)
 
     for placeholder in protected.mapping:
         if placeholder in original and placeholder not in candidate:

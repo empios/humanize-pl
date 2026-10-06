@@ -489,7 +489,7 @@ class OpenAICompatibleRewriter:
                     )},
                     {"role": "user", "content": _repair_instruction(failed_check)},
                 ]
-            restored = _keep_initial_capital(source, protected.restore(proposal.proposal))
+            restored = _keep_initial_case(source, protected.restore(proposal.proposal))
             if restored == source:
                 self.metadata.note_rejected("rejected:no_visible_change")
                 return LlmRewriteResult(
@@ -595,11 +595,22 @@ class OpenAICompatibleRewriter:
         return LlmProposal(**{key: payload[key] for key in required})
 
 
-def _keep_initial_capital(source: str, text: str) -> str:
-    """A fragment that opened with a capital still does. Moving "art. 471" to
-    the front, a model left a paragraph starting in lower case."""
+def _keep_initial_case(source: str, text: str) -> str:
+    """A fragment that opened with a capital still does: moving "art. 471" to
+    the front, a model left a paragraph starting in lower case. And the
+    paragraph after "Szanowni Państwo," that opened in lower case keeps doing
+    so when the model kept its first word ("uprzejmie informujemy")."""
     if source[:1].isupper() and text[:1].islower():
         return text[:1].upper() + text[1:]
+    source_words, text_words = source.split()[:1], text.split()[:1]
+    if (
+        source[:1].islower()
+        and text[:1].isupper()
+        and source_words
+        and text_words
+        and source_words[0].casefold() == text_words[0].casefold()
+    ):
+        return text[:1].lower() + text[1:]
     return text
 
 

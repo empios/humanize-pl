@@ -860,7 +860,7 @@ def test_what_the_rules_took_out_a_model_cannot_put_back() -> None:
     assert changes[0]["rules"][0] == "llm_rewrite" and len(changes[0]["rules"]) > 1
 
 
-def test_a_fragment_that_opened_with_a_capital_still_does() -> None:
+def test_a_rewritten_fragment_keeps_its_opening_case() -> None:
     source = "Duże znaczenie ma art. 471 k.c., który reguluje odpowiedzialność dłużnika za szkodę."
 
     def move_reference_forward(protected: str) -> str:
@@ -870,3 +870,11 @@ def test_a_fragment_that_opened_with_a_capital_still_does() -> None:
     result = rewriter.rewrite_fragment(source, fragment_id="p-1", document_type=DocumentType.general)
     assert result.accepted, result.reason
     assert result.text.startswith("Art. 471 k.c. reguluje")
+
+    # After "Szanowni Państwo," a letter goes on in lower case
+    source = "uprzejmie informujemy o zmianach dotyczących naszych usług od listopada."
+    rewriter = _rewriter(
+        _sentence_handler(lambda _s: "Uprzejmie informujemy o zmianach w naszych usługach od listopada.")
+    )
+    result = rewriter.rewrite_fragment(source, fragment_id="p-2", document_type=DocumentType.general)
+    assert result.text == "uprzejmie informujemy o zmianach w naszych usługach od listopada."

@@ -30,7 +30,7 @@ def _response(payload: dict) -> httpx.Response:
 def _fields(content: str) -> dict[str, str]:
     """Read the labelled plain-text prompt the rewriter now sends."""
     fragment_id = re.search(r"fragment_id: (\S+)", content)
-    source = re.search(r"Fragment do redakcji:\n(.*?)\nZauważone problemy:", content, re.S)
+    source = re.search(r"Fragment do redakcji: <<<(.*?)>>>", content, re.S)
     return {
         "fragment_id": fragment_id.group(1) if fragment_id else "",
         "source": source.group(1) if source else "",
@@ -631,3 +631,18 @@ def test_a_proposal_failing_again_after_its_repair_leaves_the_source() -> None:
         "repair:deontic_modality_preserved": 1,
         "rejected:deontic_modality_preserved": 1,
     }
+
+
+def test_the_fragment_is_fenced_so_its_end_is_unambiguous() -> None:
+    """Under a bare label a small model copied the labelled lines after the
+    fragment into its echo of the source, and the proposal was discarded."""
+    requests: list[dict] = []
+    rewriter = _repairing_rewriter(["Pracownik musi zapłacić karę umowną."], requests)
+    rewriter.rewrite_fragment(
+        "Warto podkreślić, że pracownik musi zapłacić karę umowną.",
+        fragment_id="p-1",
+        document_type=DocumentType.contract,
+    )
+    user = requests[1]["messages"][1]["content"]
+    assert "<<<Warto podkreślić, że pracownik musi zapłacić karę umowną.>>>\nZauważone" in user
+    assert "<<<" in requests[1]["messages"][0]["content"]

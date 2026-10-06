@@ -382,18 +382,21 @@ class OpenAICompatibleRewriter:
             + " "
             + profile_text
             + " Odpowiadasz wyłącznie jednym obiektem JSON o dokładnie czterech polach "
-            "tekstowych: fragment_id (przepisany bez zmian), source (powtórzony znak "
-            "w znak), proposal (twoja redakcja fragmentu), rationale (jedno zdanie "
-            "uzasadnienia). Bez komentarza i bez bloku kodu."
+            "tekstowych: fragment_id (przepisany bez zmian), source (tekst spomiędzy "
+            "znaczników <<< i >>>, powtórzony znak w znak, bez znaczników), proposal "
+            "(twoja redakcja fragmentu), rationale (jedno zdanie uzasadnienia). Bez "
+            "komentarza i bez bloku kodu."
         )
         # Labelled plain text, not a JSON object. Handed an object, a model
         # without a grammar to hold it echoes the object it was given - keys
         # and all - instead of producing the answer shape. Measured: every one
-        # of nine fragments came back as a copy of the input.
+        # of nine fragments came back as a copy of the input. The fragment is
+        # fenced: under a bare label a 9B model echoed the labelled lines after
+        # it as part of the source, and 56 of 107 proposals failed on that.
         user = "\n".join(
             [
                 f"fragment_id: {fragment_id}",
-                f"Fragment do redakcji:\n{protected.text}",
+                f"Fragment do redakcji: <<<{protected.text}>>>",
                 f"Zauważone problemy: {issue_text}",
                 f"Poprzedni akapit: {previous_protected[:1200] or '(brak)'}",
                 f"Następny akapit: {following_protected[:1200] or '(brak)'}",

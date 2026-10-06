@@ -39,3 +39,14 @@ def test_committed_baseline_records_every_gated_metric():
     path = Path(__file__).resolve().parents[1] / DEFAULT_BASELINE
     recorded = json.loads(path.read_text(encoding="utf-8"))
     assert set(DIRECTION) <= set(recorded["metrics"])
+
+
+def test_detector_separation_is_a_rank_probability():
+    from humanize_pl.evaluation import _auc, detector_metrics
+
+    assert _auc([0.9, 0.8], [0.1, 0.2]) == 1.0
+    assert _auc([0.1], [0.1]) == 0.5
+    assert _auc([0.1, 0.2], [0.8, 0.9]) == 0.0
+    # Without the local rulings only the template comparison is measured
+    draft = "Umowa zawarta w dniu 1 marca 2026 r. pomiędzy stronami. " * 40
+    assert set(detector_metrics([("umowa_najmu", draft)], None, None)) == {"detector_auc_drafts"}

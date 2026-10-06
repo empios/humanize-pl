@@ -1435,12 +1435,17 @@ class _Report:
             signal_explanation = (
                 "To opisowy, nieskalibrowany wskaźnik gęstości wykrytych cech. "
                 "Nie porównujemy go z korpusem uzasadnień SAOS, ponieważ badany "
-                "gatunek może być umową, pismem urzędowym albo komunikacją z klientem."
+                "gatunek może być umową, pismem urzędowym albo komunikacją z klientem. "
+                "Nie rozstrzyga o autorstwie: na projektach umów i pism nie odróżnia "
+                "tekstu AI od ludzkiego. Pokazuje, ile cech schematycznych znaleziono "
+                "przed poprawkami i po nich."
             )
         else:
             signal_explanation = (
-                "To główna liczba raportu. Przyjmuje wartości od 0 do 1. Tekst "
-                "porównujemy ze zbiorem pism napisanych przez ludzi w odpowiednim profilu."
+                "Przyjmuje wartości od 0 do 1. Tekst porównujemy ze zbiorem pism "
+                "napisanych przez ludzi w odpowiednim profilu. Wynik poniżej progu nie "
+                "oznacza, że tekst napisał człowiek: teksty współczesnych modeli "
+                "przekraczają próg rzadko."
             )
         story = [
             self.para(f"{section}. Co dokładnie mierzymy", "h1"),

@@ -533,8 +533,8 @@ Detekcja działa w każdym trybie, także w `conservative`, gdzie żadna reguła
 przepisująca nie jest uruchamiana. Sekcja `detection` w raporcie JSON zawiera:
 
 - `ai_signal_score` — nasycająca się ważona gęstość sygnałów (0–1),
-- `score_is_calibrated` — dziś zawsze `false`; próg wymaga ludzkiego korpusu
-  referencyjnego polskich tekstów prawniczych,
+- `score_is_calibrated` — `true`, gdy wynik odniesiono do profilu ludzkiego
+  (dziś tylko uzasadnienia SAOS; zob. „Kalibracja”),
 - `families` — rodziny sygnałów z gęstością na 1000 słów,
 - `findings` — pojedyncze znaleziska ze spanami znakowymi i dowodem,
 - `findings_rewritable` / `findings_detect_only` — ile znalezisk ma za sobą
@@ -563,27 +563,33 @@ python tools/build_reference_profile.py --corpus docs_tests/corpus/saos.jsonl \
   --name saos_common_2018_2024 --genre court_reasoning
 ```
 
-Punkt pracy zmierzony na 599 odłożonych uzasadnieniach (nieużytych do budowy
-profilu) wobec 9 dokumentów AI:
+Pierwszy punkt pracy zmierzono na 599 odłożonych uzasadnieniach wobec 9
+dokumentów AI pełnych nawyków starszych modeli: przy progu 0,25 recall 100%,
+0% fałszywych alarmów. Pomiar powtórzony na 300 odłożonych uzasadnieniach
+wobec 171 przeredagowań uzasadnień SAOS, 48 projektów pism i 24 e-maili
+napisanych przez Claude Haiku, Sonnet i Opus pokazuje coś innego:
 
-| próg | recall AI | FPR na tekstach ludzkich |
-|------|-----------|--------------------------|
-| 0.15 | 100%      | 1,17%                    |
-| 0.20 | 100%      | 0,67%                    |
-| 0.25 | 100%      | 0,00%                    |
+| próg | fałszywe alarmy (uzasadnienia) | recall: przeredagowania | projekty pism | e-maile |
+|------|------|------|------|------|
+| 0.10 | 9,7% | 59,6% | 68,8% | 95,8% |
+| 0.14 | 4,7% | 32,7% | 33,3% | 66,7% |
+| 0.20 | 1,7% | 9,9% | 4,2% | 12,5% |
+| 0.25 | 0,0% | 1,8% | 0,0% | 0,0% |
 
-Populacje się nie stykają: maksimum ludzkie 0,215, minimum AI 0,332. Domyślny
-próg przeglądu **0.25** leży w tej luce. Flaga `needs_review` w raporcie oznacza
-„dokument wart przejrzenia przez człowieka", nigdy „napisane przez AI".
+W obrębie gatunku wskaźnik wciąż porządkuje teksty (AUC 0,84 dla przeredagowań
+wobec uzasadnień; 0,75, gdy uzasadnienia przyciąć do długości przeredagowań),
+ale niemal w całości dzięki zmienności długości zdań (sama daje 0,87).
+`humanize-pl-eval` śledzi obie separacje jako bramkowane metryki
+(`detector_auc_rewrites`, `detector_auc_drafts`), więc zmiana detektora jest
+mierzona, a nie zgadywana. Rodziny zwrotów mają AUC bliskie 0,5: współczesne modele tych
+zwrotów już nie piszą. Projekty umów i pism wobec 49 ludzkich wzorów: AUC 0,56,
+czyli dla tych gatunków wskaźnik nie odróżnia tekstu AI od ludzkiego.
 
-Dwa zastrzeżenia, które trzeba czytać razem z tymi liczbami:
-
-1. Strona ludzka jest wiarygodna, strona AI **nie** — to 9 dokumentów.
-   Potrzebny jest korpus AI z różnymi promptami i modelami.
-2. Obie strony różnią się nie tylko autorstwem, ale i **gatunkiem**
-   (uzasadnienia vs opinie, umowy, pisma). Część separacji może pochodzić
-   z gatunku. Rozstrzygnąłby to profil ludzki w tym samym gatunku, np.
-   zbudowany z własnych dokumentów kancelarii.
+Próg przeglądu **0.25** zostaje tam, gdzie prawie nie zaznacza ludzkich
+uzasadnień. Flaga `needs_review` oznacza „dokument wart przejrzenia przez
+człowieka", nigdy „napisane przez AI", a wynik poniżej progu mówi tylko, że w
+tekście brak cech schematycznych — nie, że napisał go człowiek. Wiarygodną
+część raportu stanowią konkretne znaleziska i kontrole treści, nie sama liczba.
 
 ### Metryki wykluczone ze scoringu
 

@@ -30,6 +30,7 @@ from typing import Any
 import gradio as gr
 
 from humanize_pl.config import Engine, Mode
+from humanize_pl.detect.calibration import REVIEW_THRESHOLD, UNCERTAIN_BAND
 from humanize_pl.document import (
     DocumentType,
     FormatPolicy,
@@ -55,14 +56,6 @@ RUNS_ROOT = Path(tempfile.gettempdir()) / "humanize-pl-ui"
 # one. "Do przeglądu" comes from the gate, never from this number.
 SATURATED = 1.0
 
-# The point at which a calibrated score warrants a human look. Measured, not
-# chosen: on 599 held-out judgments and the AI corpus it gives 100% recall at
-# 0% false positives, and the populations do not overlap around it.
-REVIEW_THRESHOLD = 0.25
-
-# Half-width of the band where the verdict is not reliable. See
-# humanize_pl.detect.calibration — it is a measurement, not a preference.
-UNCERTAIN_BAND = 0.035
 
 TABLE_HEADERS = [
     "pozycja",

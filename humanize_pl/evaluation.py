@@ -48,6 +48,8 @@ RULINGS_SAMPLE = 150
 RULING_CHARS = 8000
 # The opening lines hold the title, which names the category outright.
 TITLE_LINES = 3
+# Below this a template is a form of blanks rather than prose to measure.
+DETECTOR_MIN_WORDS = 150
 SAFETY_CHECKS = (
     "no_placeholder_leak",
     "numbers_preserved",
@@ -74,6 +76,8 @@ DIRECTION = {
     "unsafe_outputs_rulings": -1,
     "ai_models_category_exact": 1,
     "ai_models_category_wrong": -1,
+    "detector_auc_rewrites": 1,
+    "detector_auc_drafts": 1,
 }
 LABELS = {
     "category_exact": "kategoria trafiona (wzory)",
@@ -98,6 +102,10 @@ LABELS = {
     "ai_models_category_wrong": "kategoria błędna, nie nieokreślona (projekty różnych modeli)",
     "ai_models_checklist_blocking": "projekty różnych modeli blokowane przez listę kontrolną",
     "edits_per_1k_ai_models": "zmiany merytoryczne na 1000 słów (projekty różnych modeli)",
+    "detector_auc_rewrites": (
+        "detektor odróżnia przeredagowania AI od orzeczeń (AUC; 0,5 = losowo)"
+    ),
+    "detector_auc_drafts": "detektor odróżnia projekty AI od ludzkich wzorów (AUC; 0,5 = losowo)",
 }
 # Metrics measured on a local corpus, by the corpus they need.
 LOCAL_METRICS = {
@@ -107,12 +115,15 @@ LOCAL_METRICS = {
         "edit_ratio_ai_to_rulings",
         "unsafe_outputs_rulings",
         "fog_change_rulings",
+        "detector_auc_rewrites",
     },
     AI_MODELS: {
         "ai_models_category_exact",
         "ai_models_category_wrong",
         "ai_models_checklist_blocking",
         "edits_per_1k_ai_models",
+        "detector_auc_rewrites",
+        "detector_auc_drafts",
     },
 }
 
@@ -142,18 +153,60 @@ def _rulings(root: Path) -> list[str] | None:
     return [json.loads(row)["text"][:RULING_CHARS] for row in rows]
 
 
-def _ai_model_drafts(root: Path) -> list[tuple[str, str]] | None:
-    """(category, text) of every draft in the local multi-model corpus."""
+def _ai_model_texts(root: Path, kind: str) -> list[dict[str, str]] | None:
+    """Manifest rows of one kind ("draft", "rewrite") in the local multi-model
+    corpus, each with its text."""
     folder = root / AI_MODELS
     if not folder.is_dir():
         return None
-    drafts = []
+    rows = []
     for manifest in sorted(folder.glob("*/manifest.json")):
         for row in json.loads(manifest.read_text(encoding="utf-8")):
-            if row["kind"] == "draft":
+            if row["kind"] == kind:
                 text = (manifest.parent / row["file"]).read_text(encoding="utf-8")
-                drafts.append((row["category"], text))
-    return drafts or None
+                rows.append({**row, "text": text})
+    return rows or None
+
+
+def _signal(text: str) -> float:
+    diagnosis = detect_document(text)
+    calibration = diagnosis.calibration
+    return calibration.calibrated_score if calibration else diagnosis.ai_signal_score
+
+
+def _auc(positive: list[float], negative: list[float]) -> float:
+    """How often a random AI text scores above a random human one."""
+    wins = sum((p > n) + 0.5 * (p == n) for p in positive for n in negative)
+    return round(wins / (len(positive) * len(negative)), 4)
+
+
+def detector_metrics(
+    drafts: list[tuple[str, str]],
+    rewrites: list[str] | None,
+    rulings: list[str] | None,
+) -> dict[str, float]:
+    """Whether the AI-signal score tells today's models from people, within a
+    genre: rewrites of court rulings against rulings, legal drafts against the
+    human templates of the catalogue. Measured because a nine-document AI set
+    once showed the populations apart, and they are not."""
+    human_templates = [
+        "\n".join(_template_lines(template.document))
+        for template in templates()
+        if not template.general
+    ]
+    human_templates = [
+        text for text in human_templates if len(text.split()) >= DETECTOR_MIN_WORDS
+    ]
+    metrics = {
+        "detector_auc_drafts": _auc(
+            [_signal(text) for _, text in drafts], [_signal(text) for text in human_templates]
+        )
+    }
+    if rewrites and rulings:
+        metrics["detector_auc_rewrites"] = _auc(
+            [_signal(text) for text in rewrites], [_signal(text) for text in rulings]
+        )
+    return metrics
 
 
 def ai_model_metrics(drafts: list[tuple[str, str]]) -> dict[str, float]:
@@ -303,13 +356,15 @@ def measure(root: Path = Path(".")) -> tuple[dict[str, Any], dict[str, dict[str,
     ai = _ai_documents(root)
     rulings = _rulings(root)
     rewrite, by_rule = rewrite_metrics(ai, rulings)
-    drafts = _ai_model_drafts(root)
+    drafts = [(row["category"], row["text"]) for row in _ai_model_texts(root, "draft") or []]
+    rewrites = [row["text"] for row in _ai_model_texts(root, "rewrite") or []]
     current = {
         "morfeusz": try_load_morfeusz() is not None,
         "metrics": {
             **structure_metrics(ai, rulings),
             **rewrite,
             **(ai_model_metrics(drafts) if drafts else {}),
+            **(detector_metrics(drafts, rewrites, rulings) if drafts else {}),
         },
     }
     return current, by_rule

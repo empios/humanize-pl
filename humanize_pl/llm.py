@@ -440,7 +440,7 @@ class OpenAICompatibleRewriter:
                 proposal = self._parse_proposal(data)
                 if proposal.fragment_id != fragment_id:
                     raise LlmEndpointError("Odpowiedź ma niewłaściwy identyfikator fragmentu.")
-                if proposal.source != protected.text:
+                if _unfenced(proposal.source) != protected.text.strip():
                     raise LlmEndpointError("Model nie zwrócił identycznego tekstu źródłowego.")
                 validation = validate_candidate(
                     protected.text,
@@ -588,6 +588,13 @@ class OpenAICompatibleRewriter:
         if any(not isinstance(payload.get(key), str) for key in required):
             raise LlmEndpointError("W odpowiedzi modelu brakuje wymaganych pól tekstowych.")
         return LlmProposal(**{key: payload[key] for key in required})
+
+
+def _unfenced(echo: str) -> str:
+    """The echoed source without the fence. Asked to repeat the text between
+    <<< and >>>, a 9B model kept the markers in 2 of 3 failed echoes on 25
+    drafts, and a correct proposal was thrown away for it."""
+    return echo.strip().removeprefix("<<<").removesuffix(">>>").strip()
 
 
 def _protect_context(text: str, first_number: int) -> tuple[str, int]:

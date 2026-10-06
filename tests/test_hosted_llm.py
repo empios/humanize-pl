@@ -791,3 +791,33 @@ def test_hosted_model_proposals_face_the_meaning_check_too() -> None:
         "rejected:semantic_contradiction": 1,
     }
 
+
+def test_an_echoed_source_that_kept_its_fence_still_counts() -> None:
+    source = "Warto podkreślić, że pracownik musi zapłacić karę umowną."
+    requests: list[dict] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        requests.append(json.loads(request.content))
+        user = _fields(requests[-1]["messages"][1]["content"])
+        if not user["fragment_id"]:
+            return _response(
+                {
+                    "fragment_id": "capability-test",
+                    "source": "To jest test połączenia.",
+                    "proposal": "To jest test połączenia.",
+                    "rationale": "test",
+                }
+            )
+        return _response(
+            {
+                "fragment_id": user["fragment_id"],
+                "source": f"<<<{user['source']}>>>",
+                "proposal": "Pracownik musi zapłacić karę umowną.",
+                "rationale": "usunięto rozbieg",
+            }
+        )
+
+    result = _rewriter(handler).rewrite_fragment(
+        source, fragment_id="p-1", document_type=DocumentType.contract
+    )
+    assert result.accepted and result.text == "Pracownik musi zapłacić karę umowną."

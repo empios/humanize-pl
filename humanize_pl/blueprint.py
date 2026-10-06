@@ -110,16 +110,30 @@ class Section:
     label_pl: str
     matches: tuple[str, ...]
     severity: str = "required"
+    # Line patterns, for a section a phrase cannot pin down: the place and date
+    # line has no word of its own ("Toruń, 7 kwietnia 2026 r."), and "dnia" or
+    # "r." alone also match "ustawy z dnia 26 czerwca 1974 r.".
+    patterns: tuple[re.Pattern, ...] = ()
 
     @property
     def required(self) -> bool:
         return self.severity == "required"
 
     def found_in(self, lowered: str) -> str | None:
+        """The text that shows the section in the (casefolded) document."""
         for phrase in self.matches:
             if phrase in lowered:
                 return phrase
+        for pattern in self.patterns:
+            found = pattern.search(lowered)
+            if found and found.group(0):
+                return found.group(0)
         return None
+
+    def in_line(self, lowered_line: str) -> bool:
+        return any(phrase in lowered_line for phrase in self.matches) or any(
+            pattern.search(lowered_line) for pattern in self.patterns
+        )
 
 
 @dataclass(frozen=True)
@@ -231,14 +245,23 @@ def _load(path: Path) -> DocumentBlueprint:
                 f"Sekcja {identifier}: `severity` musi być required albo expected."
             )
         matches = tuple(str(v).casefold() for v in row.get("matches") or ())
-        if not matches:
-            raise BlueprintError(f"Sekcja {identifier} nie ma żadnego wzorca `matches`.")
+        try:
+            patterns = tuple(
+                re.compile(str(v), re.IGNORECASE | re.MULTILINE) for v in row.get("patterns") or ()
+            )
+        except re.error as exc:
+            raise BlueprintError(f"Sekcja {identifier}: błędny wzorzec `patterns`: {exc}") from exc
+        if not matches and not patterns:
+            raise BlueprintError(
+                f"Sekcja {identifier} nie ma żadnego wzorca `matches` ani `patterns`."
+            )
         sections.append(
             Section(
                 id=identifier,
                 label_pl=str(row.get("label_pl", identifier)),
                 matches=matches,
                 severity=severity,
+                patterns=patterns,
             )
         )
 
@@ -501,8 +524,13 @@ def check(text: str, blueprint: DocumentBlueprint) -> BlueprintReport:
         # Emptiness is only decidable when the match landed on a heading that
         # titles the section: in running prose there is no boundary to measure
         # against, and a heading-like line naming the court or the office
-        # ("Sąd Okręgowy w Szczecinie") is the section's content itself.
-        if position in heading_indices and _titles_section(lines[position], phrase):
+        # ("Sąd Okręgowy w Szczecinie") is the section's content itself, as is
+        # any line a pattern found ("Warszawa, dnia 12 lipca 2026 r.").
+        if (
+            position in heading_indices
+            and phrase in section.matches
+            and _titles_section(lines[position], phrase)
+        ):
             titles.append((section, position))
 
     # A section's body runs to the later of the next heading and the next

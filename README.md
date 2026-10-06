@@ -574,8 +574,11 @@ Dokument z rozpoznaną kategorią prawną jest sprawdzany w dwóch krokach.
 1. **Blueprint ogólny** (`humanize_pl/data/blueprints/<kategoria>.yaml`) — lista
    sekcji, które dokument tej kategorii powinien zawierać (`required` blokuje
    gotowość, `expected` tylko odnotowuje), z kontrolą numeracji i — tam, gdzie
-   realne wzory trzymają jedną kolejność — kolejności. Działa na każdym
-   dokumencie, także napisanym bez naszego wzoru. Blueprint zawiera też
+   realne wzory trzymają jedną kolejność — kolejności. Sekcję wskazują zwroty
+   (`matches`) albo, gdy żaden zwrot jej nie wyróżnia, wzorce linii
+   (`patterns`, wyrażenia regularne): linię „Toruń, 7 kwietnia 2026 r.” poznaje
+   się po kształcie, a samo „dnia” trafia też w „ustawy z dnia …”. Działa na
+   każdym dokumencie, także napisanym bez naszego wzoru. Blueprint zawiera też
    `document`: ogólny dokument kategorii, w którym wypełnia się wyłącznie pola
    (`slots`); treść, kolejność i układ zostają jak we wzorze.
 2. **Wzór precyzyjny** (`humanize_pl/data/templates/<kategoria>/*.yaml`) —

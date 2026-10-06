@@ -48,7 +48,7 @@ def test_shipped_blueprints_parse() -> None:
     assert blueprints(), "brak szablonów"
     for blueprint in blueprints().values():
         assert blueprint.required_sections
-        assert all(row.matches for row in blueprint.sections)
+        assert all(row.matches or row.patterns for row in blueprint.sections)
 
 
 def test_missing_required_section_blocks_but_expected_one_does_not() -> None:
@@ -509,3 +509,28 @@ def test_a_header_block_or_a_list_is_not_an_empty_section() -> None:
     )
     report = check(text, blueprint_for("pozew"))
     assert report.empty_sections == [], report.empty_sections
+
+
+def test_a_date_line_is_found_by_its_shape_not_by_dnia() -> None:
+    """"dnia" also stands in "ustawy z dnia 26 czerwca 1974 r.", so a missing
+    date line passed as present; a line pattern finds the line itself."""
+    blueprint = blueprint_for("wezwanie_do_zaplaty")
+    body = (
+        "Na podstawie art. 471 ustawy z dnia 23 kwietnia 1964 r. Kodeks cywilny wzywam "
+        "Dłużnika do zapłaty kwoty 12 450 zł w terminie 7 dni.\nZ poważaniem\nJan Kowalski (podpis)"
+    )
+    assert "data_miejsce" not in check(body, blueprint).present_sections
+    for date_line in ("Toruń, 7 kwietnia 2026 r.", "Warszawa, dnia 12 lipca 2026 roku",
+                      "…………………, dnia ……………… r."):
+        report = check(date_line + "\n" + body, blueprint)
+        assert "data_miejsce" in report.present_sections, date_line
+        assert "miejscowość i data" not in report.empty_sections, date_line
+
+
+def test_loader_reads_line_patterns_and_rejects_a_broken_one(tmp_path) -> None:
+    payload = {"category": "x", "sections": [{"id": "a", "patterns": [r"^\d+, dnia"]}]}
+    (section,) = _load(_write(tmp_path, payload)).sections
+    assert section.found_in("12, dnia") == "12, dnia"
+    payload["sections"][0]["patterns"] = ["(unclosed"]
+    with pytest.raises(BlueprintError, match="patterns"):
+        _load(_write(tmp_path, payload))

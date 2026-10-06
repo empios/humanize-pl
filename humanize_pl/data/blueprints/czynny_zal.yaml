@@ -8,7 +8,13 @@ sections:
 - id: data_miejsce
   label_pl: miejscowość i data
   severity: required
-  matches: [dnia, ' r.', miejscowość, (data]
+  # Linia „miejscowość, data” albo jej podpis we wzorze. Same „dnia” i „r.”
+  # trafiały też w „ustawy z dnia 26 czerwca 1974 r.”, więc usunięta data
+  # uchodziła za obecną.
+  patterns:
+  - '^(?=.{0,90}$)[\p{L}…. ()\t\-]{1,60},\s*(?:dnia\s+)?(?:\d{1,2}\b|…|\.{2,})'
+  - '\(miejscowość\W+(?:i\s+)?data'
+  - 'zawart\w*\s+(?:w\s+dniu|dnia)\b'
 - id: wnoszący
   label_pl: oznaczenie wnoszącego
   severity: required

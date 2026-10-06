@@ -189,7 +189,7 @@ def _section_spans(lines: list[str], blueprint) -> dict[str, tuple[int, int]]:
     headings = [index for index, line in enumerate(lines) if is_heading(line)]
     starts: dict[str, tuple[int, bool]] = {}
     for section in blueprint.sections:
-        hits = [i for i, line in enumerate(lowered) if any(p in line for p in section.matches)]
+        hits = [i for i, line in enumerate(lowered) if section.in_line(line)]
         if hits:
             heading = next((i for i in hits if i in headings), None)
             starts[section.id] = (hits[0], False) if heading is None else (heading, True)

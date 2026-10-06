@@ -7,8 +7,10 @@ owes its category, and editing AI-drafted legal text while leaving human
 legal text mostly alone. Every gated metric has a direction; a change that
 moves one the wrong way fails until the baseline is deliberately re-recorded.
 
-Court rulings come from the local SAOS corpus, which is not committed. Without
-it the ruling metrics are skipped, and said to be skipped, rather than guessed.
+Court rulings come from the local SAOS corpus, and documents drafted by
+several models from docs_tests/corpus/ai_models/; neither is committed.
+Without one, its metrics are skipped, and said to be skipped, rather than
+guessed.
 """
 
 from __future__ import annotations
@@ -23,7 +25,14 @@ from rich import print
 
 from humanize_pl import layout_ir
 from humanize_pl.benchmark import safety_checks
-from humanize_pl.blueprint import blueprint_for, check, is_heading, match_template, templates
+from humanize_pl.blueprint import (
+    blueprint_for,
+    check,
+    check_category,
+    is_heading,
+    match_template,
+    templates,
+)
 from humanize_pl.categories import catalogue, classify_category
 from humanize_pl.core import humanize_text
 from humanize_pl.detect import detect_document
@@ -32,6 +41,8 @@ from humanize_pl.nlp.morfeusz import try_load_morfeusz
 DEFAULT_BASELINE = Path("docs_tests/eval_baseline.json")
 AI_DIR = Path("docs_tests/ai_generated")
 RULINGS = Path("docs_tests/corpus/saos_holdout.jsonl")
+# One folder per model, each with a manifest.json of drafts and rewrites.
+AI_MODELS = Path("docs_tests/corpus/ai_models")
 # Enough rulings for a stable rate; each is cut to a few pages to keep the run short.
 RULINGS_SAMPLE = 150
 RULING_CHARS = 8000
@@ -61,6 +72,8 @@ DIRECTION = {
     "fog_change_ai": -1,
     "unsafe_outputs": -1,
     "unsafe_outputs_rulings": -1,
+    "ai_models_category_exact": 1,
+    "ai_models_category_wrong": -1,
 }
 LABELS = {
     "category_exact": "kategoria trafiona (wzory)",
@@ -81,13 +94,26 @@ LABELS = {
     "fog_change_rulings": "zmiana mglistości FOG-PL po redakcji (orzeczenia)",
     "unsafe_outputs": "wyniki naruszające bezpieczeństwo (wzory, dokumenty AI)",
     "unsafe_outputs_rulings": "wyniki naruszające bezpieczeństwo (orzeczenia)",
+    "ai_models_category_exact": "kategoria trafiona (projekty różnych modeli)",
+    "ai_models_category_wrong": "kategoria błędna, nie nieokreślona (projekty różnych modeli)",
+    "ai_models_checklist_blocking": "projekty różnych modeli blokowane przez listę kontrolną",
+    "edits_per_1k_ai_models": "zmiany merytoryczne na 1000 słów (projekty różnych modeli)",
 }
-RULING_METRICS = {
-    "rulings_given_category",
-    "edits_per_1k_rulings",
-    "edit_ratio_ai_to_rulings",
-    "unsafe_outputs_rulings",
-    "fog_change_rulings",
+# Metrics measured on a local corpus, by the corpus they need.
+LOCAL_METRICS = {
+    RULINGS: {
+        "rulings_given_category",
+        "edits_per_1k_rulings",
+        "edit_ratio_ai_to_rulings",
+        "unsafe_outputs_rulings",
+        "fog_change_rulings",
+    },
+    AI_MODELS: {
+        "ai_models_category_exact",
+        "ai_models_category_wrong",
+        "ai_models_checklist_blocking",
+        "edits_per_1k_ai_models",
+    },
 }
 
 app = typer.Typer(
@@ -114,6 +140,40 @@ def _rulings(root: Path) -> list[str] | None:
         return None
     rows = path.read_text(encoding="utf-8").splitlines()[:RULINGS_SAMPLE]
     return [json.loads(row)["text"][:RULING_CHARS] for row in rows]
+
+
+def _ai_model_drafts(root: Path) -> list[tuple[str, str]] | None:
+    """(category, text) of every draft in the local multi-model corpus."""
+    folder = root / AI_MODELS
+    if not folder.is_dir():
+        return None
+    drafts = []
+    for manifest in sorted(folder.glob("*/manifest.json")):
+        for row in json.loads(manifest.read_text(encoding="utf-8")):
+            if row["kind"] == "draft":
+                text = (manifest.parent / row["file"]).read_text(encoding="utf-8")
+                drafts.append((row["category"], text))
+    return drafts or None
+
+
+def ai_model_metrics(drafts: list[tuple[str, str]]) -> dict[str, float]:
+    """How documents drafted by today's models fare: their category, the
+    checklist of the category asked for, and how much the rules change them."""
+    right = wrong = blocked = words = edits = 0
+    for category, text in drafts:
+        guess = classify_category(text)
+        right += guess.category.id == category
+        wrong += guess.specified and guess.category.id != category
+        blocked += check_category(text, category).blocking
+        words += len(text.split())
+        result = humanize_text(text, mode="standard")
+        edits += sum(not c.rule.startswith("cleanup") for c in result.changes)
+    return {
+        "ai_models_category_exact": round(right / len(drafts), 4),
+        "ai_models_category_wrong": round(wrong / len(drafts), 4),
+        "ai_models_checklist_blocking": round(blocked / len(drafts), 4),
+        "edits_per_1k_ai_models": round(1000 * edits / words, 2),
+    }
 
 
 def _matches(text: str, template_id: str) -> bool:
@@ -243,9 +303,14 @@ def measure(root: Path = Path(".")) -> tuple[dict[str, Any], dict[str, dict[str,
     ai = _ai_documents(root)
     rulings = _rulings(root)
     rewrite, by_rule = rewrite_metrics(ai, rulings)
+    drafts = _ai_model_drafts(root)
     current = {
         "morfeusz": try_load_morfeusz() is not None,
-        "metrics": {**structure_metrics(ai, rulings), **rewrite},
+        "metrics": {
+            **structure_metrics(ai, rulings),
+            **rewrite,
+            **(ai_model_metrics(drafts) if drafts else {}),
+        },
     }
     return current, by_rule
 
@@ -281,9 +346,12 @@ def main(
         before = "" if recorded is None else recorded["metrics"].get(key, "—")
         gated = "" if key in DIRECTION else "  (informacyjnie)"
         print(f"{LABELS[key]}: {value}  [baza: {before}]{gated}")
-    skipped = sorted(RULING_METRICS - current["metrics"].keys())
-    if skipped:
-        print(f"[yellow]Pominięto (brak lokalnego korpusu {RULINGS}):[/yellow] {', '.join(skipped)}")
+    skipped = []
+    for corpus, names in LOCAL_METRICS.items():
+        missing = sorted(names - current["metrics"].keys())
+        if missing:
+            skipped += missing
+            print(f"[yellow]Pominięto (brak lokalnego korpusu {corpus}):[/yellow] {', '.join(missing)}")
     if rules:
         rows = sorted(set(by_rule["ai"]) | set(by_rule.get("rulings", {})))
         print("\nreguła | AI na 1000 słów | orzeczenia na 1000 słów")
@@ -294,7 +362,7 @@ def main(
 
     if update_baseline:
         if skipped:
-            print("[red]Baza wymaga lokalnego korpusu orzeczeń; nie zapisano.[/red]")
+            print("[red]Baza wymaga wszystkich lokalnych korpusów; nie zapisano.[/red]")
             raise typer.Exit(1)
         baseline.write_text(json.dumps(current, ensure_ascii=False, indent=2) + "\n", "utf-8")
         print(f"[green]Zapisano bazę:[/green] {baseline}")

@@ -18,6 +18,10 @@
     "fog_change_rulings": -0.02,
     "edits_per_1k_rulings": 2.13,
     "edit_ratio_ai_to_rulings": 13.58,
-    "unsafe_outputs_rulings": 0
+    "unsafe_outputs_rulings": 0,
+    "ai_models_category_exact": 0.7292,
+    "ai_models_category_wrong": 0.125,
+    "ai_models_checklist_blocking": 0.5625,
+    "edits_per_1k_ai_models": 2.03
   }
 }

@@ -234,6 +234,7 @@ def _safety_summary(change: dict[str, Any]) -> str:
         "deontic_modality_preserved": "normatywność (np. może/musi)",
         "negation_preserved": "przeczenia (nie/brak/bez)",
         "party_roles_preserved": "role stron",
+        "party_mentions_preserved": "określenia stron",
         "legal_anchor_retention": "kotwice prawne",
         "content_anchor_retention": "kluczowe pojęcia",
         "protected_fragments": "fragmenty chronione",

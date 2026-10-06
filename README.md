@@ -945,6 +945,7 @@ Jeżeli w systemie jest `make`, równoważnym skrótem jest `make release-check`
 Silnik nie jest generatywnym parafrazerem. To kontrolowany edytor formalnej polszczyzny: lepiej odrzucić zmianę niż wygenerować nienaturalne lub nieprecyzyjne zdanie.
 
 Walidatory blokują m.in. zmianę normatywności (`może`/`musi`/`powinien`),
-utratę stron, świadczeń, kwot, dat, cytatów i podstaw prawnych, zdania bez
-orzeczenia, osierocone zdania względne po bezokoliczniku, angielskie wstawki
-oraz wycieki placeholderów ochronnych.
+utratę stron, świadczeń, kwot, dat, cytatów i podstaw prawnych, zamianę ról
+stron i ich określeń (strona pozwana → powodowa, płatnik → pracodawca), zdania
+bez orzeczenia, osierocone zdania względne po bezokoliczniku, angielskie
+wstawki oraz wycieki placeholderów ochronnych.

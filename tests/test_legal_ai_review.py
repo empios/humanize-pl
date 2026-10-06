@@ -123,6 +123,41 @@ def test_parties_keeping_their_roles_pass_the_swap_check():
         assert not parties_swapped(original, candidate), candidate
 
 
+def test_validator_rejects_one_party_named_in_place_of_another():
+    for original, candidate in [
+        # The side of the lawsuit liable for costs, swapped
+        (
+            "Pozwana wniosła o zasądzenie od strony pozwanej kosztów procesu.",
+            "Pozwana wniosła o zasądzenie od strony powodowej kosztów procesu.",
+        ),
+        # A legal role replaced by another one: the payer is not the employer
+        (
+            "Płatnik zgłosił ubezpieczoną do ubezpieczeń społecznych w terminie.",
+            "Pracodawca zgłosił ubezpieczoną do ubezpieczeń społecznych w terminie.",
+        ),
+    ]:
+        validation = validate_candidate(
+            original, candidate, protected=protect_text(original), max_length_ratio=2.0
+        )
+        assert validation.reason == "one party named in place of another", candidate
+
+
+def test_party_mentions_may_change_without_an_exchange():
+    from humanize_pl.safety.parties import party_mentions_exchanged
+
+    for original, candidate in [
+        # Passive to active: the same parties, mentioned as often
+        ("Pozwane zostały poinformowane przez powoda o zaległości.", "Powód poinformował pozwane o zaległości."),
+        # A party named less often, by a pronoun
+        ("Pozwany wezwał powoda, a pozwany nie zapłacił.", "Pozwany wezwał powoda, lecz nie zapłacił."),
+        # An opener dropped capitalises a word Morfeusz also reads as a surname
+        ("Warto zauważyć, że zgoda może zostać cofnięta.", "Zgoda może zostać cofnięta."),
+        # Adjectives used as nouns name no party
+        ("Inny świadek potwierdził zeznania powoda.", "Kolejny świadek potwierdził zeznania powoda."),
+    ]:
+        assert not party_mentions_exchanged(original, candidate), candidate
+
+
 def test_validator_rejects_changed_code_abbreviation():
     original = "Do szkody stosuje się art. 471 k.c. i strony to akceptują bez zastrzeżeń."
     validation = validate_candidate(

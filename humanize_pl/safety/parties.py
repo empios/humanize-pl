@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+from collections import Counter
+
 import regex as re
 
 from humanize_pl.nlp.morfeusz import try_load_morfeusz
@@ -10,6 +12,9 @@ from humanize_pl.nlp.morfeusz import try_load_morfeusz
 _WORD_RE = re.compile(r"\p{L}+")
 _NOMINAL = {"subst", "depr", "adj", "pact", "ppas"}
 _FINITE = {"fin", "praet", "bedzie", "winien"}
+# "strona powodowa" and "strona pozwana" name the parties of a lawsuit without
+# a personal noun.
+_SIDE_RE = re.compile(r"\bstron\w*\s+(powodow|pozwan)\w*", re.IGNORECASE)
 
 
 def parties_swapped(original: str, candidate: str) -> bool:
@@ -88,3 +93,45 @@ def _subject_roles(text: str, parties: set[str], morfeusz) -> dict[str, bool] | 
         )
         roles[key] = roles.get(key, False) or subject
     return roles
+
+
+def party_mentions_exchanged(original: str, candidate: str) -> bool:
+    """True if one party is mentioned less and another more than in the source.
+
+    "zasądzenie od strony pozwanej kosztów" becoming "od strony powodowej" keeps
+    every word the other checks look at, and so does "płatnik" becoming
+    "pracodawca". Mentions are personal nouns ("powód", "płatnik") and the
+    sides of a lawsuit ("strona pozwana"). A party merely named more or less
+    often, by a pronoun or by its role, is no exchange. Meant for a sentence
+    and its rewrite; without Morfeusz nothing is reported.
+    """
+    morfeusz = try_load_morfeusz()
+    if morfeusz is None:
+        return False
+    before, after = _mentions(original, morfeusz), _mentions(candidate, morfeusz)
+    fewer = any(after[key] < count for key, count in before.items())
+    more = any(count > before[key] for key, count in after.items())
+    return fewer and more
+
+
+def _mentions(text: str, morfeusz) -> Counter[str]:
+    mentions: Counter[str] = Counter()
+    for side in _SIDE_RE.finditer(text):
+        mentions["powód" if side.group(1).casefold().startswith("powod") else "pozwany"] += 1
+    for token in _WORD_RE.finditer(_SIDE_RE.sub(" ", text)):
+        readings = [(a.lemma, a.tag.split(":")) for a in morfeusz.analyses(token.group(0))]
+        # Common nouns only: a surname reading has a capitalised lemma ("Zgoda",
+        # "Warta"), and names are the inventory's to compare.
+        persons = {
+            lemma for lemma, parts in readings
+            if parts[0] == "subst"
+            and len(parts) > 3
+            and "m1" in parts[3].split(".")
+            and lemma[:1].islower()
+        }
+        # An adjective used as a noun ("inny", "ostatni", "zmarły") names no
+        # party; it shares its lemma with its adjective reading.
+        adjectives = {lemma for lemma, parts in readings if parts[0] == "adj"}
+        if persons and not persons & adjectives:
+            mentions[min(persons)] += 1
+    return mentions

@@ -245,6 +245,10 @@ _REPAIR_HINTS = {
         "Nie zamieniaj ról stron: kto w źródle działa, a kto jest adresatem, musi "
         "pozostać tak samo."
     ),
+    "party_mentions_preserved": (
+        "Nie zastępuj jednej strony inną i nie zmieniaj określeń stron (powód, pozwany, "
+        "płatnik, pracodawca…): każda musi pozostać tą samą osobą co w źródle."
+    ),
     "protected_fragments": (
         "Zachowaj wszystkie placeholdery __PROTECTED_XXXX__ bez zmian i w tej samej liczbie."
     ),

@@ -646,3 +646,41 @@ def test_the_fragment_is_fenced_so_its_end_is_unambiguous() -> None:
     user = requests[1]["messages"][1]["content"]
     assert "<<<Warto podkreślić, że pracownik musi zapłacić karę umowną.>>>\nZauważone" in user
     assert "<<<" in requests[1]["messages"][0]["content"]
+
+
+def test_a_long_sentence_is_sent_even_without_a_finding() -> None:
+    from dataclasses import replace
+
+    from humanize_pl.detect import detect_document
+    from humanize_pl.flows.base import LONG_SENTENCE_WORDS, _rewrite_remaining_with_llm
+
+    long_sentence = (
+        "Wykonawca zobowiązuje się wykonywać prace remontowe w lokalu Zamawiającego w dni "
+        "robocze w godzinach od ósmej do szesnastej, z zachowaniem zasad bezpieczeństwa i "
+        "higieny pracy oraz przepisów przeciwpożarowych, a także utrzymywać porządek na "
+        "terenie prac i usuwać odpady na własny koszt po zakończeniu każdego dnia pracy."
+    )
+    assert len(long_sentence.split()) > LONG_SENTENCE_WORDS
+    paragraph = "Umowa obowiązuje od dnia podpisania. " + long_sentence
+    prompts: list[str] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        prompts.append(json.loads(request.content)["messages"][1]["content"])
+        return _sentence_handler(lambda source: source)(request)
+
+    rewriter = _rewriter(handler)
+    assert rewriter.probe()
+    # No finding at all: only its length sends the sentence
+    diagnosis = replace(detect_document(paragraph, calibrate_against_default=False), findings=[])
+    _rewrite_remaining_with_llm(
+        paragraph,
+        diagnosis,
+        rewriter=rewriter,
+        document_type=DocumentType.contract,
+        style_profile=None,
+        protected_paragraph_indices=set(),
+    )
+    sent = [prompt for prompt in prompts if "fragment_id: p" in prompt]
+    assert len(sent) == 1
+    assert "<<<" + long_sentence + ">>>" in sent[0]
+    assert "podziel je na krótsze" in sent[0]

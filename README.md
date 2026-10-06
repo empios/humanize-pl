@@ -252,6 +252,11 @@ profilem gatunku, profilem kancelarii i krótkim konspektem. Nie trafia cały
 DOCX ani jego metadane. Nazwy, kwoty, daty, przepisy, identyfikatory i cytaty
 są zastępowane placeholderami, a następnie przywracane lokalnie.
 
+Do modelu trafiają zdania z uwagami detektora oraz zdania dłuższe niż 35 słów,
+z prośbą o podział albo uproszczenie bez zmiany treści: detektor szuka
+nawyków starszych modeli, a zrozumiałość tekstu prawniczego psują przede
+wszystkim długie zdania.
+
 Propozycję modelu sprawdzają te same lokalne walidatory co reguły (modalność,
 przeczenia, liczby, role stron, przepisy, daty, kwoty, orzeczenie). Propozycja
 odrzucona wraca do modelu raz, z konkretną wskazówką, co poprawić (np.

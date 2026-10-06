@@ -40,6 +40,11 @@ from humanize_pl.sentence_splitter import split_sentences
 # Kept per item, not per run: the report picks its illustrations from across
 # the batch, and a whole document's changes would bloat the payload.
 EXAMPLES_PER_ITEM = 4
+# A sentence longer than this goes to the hosted model even without a finding.
+# The detector looks for habits of older models, which today's drafts mostly
+# lack, while long sentences are what makes legal text hard to follow; in 48
+# drafts by three models, 26 sentences ran longer and had no finding.
+LONG_SENTENCE_WORDS = 35
 
 
 def describe_visible_change(before: Any, after: Any) -> str:
@@ -646,7 +651,8 @@ def _rewrite_remaining_with_llm(
     style_profile: StyleProfile | None,
     protected_paragraph_indices: set[int],
 ) -> tuple[str, list[dict[str, Any]], int]:
-    """Second and final pass: only the sentences that still have findings.
+    """Second and final pass: only the sentences that still have findings, and
+    those longer than LONG_SENTENCE_WORDS.
 
     One sentence at a time, not the paragraph around it. Both models measured
     here failed the same way - they changed amounts, party names and
@@ -665,6 +671,13 @@ def _rewrite_remaining_with_llm(
         findings_by_sentence.setdefault(
             (finding.paragraph_index, finding.sentence_index), []
         ).append(finding.detail or finding.evidence or finding.family)
+    for paragraph_index, line_index in enumerate(nonempty):
+        for sentence_index, sentence in enumerate(split_sentences(lines[line_index])):
+            words = len(sentence.split())
+            if words > LONG_SENTENCE_WORDS:
+                findings_by_sentence.setdefault((paragraph_index, sentence_index), []).append(
+                    f"zdanie ma {words} słów: podziel je na krótsze albo uprość, bez zmiany treści"
+                )
     outline = " | ".join(
         lines[line_index].strip()
         for paragraph_index, line_index in enumerate(nonempty)

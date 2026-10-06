@@ -8,6 +8,7 @@ from .anchors import content_anchor_retention, content_anchor_tokens
 from .protectors import ProtectedText
 from .deontic import extract_deontic_profile, DeonticModality
 from .parties import parties_swapped, party_mentions_exchanged
+from .speech_acts import speech_acts_changed
 from humanize_pl.nlp.morfeusz import try_load_morfeusz
 from humanize_pl.rules.finite_verbs import has_finite_verb
 from humanize_pl.rules.legal_features import (
@@ -293,6 +294,10 @@ def validate_candidate(
     if not negation_kept and rule not in DOUBLE_NEGATION_RULES:
         return _failed("negation_preserved", "negation changed", checks)
     _passed("negation_preserved", checks)
+
+    if speech_acts_changed(restored_original, restored_candidate):
+        return _failed("speech_acts_preserved", "performative act changed", checks)
+    _passed("speech_acts_preserved", checks)
 
     if parties_swapped(restored_original, restored_candidate):
         return _failed("party_roles_preserved", "parties swapped roles", checks)

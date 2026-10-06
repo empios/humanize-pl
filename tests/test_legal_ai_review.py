@@ -158,6 +158,39 @@ def test_party_mentions_may_change_without_an_exchange():
         assert not party_mentions_exchanged(original, candidate), candidate
 
 
+def test_validator_rejects_an_act_turned_into_a_request():
+    for original, candidate in [
+        # A hosted model's edit in a payment demand; the meaning check passed it
+        (
+            "Wzywam do zapłaty całej kwoty w terminie 7 dni od dnia doręczenia pisma.",
+            "Płatność całej kwoty proszę dokonać w terminie 7 dni od dnia doręczenia pisma.",
+        ),
+        (
+            "Wnoszę o zasądzenie od pozwanego kosztów postępowania według norm przepisanych.",
+            "Proszę o zasądzenie od pozwanego kosztów postępowania według norm przepisanych.",
+        ),
+    ]:
+        validation = validate_candidate(
+            original, candidate, protected=protect_text(original), max_length_ratio=2.0
+        )
+        assert validation.reason == "performative act changed", candidate
+
+
+def test_acts_kept_reported_or_merely_referred_to_pass():
+    from humanize_pl.safety.speech_acts import speech_acts_changed
+
+    for original, candidate in [
+        ("Niniejszym wypowiadam umowę o pracę.", "Wypowiadam umowę o pracę."),
+        # A request phrased another way is still a request
+        ("Uprzejmie proszę o przesłanie dokumentów.", "Zwracam się z prośbą o przesłanie dokumentów."),
+        # A reference, not an appeal
+        ("Umowa odwołuje się do art. 471 k.c.", "Umowa nawiązuje do art. 471 k.c."),
+        # The past tense reports an act; it performs none
+        ("Powód wezwał pozwanego do zapłaty.", "Powód wezwał pozwaną spółkę do zapłaty."),
+    ]:
+        assert not speech_acts_changed(original, candidate), candidate
+
+
 def test_validator_rejects_changed_code_abbreviation():
     original = "Do szkody stosuje się art. 471 k.c. i strony to akceptują bez zastrzeżeń."
     validation = validate_candidate(

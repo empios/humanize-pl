@@ -241,6 +241,11 @@ _REPAIR_HINTS = {
         "nie może, powinien, należy) muszą pozostać dokładnie takie jak w źródle."
     ),
     "negation_preserved": "Zachowaj każde przeczenie ze źródła (nie, brak, bez).",
+    "speech_acts_preserved": (
+        "Zachowaj czynności, których dokonuje tekst (wzywam, wnoszę, żądam, oświadczam, "
+        "wypowiadam, odwołuję…): każda musi pozostać tym samym czasownikiem w czasie "
+        "teraźniejszym, nie prośbą ani opisem."
+    ),
     "party_roles_preserved": (
         "Nie zamieniaj ról stron: kto w źródle działa, a kto jest adresatem, musi "
         "pozostać tak samo."

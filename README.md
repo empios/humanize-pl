@@ -261,7 +261,11 @@ nawyków starszych modeli, a zrozumiałość tekstu prawniczego psują przede
 wszystkim długie zdania.
 
 Propozycję modelu sprawdzają te same lokalne walidatory co reguły (modalność,
-przeczenia, liczby, role stron, przepisy, daty, kwoty, orzeczenie). Propozycja
+przeczenia, czynności, liczby, role stron, przepisy, daty, kwoty, orzeczenie).
+Czynności to czasowniki, którymi pismo działa w czasie teraźniejszym
+(„wzywam”, „wnoszę”, „żądam”, „oświadczam”, „wypowiadam”, „odwołuję się”):
+redakcja nie może zamienić wezwania w prośbę ani usunąć oświadczenia, choćby
+zachowała wszystkie liczby i modalność. Propozycja
 odrzucona wraca do modelu raz, z konkretną wskazówką, co poprawić (np.
 „Zachowaj modalność źródła…”); jeżeli i druga nie przejdzie kontroli, zostaje
 tekst źródłowy. Raport liczy próby naprawy (`repair:<kontrola>`) i propozycje
@@ -308,7 +312,8 @@ Pomiar na 25 projektach pism (modele Claude i próbki AI), z lokalnym modelem 9B
 NLI odrzucił m.in. dopisane przez model twierdzenie („…ma znaczenie dla
 ustalenia terminu płatności” w wezwaniu, które o terminie nie mówiło) oraz
 usunięte „Działając w imieniu własnym”. Nie wychwycił osłabienia „Wzywam do
-zapłaty” do „proszę dokonać” — przegląd człowieka pozostaje potrzebny.
+zapłaty” do „proszę dokonać”; tę zmianę odrzuca teraz kontrola czynności.
+Przegląd człowieka pozostaje potrzebny.
 Mglistość FOG-PL prawie się nie zmienia (13,7 → 13,6). Sprawdzony i
 odrzucony wariant z tłumaczeniem PL → EN → PL (TranslateGemma 4B): już sam
 przekład w obie strony gubił liczby i przepisy we wszystkich 25 dokumentach.

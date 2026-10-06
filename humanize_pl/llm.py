@@ -231,6 +231,50 @@ _JSON_SCHEMA = {
 }
 
 
+# A proposal the local checks reject is sent back once, with what to fix.
+REPAIR_ROUNDS = 1
+# What each failed check asks of the next proposal, phrased for the model.
+_REPAIR_HINTS = {
+    "numbers_preserved": "Zachowaj każdą liczbę ze źródła dokładnie w tej samej postaci.",
+    "deontic_modality_preserved": (
+        "Zachowaj modalność źródła: obowiązek, uprawnienie, zakaz i zalecenie (musi, może, "
+        "nie może, powinien, należy) muszą pozostać dokładnie takie jak w źródle."
+    ),
+    "negation_preserved": "Zachowaj każde przeczenie ze źródła (nie, brak, bez).",
+    "party_roles_preserved": (
+        "Nie zamieniaj ról stron: kto w źródle działa, a kto jest adresatem, musi "
+        "pozostać tak samo."
+    ),
+    "protected_fragments": (
+        "Zachowaj wszystkie placeholdery __PROTECTED_XXXX__ bez zmian i w tej samej liczbie."
+    ),
+    "placeholder_restore": (
+        "Zachowaj wszystkie placeholdery __PROTECTED_XXXX__ bez zmian i w tej samej liczbie."
+    ),
+    "legal_anchor_retention": "Nie usuwaj stron, świadczeń ani pojęć prawnych obecnych w źródle.",
+    "content_anchor_retention": "Nie usuwaj treści merytorycznej obecnej w źródle.",
+    "finite_verb_presence": "Każde zdanie musi mieć orzeczenie; nie twórz równoważników zdań.",
+    "sentence_split_safety": "Każde zdanie musi mieć orzeczenie; nie dziel zdania na urywki.",
+    "length_ratio": "Zachowaj długość zbliżoną do źródła i nie dopisuj nowej treści.",
+}
+# Inventory checks are named after what they guard: "dates_preserved", ...
+_INVENTORY_HINT = (
+    "Zachowaj bez zmian przepisy, daty, kwoty, oznaczenia, cytaty i nazwy stron ze źródła."
+)
+_STYLE_HINT = "Popraw poprawność językową: składnię, spójniki i interpunkcję."
+
+
+def _repair_instruction(failed_check: str) -> str:
+    hint = _REPAIR_HINTS.get(failed_check) or (
+        _INVENTORY_HINT if failed_check.endswith("_preserved") else _STYLE_HINT
+    )
+    return (
+        f"Kontrola bezpieczeństwa odrzuciła tę propozycję. {hint} Przygotuj nową "
+        "propozycję tego samego fragmentu i odpowiedz tym samym obiektem JSON o czterech "
+        "polach: fragment_id, source, proposal, rationale."
+    )
+
+
 class OpenAICompatibleRewriter:
     """One reusable client and capability decision per batch."""
 
@@ -358,43 +402,62 @@ class OpenAICompatibleRewriter:
         )
         started = time.monotonic()
         self.metadata.note_proposal()
+        messages = [
+            {"role": "system", "content": system},
+            {"role": "user", "content": user},
+        ]
         try:
-            data, _used_format = self._completion(
-                [
-                    {"role": "system", "content": system},
-                    {"role": "user", "content": user},
-                ],
-                use_response_format=bool(self.metadata.supports_response_format),
-            )
-            proposal = self._parse_proposal(data)
-            if proposal.fragment_id != fragment_id:
-                raise LlmEndpointError("Odpowiedź ma niewłaściwy identyfikator fragmentu.")
-            if proposal.source != protected.text:
-                raise LlmEndpointError("Model nie zwrócił identycznego tekstu źródłowego.")
-            validation = validate_candidate(
-                protected.text,
-                proposal.proposal,
-                protected=protected,
-                max_length_ratio=1.60,
-                rule="llm:legal_style",
-                operation_type="llm_rewrite",
-            )
-            checks = [
-                {"name": check.name, "ok": check.ok, "reason": check.reason}
-                for check in validation.checks
-            ]
-            if not validation.ok:
+            for round_number in range(REPAIR_ROUNDS + 1):
+                data, _used_format = self._completion(
+                    messages,
+                    use_response_format=bool(self.metadata.supports_response_format),
+                )
+                proposal = self._parse_proposal(data)
+                if proposal.fragment_id != fragment_id:
+                    raise LlmEndpointError("Odpowiedź ma niewłaściwy identyfikator fragmentu.")
+                if proposal.source != protected.text:
+                    raise LlmEndpointError("Model nie zwrócił identycznego tekstu źródłowego.")
+                validation = validate_candidate(
+                    protected.text,
+                    proposal.proposal,
+                    protected=protected,
+                    max_length_ratio=1.60,
+                    rule="llm:legal_style",
+                    operation_type="llm_rewrite",
+                )
+                checks = [
+                    {"name": check.name, "ok": check.ok, "reason": check.reason}
+                    for check in validation.checks
+                ]
+                if validation.ok:
+                    break
                 failed_check = next(
                     (check.name for check in validation.checks if not check.ok), "validation"
                 )
-                self.metadata.note_rejected(f"rejected:{failed_check}")
-                return LlmRewriteResult(
-                    source,
-                    False,
-                    f"validation_failed: {validation.reason}",
-                    rationale=proposal.rationale,
-                    validation_checks=checks,
-                )
+                if round_number == REPAIR_ROUNDS:
+                    self.metadata.note_rejected(f"rejected:{failed_check}")
+                    return LlmRewriteResult(
+                        source,
+                        False,
+                        f"validation_failed: {validation.reason}",
+                        rationale=proposal.rationale,
+                        validation_checks=checks,
+                    )
+                # Sent back once with what failed: a model told which value or
+                # modality it changed mostly keeps it the second time.
+                self.metadata.record_decision(f"repair:{failed_check}")
+                messages = messages + [
+                    {"role": "assistant", "content": json.dumps(
+                        {
+                            "fragment_id": proposal.fragment_id,
+                            "source": proposal.source,
+                            "proposal": proposal.proposal,
+                            "rationale": proposal.rationale,
+                        },
+                        ensure_ascii=False,
+                    )},
+                    {"role": "user", "content": _repair_instruction(failed_check)},
+                ]
             restored = protected.restore(proposal.proposal)
             if restored == source:
                 self.metadata.note_rejected("rejected:no_visible_change")
@@ -405,11 +468,14 @@ class OpenAICompatibleRewriter:
                     rationale=proposal.rationale,
                     validation_checks=checks,
                 )
-            self.metadata.note_accepted("accepted:local_validators_passed")
+            repaired = round_number > 0
+            self.metadata.note_accepted(
+                "accepted:after_repair" if repaired else "accepted:local_validators_passed"
+            )
             return LlmRewriteResult(
                 restored,
                 True,
-                "accepted",
+                "accepted_after_repair" if repaired else "accepted",
                 rationale=proposal.rationale,
                 validation_checks=checks,
             )

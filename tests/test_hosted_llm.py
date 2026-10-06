@@ -11,6 +11,7 @@ from humanize_pl.llm import (
     LlmConfigurationError,
     LlmSettings,
     OpenAICompatibleRewriter,
+    REPAIR_ROUNDS,
     normalize_chat_completions_url,
 )
 
@@ -562,3 +563,71 @@ def test_a_rejected_sentence_leaves_its_paragraph_untouched() -> None:
     assert rejected >= 1
     assert changes == []
     assert result == paragraph
+
+
+def _repairing_rewriter(proposals: list[str], requests: list[dict]) -> OpenAICompatibleRewriter:
+    """A rewriter whose endpoint answers the probe, then the given proposals in turn."""
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        payload = json.loads(request.content)
+        requests.append(payload)
+        if len(requests) == 1:
+            return _response(
+                {
+                    "fragment_id": "capability-test",
+                    "source": "To jest test połączenia.",
+                    "proposal": "To jest test połączenia.",
+                    "rationale": "test",
+                }
+            )
+        user = _fields(payload["messages"][1]["content"])
+        return _response(
+            {
+                "fragment_id": user["fragment_id"],
+                "source": user["source"],
+                "proposal": proposals[min(len(requests) - 2, len(proposals) - 1)],
+                "rationale": "redakcja",
+            }
+        )
+
+    settings = LlmSettings("https://model.test/v1", "legal-pl", "token", 2)
+    return OpenAICompatibleRewriter(settings, client=httpx.Client(transport=httpx.MockTransport(handler)))
+
+
+def test_a_rejected_proposal_is_sent_back_once_with_what_to_fix() -> None:
+    requests: list[dict] = []
+    rewriter = _repairing_rewriter(
+        ["Pracownik może zapłacić karę umowną.", "Pracownik musi zapłacić karę umowną."],
+        requests,
+    )
+    result = rewriter.rewrite_fragment(
+        "Warto podkreślić, że pracownik musi zapłacić karę umowną.",
+        fragment_id="p-1",
+        document_type=DocumentType.contract,
+    )
+
+    assert result.accepted and result.reason == "accepted_after_repair"
+    assert result.text == "Pracownik musi zapłacić karę umowną."
+    repair = requests[2]["messages"]
+    assert [m["role"] for m in repair] == ["system", "user", "assistant", "user"]
+    assert "Pracownik może zapłacić" in repair[2]["content"]
+    assert "modalność" in repair[3]["content"]
+    report = rewriter.metadata.to_report()
+    assert report["decision_reasons"] == {
+        "repair:deontic_modality_preserved": 1,
+        "accepted:after_repair": 1,
+    }
+
+
+def test_a_proposal_failing_again_after_its_repair_leaves_the_source() -> None:
+    requests: list[dict] = []
+    rewriter = _repairing_rewriter(["Pracownik może zapłacić karę umowną."], requests)
+    source = "Warto podkreślić, że pracownik musi zapłacić karę umowną."
+    result = rewriter.rewrite_fragment(source, fragment_id="p-1", document_type=DocumentType.contract)
+
+    assert not result.accepted and result.text == source
+    assert len(requests) == 1 + 1 + REPAIR_ROUNDS
+    assert rewriter.metadata.to_report()["decision_reasons"] == {
+        "repair:deontic_modality_preserved": 1,
+        "rejected:deontic_modality_preserved": 1,
+    }

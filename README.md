@@ -247,6 +247,13 @@ profilem gatunku, profilem kancelarii i krótkim konspektem. Nie trafia cały
 DOCX ani jego metadane. Nazwy, kwoty, daty, przepisy, identyfikatory i cytaty
 są zastępowane placeholderami, a następnie przywracane lokalnie.
 
+Propozycję modelu sprawdzają te same lokalne walidatory co reguły (modalność,
+przeczenia, liczby, role stron, przepisy, daty, kwoty, orzeczenie). Propozycja
+odrzucona wraca do modelu raz, z konkretną wskazówką, co poprawić (np.
+„Zachowaj modalność źródła…”); jeżeli i druga nie przejdzie kontroli, zostaje
+tekst źródłowy. Raport liczy próby naprawy (`repair:<kontrola>`) i propozycje
+przyjęte dopiero po niej (`accepted:after_repair`).
+
 Przy timeoutach, HTTP 429 i 5xx klient wykonuje najwyżej dwie ponowne próby.
 Potem wynik regułowy jest zapisywany jako `ready_with_warnings`;
 `--require-llm` zamienia to w błąd. URL, token, pełne prompty i surowe

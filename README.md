@@ -271,6 +271,11 @@ odrzucona wraca do modelu raz, z konkretną wskazówką, co poprawić (np.
 tekst źródłowy. Raport liczy próby naprawy (`repair:<kontrola>`) i propozycje
 przyjęte dopiero po niej (`accepted:after_repair`).
 
+Przyjęta propozycja przechodzi jeszcze raz przez warstwę reguł, za tymi samymi
+walidatorami: model potrafi przywrócić to, co reguły właśnie usunęły (w 6 ze
+106 przyjętych akapitów wpisał z powrotem „niniejszego wezwania” w miejsce
+„tego wezwania”). Raport wymienia reguły, które poprawiły tekst po modelu.
+
 Przy timeoutach, HTTP 429 i 5xx klient wykonuje najwyżej dwie ponowne próby.
 Potem wynik regułowy jest zapisywany jako `ready_with_warnings`;
 `--require-llm` zamienia to w błąd. URL, token, pełne prompty i surowe

@@ -35,7 +35,7 @@ sections:
   - id: warunki_zawarcia
     label_pl: warunki zawierania umowy
     severity: required
-    matches: ["zawarcie umowy", "warunki zawierania", "rejestrac"]
+    matches: ["zawarcie umowy", "warunki zawierania", "rejestrac", "zostaje zawarta z chwilą", "składa zamówienie"]
 
   - id: odstapienie
     label_pl: odstąpienie od umowy przez konsumenta
@@ -52,7 +52,7 @@ sections:
   - id: zmiany_regulaminu
     label_pl: zmiany regulaminu
     severity: required
-    matches: ["zmiana regulaminu", "zmiany regulaminu", "zastrzega sobie prawo do zmiany"]
+    matches: ["zmiana regulaminu", "zmiany regulaminu", "zastrzega sobie prawo do zmiany", "zmienić regulamin"]
 
   - id: postanowienia_koncowe
     label_pl: postanowienia końcowe

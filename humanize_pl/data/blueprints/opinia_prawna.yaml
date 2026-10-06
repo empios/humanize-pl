@@ -22,7 +22,8 @@ sections:
   - id: podstawa_prawna
     label_pl: podstawa prawna
     severity: required
-    matches: ["podstawa prawna", "podstawy prawne", "stan prawny"]
+    # Opinia może wskazać podstawę wprost w tekście („zgodnie z art. 42 § 1 k.p.”).
+    matches: ["podstawa prawna", "podstawy prawne", "stan prawny", "na podstawie przepisów", "zgodnie z art."]
 
   - id: analiza
     label_pl: analiza prawna
@@ -37,7 +38,7 @@ sections:
   - id: zastrzezenia
     label_pl: zastrzeżenia i granice opinii
     severity: required
-    matches: ["zastrzeżenia", "opinia została sporządzona", "stan prawny na dzień"]
+    matches: ["zastrzeżenia", "opinia została sporządzona", "stan prawny na dzień", "opinia obejmuje wyłącznie", "informacje przekazane przez", "informacji przekazanych przez"]
 
   - id: orzecznictwo
     label_pl: powołane orzecznictwo lub piśmiennictwo

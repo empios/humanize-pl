@@ -21,7 +21,7 @@
     "unsafe_outputs_rulings": 0,
     "ai_models_category_exact": 0.8333,
     "ai_models_category_wrong": 0.0208,
-    "ai_models_checklist_blocking": 0.4375,
+    "ai_models_checklist_blocking": 0.4167,
     "edits_per_1k_ai_models": 2.03
   }
 }

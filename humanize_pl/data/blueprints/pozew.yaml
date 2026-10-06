@@ -40,7 +40,8 @@ sections:
 - id: dowody
   label_pl: wnioski dowodowe
   severity: required
-  matches: [dowody, dowód z, wnoszę o dopuszczenie, dopuszczenie dowodu]
+  matches: [dowody, dowód z, 'dowód:', przeprowadzenie dowodów, wnoszę o dopuszczenie,
+    dopuszczenie dowodu]
 - id: podpis
   label_pl: podpis
   severity: required

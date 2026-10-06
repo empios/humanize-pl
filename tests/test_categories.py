@@ -326,6 +326,26 @@ def test_a_leave_request_is_an_employee_request_not_a_court_motion() -> None:
     assert not any("sądu" in issue for issue in report.issues)
 
 
+def test_a_document_is_what_it_does_not_what_it_mentions() -> None:
+    # A letter enclosing a power of attorney is not one; a power of attorney grants
+    letter = (
+        "Warszawa, dnia 2 marca 2026 r.\nUrząd Gminy Lipno\n"
+        "Działając w imieniu Jana Nowaka, zwracam się z wnioskiem o wydanie zaświadczenia "
+        "o przeznaczeniu działki nr 12/3 w miejscowym planie zagospodarowania przestrzennego.\n"
+        "W załączeniu pełnomocnictwo."
+    )
+    assert classify_category(letter).category.id == "pismo_urzedowe"
+    grant = "PEŁNOMOCNICTWO\nUdzielam pełnomocnictwa adwokatowi Janowi Nowakowi do reprezentowania mnie."
+    assert classify_category(grant).category.id == "pelnomocnictwo"
+    # An appeal to ZUS names an employment contract without being one
+    appeal = (
+        "ODWOŁANIE OD DECYZJI\nOdwołuję się od decyzji ZUS z dnia 3 marca 2026 r. odmawiającej "
+        "prawa do zasiłku chorobowego. W okresie objętym decyzją pozostawałam w stosunku "
+        "pracy na podstawie umowy o pracę i podlegałam ubezpieczeniu chorobowemu."
+    )
+    assert classify_category(appeal).category.id == "odwolanie_od_decyzji"
+
+
 def test_a_phrase_listed_as_both_gate_and_signal_scores_once() -> None:
     row = get("wezwanie_do_zaplaty")
     shared = set(row.requires_any) & set(row.signals_strong + row.signals)

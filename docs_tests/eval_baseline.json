@@ -1,11 +1,11 @@
 {
   "morfeusz": true,
   "metrics": {
-    "category_exact": 0.8037,
+    "category_exact": 0.8224,
     "category_wrong": 0.0748,
-    "category_family": 0.8411,
-    "category_exact_untitled": 0.6729,
-    "category_wrong_untitled": 0.1402,
+    "category_family": 0.8598,
+    "category_exact_untitled": 0.6822,
+    "category_wrong_untitled": 0.1308,
     "checklist_false_blocks": 0.028,
     "template_self_match": 1.0,
     "template_match_gapped": 0.9252,
@@ -19,8 +19,8 @@
     "edits_per_1k_rulings": 2.13,
     "edit_ratio_ai_to_rulings": 13.58,
     "unsafe_outputs_rulings": 0,
-    "ai_models_category_exact": 0.7292,
-    "ai_models_category_wrong": 0.1042,
+    "ai_models_category_exact": 0.8333,
+    "ai_models_category_wrong": 0.0208,
     "ai_models_checklist_blocking": 0.5625,
     "edits_per_1k_ai_models": 2.03
   }

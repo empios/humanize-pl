@@ -41,56 +41,57 @@ categories:
     family: contract
     signals_strong: ["świadczenie usług", "usługodawca"]
     signals: ["usługobiorca", "zakres usług", "raport z wykonania", "etapy"]
-    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa o świadczenie usług"]
+    requires_any: ["zawarta w dniu", "zawarta dnia", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa o świadczenie usług"]
 
   - id: umowa_zlecenia
     label_pl: umowa zlecenia
     family: contract
     signals_strong: ["umowa zlecenia", "umowa zlecenie", "umowa o zlecenie", "zleceniobiorca"]
     signals: ["zleceniodawca", "starannego działania", "art. 734"]
-    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa zlecenia", "umowa zlecenie", "umowa o zlecenie"]
+    requires_any: ["zawarta w dniu", "zawarta dnia", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa zlecenia", "umowa zlecenie", "umowa o zlecenie"]
 
   - id: umowa_o_dzielo
     label_pl: umowa o dzieło
     family: contract
     signals_strong: ["umowa o dzieło", "wykonanie dzieła"]
     signals: ["zamawiający dzieło", "odbiór dzieła", "art. 627"]
-    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa o dzieło"]
+    requires_any: ["zawarta w dniu", "zawarta dnia", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa o dzieło"]
 
   - id: umowa_o_prace
     label_pl: umowa o pracę
     family: contract
     signals_strong: ["umowa o pracę", "stosunek pracy"]
     signals: ["pracodawca", "pracownik", "wymiar czasu pracy", "kodeks pracy"]
-    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa o pracę"]
+    # Bez tytułu w bramce: odwołanie czy wypowiedzenie też wymienia umowę o pracę.
+    requires_any: ["zawarta w dniu", "zawarta dnia", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają"]
 
   - id: umowa_sprzedazy
     label_pl: umowa sprzedaży
     family: contract
     signals_strong: ["umowa sprzedaży", "przenosi własność"]
     signals: ["sprzedający", "kupujący", "wydanie rzeczy", "cena sprzedaży"]
-    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa sprzedaży"]
+    requires_any: ["zawarta w dniu", "zawarta dnia", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa sprzedaży"]
 
   - id: umowa_najmu
     label_pl: umowa najmu
     family: contract
     signals_strong: ["umowa najmu", "czynsz"]
     signals: ["wynajmujący", "najemca", "przedmiot najmu", "kaucja"]
-    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa najmu"]
+    requires_any: ["zawarta w dniu", "zawarta dnia", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa najmu"]
 
   - id: umowa_nda
     label_pl: umowa o zachowaniu poufności
     family: contract
     signals_strong: ["zachowaniu poufności", "informacje poufne"]
     signals: ["ujawniająca", "otrzymująca", "okres poufności", "nda"]
-    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa o zachowaniu poufności"]
+    requires_any: ["zawarta w dniu", "zawarta dnia", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa o zachowaniu poufności"]
 
   - id: umowa_spolki
     label_pl: umowa spółki
     family: contract
     signals_strong: ["umowa spółki", "kapitał zakładowy"]
     signals: ["wspólnicy", "udziały", "zgromadzenie wspólników", "firma spółki"]
-    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa spółki"]
+    requires_any: ["zawarta w dniu", "zawarta dnia", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa spółki"]
 
   - id: aneks
     label_pl: aneks do umowy
@@ -169,7 +170,7 @@ categories:
     family: filing_official
     signals_strong: ["wnoszę odwołanie", "od decyzji z dnia"]
     signals: ["organ pierwszej instancji", "uchylenie decyzji", "kodeks postępowania administracyjnego"]
-    requires_any: ["wnoszę odwołanie", "niniejszym odwołuję się"]
+    requires_any: ["wnoszę odwołanie", "niniejszym odwołuję się", "odwołuję się od decyzji", "odwołanie od decyzji"]
 
   - id: wniosek_procesowy
     label_pl: wniosek procesowy
@@ -236,7 +237,7 @@ categories:
     family: contract
     signals_strong: ["umowa pożyczki", "pożyczkodawca", "pożyczkobiorca"]
     signals: ["zwrot", "odsetki", "spłata", "kwota pożyczki", "pożyczk"]
-    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa pożyczki"]
+    requires_any: ["zawarta w dniu", "zawarta dnia", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa pożyczki"]
 
   - id: umowa_poreczenia
     label_pl: umowa poręczenia
@@ -264,21 +265,21 @@ categories:
     family: contract
     signals_strong: ["umowa darowizny", "darczyńca"]
     signals: ["darowiznę", "przekazuje", "przyjmuje", "obdarowany", "darowizn", "obdarowan"]
-    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa darowizny"]
+    requires_any: ["zawarta w dniu", "zawarta dnia", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa darowizny"]
 
   - id: zamiana
     label_pl: umowa zamiany
     family: contract
     signals_strong: ["umowa zamiany"]
     signals: ["równowartość", "dopłata", "w zamian", "przenosi własność"]
-    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa zamiany"]
+    requires_any: ["zawarta w dniu", "zawarta dnia", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa zamiany"]
 
   - id: umowa_posrednictwa
     label_pl: umowa pośrednictwa
     family: contract
     signals_strong: ["umowa pośrednictwa", "umowa o pośrednictwo"]
     signals: ["prowizja", "wyłączność", "zamawiający", "czynności pośrednicze", "pośrednik"]
-    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa pośrednictwa", "umowa o pośrednictwo"]
+    requires_any: ["zawarta w dniu", "zawarta dnia", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa pośrednictwa", "umowa o pośrednictwo"]
 
   - id: umowa_praktyki
     label_pl: umowa o praktykę
@@ -292,7 +293,7 @@ categories:
     family: contract
     signals_strong: ["umowa o wykonanie prac remontowych"]
     signals: ["zamawiający", "wykonawca", "zakres remontu", "projekt", "prac remontowych"]
-    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa o wykonanie prac remontowych"]
+    requires_any: ["zawarta w dniu", "zawarta dnia", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają", "umowa o wykonanie prac remontowych"]
 
   - id: umowa_serwisu
     label_pl: umowa o stworzenie i prowadzenie serwisu
@@ -385,7 +386,9 @@ categories:
     family: filing_official
     signals_strong: ["pełnomocnictwo"]
     signals: ["pełnomocnik", "mocodawca", "reprezentowania", "odwołuję"]
-    requires_any: ["pełnomocnictwo"]
+    # Pełnomocnictwo działa w pierwszej osobie („udzielam”, „odwołuję”); samo
+    # słowo ma też pismo, do którego je załączono.
+    requires_any: ["udzielam", "odwołuję pełnomocnictwo", "odwołuję udzielon", "odwołanie pełnomocnictwa"]
 
   # ------------------------------------------------- klient (dopisane 28.09) ---
 
@@ -427,7 +430,7 @@ categories:
     signals: ["odszkodowani", "kar umown", "po ustaniu"]
     # Bez tytułu w bramce: opinia o takiej umowie nazywa ją tak samo, a nie
     # zawiera jej formuł zawarcia.
-    requires_any: ["zawarta w dniu", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają"]
+    requires_any: ["zawarta w dniu", "zawarta dnia", "zawarto umowę", "niniejsza umowa", "strony zawierają", "strony postanawiają"]
 
   # ------------------------------------------------------------ bez decyzji ---
 

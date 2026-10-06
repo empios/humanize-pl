@@ -64,6 +64,9 @@ _YAML_LOADER = getattr(yaml, "CSafeLoader", yaml.SafeLoader)
 # nothing - so anything higher reports terseness as absence. What this catches
 # is a heading followed by nothing, or by a stub like "Do uzupełnienia."
 MIN_SECTION_WORDS = 4
+# Words a heading may carry beyond its section's phrase and still only title
+# it: "Wnioski dowodowe powoda", but not "Sąd Rejonowy dla Krakowa".
+_TITLE_EXTRA_WORDS = 2
 
 # Leading unit markers: "§ 3.", "III.", "3.", "3)" — the shapes Polish legal
 # drafting actually uses for a top-level unit.
@@ -421,6 +424,17 @@ def is_heading(line: str) -> bool:
     return not stripped.endswith((".", ",", ";", ":")) and stripped[:1].isupper()
 
 
+def _titles_section(line: str, phrase: str) -> bool:
+    """True if a heading line only titles its section: numbered ("§ 2.
+    Wynagrodzenie i sposób zapłaty") or little beyond the matched phrase
+    ("Uzasadnienie", "II. Wnioski dowodowe")."""
+    stripped = line.strip()
+    if any(unit.match(stripped) for unit in (_PARAGRAPH_UNIT, _ROMAN_UNIT, _ARABIC_UNIT)):
+        return True
+    rest = stripped.casefold().replace(phrase, " ")
+    return len(re.findall(r"\p{L}+", rest)) <= _TITLE_EXTRA_WORDS
+
+
 def _unit_numbers(lines: list[str], numbering: str) -> list[tuple[int, str]]:
     pattern = {
         "paragraph": _PARAGRAPH_UNIT,
@@ -466,11 +480,8 @@ def check(text: str, blueprint: DocumentBlueprint) -> BlueprintReport:
     lowered_all = "\n".join(lowered_lines)
     heading_indices = [index for index, line in enumerate(lines) if is_heading(line)]
 
-    def words_after(index: int) -> int:
-        stop = next((row for row in heading_indices if row > index), len(lines))
-        return sum(len(lines[row].split()) for row in range(index + 1, stop))
-
     order: list[tuple[int, str]] = []
+    titles: list[tuple[Section, int]] = []
     for section in blueprint.sections:
         phrase = section.found_in(lowered_all)
         if phrase is None:
@@ -487,9 +498,24 @@ def check(text: str, blueprint: DocumentBlueprint) -> BlueprintReport:
         if position is None:
             continue
         order.append((position, section.id))
-        # Emptiness is only decidable when the match landed on a heading: in
-        # running prose there is no boundary to measure the section against.
-        if position in heading_indices and words_after(position) < MIN_SECTION_WORDS:
+        # Emptiness is only decidable when the match landed on a heading that
+        # titles the section: in running prose there is no boundary to measure
+        # against, and a heading-like line naming the court or the office
+        # ("Sąd Okręgowy w Szczecinie") is the section's content itself.
+        if position in heading_indices and _titles_section(lines[position], phrase):
+            titles.append((section, position))
+
+    # A section's body runs to the later of the next heading and the next
+    # section found: heading-like lines of an address block or a numbered list
+    # of evidence are its body, and so is a clause after the document's title
+    # when the title happens to name the section.
+    starts = sorted({position for position, _ in order})
+    for section, position in titles:
+        stop = max(
+            next((row for row in heading_indices if row > position), len(lines)),
+            next((row for row in starts if row > position), len(lines)),
+        )
+        if sum(len(lines[row].split()) for row in range(position + 1, stop)) < MIN_SECTION_WORDS:
             report.empty_sections.append(section.label_pl)
 
     if blueprint.numbering:

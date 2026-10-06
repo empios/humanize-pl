@@ -485,3 +485,27 @@ def test_a_request_without_its_optional_justification_is_not_blocked() -> None:
     report = check_category(text, "wniosek_pracowniczy")
     assert report.template["id"] == "wniosek_pracowniczy/wniosek_o_udzielenie_urlopu_bezplatnego"
     assert not report.blocking, report.issues
+
+
+def test_a_header_block_or_a_list_is_not_an_empty_section() -> None:
+    """A court's name, its department and the date are heading-like lines, and
+    so are unpunctuated list items; none of them leaves a section empty."""
+    text = (
+        "Szczecin, dnia 8 października 2026 r.\n"
+        "Sąd Okręgowy w Szczecinie\n"
+        "X Wydział Gospodarczy\n"
+        "ul. Małopolska 47, 70-515 Szczecin\n"
+        "Powód: Hurtownia Pomorze sp. z o.o., ul. Kolumba 3, Szczecin\n"
+        "Pozwany: Gastro-Serwis Łukasz Borowski, ul. Rycerska 33, Szczecin\n"
+        "Wartość przedmiotu sporu: 27 300 zł\n"
+        "POZEW O ZAPŁATĘ\n"
+        "Wnoszę o zasądzenie od pozwanego na rzecz powoda kwoty 27 300 zł z odsetkami.\n"
+        "Wnioski dowodowe\n"
+        "1. Faktura VAT nr 12/2026 z dnia 3 marca 2026\n"
+        "2. Wezwanie do zapłaty z dnia 1 kwietnia 2026\n"
+        "Uzasadnienie\n"
+        "Powód dostarczył towar, a pozwany nie zapłacił ceny w terminie.\n"
+        "Ewa Pawłowska, adwokat (podpis)"
+    )
+    report = check(text, blueprint_for("pozew"))
+    assert report.empty_sections == [], report.empty_sections

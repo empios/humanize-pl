@@ -31,6 +31,9 @@ Działa warstwowo:
   przez `--document-type`,
 - nowy backend `--rewrite-backend hybrid`: reguły, a następnie hostowany model
   OpenAI-compatible tylko dla pozostałych problemów,
+- rodzaj `--document-type general` dla tekstu spoza rodzin prawnych (e-mail,
+  list, notatka): model hostowany redaguje całe akapity, pod tymi samymi
+  kontrolami co zawsze i z kontrolą znaczenia NLI (zob. „Tekst ogólny”),
 - profile kancelarii z 5–20 zatwierdzonych dokumentów, zanonimizowanych
   przykładów, instrukcji YAML i opcjonalnego szablonu,
 - DOCX analizowany w kolejności OOXML, razem z tabelami; redakcja nie czyści
@@ -268,6 +271,47 @@ Przy timeoutach, HTTP 429 i 5xx klient wykonuje najwyżej dwie ponowne próby.
 Potem wynik regułowy jest zapisywany jako `ready_with_warnings`;
 `--require-llm` zamienia to w błąd. URL, token, pełne prompty i surowe
 odpowiedzi nie trafiają do logów ani raportów.
+
+#### Tekst ogólny (`--document-type general`)
+
+```bash
+humanize-pl-flow docx maile/ -o wyniki/ \
+  --document-type general --rewrite-backend hybrid
+```
+
+Dla tekstu spoza rodzin prawnych: e-maila, listu, notatki. Cel to naturalny,
+jasny tekst, a nie ominięcie detektora AI. Rodzaj wybiera tylko użytkownik;
+automatyczne rozpoznanie nigdy go nie zwraca, więc dokument prawny nie trafi
+tu przypadkiem. Różnice wobec rodzin prawnych:
+
+- do modelu trafia każdy akapit prozy w całości (krótsze niż 12 słów, jak
+  nagłówki, adresy i podpisy, zostają bez zmian), z poleceniem przebudowy
+  zdań, a nie tylko zdania z uwagami detektora,
+- obowiązują te same kontrole co zawsze: liczby, daty, kwoty, przepisy,
+  nazwy, modalność, przeczenia i strony; akapit, który ich nie przejdzie (także
+  po jednej próbie naprawy), zostaje bez zmian,
+- dochodzi kontrola znaczenia NLI: akapit i redakcja muszą wynikać z siebie
+  nawzajem. Ładowana jest sama, bez reszty silnika `hybrid`; bez dodatku
+  `[transformers]` przebieg idzie dalej z ostrzeżeniem, a `--require-models`
+  zamienia to w błąd,
+- warstwa reguł działa z profilem komunikacji z klientem, a dokument DOCX
+  dostaje jego rodzinę stylów.
+
+Pomiar na 25 projektach pism (modele Claude i próbki AI), z lokalnym modelem 9B:
+
+| | dokumenty bez utraty wartości, modalności i stron | zredagowane akapity |
+|---|---|---|
+| cały dokument naraz, bez kontroli | 13 z 25 | — |
+| tekst ogólny, bez NLI | 25 z 25 | 114 ze 196 |
+| tekst ogólny, z NLI | 25 z 25 | 106 ze 196 |
+
+NLI odrzucił m.in. dopisane przez model twierdzenie („…ma znaczenie dla
+ustalenia terminu płatności” w wezwaniu, które o terminie nie mówiło) oraz
+usunięte „Działając w imieniu własnym”. Nie wychwycił osłabienia „Wzywam do
+zapłaty” do „proszę dokonać” — przegląd człowieka pozostaje potrzebny.
+Mglistość FOG-PL prawie się nie zmienia (13,7 → 13,6). Sprawdzony i
+odrzucony wariant z tłumaczeniem PL → EN → PL (TranslateGemma 4B): już sam
+przekład w obie strony gubił liczby i przepisy we wszystkich 25 dokumentach.
 
 #### Profil kancelarii
 

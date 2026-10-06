@@ -34,6 +34,7 @@ from humanize_pl.document import (
 )
 from humanize_pl.llm import LlmConfigurationError, LlmSettings, OpenAICompatibleRewriter
 from humanize_pl.nlp.morfeusz import try_load_morfeusz
+from humanize_pl.nlp.semantic import NLIValidator
 from humanize_pl.gate import GateVerdict, review_response
 from humanize_pl.sentence_splitter import split_sentences
 
@@ -45,6 +46,9 @@ EXAMPLES_PER_ITEM = 4
 # lack, while long sentences are what makes legal text hard to follow; in 48
 # drafts by three models, 26 sentences ran longer and had no finding.
 LONG_SENTENCE_WORDS = 35
+# In general text a paragraph this short is a heading, an address or a
+# greeting, and has nothing to redraft.
+GENERAL_MIN_WORDS = 12
 
 
 def describe_visible_change(before: Any, after: Any) -> str:
@@ -175,9 +179,13 @@ class FlowSettings:
 
     def session(self) -> HumanizerSession:
         profile = self.legal_review_profile
-        if self.document_type != DocumentType.auto:
+        if self.document_type == DocumentType.general:
+            # The rule layer has no general profile. Client communication is
+            # the one that never normalises contractual or procedural formulas.
+            profile = LegalReviewProfile.client_communication
+        elif self.document_type != DocumentType.auto:
             profile = LegalReviewProfile(self.document_type.value)
-        return create_humanizer_session(
+        session = create_humanizer_session(
             mode=self.mode,
             engine=self.engine,
             legal_review_profile=profile,
@@ -185,6 +193,30 @@ class FlowSettings:
             require_models=self.require_models,
             require_morfeusz=self.require_morfeusz,
         )
+        general_with_model = (
+            self.document_type == DocumentType.general
+            and self.rewrite_backend == RewriteBackend.hybrid
+        )
+        if general_with_model and session.nli is None:
+            # A whole paragraph gives the model room to add a claim of its
+            # own, which no inventory check sees. On 25 drafts the meaning
+            # check refused "…ma znaczenie dla ustalenia terminu płatności",
+            # written into a payment demand that never mentioned a deadline.
+            # Loaded alone, without the rest of the hybrid engine.
+            try:
+                session.nli = NLIValidator(model_name=None, offline=self.offline_models)
+                session.model_status["nli"] = "ready"
+            except Exception as exc:
+                session.model_status["nli"] = f"unavailable: {type(exc).__name__}"
+                if self.require_models:
+                    raise RuntimeError(
+                        f"Kontrola znaczenia (NLI) niedostępna: {type(exc).__name__}"
+                    ) from exc
+                session.warnings.append(
+                    "Kontrola znaczenia (NLI) niedostępna; model hostowany redaguje tekst "
+                    "ogólny bez niej. Zainstaluj dodatek [transformers]."
+                )
+        return session
 
     def load_style_profile(self) -> StyleProfile | None:
         return StyleProfile.load(self.style_profile) if self.style_profile else None
@@ -530,6 +562,7 @@ def run_all_layers(
                 document_type=resolved_type,
                 style_profile=style_profile,
                 protected_paragraph_indices=protected_paragraph_indices,
+                nli=session.nli,
             )
             outcome.applied_changes = collapse_visible_changes(
                 outcome.applied_changes + llm_changes
@@ -650,6 +683,7 @@ def _rewrite_remaining_with_llm(
     document_type: DocumentType,
     style_profile: StyleProfile | None,
     protected_paragraph_indices: set[int],
+    nli=None,
 ) -> tuple[str, list[dict[str, Any]], int]:
     """Second and final pass: only the sentences that still have findings, and
     those longer than LONG_SENTENCE_WORDS.
@@ -663,19 +697,23 @@ def _rewrite_remaining_with_llm(
 
     The detector already knows which sentence carries the finding, so the
     narrower unit costs nothing to locate.
+
+    General text is the exception (see _paragraph_jobs): there the user asked
+    for natural writing rather than a flagged sentence fixed, so whole
+    paragraphs go, under the same checks.
     """
     lines = text.split("\n")
     nonempty = [index for index, value in enumerate(lines) if value.strip()]
-    findings_by_sentence: dict[tuple[int, int], list[str]] = {}
+    issues_by_sentence: dict[tuple[int, int], list[str]] = {}
     for finding in diagnosis.findings:
-        findings_by_sentence.setdefault(
+        issues_by_sentence.setdefault(
             (finding.paragraph_index, finding.sentence_index), []
         ).append(finding.detail or finding.evidence or finding.family)
     for paragraph_index, line_index in enumerate(nonempty):
         for sentence_index, sentence in enumerate(split_sentences(lines[line_index])):
             words = len(sentence.split())
             if words > LONG_SENTENCE_WORDS:
-                findings_by_sentence.setdefault((paragraph_index, sentence_index), []).append(
+                issues_by_sentence.setdefault((paragraph_index, sentence_index), []).append(
                     f"zdanie ma {words} słów: podziel je na krótsze albo uprość, bez zmiany treści"
                 )
     outline = " | ".join(
@@ -693,46 +731,22 @@ def _rewrite_remaining_with_llm(
     # is pure wall clock. Neighbour context is therefore the original
     # paragraph rather than a possibly already-rewritten one, which also drops
     # a hidden dependency on iteration order.
-    jobs = []
-    for paragraph_index, sentence_index in sorted(findings_by_sentence):
-        if paragraph_index in protected_paragraph_indices:
-            continue
-        if paragraph_index >= len(nonempty):
-            continue
-        line_index = nonempty[paragraph_index]
-        sentences = split_sentences(lines[line_index])
-        if sentence_index >= len(sentences):
-            continue
-        # The neighbouring sentences travel as context so the rewrite still
-        # reads as part of its paragraph; only the flagged one is replaced.
-        jobs.append(
-            {
-                "paragraph_index": paragraph_index,
-                "sentence_index": sentence_index,
-                "line_index": line_index,
-                "sentences": sentences,
-                "source": sentences[sentence_index],
-                "previous": sentences[sentence_index - 1] if sentence_index else "",
-                "following": (
-                    sentences[sentence_index + 1]
-                    if sentence_index + 1 < len(sentences)
-                    else ""
-                ),
-            }
-        )
+    build_jobs = _paragraph_jobs if document_type is DocumentType.general else _sentence_jobs
+    jobs = build_jobs(lines, nonempty, issues_by_sentence, protected_paragraph_indices)
     if not jobs:
         return "\n".join(lines), changes, rejected
 
     def rewrite(job: dict[str, Any]):
         return rewriter.rewrite_fragment(
             job["source"],
-            fragment_id=f"p{job['paragraph_index'] + 1}s{job['sentence_index'] + 1}",
+            fragment_id=job["fragment_id"],
             document_type=document_type,
             style_profile=style_profile,
             previous=job["previous"],
             following=job["following"],
             outline=outline,
-            issues=findings_by_sentence[(job["paragraph_index"], job["sentence_index"])],
+            issues=job["issues"],
+            nli=nli,
         )
 
     workers = max(1, min(rewriter.settings.concurrency, len(jobs)))
@@ -752,12 +766,16 @@ def _rewrite_remaining_with_llm(
         if not result.accepted:
             rejected += 1
             continue
-        sentences = rewritten.setdefault(job["line_index"], list(job["sentences"]))
-        sentences[job["sentence_index"]] = result.text.replace("\n", " ").strip()
+        after = result.text.replace("\n", " ").strip()
+        if job["sentence_index"] is None:
+            rewritten[job["line_index"]] = [after]
+        else:
+            sentences = rewritten.setdefault(job["line_index"], list(job["sentences"]))
+            sentences[job["sentence_index"]] = after
         changes.append(
             {
                 "before": job["source"],
-                "after": result.text.replace("\n", " ").strip(),
+                "after": after,
                 "issue": "llm_rewrite",
                 "rules": ["llm_rewrite"],
                 "risk": 0.45,
@@ -777,6 +795,88 @@ def _rewrite_remaining_with_llm(
     for line_index, sentences in rewritten.items():
         lines[line_index] = " ".join(sentences)
     return "\n".join(lines), changes, rejected
+
+
+def _sentence_jobs(
+    lines: list[str],
+    nonempty: list[int],
+    issues_by_sentence: dict[tuple[int, int], list[str]],
+    protected_paragraph_indices: set[int],
+) -> list[dict[str, Any]]:
+    """One job per flagged or overlong sentence."""
+    jobs = []
+    for paragraph_index, sentence_index in sorted(issues_by_sentence):
+        if paragraph_index in protected_paragraph_indices:
+            continue
+        if paragraph_index >= len(nonempty):
+            continue
+        line_index = nonempty[paragraph_index]
+        sentences = split_sentences(lines[line_index])
+        if sentence_index >= len(sentences):
+            continue
+        # The neighbouring sentences travel as context so the rewrite still
+        # reads as part of its paragraph; only the flagged one is replaced.
+        jobs.append(
+            {
+                "fragment_id": f"p{paragraph_index + 1}s{sentence_index + 1}",
+                "paragraph_index": paragraph_index,
+                "sentence_index": sentence_index,
+                "line_index": line_index,
+                "sentences": sentences,
+                "source": sentences[sentence_index],
+                "previous": sentences[sentence_index - 1] if sentence_index else "",
+                "following": (
+                    sentences[sentence_index + 1]
+                    if sentence_index + 1 < len(sentences)
+                    else ""
+                ),
+                "issues": issues_by_sentence[(paragraph_index, sentence_index)],
+            }
+        )
+    return jobs
+
+
+def _paragraph_jobs(
+    lines: list[str],
+    nonempty: list[int],
+    issues_by_sentence: dict[tuple[int, int], list[str]],
+    protected_paragraph_indices: set[int],
+) -> list[dict[str, Any]]:
+    """One job per prose paragraph of general text, flagged or not.
+
+    Measured on 25 drafts with a local 9B model: rewritten whole, documents
+    kept every value, modality and party in 13 cases; paragraph by paragraph
+    behind the local checks, in all 25, with 114 of 196 paragraphs rewritten.
+    """
+    jobs = []
+    for paragraph_index, line_index in enumerate(nonempty):
+        source = lines[line_index].strip()
+        if paragraph_index in protected_paragraph_indices:
+            continue
+        if len(source.split()) < GENERAL_MIN_WORDS:
+            continue
+        jobs.append(
+            {
+                "fragment_id": f"p{paragraph_index + 1}",
+                "paragraph_index": paragraph_index,
+                "sentence_index": None,
+                "line_index": line_index,
+                "source": source,
+                "previous": lines[nonempty[paragraph_index - 1]] if paragraph_index else "",
+                "following": (
+                    lines[nonempty[paragraph_index + 1]]
+                    if paragraph_index + 1 < len(nonempty)
+                    else ""
+                ),
+                "issues": [
+                    issue
+                    for (index, _sentence), found in sorted(issues_by_sentence.items())
+                    if index == paragraph_index
+                    for issue in found
+                ],
+            }
+        )
+    return jobs
 
 
 def _style_compliance(

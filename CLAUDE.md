@@ -27,6 +27,7 @@ CLI entry points: `humanize-pl`, `humanize-pl-flow` (DOCX/XLSX batches), `humani
 
 ## Rules
 - Legal safety first: never alter deontic modality (must/may/shall), numbers, dates, references or defined terms. Safety validators must reject unsafe candidates.
+- `DocumentType.general` (emails, notes) is user-chosen only: `classify_document` must never return it. Its whole-paragraph LLM rewriting passes the same validators plus NLI; never use it for legal families.
 - DOCX edits preserve runs, hyperlinks, bookmarks and mixed formatting. Fields, comments, tracked changes, footnotes and content controls are protected and reported as warnings.
 - Predicate detection uses Morfeusz2/SGJP morphology, not word lists. Don't reintroduce closed verb lists.
 - Metrics must be computed before and after redaction (`*_before` / `*_after`). Don't drop metrics distorted by genre; list them as excluded.

@@ -23,6 +23,10 @@ class DocumentType(str, Enum):
     client_communication = "client_communication"
     contract = "contract"
     filing_official = "filing_official"
+    # Text outside the legal families: an email, a note, a letter. Only the
+    # user chooses it; classify_document never returns it, so a legal document
+    # cannot fall into the looser paragraph rewriting by accident.
+    general = "general"
 
 
 class RewriteBackend(str, Enum):
@@ -126,6 +130,29 @@ GENRE_PROFILES: dict[DocumentType, GenreProfile] = {
             "warto podkreślić",
             "należy zauważyć",
             "w dzisiejszych czasach",
+        ),
+    ),
+    DocumentType.general: GenreProfile(
+        document_type=DocumentType.general,
+        label_pl="tekst ogólny (e-mail, list, notatka)",
+        tone=(
+            "naturalny i jasny, jak napisany przez doświadczoną osobę",
+            "zdania o zróżnicowanej długości",
+            "bez asekuracyjnych wtrąceń i zdań, które tylko zapowiadają treść",
+        ),
+        terminology=(
+            "słowa konkretne zamiast abstrakcyjnych",
+            "nazwy osób, firm i pojęć bez zmian",
+        ),
+        structure=(
+            "najpierw sedno, potem szczegóły",
+            "jedna myśl w zdaniu",
+        ),
+        forbidden_phrases=(
+            "warto podkreślić",
+            "należy zauważyć",
+            "w dzisiejszych czasach",
+            "kluczowym aspektem jest",
         ),
     ),
 }

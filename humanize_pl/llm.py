@@ -260,12 +260,28 @@ _REPAIR_HINTS = {
     "finite_verb_presence": "Każde zdanie musi mieć orzeczenie; nie twórz równoważników zdań.",
     "sentence_split_safety": "Każde zdanie musi mieć orzeczenie; nie dziel zdania na urywki.",
     "length_ratio": "Zachowaj długość zbliżoną do źródła i nie dopisuj nowej treści.",
+    "semantic_contradiction": (
+        "Zachowaj znaczenie źródła: nie dodawaj, nie usuwaj i nie osłabiaj żadnego twierdzenia."
+    ),
 }
 # Inventory checks are named after what they guard: "dates_preserved", ...
 _INVENTORY_HINT = (
     "Zachowaj bez zmian przepisy, daty, kwoty, oznaczenia, cytaty i nazwy stron ze źródła."
 )
 _STYLE_HINT = "Popraw poprawność językową: składnię, spójniki i interpunkcję."
+
+# Who the model is told it is. A legal editor redrafts one flagged sentence
+# and gives no advice; the general one may restructure a whole paragraph of
+# an email or a note. Both answer to the same local checks.
+_LEGAL_EDITOR = (
+    "Jesteś polskim redaktorem dokumentów prawnych. Redagujesz tylko wskazany "
+    "fragment i nie udzielasz porady prawnej."
+)
+_GENERAL_EDITOR = (
+    "Jesteś polskim redaktorem. Redagujesz tylko wskazany akapit, tak by brzmiał "
+    "naturalnie i jasno: możesz zmieniać szyk i budowę zdań, dzielić zbyt długie "
+    "zdania, usuwać asekuracyjne wtrącenia i zdania, które tylko zapowiadają treść."
+)
 
 
 def _repair_instruction(failed_check: str) -> str:
@@ -359,6 +375,7 @@ class OpenAICompatibleRewriter:
         following: str = "",
         outline: str = "",
         issues: list[str] | None = None,
+        nli=None,
     ) -> LlmRewriteResult:
         if not self._probed and not self.probe():
             return LlmRewriteResult(source, False, "model_unavailable")
@@ -377,9 +394,10 @@ class OpenAICompatibleRewriter:
         # The output instruction sits last on purpose. Without grammar-constrained
         # sampling nothing enforces the shape, and an instruction buried before
         # a paragraph of genre guidance is the one the model forgets.
+        editor = _GENERAL_EDITOR if document_type is DocumentType.general else _LEGAL_EDITOR
         system = (
-            "Jesteś polskim redaktorem dokumentów prawnych. Redagujesz tylko wskazany "
-            "fragment i nie udzielasz porady prawnej. Zachowaj dokładnie wszystkie "
+            editor
+            + " Zachowaj dokładnie wszystkie "
             "placeholdery __PROTECTED_XXXX__, liczby, nazwy, definicje, cytaty, przepisy, "
             "daty, kwoty, terminy i modalność może/powinien/musi. Nie dodawaj faktów. "
             + genre.prompt_text()
@@ -431,6 +449,7 @@ class OpenAICompatibleRewriter:
                     max_length_ratio=1.60,
                     rule="llm:legal_style",
                     operation_type="llm_rewrite",
+                    nli=nli,
                 )
                 checks = [
                     {"name": check.name, "ok": check.ok, "reason": check.reason}

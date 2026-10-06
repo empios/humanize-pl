@@ -48,6 +48,21 @@ def test_document_type_classifier(text: str, expected: DocumentType) -> None:
     assert 0 <= guess.confidence <= 1
 
 
+def test_general_text_is_only_ever_chosen_by_the_user() -> None:
+    """An email with no legal vocabulary still lands in a legal family, so a
+    legal document can never slip into the looser paragraph rewriting."""
+    from humanize_pl.config import LegalReviewProfile
+    from humanize_pl.docx_quality import normalize_document
+
+    email = "Cześć Aniu, przesyłam notatkę ze spotkania. Daj znać, czy wszystko się zgadza."
+    assert classify_document(email).document_type is not DocumentType.general
+    session = FlowSettings(document_type=DocumentType.general).session()
+    assert session.config.legal_review_profile is LegalReviewProfile.client_communication
+    document = Document()
+    document.add_paragraph(email)
+    normalize_document(document, DocumentType.general)
+
+
 def test_profile_stores_only_short_anonymized_examples_and_style_data(tmp_path) -> None:
     samples = tmp_path / "samples"
     samples.mkdir()
@@ -353,3 +368,36 @@ def test_fewer_than_the_minimum_is_refused_with_the_count(tmp_path) -> None:
         build_style_profile(
             source_directory=source, output_directory=tmp_path / "out", name="Mała"
         )
+
+
+def test_general_text_with_a_hosted_model_brings_the_meaning_check(monkeypatch) -> None:
+    from humanize_pl.flows import base
+
+    class FakeNLI:
+        def __init__(self, model_name=None, *, offline=False) -> None:
+            self.offline = offline
+
+    monkeypatch.setattr(base, "NLIValidator", FakeNLI)
+    settings = FlowSettings(
+        document_type=DocumentType.general, rewrite_backend=RewriteBackend.hybrid
+    )
+    session = settings.session()
+    assert isinstance(session.nli, FakeNLI) and session.model_status["nli"] == "ready"
+    # Legal families and rules-only runs are unchanged
+    assert FlowSettings(document_type=DocumentType.general).session().nli is None
+    contract = FlowSettings(document_type=DocumentType.contract, rewrite_backend=RewriteBackend.hybrid)
+    assert contract.session().nli is None
+
+    def unavailable(*_args, **_kwargs):
+        raise ImportError("transformers")
+
+    monkeypatch.setattr(base, "NLIValidator", unavailable)
+    session = settings.session()
+    assert session.nli is None
+    assert any("Kontrola znaczenia (NLI) niedostępna" in row for row in session.warnings)
+    with pytest.raises(RuntimeError):
+        FlowSettings(
+            document_type=DocumentType.general,
+            rewrite_backend=RewriteBackend.hybrid,
+            require_models=True,
+        ).session()

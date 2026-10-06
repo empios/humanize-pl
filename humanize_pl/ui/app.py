@@ -97,6 +97,7 @@ DOCUMENT_TYPE_LABELS = {
     "client_communication": "pismo do klienta",
     "contract": "umowa",
     "filing_official": "pismo procesowe / urzędowe",
+    "general": "tekst ogólny (e-mail, notatka)",
 }
 
 CSS = """

@@ -1247,6 +1247,7 @@ class _Report:
                 "client_communication": "komunikacja z klientem",
                 "contract": "umowa",
                 "filing_official": "pismo urzędowe/procesowe",
+                "general": "tekst ogólny",
             }
             raw_type = str(item.get("document_type") or "brak danych")
             document_type = type_labels.get(raw_type, raw_type)

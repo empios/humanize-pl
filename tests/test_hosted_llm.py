@@ -684,3 +684,110 @@ def test_a_long_sentence_is_sent_even_without_a_finding() -> None:
     assert len(sent) == 1
     assert "<<<" + long_sentence + ">>>" in sent[0]
     assert "podziel je na krótsze" in sent[0]
+
+
+def test_general_text_sends_each_prose_paragraph_whole() -> None:
+    """General text asks for natural writing, so the unit is the paragraph;
+    a greeting or a signature is too short to redraft and is never sent."""
+    from dataclasses import replace
+
+    from humanize_pl.detect import detect_document
+    from humanize_pl.flows.base import _rewrite_remaining_with_llm
+
+    prose = (
+        "Chciałbym poinformować, że spotkanie zespołu odbędzie się w czwartek o 10:00. "
+        "Warto podkreślić, że obecność wszystkich osób jest bardzo ważna dla projektu."
+    )
+    text = "Dzień dobry,\n" + prose + "\nPozdrawiam,\nJan Nowak"
+    seen: list[str] = []
+
+    def rewrite(source: str) -> str:
+        seen.append(source)
+        return (
+            "Spotkanie zespołu odbędzie się w czwartek o 10:00. "
+            "Obecność wszystkich osób jest bardzo ważna dla projektu."
+        )
+
+    rewriter = _rewriter(_sentence_handler(rewrite))
+    assert rewriter.probe()
+    diagnosis = replace(detect_document(text, calibrate_against_default=False), findings=[])
+    result, changes, rejected = _rewrite_remaining_with_llm(
+        text,
+        diagnosis,
+        rewriter=rewriter,
+        document_type=DocumentType.general,
+        style_profile=None,
+        protected_paragraph_indices=set(),
+    )
+
+    assert seen == [prose]
+    assert rejected == 0
+    assert result.split("\n") == [
+        "Dzień dobry,",
+        "Spotkanie zespołu odbędzie się w czwartek o 10:00. "
+        "Obecność wszystkich osób jest bardzo ważna dla projektu.",
+        "Pozdrawiam,",
+        "Jan Nowak",
+    ]
+    assert changes[0]["paragraph_index"] == 1 and changes[0]["sentence_index"] is None
+
+
+def test_a_general_paragraph_failing_the_checks_stays_as_it_was() -> None:
+    from dataclasses import replace
+
+    from humanize_pl.detect import detect_document
+    from humanize_pl.flows.base import _rewrite_remaining_with_llm
+
+    text = (
+        "Przypominamy, że faktura nr 14/2026 na kwotę 3 200 zł była płatna do 15 września, "
+        "a kolejna płatność musi wpłynąć w ciągu siedmiu dni od otrzymania tej wiadomości."
+    )
+    rewriter = _rewriter(_sentence_handler(lambda source: source.replace("musi", "może")))
+    assert rewriter.probe()
+    diagnosis = replace(detect_document(text, calibrate_against_default=False), findings=[])
+    result, changes, rejected = _rewrite_remaining_with_llm(
+        text,
+        diagnosis,
+        rewriter=rewriter,
+        document_type=DocumentType.general,
+        style_profile=None,
+        protected_paragraph_indices=set(),
+    )
+    assert (result, changes, rejected) == (text, [], 1)
+
+
+def test_the_general_editor_may_restructure_the_legal_one_may_not() -> None:
+    requests: list[dict] = []
+    rewriter = _repairing_rewriter(["Pracownik musi zapłacić karę umowną."], requests)
+    for document_type in (DocumentType.general, DocumentType.contract):
+        rewriter.rewrite_fragment(
+            "Warto podkreślić, że pracownik musi zapłacić karę umowną.",
+            fragment_id="p-1",
+            document_type=document_type,
+        )
+    general, contract = (request["messages"][0]["content"] for request in requests[1:])
+    assert "zmieniać szyk i budowę zdań" in general
+    assert "dokumentów prawnych" not in general
+    assert "dokumentów prawnych" in contract
+    assert "zmieniać szyk" not in contract
+
+
+def test_hosted_model_proposals_face_the_meaning_check_too() -> None:
+    class Contradicting:
+        def check_entailment(self, premise: str, hypothesis: str) -> bool:
+            return False
+
+    requests: list[dict] = []
+    rewriter = _repairing_rewriter(["Pracownik musi zapłacić karę umowną."], requests)
+    source = "Warto podkreślić, że pracownik musi zapłacić karę umowną."
+    result = rewriter.rewrite_fragment(
+        source, fragment_id="p-1", document_type=DocumentType.general, nli=Contradicting()
+    )
+
+    assert not result.accepted and result.text == source
+    assert "znaczenie źródła" in requests[2]["messages"][3]["content"]
+    assert rewriter.metadata.to_report()["decision_reasons"] == {
+        "repair:semantic_contradiction": 1,
+        "rejected:semantic_contradiction": 1,
+    }
+

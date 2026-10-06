@@ -67,6 +67,8 @@ _STYLE_FAMILIES = {
         "line_spacing": 1.15,
     },
 }
+# General text has no style family of its own; it is set like a client letter.
+_STYLE_FAMILIES[DocumentType.general] = _STYLE_FAMILIES[DocumentType.client_communication]
 
 
 def _inventory_warnings(inventory: DocxInventory) -> tuple[list[str], dict[str, int]]:

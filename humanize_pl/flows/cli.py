@@ -341,7 +341,10 @@ def docx_command(
     document_type: DocumentType = typer.Option(
         DocumentType.auto,
         "--document-type",
-        help="auto, client_communication, contract albo filing_official",
+        help=(
+            "auto, client_communication, contract, filing_official albo general "
+            "(tekst ogólny: cały akapit do modelu hostowanego)"
+        ),
     ),
     rewrite_backend: RewriteBackend = typer.Option(
         RewriteBackend.rules,
@@ -464,7 +467,10 @@ def xlsx_command(
     document_type: DocumentType = typer.Option(
         DocumentType.auto,
         "--document-type",
-        help="auto, client_communication, contract albo filing_official",
+        help=(
+            "auto, client_communication, contract, filing_official albo general "
+            "(tekst ogólny: cały akapit do modelu hostowanego)"
+        ),
     ),
     rewrite_backend: RewriteBackend = typer.Option(
         RewriteBackend.rules,

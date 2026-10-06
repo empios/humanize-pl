@@ -53,6 +53,12 @@ _ACTS = {
 }
 # "odwołuje się do art. 471" refers to a provision; it appeals nothing.
 _REFERENCE_RE = re.compile(r"\s+się\s+do\b", re.IGNORECASE)
+# "Składam odwołanie" and "wnoszę odwołanie" perform the act their noun
+# names, the same one as "odwołuję się"; the noun follows within a few words
+# ("składam niniejszym odwołanie").
+_CARRIERS = frozenset({"składać", "złożyć", "wnosić", "wnieść"})
+_NOUN_ACTS = {act: act for act in _ACTS.values()} | {"wniosek": "wniesienie"}
+_CARRIER_REACH = 3
 
 
 def speech_acts_changed(original: str, candidate: str) -> bool:
@@ -66,15 +72,34 @@ def speech_acts_changed(original: str, candidate: str) -> bool:
 
 def _acts(text: str, morfeusz) -> Counter[str]:
     acts: Counter[str] = Counter()
-    for token in _WORD_RE.finditer(text):
-        found = {
-            _ACTS[analysis.lemma]
-            for analysis in morfeusz.analyses(token.group(0))
-            if analysis.lemma in _ACTS and analysis.tag.startswith("fin:")
-        }
+    tokens = list(_WORD_RE.finditer(text))
+    readings = [
+        [(analysis.lemma, analysis.tag) for analysis in morfeusz.analyses(token.group(0))]
+        for token in tokens
+    ]
+    carried: set[int] = set()
+    for index, token in enumerate(tokens):
+        if index in carried:
+            continue
+        finite = {lemma for lemma, tag in readings[index] if tag.startswith("fin:")}
+        if finite & _CARRIERS:
+            reach = range(index + 1, min(index + 1 + _CARRIER_REACH, len(tokens)))
+            noun = next((position for position in reach if _noun_act(readings[position])), None)
+            if noun is not None:
+                acts[_noun_act(readings[noun])] += 1
+                carried.add(noun)
+                continue
+        found = {_ACTS[lemma] for lemma in finite if lemma in _ACTS}
         if not found:
             continue
         if "odwołanie" in found and _REFERENCE_RE.match(text, token.end()):
             continue
         acts[min(found)] += 1
     return acts
+
+
+def _noun_act(readings: list[tuple[str, str]]) -> str | None:
+    for lemma, tag in readings:
+        if tag.startswith("subst:") and lemma in _NOUN_ACTS:
+            return _NOUN_ACTS[lemma]
+    return None

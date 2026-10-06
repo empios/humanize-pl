@@ -187,8 +187,15 @@ def test_acts_kept_reported_or_merely_referred_to_pass():
         ("Umowa odwołuje się do art. 471 k.c.", "Umowa nawiązuje do art. 471 k.c."),
         # The past tense reports an act; it performs none
         ("Powód wezwał pozwanego do zapłaty.", "Powód wezwał pozwaną spółkę do zapłaty."),
+        # The same act carried by a noun: "składam odwołanie", "wnoszę odwołanie"
+        ("Odwołuję się od decyzji z dnia 5 maja.", "Składam odwołanie od decyzji z dnia 5 maja."),
+        ("Odwołuję się od decyzji z dnia 5 maja.", "Wnoszę odwołanie od decyzji z dnia 5 maja."),
+        ("Wnoszę o zasądzenie kwoty.", "Składam wniosek o zasądzenie kwoty."),
+        ("Niniejszym składam wypowiedzenie umowy.", "Wypowiadam umowę."),
     ]:
         assert not speech_acts_changed(original, candidate), candidate
+    # An act made into a report of itself is no longer performed
+    assert speech_acts_changed("Składam odwołanie od decyzji.", "Odwołanie od decyzji zostało złożone.")
 
 
 def test_validator_rejects_changed_code_abbreviation():

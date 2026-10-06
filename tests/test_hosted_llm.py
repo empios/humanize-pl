@@ -320,7 +320,9 @@ def test_fragments_are_rewritten_concurrently_but_applied_in_document_order() ->
         change["paragraph_index"] for change in changes
     )
     for line, original in zip(result.split("\n"), paragraphs):
-        assert line == original.replace("Warto zauważyć, że ", "")
+        # The opener is gone and the sentence still starts with a capital
+        stripped = original.replace("Warto zauważyć, że ", "")
+        assert line == stripped[:1].upper() + stripped[1:]
     assert rejected == 0
 
 
@@ -541,7 +543,7 @@ def test_two_accepted_sentences_in_one_paragraph_both_land() -> None:
     assert len(changes) >= 2
     assert "Warto zauważyć" not in result
     assert "Należy podkreślić" not in result
-    assert "termin biegnie" in result and "formę pisemną" in result
+    assert "Termin biegnie" in result and "formę pisemną" in result
 
 
 def test_a_rejected_sentence_leaves_its_paragraph_untouched() -> None:
@@ -856,3 +858,15 @@ def test_what_the_rules_took_out_a_model_cannot_put_back() -> None:
     assert "niniejszego" not in result
     assert "Należność ta nie została uregulowana" in result
     assert changes[0]["rules"][0] == "llm_rewrite" and len(changes[0]["rules"]) > 1
+
+
+def test_a_fragment_that_opened_with_a_capital_still_does() -> None:
+    source = "Duże znaczenie ma art. 471 k.c., który reguluje odpowiedzialność dłużnika za szkodę."
+
+    def move_reference_forward(protected: str) -> str:
+        return protected.replace("Duże znaczenie ma ", "").replace(", który reguluje", " reguluje")
+
+    rewriter = _rewriter(_sentence_handler(move_reference_forward))
+    result = rewriter.rewrite_fragment(source, fragment_id="p-1", document_type=DocumentType.general)
+    assert result.accepted, result.reason
+    assert result.text.startswith("Art. 471 k.c. reguluje")

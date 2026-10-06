@@ -489,7 +489,7 @@ class OpenAICompatibleRewriter:
                     )},
                     {"role": "user", "content": _repair_instruction(failed_check)},
                 ]
-            restored = protected.restore(proposal.proposal)
+            restored = _keep_initial_capital(source, protected.restore(proposal.proposal))
             if restored == source:
                 self.metadata.note_rejected("rejected:no_visible_change")
                 return LlmRewriteResult(
@@ -593,6 +593,14 @@ class OpenAICompatibleRewriter:
         if any(not isinstance(payload.get(key), str) for key in required):
             raise LlmEndpointError("W odpowiedzi modelu brakuje wymaganych pól tekstowych.")
         return LlmProposal(**{key: payload[key] for key in required})
+
+
+def _keep_initial_capital(source: str, text: str) -> str:
+    """A fragment that opened with a capital still does. Moving "art. 471" to
+    the front, a model left a paragraph starting in lower case."""
+    if source[:1].isupper() and text[:1].islower():
+        return text[:1].upper() + text[1:]
+    return text
 
 
 def _unfenced(echo: str) -> str:

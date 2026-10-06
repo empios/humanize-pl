@@ -75,6 +75,44 @@ def test_missing_model_is_a_configuration_error(tmp_path, monkeypatch) -> None:
         )
 
 
+def test_thinking_is_switched_off_only_when_asked(tmp_path, monkeypatch) -> None:
+    """A strict OpenAI endpoint refuses an unknown field, so it is sent only
+    when the configuration asks for it."""
+    monkeypatch.chdir(tmp_path)
+    base = {"HUMANIZE_PL_LLM_BASE_URL": "https://model.test/v1", "HUMANIZE_PL_LLM_MODEL": "m"}
+    assert not LlmSettings.from_environment(environ=base).disable_thinking
+    settings = LlmSettings.from_environment(
+        environ={**base, "HUMANIZE_PL_LLM_DISABLE_THINKING": "1"}
+    )
+    assert settings.disable_thinking
+    with pytest.raises(LlmConfigurationError):
+        LlmSettings.from_environment(environ={**base, "HUMANIZE_PL_LLM_DISABLE_THINKING": "maybe"})
+
+    payloads: list[dict] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        payloads.append(json.loads(request.content))
+        return _response(
+            {
+                "fragment_id": "capability-test",
+                "source": "To jest test połączenia.",
+                "proposal": "To jest test połączenia.",
+                "rationale": "test",
+            }
+        )
+
+    for flag in (True, False):
+        payloads.clear()
+        rewriter = OpenAICompatibleRewriter(
+            LlmSettings("https://model.test/v1", "m", "", 5, disable_thinking=flag),
+            client=httpx.Client(transport=httpx.MockTransport(handler)),
+        )
+        assert rewriter.probe()
+        assert ("chat_template_kwargs" in payloads[0]) is flag
+        if flag:
+            assert payloads[0]["chat_template_kwargs"] == {"enable_thinking": False}
+
+
 def test_client_probes_and_rewrites_with_strict_json() -> None:
     requests: list[dict] = []
 

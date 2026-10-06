@@ -57,6 +57,9 @@ def _read_env_file(path: Path) -> dict[str, str]:
     return values
 
 
+_FLAGS = {"1": True, "true": True, "tak": True, "0": False, "false": False, "nie": False, "": False}
+
+
 @dataclass(frozen=True)
 class LlmSettings:
     base_url: str = field(repr=False)
@@ -69,6 +72,10 @@ class LlmSettings:
     # latency, which is how a long fragment reaches the timeout. Default stays
     # at the point where throughput rises without latency moving.
     concurrency: int = 3
+    # A reasoning model spends a third of its tokens thinking before a
+    # paraphrase (measured on the 9B model: 314 tokens, 94 of them reasoning;
+    # 219 without). Opt-in, because a strict OpenAI endpoint refuses the field.
+    disable_thinking: bool = False
 
     @property
     def endpoint(self) -> str:
@@ -121,12 +128,18 @@ class LlmSettings:
             ) from exc
         if concurrency < 1:
             raise LlmConfigurationError("HUMANIZE_PL_LLM_CONCURRENCY musi wynosić co najmniej 1.")
+        thinking_raw = value("HUMANIZE_PL_LLM_DISABLE_THINKING", "0").casefold()
+        if thinking_raw not in _FLAGS:
+            raise LlmConfigurationError(
+                "HUMANIZE_PL_LLM_DISABLE_THINKING musi wynosić 1 albo 0."
+            )
         return cls(
             base_url=base_url,
             model=model,
             api_key=value("HUMANIZE_PL_LLM_API_KEY"),
             timeout_seconds=timeout,
             concurrency=concurrency,
+            disable_thinking=_FLAGS[thinking_raw],
         )
 
 
@@ -527,6 +540,8 @@ class OpenAICompatibleRewriter:
             "temperature": 0,
             "messages": messages,
         }
+        if self.settings.disable_thinking:
+            payload["chat_template_kwargs"] = {"enable_thinking": False}
         if use_response_format:
             payload["response_format"] = _JSON_SCHEMA
 

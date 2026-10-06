@@ -249,7 +249,10 @@ HUMANIZE_PL_LLM_TIMEOUT_SECONDS=120
 ```
 
 `BASE_URL` może kończyć się na `/v1` albo na pełnym
-`/v1/chat/completions`. Przed partią wykonywany jest test możliwości endpointu.
+`/v1/chat/completions`. `HUMANIZE_PL_LLM_DISABLE_THINKING=1` prosi model
+rozumujący (Qwen, MiMo) o odpowiedź bez etapu „myślenia”: lokalny model 9B
+zużywał wtedy ok. 30% mniej tokenów na fragment. Domyślnie wyłączone, bo
+ścisły endpoint OpenAI odrzuca nieznane pole. Przed partią wykonywany jest test możliwości endpointu.
 Do modelu trafiają tylko zanonimizowane fragmenty z sąsiednim kontekstem,
 profilem gatunku, profilem kancelarii i krótkim konspektem. Nie trafia cały
 DOCX ani jego metadane. Nazwy, kwoty, daty, przepisy, identyfikatory i cytaty

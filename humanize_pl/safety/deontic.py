@@ -36,8 +36,10 @@ _NEGATED = {
     "re": DeonticModality.RECOMMENDATION,
 }
 
-# Discourse verbs that cancel deontic meaning of "warto" / "należy" / "powinien"
-# because they just frame the text, e.g. "warto wskazać", "należy zauważyć"
+# Discourse verbs that cancel deontic meaning of "warto" / "należy" / "można" /
+# "trzeba" because they just frame the text, e.g. "warto wskazać", "należy
+# zauważyć", "można zauważyć"
+_FRAMING = ("warto", "można", "trzeba")
 _DISCOURSE_VERBS_RE = re.compile(r"^\s*(?:wskazać|zauważyć|podkreślić|zaznaczyć|odnotować|przypomnieć|mieć na uwadze|dodać)\b", re.IGNORECASE)
 
 # With Morfeusz, one-word markers are found by lemma in every inflected form
@@ -61,8 +63,12 @@ _LEMMA_MARKERS: dict[str, tuple[str, frozenset[str]]] = {
     "dozwolić": ("pe", frozenset({"ppas"})),
     "dozwolony": ("pe", frozenset({"adj"})),
     "wolno": ("pe", frozenset({"pred"})),
+    # Impersonal: "można" permits and "nie można" forbids, "trzeba" obliges
+    # and "nie trzeba" leaves a choice, exactly like "może" and "musi".
+    "można": ("pe", frozenset({"pred"})),
     "zezwolić": ("pe", _VERBAL),
     "zezwalać": ("pe", _VERBAL),
+    "trzeba": ("ob", frozenset({"pred"})),
     "zakaz": ("pr", frozenset({"subst"})),
     "zakazać": ("pr", _VERBAL),
     "zakazywać": ("pr", _VERBAL),
@@ -98,6 +104,7 @@ _BASE_MARKERS = {
         r"\bnakazuje\s+się\b",
         r"\bnależy\b",
         r"\bwymaga\s+się\b",
+        r"\btrzeba\b",
     ],
     # permission (may)
     "pe": [
@@ -107,6 +114,7 @@ _BASE_MARKERS = {
         r"\bzezwala\s+się\b",
         r"\bdozwolon[yiae]\b",
         r"\bwolno\b",
+        r"\bmożna\b",
     ],
     # recommendation (should)
     "re": [
@@ -179,7 +187,7 @@ def _lemma_markers(text: str, profile, morfeusz) -> None:
                 break
         else:
             continue
-        if analysis.lemma == "warto" and _DISCOURSE_VERBS_RE.search(text[token.end() :]):
+        if analysis.lemma in _FRAMING and _DISCOURSE_VERBS_RE.search(text[token.end() :]):
             continue
         # A negated participle ("niezobowiązany") is tagged "neg".
         negated = "neg" in parts or _negated(text, tokens, index)
@@ -217,6 +225,6 @@ def _surface_markers(text: str, profile) -> None:
     for category in ("pr", "ob", "pe", "re"):
         for match in _COMPILED_PATTERNS[category].finditer(text):
             word = match.group("match").lower()
-            if word in ("należy", "warto") and _DISCOURSE_VERBS_RE.search(text[match.end():]):
+            if word in ("należy", *_FRAMING) and _DISCOURSE_VERBS_RE.search(text[match.end():]):
                 continue
             _count(profile, category, word, bool(match.group("neg")))

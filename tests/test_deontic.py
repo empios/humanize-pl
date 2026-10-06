@@ -157,3 +157,26 @@ def test_validator_rejects_a_past_tense_modal_flip():
     )
     assert not res.ok
     assert res.reason.startswith("deontic drift")
+
+
+def test_impersonal_modals_are_detected():
+    """"Można" and "trzeba" carry the same force as "może" and "musi"; a model
+    turned "Jedynym sposobem … jest" into "można dokonać wyłącznie" unseen."""
+    from collections import Counter
+
+    from humanize_pl.safety.deontic import _surface_markers
+
+    cases = [
+        ("Zmianę umowy można dokonać wyłącznie w formie pisemnej.", DeonticModality.PERMISSION),
+        ("Nie można wypowiedzieć umowy przed terminem.", DeonticModality.PROHIBITION),
+        ("Trzeba złożyć wniosek w terminie siedmiu dni.", DeonticModality.OBLIGATION),
+        ("Nie trzeba składać wniosku o zwrot kaucji.", DeonticModality.PERMISSION),
+    ]
+    for text, modality in cases:
+        surface = {mod: Counter() for mod in DeonticModality}
+        _surface_markers(text, surface)
+        for profile in (extract_deontic_profile(text), surface):
+            assert {mod for mod, found in profile.items() if found} == {modality}, text
+    # Framing the text is not a modal, as with "warto wskazać"
+    framing = "Można zauważyć, że strona złożyła wniosek. Trzeba podkreślić, że termin minął."
+    assert not any(extract_deontic_profile(framing).values())

@@ -413,11 +413,12 @@ categories:
   - id: wniosek_pracowniczy
     label_pl: wniosek pracowniczy
     family: filing_official
-    signals_strong: ["wniosek o udzielenie urlopu", "wniosek o wydanie świadectwa pracy", "dni wolnych", "urlopu"]
-    signals: ["pracodawc", "pracownik", "kodeks pracy", "kodeksu pracy", "świadectwa pracy"]
+    signals_strong: ["wniosek o udzielenie urlopu", "wniosek o wydanie świadectwa pracy", "dni wolnych", "urlopu", "świadectwa pracy"]
+    signals: ["pracodawc", "pracownik", "kodeks pracy", "kodeksu pracy"]
     # Bez samego „wniosek o udzielenie”: sądowy bywa wnioskiem o udzielenie
-    # zabezpieczenia.
-    requires_any: ["wniosek o udzielenie urlopu", "o udzielenie mi urlopu", "wniosek o udzielenie dni wolnych", "wniosek o wydanie świadectwa pracy", "o wydanie mi świadectwa pracy", "zwolnienia od pracy"]
+    # zabezpieczenia. Bez „o wydanie mi świadectwa pracy”: prosi o nie także
+    # pracownik, który wypowiada umowę.
+    requires_any: ["wniosek o udzielenie urlopu", "o udzielenie mi urlopu", "wniosek o udzielenie dni wolnych", "wniosek o wydanie świadectwa pracy", "zwolnienia od pracy"]
 
   - id: umowa_o_zakazie_konkurencji
     label_pl: umowa o zakazie konkurencji

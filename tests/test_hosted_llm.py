@@ -821,3 +821,38 @@ def test_an_echoed_source_that_kept_its_fence_still_counts() -> None:
         source, fragment_id="p-1", document_type=DocumentType.contract
     )
     assert result.accepted and result.text == "Pracownik musi zapłacić karę umowną."
+
+
+def test_what_the_rules_took_out_a_model_cannot_put_back() -> None:
+    """The model wrote "niniejszego" back where the rules had written "tego",
+    in 6 of 106 accepted paragraphs; the rules run once more on its output."""
+    from dataclasses import replace
+
+    from humanize_pl.core import create_humanizer_session
+    from humanize_pl.detect import detect_document
+    from humanize_pl.flows.base import _rewrite_remaining_with_llm
+
+    text = (
+        "Należność nie została uregulowana do dnia sporządzenia tego wezwania, "
+        "a Państwa zobowiązanie jest wymagalne od dnia 15 września 2026 r."
+    )
+    rewriter = _rewriter(
+        _sentence_handler(
+            lambda source: source.replace("Należność nie", "Należność ta nie").replace(
+                "tego wezwania", "niniejszego wezwania"
+            )
+        )
+    )
+    assert rewriter.probe()
+    result, changes, _rejected = _rewrite_remaining_with_llm(
+        text,
+        replace(detect_document(text, calibrate_against_default=False), findings=[]),
+        rewriter=rewriter,
+        document_type=DocumentType.general,
+        style_profile=None,
+        protected_paragraph_indices=set(),
+        session=create_humanizer_session(mode="standard", legal_review_profile="client_communication"),
+    )
+    assert "niniejszego" not in result
+    assert "Należność ta nie została uregulowana" in result
+    assert changes[0]["rules"][0] == "llm_rewrite" and len(changes[0]["rules"]) > 1

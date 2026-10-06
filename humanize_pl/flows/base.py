@@ -562,7 +562,7 @@ def run_all_layers(
                 document_type=resolved_type,
                 style_profile=style_profile,
                 protected_paragraph_indices=protected_paragraph_indices,
-                nli=session.nli,
+                session=session,
             )
             outcome.applied_changes = collapse_visible_changes(
                 outcome.applied_changes + llm_changes
@@ -683,7 +683,7 @@ def _rewrite_remaining_with_llm(
     document_type: DocumentType,
     style_profile: StyleProfile | None,
     protected_paragraph_indices: set[int],
-    nli=None,
+    session: HumanizerSession | None = None,
 ) -> tuple[str, list[dict[str, Any]], int]:
     """Second and final pass: only the sentences that still have findings, and
     those longer than LONG_SENTENCE_WORDS.
@@ -701,6 +701,12 @@ def _rewrite_remaining_with_llm(
     General text is the exception (see _paragraph_jobs): there the user asked
     for natural writing rather than a flagged sentence fixed, so whole
     paragraphs go, under the same checks.
+
+    With a session, an accepted proposal passes the rule layer once more
+    before it lands: the model writes back what the rules took out
+    ("tego wezwania" -> "niniejszego wezwania", in 6 of 106 accepted
+    paragraphs), and the same rules, behind the same validators, take it out
+    again.
     """
     lines = text.split("\n")
     nonempty = [index for index, value in enumerate(lines) if value.strip()]
@@ -746,7 +752,7 @@ def _rewrite_remaining_with_llm(
             following=job["following"],
             outline=outline,
             issues=job["issues"],
-            nli=nli,
+            nli=session.nli if session else None,
         )
 
     workers = max(1, min(rewriter.settings.concurrency, len(jobs)))
@@ -767,6 +773,12 @@ def _rewrite_remaining_with_llm(
             rejected += 1
             continue
         after = result.text.replace("\n", " ").strip()
+        rules = ["llm_rewrite"]
+        if session is not None:
+            polished = session.humanize(after)
+            if polished.changed:
+                after = polished.text.strip()
+                rules += [change.rule for change in polished.changes]
         if job["sentence_index"] is None:
             rewritten[job["line_index"]] = [after]
         else:
@@ -777,7 +789,7 @@ def _rewrite_remaining_with_llm(
                 "before": job["source"],
                 "after": after,
                 "issue": "llm_rewrite",
-                "rules": ["llm_rewrite"],
+                "rules": rules,
                 "risk": 0.45,
                 "semantic_similarity": None,
                 "gate_results": result.validation_checks,

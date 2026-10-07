@@ -991,3 +991,15 @@ def test_a_response_limit_is_sent_only_when_configured(tmp_path, monkeypatch) ->
         )
         assert rewriter.probe()
         assert payloads[0].get("max_tokens") == limit
+
+
+def test_a_reply_with_raw_line_breaks_in_its_strings_is_still_read() -> None:
+    from humanize_pl.llm import _extract_json_object
+
+    reply = (
+        '{"fragment_id": "p1", "source": "Data: 22 października\nGodzina: 14:00", '
+        '"proposal": "Data: 22 października\nGodzina: 14:00", "rationale": "bez zmian"}'
+    ).replace("\\n", "\n")
+    assert "\n" in reply and "\\n" not in reply
+    parsed = _extract_json_object(reply)
+    assert parsed is not None and parsed["source"] == "Data: 22 października\nGodzina: 14:00"

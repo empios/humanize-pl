@@ -702,6 +702,10 @@ def _extract_json_object(content: str) -> dict[str, Any] | None:
     side. Insisting on a bare object throws away replies that are perfectly
     good once unwrapped.
 
+    A fragment spanning several lines comes back with real line breaks inside
+    its strings rather than \\n escapes, which strict JSON refuses: 14 of the
+    29 unreadable answers a fine-tuned editor gave on 24 emails.
+
     This loosens parsing only. Every guarantee lives after it: the echoed
     source must match verbatim, the fragment id must match, and the local
     validators still decide. A tolerant reader changes how many proposals
@@ -710,7 +714,7 @@ def _extract_json_object(content: str) -> dict[str, Any] | None:
 
     def as_object(text: str) -> dict[str, Any] | None:
         try:
-            value = json.loads(text)
+            value = json.loads(text, strict=False)
         except json.JSONDecodeError:
             return None
         return value if isinstance(value, dict) else None

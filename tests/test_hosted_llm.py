@@ -1003,3 +1003,16 @@ def test_a_reply_with_raw_line_breaks_in_its_strings_is_still_read() -> None:
     assert "\n" in reply and "\\n" not in reply
     parsed = _extract_json_object(reply)
     assert parsed is not None and parsed["source"] == "Data: 22 października\nGodzina: 14:00"
+
+
+def test_a_loosely_copied_echo_still_identifies_its_fragment() -> None:
+    from humanize_pl.llm import _same_fragment
+
+    source = "Uprzejmie zawiadomuję, że czynsz za __PROTECTED_0000__ wynosi __PROTECTED_0001__, płatny do dnia 10."
+    # A comma dropped, a typo "fixed", a space added: the same fragment
+    assert _same_fragment(source.replace(", płatny", " płatny"), source)
+    assert _same_fragment(source.replace("zawiadomuję", "zawiadamiam"), source)
+    assert _same_fragment("<<<" + source + " >>>", source)
+    # A garbled placeholder, or another fragment, is not
+    assert not _same_fragment(source.replace("__PROTECTED_0001__", "__PROTECTED_001__"), source)
+    assert not _same_fragment("Najemca opuści lokal __PROTECTED_0000__ i odda __PROTECTED_0001__.", source)

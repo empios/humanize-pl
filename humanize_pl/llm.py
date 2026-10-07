@@ -6,7 +6,9 @@ and raw responses intentionally have no report/log serialization path here.
 
 from __future__ import annotations
 
+from collections import Counter
 from dataclasses import dataclass, field
+from difflib import SequenceMatcher
 import json
 import os
 from pathlib import Path
@@ -481,7 +483,7 @@ class OpenAICompatibleRewriter:
                 proposal = self._parse_proposal(data)
                 if proposal.fragment_id != fragment_id:
                     raise LlmEndpointError("Odpowiedź ma niewłaściwy identyfikator fragmentu.")
-                if _unfenced(proposal.source) != protected.text.strip():
+                if not _same_fragment(proposal.source, protected.text):
                     raise LlmEndpointError("Model nie zwrócił identycznego tekstu źródłowego.")
                 validation = validate_candidate(
                     protected.text,
@@ -670,6 +672,26 @@ def _keep_initial_case(source: str, text: str) -> str:
     ):
         return text[:1].lower() + text[1:]
     return text
+
+
+# The echo proves the model answered this fragment, nothing more: the proposal
+# is checked against the true source whatever the echo says. Of 14 echoes the
+# 9B model got wrong on 49 test documents, 11 dropped a comma, "fixed" a typo
+# or added a space; 3 garbled a placeholder.
+ECHO_SIMILARITY = 0.95
+_PLACEHOLDER_RE = re.compile(r"__PROTECTED_\d+__")
+
+
+def _same_fragment(echo: str, source: str) -> bool:
+    """True when the echo is the source, or the source copied loosely: every
+    placeholder intact and the text at least ECHO_SIMILARITY alike."""
+    echo, source = _unfenced(echo), source.strip()
+    if echo == source:
+        return True
+    if Counter(_PLACEHOLDER_RE.findall(echo)) != Counter(_PLACEHOLDER_RE.findall(source)):
+        return False
+    alike = SequenceMatcher(None, " ".join(echo.split()), " ".join(source.split()), autojunk=False)
+    return alike.ratio() >= ECHO_SIMILARITY
 
 
 def _unfenced(echo: str) -> str:

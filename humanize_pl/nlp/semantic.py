@@ -8,6 +8,9 @@ import os
 import threading
 
 import numpy as np
+import regex as re
+
+from humanize_pl.sentence_splitter import split_sentences
 
 
 DEFAULT_SEMANTIC_MODEL = "sdadas/st-polish-paraphrase-from-distilroberta"
@@ -24,6 +27,12 @@ DEFAULT_NLI_MODEL = "MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7"
 # of 60 changed modals; with this floor 40, for 3 rejected good rewrites in
 # 124 instead of 1.
 MIN_MUTUAL_ENTAILMENT = 0.2
+# The model reads a pair of up to 512 tokens; past that the end of a long
+# paragraph and its rewrite goes unread. On 20 long rewrites (518-713 tokens)
+# a sentence invented at the end was caught in 4; split into aligned parts
+# that each fit, in 19, for 17 good rewrites accepted instead of 19.
+MAX_PAIR_TOKENS = 512
+_WORD_RE = re.compile(r"\w{4,}")
 
 @dataclass(frozen=True)
 class TransformerValidationResult:
@@ -52,18 +61,84 @@ class NLIValidator:
     def check_entailment(self, premise: str, hypothesis: str) -> bool:
         """True if the hypothesis keeps the premise's meaning: the model does not
         call it a contradiction, and each entails the other at least
-        MIN_MUTUAL_ENTAILMENT."""
+        MIN_MUTUAL_ENTAILMENT. A pair too long for the model is checked in
+        aligned parts, every one of which must hold."""
+        return all(
+            self._mutual(part_premise, part_hypothesis)
+            for part_premise, part_hypothesis in self._parts(premise, hypothesis)
+        )
+
+    def _mutual(self, premise: str, hypothesis: str) -> bool:
         forward = self._scores(premise, hypothesis)
         if max(forward, key=forward.get) == "contradiction":
             return False
         backward = self._scores(hypothesis, premise)
         return min(forward["entailment"], backward["entailment"]) >= MIN_MUTUAL_ENTAILMENT
 
+    def _fits(self, premise: str, hypothesis: str) -> bool:
+        tokenizer = getattr(self._pipeline, "tokenizer", None)
+        if tokenizer is None:
+            return True
+        return len(tokenizer(premise, hypothesis)["input_ids"]) <= MAX_PAIR_TOKENS
+
+    def _parts(self, premise: str, hypothesis: str) -> list[tuple[str, str]]:
+        """The pair itself when it fits; otherwise the premise cut into the
+        fewest runs of sentences that fit, and the hypothesis cut where its
+        words best follow each run - a rewrite merges and splits sentences, so
+        cutting both at the same sentence count misaligns them. The whole pair
+        again when no cut fits."""
+        if self._fits(premise, hypothesis):
+            return [(premise, hypothesis)]
+        source, rewrite = split_sentences(premise), split_sentences(hypothesis)
+        for count in range(2, len(source) + 1):
+            size = -(-len(source) // count)
+            runs = [source[index : index + size] for index in range(0, len(source), size)]
+            cuts = _aligned_cuts(runs, rewrite)
+            if cuts is None:
+                continue
+            bounds = [0, *cuts, len(rewrite)]
+            parts = [
+                (" ".join(run), " ".join(rewrite[bounds[index] : bounds[index + 1]]))
+                for index, run in enumerate(runs)
+            ]
+            if all(rewrite_part and self._fits(source_part, rewrite_part) for source_part, rewrite_part in parts):
+                return parts
+        return [(premise, hypothesis)]
+
     def _scores(self, premise: str, hypothesis: str) -> dict[str, float]:
         """Label -> probability; the labels are entailment, neutral, contradiction."""
         with _NLI_LOCK:
             rows = self._pipeline({"text": premise, "text_pair": hypothesis}, top_k=None)
         return {row["label"].lower(): row["score"] for row in rows}
+
+
+def _words(sentences: list[str]) -> set[str]:
+    return {word.casefold() for sentence in sentences for word in _WORD_RE.findall(sentence)}
+
+
+def _overlap(left: list[str], right: list[str]) -> float:
+    a, b = _words(left), _words(right)
+    return len(a & b) / max(1, len(a | b))
+
+
+def _aligned_cuts(runs: list[list[str]], rewrite: list[str]) -> list[int] | None:
+    """Where to cut the rewrite after each run but the last: at each boundary,
+    the sentence position whose two sides share the most words with the source
+    on either side of it. None when the rewrite has too few sentences."""
+    cuts: list[int] = []
+    start = 0
+    for index in range(len(runs) - 1):
+        left = [sentence for run in runs[: index + 1] for sentence in run]
+        right = [sentence for run in runs[index + 1 :] for sentence in run]
+        positions = range(start + 1, len(rewrite))
+        if not positions:
+            return None
+        start = max(
+            positions,
+            key=lambda cut: _overlap(left, rewrite[:cut]) + _overlap(right, rewrite[cut:]),
+        )
+        cuts.append(start)
+    return cuts
 
 
 class EmbeddingSimilarityValidator:

@@ -93,7 +93,11 @@ Działa warstwowo:
   siebie nawzajem z prawdopodobieństwem co najmniej 0,2: zmiana modalności
   rzadko wygląda na sprzeczność, ale przestaje wynikać ze źródła (wykryte
   zmiany modalności: 40 z 60 zamiast 17, odrzucone dobre redakcje: 3 ze 124
-  zamiast 1),
+  zamiast 1). Para dłuższa niż 512 tokenów (cały długi akapit i jego redakcja)
+  jest sprawdzana w dopasowanych częściach, z których każda musi przejść:
+  model czyta najwyżej 512 tokenów, więc koniec długiej pary szedł bez kontroli.
+  Na 20 długich redakcjach zdanie dopisane na końcu wychwycono w 19 przypadkach
+  zamiast 4, przy 17 zamiast 19 przyjętych dobrych redakcjach,
 - nowe kategorie `wniosek_pracowniczy` (wnioski do pracodawcy: urlop, dni
   wolne, świadectwo pracy) i `umowa_o_zakazie_konkurencji`; ich wzory leżały
   wcześniej pod wnioskiem procesowym i NDA, których lista kontrolna blokowała

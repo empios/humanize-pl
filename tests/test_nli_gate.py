@@ -73,3 +73,58 @@ def test_nli_inference_runs_one_call_at_a_time(monkeypatch):
     with ThreadPoolExecutor(4) as pool:
         assert all(pool.map(lambda _: nli.check_entailment("A", "B"), range(8)))
     assert overlaps and not any(overlaps)
+
+
+def test_a_pair_too_long_for_the_model_is_checked_in_aligned_parts(monkeypatch):
+    """Past 512 tokens the end of a long rewrite went unread: a sentence
+    invented there was caught in 4 of 20. Each aligned part must hold."""
+    from humanize_pl.nlp import semantic
+
+    calls = []
+
+    class Tokenizer:
+        def __call__(self, premise, hypothesis):
+            return {"input_ids": (premise + " " + hypothesis).split()}
+
+    def fake_pipeline(pair, top_k=None):
+        calls.append(pair)
+        invented = "wymyślone" in pair["text_pair"] and "wymyślone" not in pair["text"]
+        entail = 0.05 if invented else 0.9
+        return [
+            {"label": "entailment", "score": entail},
+            {"label": "neutral", "score": 0.95 - entail},
+            {"label": "contradiction", "score": 0.05},
+        ]
+
+    fake_pipeline.tokenizer = Tokenizer()
+    monkeypatch.setattr(semantic, "_get_nli_pipeline", lambda name, offline: fake_pipeline)
+    monkeypatch.setattr(semantic, "MAX_PAIR_TOKENS", 24)
+    nli = semantic.NLIValidator()
+    source = (
+        "Spotkanie zespołu projektowego odbędzie się w czwartek. Agenda obejmuje budżet. "
+        "Prosimy o przygotowanie raportów kwartalnych. Raporty trafią do zarządu firmy."
+    )
+    rewrite = (
+        "Spotkanie zespołu projektowego będzie w czwartek. Omówimy budżet. "
+        "Przygotujcie raporty kwartalne. Raporty trafią do zarządu firmy."
+    )
+    assert nli.check_entailment(source, rewrite)
+    # The pair was split: no call carried the whole of both texts
+    assert all(len(call["text"]) < len(source) for call in calls)
+    assert not nli.check_entailment(source, rewrite + " To zdanie jest wymyślone.")
+
+
+def test_aligned_cut_follows_a_merged_sentence():
+    from humanize_pl.nlp.semantic import _aligned_cuts
+
+    runs = [
+        ["Umowa została podpisana w poniedziałek.", "Strony ustaliły cenę towaru."],
+        ["Dostawa nastąpi w przyszłym miesiącu.", "Płatność przelewem bankowym."],
+    ]
+    # The rewrite merges the first run's two sentences into one
+    rewrite = [
+        "Umowa została podpisana w poniedziałek, a strony ustaliły cenę towaru.",
+        "Dostawa nastąpi w przyszłym miesiącu.",
+        "Płatność przelewem bankowym.",
+    ]
+    assert _aligned_cuts(runs, rewrite) == [1]

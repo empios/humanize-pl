@@ -959,3 +959,35 @@ def test_an_unchanged_general_proposal_gets_one_more_try() -> None:
     assert not result.accepted and result.reason == "no_visible_change"
     assert len(requests) == 2
 
+
+def test_a_response_limit_is_sent_only_when_configured(tmp_path, monkeypatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    base = {"HUMANIZE_PL_LLM_BASE_URL": "https://model.test/v1", "HUMANIZE_PL_LLM_MODEL": "m"}
+    assert LlmSettings.from_environment(environ=base).max_tokens is None
+    assert LlmSettings.from_environment(
+        environ={**base, "HUMANIZE_PL_LLM_MAX_TOKENS": "4096"}
+    ).max_tokens == 4096
+    with pytest.raises(LlmConfigurationError):
+        LlmSettings.from_environment(environ={**base, "HUMANIZE_PL_LLM_MAX_TOKENS": "lots"})
+
+    payloads: list[dict] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        payloads.append(json.loads(request.content))
+        return _response(
+            {
+                "fragment_id": "capability-test",
+                "source": "To jest test połączenia.",
+                "proposal": "To jest test połączenia.",
+                "rationale": "test",
+            }
+        )
+
+    for limit in (None, 4096):
+        payloads.clear()
+        rewriter = OpenAICompatibleRewriter(
+            LlmSettings("https://model.test/v1", "m", "", 5, max_tokens=limit),
+            client=httpx.Client(transport=httpx.MockTransport(handler)),
+        )
+        assert rewriter.probe()
+        assert payloads[0].get("max_tokens") == limit

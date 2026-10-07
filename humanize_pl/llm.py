@@ -76,6 +76,11 @@ class LlmSettings:
     # paraphrase (measured on the 9B model: 314 tokens, 94 of them reasoning;
     # 219 without). Opt-in, because a strict OpenAI endpoint refuses the field.
     disable_thinking: bool = False
+    # mlx_lm's server stops at 512 tokens unless asked otherwise, and an
+    # answer echoes its fragment before rewriting it: the longest paragraph of
+    # 24 test emails took 511. A longer one would be cut mid-JSON. Unset, the
+    # field is not sent and the server's default applies.
+    max_tokens: int | None = None
 
     @property
     def endpoint(self) -> str:
@@ -128,6 +133,15 @@ class LlmSettings:
             ) from exc
         if concurrency < 1:
             raise LlmConfigurationError("HUMANIZE_PL_LLM_CONCURRENCY musi wynosić co najmniej 1.")
+        max_tokens_raw = value("HUMANIZE_PL_LLM_MAX_TOKENS")
+        try:
+            max_tokens = int(max_tokens_raw) if max_tokens_raw else None
+        except ValueError as exc:
+            raise LlmConfigurationError(
+                "HUMANIZE_PL_LLM_MAX_TOKENS musi być liczbą całkowitą."
+            ) from exc
+        if max_tokens is not None and max_tokens < 1:
+            raise LlmConfigurationError("HUMANIZE_PL_LLM_MAX_TOKENS musi wynosić co najmniej 1.")
         thinking_raw = value("HUMANIZE_PL_LLM_DISABLE_THINKING", "0").casefold()
         if thinking_raw not in _FLAGS:
             raise LlmConfigurationError(
@@ -140,6 +154,7 @@ class LlmSettings:
             timeout_seconds=timeout,
             concurrency=concurrency,
             disable_thinking=_FLAGS[thinking_raw],
+            max_tokens=max_tokens,
         )
 
 
@@ -568,6 +583,8 @@ class OpenAICompatibleRewriter:
         }
         if self.settings.disable_thinking:
             payload["chat_template_kwargs"] = {"enable_thinking": False}
+        if self.settings.max_tokens is not None:
+            payload["max_tokens"] = self.settings.max_tokens
         if use_response_format:
             payload["response_format"] = _JSON_SCHEMA
 

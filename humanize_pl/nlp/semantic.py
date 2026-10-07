@@ -5,6 +5,7 @@ from contextlib import contextmanager
 from functools import lru_cache
 import math
 import os
+import threading
 
 import numpy as np
 
@@ -33,6 +34,13 @@ class TransformerValidationResult:
     nli_model: str | None = None
 
 
+# The hosted model's fragments are validated on several threads at once, and
+# the NLI pipeline (cached, so shared) runs on the GPU: two concurrent calls
+# crashed the process in Metal ("A command encoder is already encoding to
+# this command buffer"). One inference at a time.
+_NLI_LOCK = threading.Lock()
+
+
 class NLIValidator:
     """NLI cross-encoder used to prevent hallucinations (contradictions)."""
 
@@ -53,7 +61,8 @@ class NLIValidator:
 
     def _scores(self, premise: str, hypothesis: str) -> dict[str, float]:
         """Label -> probability; the labels are entailment, neutral, contradiction."""
-        rows = self._pipeline({"text": premise, "text_pair": hypothesis}, top_k=None)
+        with _NLI_LOCK:
+            rows = self._pipeline({"text": premise, "text_pair": hypothesis}, top_k=None)
         return {row["label"].lower(): row["score"] for row in rows}
 
 

@@ -42,3 +42,34 @@ def test_nli_validator_wants_mutual_entailment(monkeypatch):
     assert nli.check_entailment("A", "B")
     assert not nli.check_entailment("A", "C")
     assert not nli.check_entailment("A", "D")
+
+
+def test_nli_inference_runs_one_call_at_a_time(monkeypatch):
+    """Concurrent GPU calls crashed the process; fragments are validated on threads."""
+    import threading
+    import time
+    from concurrent.futures import ThreadPoolExecutor
+
+    from humanize_pl.nlp import semantic
+
+    inside, overlaps = [0], []
+    guard = threading.Lock()
+
+    def fake_pipeline(pair, top_k=None):
+        with guard:
+            inside[0] += 1
+            overlaps.append(inside[0] > 1)
+        time.sleep(0.01)
+        with guard:
+            inside[0] -= 1
+        return [
+            {"label": "entailment", "score": 0.9},
+            {"label": "neutral", "score": 0.05},
+            {"label": "contradiction", "score": 0.05},
+        ]
+
+    monkeypatch.setattr(semantic, "_get_nli_pipeline", lambda name, offline: fake_pipeline)
+    nli = semantic.NLIValidator()
+    with ThreadPoolExecutor(4) as pool:
+        assert all(pool.map(lambda _: nli.check_entailment("A", "B"), range(8)))
+    assert overlaps and not any(overlaps)

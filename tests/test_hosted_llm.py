@@ -930,3 +930,32 @@ def test_a_verbless_rewrite_passes_for_general_text_only() -> None:
     assert outcomes[DocumentType.general].accepted
     assert not outcomes[DocumentType.client_communication].accepted
     assert "lacks finite verb" in outcomes[DocumentType.client_communication].reason
+
+
+def test_an_unchanged_general_proposal_gets_one_more_try() -> None:
+    source = "Chciałbym poinformować, że spotkanie zespołu odbędzie się w czwartek o godzinie 10:00."
+    rewrite = "Spotkanie zespołu odbędzie się w czwartek o godzinie 10:00."
+
+    # Unchanged first, rewritten after the hint
+    requests: list[dict] = []
+    rewriter = _repairing_rewriter([source, rewrite], requests)
+    result = rewriter.rewrite_fragment(source, fragment_id="p1", document_type=DocumentType.general)
+    assert result.accepted and result.text == rewrite
+    assert "niczego nie zmienia" in requests[2]["messages"][3]["content"]
+    assert rewriter.metadata.to_report()["decision_reasons"] == {
+        "repair:no_visible_change": 1,
+        "accepted:after_repair": 1,
+    }
+
+    # Unchanged twice: rejected as before
+    rewriter = _repairing_rewriter([source], [])
+    result = rewriter.rewrite_fragment(source, fragment_id="p1", document_type=DocumentType.general)
+    assert not result.accepted and result.reason == "no_visible_change"
+
+    # Legal text is not pushed to change a sentence the model left alone
+    requests = []
+    rewriter = _repairing_rewriter([source, rewrite], requests)
+    result = rewriter.rewrite_fragment(source, fragment_id="p1", document_type=DocumentType.contract)
+    assert not result.accepted and result.reason == "no_visible_change"
+    assert len(requests) == 2
+

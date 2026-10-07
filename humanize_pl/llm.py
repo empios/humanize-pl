@@ -282,6 +282,8 @@ _REPAIR_HINTS = {
         "Zachowaj znaczenie źródła: nie dodawaj, nie usuwaj i nie osłabiaj żadnego twierdzenia."
     ),
 }
+# A general-text proposal identical to its source, sent back like a failed check.
+UNCHANGED = "no_visible_change"
 # Inventory checks are named after what they guard: "dates_preserved", ...
 _INVENTORY_HINT = (
     "Zachowaj bez zmian przepisy, daty, kwoty, oznaczenia, cytaty i nazwy stron ze źródła."
@@ -303,13 +305,19 @@ _GENERAL_EDITOR = (
 
 
 def _repair_instruction(failed_check: str) -> str:
-    hint = _REPAIR_HINTS.get(failed_check) or (
-        _INVENTORY_HINT if failed_check.endswith("_preserved") else _STYLE_HINT
-    )
+    if failed_check == UNCHANGED:
+        lead = (
+            "Ta propozycja niczego nie zmienia. Przeredaguj fragment tak, by brzmiał "
+            "naturalnie i jasno, zachowując wszystkie fakty, liczby, nazwy i modalność."
+        )
+    else:
+        hint = _REPAIR_HINTS.get(failed_check) or (
+            _INVENTORY_HINT if failed_check.endswith("_preserved") else _STYLE_HINT
+        )
+        lead = f"Kontrola bezpieczeństwa odrzuciła tę propozycję. {hint}"
     return (
-        f"Kontrola bezpieczeństwa odrzuciła tę propozycję. {hint} Przygotuj nową "
-        "propozycję tego samego fragmentu i odpowiedz tym samym obiektem JSON o czterech "
-        "polach: fragment_id, source, proposal, rationale."
+        f"{lead} Przygotuj nową propozycję tego samego fragmentu i odpowiedz tym samym "
+        "obiektem JSON o czterech polach: fragment_id, source, proposal, rationale."
     )
 
 
@@ -478,11 +486,25 @@ class OpenAICompatibleRewriter:
                     for check in validation.checks
                 ]
                 if validation.ok:
-                    break
-                failed_check = next(
-                    (check.name for check in validation.checks if not check.ok), "validation"
-                )
-                if round_number == REPAIR_ROUNDS:
+                    # General text asks for a rewrite; a proposal that
+                    # repeats the source passes every check and does nothing.
+                    # Measured on 24 emails, a fine-tuned editor returned 33 of
+                    # 86 paragraphs unchanged; it gets one more try.
+                    unchanged = (
+                        _keep_initial_case(source, protected.restore(proposal.proposal)) == source
+                    )
+                    if not (
+                        unchanged
+                        and document_type is DocumentType.general
+                        and round_number < REPAIR_ROUNDS
+                    ):
+                        break
+                    failed_check = UNCHANGED
+                else:
+                    failed_check = next(
+                        (check.name for check in validation.checks if not check.ok), "validation"
+                    )
+                if not validation.ok and round_number == REPAIR_ROUNDS:
                     self.metadata.note_rejected(f"rejected:{failed_check}")
                     return LlmRewriteResult(
                         source,

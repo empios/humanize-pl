@@ -9,6 +9,10 @@ is licensed CC BY-SA 4.0. The raw corpus stays local and gitignored.
 Usage:
     python tools/fetch_wiki_talk.py --messages 150 --min-words 40 \
         --out docs_tests/corpus/general/wiki_talk.jsonl
+    # a larger set for training, without the mailboxes held out above
+    python tools/fetch_wiki_talk.py --messages 6000 --pages-per-letter 80 \
+        --exclude docs_tests/corpus/general/wiki_talk.jsonl \
+        --out docs_tests/corpus/general/wiki_talk_train.jsonl
 """
 
 from __future__ import annotations
@@ -103,11 +107,19 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--messages", type=int, default=150)
     parser.add_argument("--min-words", type=int, default=40)
     parser.add_argument("--min-page-bytes", type=int, default=20000)
+    parser.add_argument("--pages-per-letter", type=int, default=6, help="up to 500")
+    parser.add_argument(
+        "--exclude", type=Path, help="an earlier output whose mailboxes are skipped (a held-out set)"
+    )
     parser.add_argument("--timeout", type=int, default=60)
     parser.add_argument("--delay", type=float, default=2.0)
     args = parser.parse_args(argv)
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
+    held_out = set()
+    if args.exclude:
+        for line in args.exclude.open(encoding="utf-8"):
+            held_out.add(int(json.loads(line)["id"].split("-")[1]))
     kept = 0
     with args.out.open("w", encoding="utf-8") as handle:
         # Pages from across the alphabet, not one letter's users
@@ -116,11 +128,14 @@ def main(argv: list[str] | None = None) -> int:
                 break
             pages = call(
                 {"action": "query", "list": "allpages", "apnamespace": USER_TALK, "apfrom": letter,
-                 "apminsize": args.min_page_bytes, "aplimit": 6, "apfilterredir": "nonredirects"},
+                 "apminsize": args.min_page_bytes, "aplimit": args.pages_per_letter,
+                 "apfilterredir": "nonredirects"},
                 args.timeout,
             )["query"]["allpages"]
             time.sleep(args.delay)
             for page in pages:
+                if page["pageid"] in held_out or kept >= args.messages:
+                    continue
                 content = call(
                     {"action": "query", "prop": "revisions", "rvprop": "content", "rvslots": "main",
                      "pageids": page["pageid"]},

@@ -61,8 +61,13 @@ class NLIValidator:
     def check_entailment(self, premise: str, hypothesis: str) -> bool:
         """True if the hypothesis keeps the premise's meaning: the model does not
         call it a contradiction, and each entails the other at least
-        MIN_MUTUAL_ENTAILMENT. A pair too long for the model is checked in
-        aligned parts, every one of which must hold."""
+        MIN_MUTUAL_ENTAILMENT. Only the span that changed is judged (see
+        _changed_span); a pair too long for the model is checked in aligned
+        parts, every one of which must hold."""
+        changed = _changed_span(premise, hypothesis)
+        if changed is None:
+            return True
+        premise, hypothesis = changed
         return all(
             self._mutual(part_premise, part_hypothesis)
             for part_premise, part_hypothesis in self._parts(premise, hypothesis)
@@ -110,6 +115,35 @@ class NLIValidator:
         with _NLI_LOCK:
             rows = self._pipeline({"text": premise, "text_pair": hypothesis}, top_k=None)
         return {row["label"].lower(): row["score"] for row in rows}
+
+
+def _changed_span(premise: str, hypothesis: str) -> tuple[str, str] | None:
+    """The sentences that differ, without those both texts open and close with
+    unchanged. Read whole, a long paragraph dense with numbers was "neutral"
+    to the model even against itself (entailment 0.09 and 0.14 on two legal
+    paragraphs): of 32 rewrites it rejected, 4 were the source or the source
+    minus "Uprzejmie informuję, że". None when nothing differs; the whole pair
+    when one side has nothing left, since a sentence only added or dropped is
+    judged against the rest."""
+    source, rewrite = split_sentences(premise), split_sentences(hypothesis)
+    shorter = min(len(source), len(rewrite))
+    head = 0
+    while head < shorter and _same(source[head], rewrite[head]):
+        head += 1
+    if head == len(source) == len(rewrite):
+        return None
+    tail = 0
+    while tail < shorter - head and _same(source[-1 - tail], rewrite[-1 - tail]):
+        tail += 1
+    changed_source = source[head : len(source) - tail]
+    changed_rewrite = rewrite[head : len(rewrite) - tail]
+    if not changed_source or not changed_rewrite:
+        return premise, hypothesis
+    return " ".join(changed_source), " ".join(changed_rewrite)
+
+
+def _same(left: str, right: str) -> bool:
+    return left.split() == right.split()
 
 
 def _words(sentences: list[str]) -> set[str]:

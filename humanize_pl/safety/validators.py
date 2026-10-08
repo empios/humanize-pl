@@ -149,12 +149,36 @@ def _party_names(text: str, pattern: str) -> list[str]:
     return names
 
 
+# A Polish letter and the one it becomes without its mark.
+_UNMARKED = str.maketrans("ąćęłńóśźż", "acelnoszz")
+
+
+def _same_word(word: str, known: str) -> bool:
+    """`word` is `known` in another form: the two part at the last letter of
+    `known` at the earliest ("backend", "backendu"; "wikipedysta",
+    "wikipedystów"; "Yanosiku", "Yanosik"), and not by a letter that lost its
+    mark ("proszę", "prosze")."""
+    if word == known:
+        return True
+    if len(known) < 4:
+        return False
+    common = next(
+        (index for index, (a, b) in enumerate(zip(word, known)) if a != b),
+        min(len(word), len(known)),
+    )
+    if common < len(known) - 1:
+        return False
+    if common in (len(word), len(known)):
+        return True
+    return word[common].translate(_UNMARKED) != known[common].translate(_UNMARKED)
+
+
 def unknown_words(original: str, candidate: str) -> list[str]:
     """Words the candidate adds that Polish does not have: "prosze" for
-    "proszę", "wznowiamy" for "wznawiamy". The original's own words pass,
-    inflected too ("backend", "backendu"), as do acronyms, abbreviations
-    written without their dot ("itp", "godz") and a capitalised word inside
-    a sentence, a name in some inflected form."""
+    "proszę", "wznowiamy" for "wznawiamy". The original's own words pass, in
+    other forms too, as do acronyms, abbreviations written without their dot
+    ("itp", "godz") and a capitalised word inside a sentence, a name in some
+    inflected form."""
     morfeusz = try_load_morfeusz()
     if morfeusz is None:
         return []
@@ -163,9 +187,7 @@ def unknown_words(original: str, candidate: str) -> list[str]:
     for match in re.finditer(r"\p{L}+", candidate):
         word = match.group(0)
         folded = word.casefold()
-        if len(word) <= 2 or word.isupper() or any(
-            folded == known or (len(known) >= 4 and folded.startswith(known)) for known in seen
-        ):
+        if len(word) <= 2 or word.isupper() or any(_same_word(folded, known) for known in seen):
             continue
         before = candidate[: match.start()].rstrip(" \t ")
         if word[0].isupper() and before and before[-1] not in ".!?\n":
@@ -186,8 +208,13 @@ def _without_transition(sentence: str) -> str:
     return body
 
 
+# An emoticon opens or closes nothing: "witam;)", ":(", ":-)".
+_EMOTICON_RE = re.compile(r"[:;=]['^-]?[()\[\]]+")
+
+
 def _pair_imbalance(text: str) -> tuple[int, ...]:
     """Unclosed marks per pair; a mark that opens and closes alike counts by parity."""
+    text = _EMOTICON_RE.sub("", text)
     pairs = [("(", ")"), ("[", "]"), ("„", "”"), ('"', '"')]
     return tuple(
         text.count(left) % 2 if left == right else text.count(left) - text.count(right)
@@ -267,8 +294,12 @@ def validate_candidate(
     _passed("no_dangling_connectors", checks)
 
     # Relative to the original: inline lists ("1) …, 2) …") and „…“ quotes are
-    # unbalanced on purpose; only an imbalance the candidate adds is an error.
-    if _pair_imbalance(candidate) != _pair_imbalance(original):
+    # unbalanced on purpose, and a rewrite may close what its source left open;
+    # only an imbalance the candidate adds is an error.
+    if any(
+        abs(after) > abs(before)
+        for before, after in zip(_pair_imbalance(original), _pair_imbalance(candidate))
+    ):
         return _failed("balanced_punctuation", "unbalanced punctuation", checks)
     _passed("balanced_punctuation", checks)
 

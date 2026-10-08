@@ -128,3 +128,35 @@ def test_aligned_cut_follows_a_merged_sentence():
         "Płatność przelewem bankowym.",
     ]
     assert _aligned_cuts(runs, rewrite) == [1]
+
+
+def test_only_the_changed_span_is_judged(monkeypatch):
+    """Read whole, a long legal paragraph was "neutral" even against itself."""
+    from humanize_pl.nlp import semantic
+
+    calls = []
+
+    def fake_pipeline(pair, top_k=None):
+        calls.append(pair)
+        return [
+            {"label": "entailment", "score": 0.9},
+            {"label": "neutral", "score": 0.05},
+            {"label": "contradiction", "score": 0.05},
+        ]
+
+    monkeypatch.setattr(semantic, "_get_nli_pipeline", lambda name, offline: fake_pipeline)
+    nli = semantic.NLIValidator()
+    source = "Uprzejmie informuję, że termin minął. Sprawa trafi do sądu. Koszty poniesie dłużnik."
+    assert nli.check_entailment(source, source)
+    assert calls == []
+
+    assert nli.check_entailment(source, "Termin minął. Sprawa trafi do sądu. Koszty poniesie dłużnik.")
+    assert {call["text"] for call in calls} | {call["text_pair"] for call in calls} == {
+        "Uprzejmie informuję, że termin minął.",
+        "Termin minął.",
+    }
+
+    # A sentence only added is judged against the whole source
+    calls.clear()
+    nli.check_entailment(source, source + " Dłużnik zapłaci podwójnie.")
+    assert calls[0]["text"] == source

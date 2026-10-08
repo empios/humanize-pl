@@ -260,6 +260,17 @@ def test_validator_rejects_words_polish_does_not_have():
     )
     assert validation.ok, validation.reason
 
+    # Another form of the source's words passes; a word that lost its mark does not
+    original = "Wikipedysta zgłosił problem przy włączonym np. Yanosiku."
+    validation = validate_candidate(
+        original,
+        "Problem pojawia się, gdy włączony jest np. Yanosik – zgłosiło to dwóch wikipedystów.",
+        protected=protect_text(original),
+        max_length_ratio=2.0,
+        rule=GENERAL_TEXT_RULE,
+    )
+    assert "known_words" in [check.name for check in validation.checks if check.ok]
+
 
 def test_validator_rejects_added_imbalance():
     original = "Strona (Najemca) płaci czynsz co miesiąc w kwocie ustalonej w umowie."
@@ -270,6 +281,22 @@ def test_validator_rejects_added_imbalance():
         max_length_ratio=1.5,
     )
     assert validation.reason == "unbalanced punctuation"
+
+
+def test_validator_accepts_a_dropped_emoticon_and_a_closed_bracket():
+    edits = [
+        ("A witam, witam;) Teraz też raczej przelotem niż na stałe.",
+         "A, witam. Teraz też raczej przelotem niż na stałe."),
+        # The source left a bracket open; the rewrite closes it
+        ("Opłatę uiszczono przelewem (zgodnie z ustawą o opłacie skarbowej.",
+         "Opłatę uiszczono przelewem (zgodnie z ustawą o opłacie skarbowej)."),
+    ]
+    for original, candidate in edits:
+        validation = validate_candidate(
+            original, candidate, protected=protect_text(original), max_length_ratio=1.5,
+            rule=GENERAL_TEXT_RULE,
+        )
+        assert validation.ok, (candidate, validation.reason)
 
 
 def test_validator_rejects_length_outliers():

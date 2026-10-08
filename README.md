@@ -329,7 +329,11 @@ tu przypadkiem. Różnice wobec rodzin prawnych:
   bez nich przechodzi 721 par zamiast 479, przy tych samych odrzuceniach za
   wartości, modalność i przeczenia. Raport nie wymienia ich jako sprawdzonych,
 - dochodzi kontrola znaczenia NLI: akapit i redakcja muszą wynikać z siebie
-  nawzajem. Ładowana jest sama, bez reszty silnika `hybrid`; bez dodatku
+  nawzajem. Oceniany jest tylko zmieniony fragment: zdania, którymi oba teksty
+  zaczynają się i kończą bez zmian, są pomijane (czytany w całości, długi akapit
+  pełen liczb był dla modelu NLI „neutralny” nawet wobec samego siebie), a
+  dopisane lub usunięte zdanie jest oceniane wobec całości. Ładowana jest sama,
+  bez reszty silnika `hybrid`; bez dodatku
   `[transformers]` przebieg idzie dalej z ostrzeżeniem, a `--require-models`
   zamienia to w błąd,
 - warstwa reguł działa z profilem komunikacji z klientem, a dokument DOCX
@@ -352,11 +356,24 @@ Mglistość FOG-PL prawie się nie zmienia (13,7 → 13,6).
 
 Na 24 e-mailach, listach i notatkach napisanych przez Claude Haiku (zaproszenia,
 oferty, przypomnienia o płatności, reklamacje, rezygnacje, komunikaty)
-redakcję przeszło 50 z 86 akapitów, wszystkie 24 teksty zachowały wartości,
+redakcję przeszło 57 z 86 akapitów, wszystkie 24 teksty zachowały wartości,
 modalność, czynności i strony, a FOG-PL spadł z 13,3 do 12,8. Polecenie
 nastawione wprost na krótsze zdania i krótsze słowa nie pomogło (12,7 przy
 46 z 86 przyjętych akapitów): zdania tych tekstów mają średnio 11 słów, a
 mglistość tworzą głównie długie wyrazy, których model 9B prawie nie zamienia.
+
+Na tekstach pisanych przez ludzi, 155 wiadomościach, które wikipedyści
+napisali do siebie na stronach dyskusji, i 40 opiniach klientów Allegro (oba
+źródła na licencji CC BY-SA 4.0, korpus zostaje lokalnie), redakcję przeszło
+105 z 222 i 18 z 40 akapitów, a wszystkie 195 tekstów zachowało wartości,
+modalność, czynności i strony. Odrzucenia to głównie zmieniona modalność
+(model zamienia „mógłbyś” na tryb rozkazujący), NLI, przeczenia i liczby.
+Model usuwa emotikony („;)”, „:)”); kontrola nawiasów ich nie liczy.
+
+```bash
+python tools/fetch_wiki_talk.py --messages 150
+python tools/fetch_allegro_reviews.py --split test
+```
 
 Sprawdzony i
 odrzucony wariant z tłumaczeniem PL → EN → PL (TranslateGemma 4B): już sam

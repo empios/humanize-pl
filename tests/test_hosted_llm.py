@@ -7,6 +7,7 @@ import httpx
 import pytest
 
 from humanize_pl.document import DocumentType
+from humanize_pl.nlp.morfeusz import try_load_morfeusz
 from humanize_pl.llm import (
     LlmConfigurationError,
     LlmSettings,
@@ -657,6 +658,22 @@ def test_a_rejected_proposal_is_sent_back_once_with_what_to_fix() -> None:
         "repair:deontic_modality_preserved": 1,
         "accepted:after_repair": 1,
     }
+
+
+@pytest.mark.skipif(try_load_morfeusz() is None, reason="morfeusz2 not installed")
+def test_the_repair_names_a_word_polish_does_not_have() -> None:
+    requests: list[dict] = []
+    rewriter = _repairing_rewriter(
+        ["Pracownik musi zapłacic karę umowną.", "Pracownik musi zapłacić karę umowną."], requests
+    )
+    result = rewriter.rewrite_fragment(
+        "Warto podkreślić, że pracownik musi zapłacić karę umowną.",
+        fragment_id="p-1",
+        document_type=DocumentType.contract,
+    )
+
+    assert result.accepted and result.text == "Pracownik musi zapłacić karę umowną."
+    assert "Takich słów nie ma w polszczyźnie: „zapłacic”." in requests[2]["messages"][3]["content"]
 
 
 def test_a_proposal_failing_again_after_its_repair_leaves_the_source() -> None:

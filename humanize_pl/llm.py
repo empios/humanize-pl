@@ -21,7 +21,7 @@ import httpx
 
 from humanize_pl.document import GENRE_PROFILES, DocumentType, StyleProfile
 from humanize_pl.safety.protectors import protect_text
-from humanize_pl.safety.validators import GENERAL_TEXT_RULE, validate_candidate
+from humanize_pl.safety.validators import GENERAL_TEXT_RULE, unknown_words, validate_candidate
 
 
 class LlmConfigurationError(RuntimeError):
@@ -271,6 +271,10 @@ _REPAIR_HINTS = {
         "nie może, powinien, należy) muszą pozostać dokładnie takie jak w źródle."
     ),
     "negation_preserved": "Zachowaj każde przeczenie ze źródła (nie, brak, bez).",
+    "known_words": (
+        "Pisz wyłącznie poprawnymi polskimi wyrazami, z polskimi znakami (ą, ć, ę, ł, ń, ó, "
+        "ś, ź, ż)."
+    ),
     "speech_acts_preserved": (
         "Zachowaj czynności, których dokonuje tekst (wzywam, wnoszę, żądam, oświadczam, "
         "wypowiadam, odwołuję…): każda musi pozostać tym samym czasownikiem w czasie "
@@ -321,7 +325,9 @@ _GENERAL_EDITOR = (
 )
 
 
-def _repair_instruction(failed_check: str) -> str:
+def _repair_instruction(failed_check: str, misspelled: list[str] | None = None) -> str:
+    """What to fix, for the model. A misspelled word is named: told only to
+    write correct Polish, the 9B model repeated "objmie" and "wznowiamy"."""
     if failed_check == UNCHANGED:
         lead = (
             "Ta propozycja niczego nie zmienia. Przeredaguj fragment tak, by brzmiał "
@@ -332,6 +338,9 @@ def _repair_instruction(failed_check: str) -> str:
             _INVENTORY_HINT if failed_check.endswith("_preserved") else _STYLE_HINT
         )
         lead = f"Kontrola bezpieczeństwa odrzuciła tę propozycję. {hint}"
+        if misspelled:
+            words = ", ".join(f"„{word}”" for word in misspelled)
+            lead += f" Takich słów nie ma w polszczyźnie: {words}."
     return (
         f"{lead} Przygotuj nową propozycję tego samego fragmentu i odpowiedz tym samym "
         "obiektem JSON o czterech polach: fragment_id, source, proposal, rationale."
@@ -543,7 +552,12 @@ class OpenAICompatibleRewriter:
                         },
                         ensure_ascii=False,
                     )},
-                    {"role": "user", "content": _repair_instruction(failed_check)},
+                    {"role": "user", "content": _repair_instruction(
+                        failed_check,
+                        unknown_words(source, protected.restore(proposal.proposal))
+                        if failed_check == "known_words"
+                        else None,
+                    )},
                 ]
             restored = _keep_initial_case(source, protected.restore(proposal.proposal))
             if restored == source:

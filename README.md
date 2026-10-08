@@ -278,7 +278,13 @@ nawyków starszych modeli, a zrozumiałość tekstu prawniczego psują przede
 wszystkim długie zdania.
 
 Propozycję modelu sprawdzają te same lokalne walidatory co reguły (modalność,
-przeczenia, czynności, liczby, role stron, przepisy, daty, kwoty, orzeczenie).
+przeczenia, czynności, liczby, role stron, przepisy, daty, kwoty, orzeczenie)
+oraz pisownia: słowo, którego Morfeusz2 nie zna, a którego nie było w źródle,
+odrzuca propozycję, a w naprawie model dostaje je wprost. Na 49 tekstach model
+9B napisał tak 6 słów („objmie”, „wznowiamy”, „uiszczyłem”), które wcześniej
+przechodziły. Przechodzą słowa źródła, także odmienione („backend” →
+„backendu”), skrótowce, skróty bez kropki („itp”) i wyrazy z wielkiej litery
+w środku zdania (nazwy); bez Morfeusza2 kontrola nie działa.
 Czynności to czasowniki, którymi pismo działa w czasie teraźniejszym
 („wzywam”, „wnoszę”, „żądam”, „oświadczam”, „wypowiadam”, „odwołuję się”):
 redakcja nie może zamienić wezwania w prośbę ani usunąć oświadczenia, choćby
@@ -314,7 +320,7 @@ tu przypadkiem. Różnice wobec rodzin prawnych:
   nagłówki, adresy i podpisy, zostają bez zmian), z poleceniem przebudowy
   zdań, a nie tylko zdania z uwagami detektora,
 - obowiązują te same kontrole treści co zawsze: liczby, daty, kwoty,
-  przepisy, nazwy, modalność, przeczenia, czynności i strony; akapit, który ich
+  przepisy, nazwy, modalność, przeczenia, czynności, strony i pisownia; akapit, który ich
   nie przejdzie (także po jednej próbie naprawy), zostaje bez zmian,
 - nie obowiązują trzy kontrole pisane pod prozę prawniczą: obecność orzeczenia
   w każdym zdaniu, zakaz dzielenia zdania z „oraz” i zachowanie pojęć

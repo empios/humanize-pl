@@ -149,6 +149,35 @@ def _party_names(text: str, pattern: str) -> list[str]:
     return names
 
 
+def unknown_words(original: str, candidate: str) -> list[str]:
+    """Words the candidate adds that Polish does not have: "prosze" for
+    "proszę", "wznowiamy" for "wznawiamy". The original's own words pass,
+    inflected too ("backend", "backendu"), as do acronyms, abbreviations
+    written without their dot ("itp", "godz") and a capitalised word inside
+    a sentence, a name in some inflected form."""
+    morfeusz = try_load_morfeusz()
+    if morfeusz is None:
+        return []
+    seen = {word.casefold() for word in re.findall(r"\p{L}+", original)}
+    unknown = []
+    for match in re.finditer(r"\p{L}+", candidate):
+        word = match.group(0)
+        folded = word.casefold()
+        if len(word) <= 2 or word.isupper() or any(
+            folded == known or (len(known) >= 4 and folded.startswith(known)) for known in seen
+        ):
+            continue
+        before = candidate[: match.start()].rstrip(" \t ")
+        if word[0].isupper() and before and before[-1] not in ".!?\n":
+            continue
+        if morfeusz.has_form(word) or any(
+            analysis.tag.startswith("brev") for analysis in morfeusz.analyses(word + ".")
+        ):
+            continue
+        unknown.append(word)
+    return unknown
+
+
 def _without_transition(sentence: str) -> str:
     body = sentence.strip()
     for transition in SENTENCE_TRANSITIONS:
@@ -259,6 +288,11 @@ def validate_candidate(
     if "__PROTECTED_" in restored_candidate:
         return _failed("placeholder_restore", "unrestored placeholder leak", checks)
     _passed("placeholder_restore", checks)
+
+    unknown = unknown_words(restored_original, restored_candidate)
+    if unknown:
+        return _failed("known_words", f"unknown words added: {', '.join(unknown[:3])}", checks)
+    _passed("known_words", checks)
 
 
 

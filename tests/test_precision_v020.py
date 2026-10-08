@@ -1,15 +1,18 @@
 import json
 
+import pytest
+
 from humanize_pl.config import Mode
 from humanize_pl.config import HumanizeConfig
 from humanize_pl.core import humanize_text
+from humanize_pl.nlp.morfeusz import try_load_morfeusz
 from humanize_pl.reports.report import write_json_report
 from humanize_pl.rules.base import Candidate
 from humanize_pl.rules.features import analyze_sentence_features
 from humanize_pl.rules.scoring import score_candidate
 from humanize_pl.safety.anchors import content_anchor_retention, content_anchor_tokens
 from humanize_pl.safety.protectors import protect_text
-from humanize_pl.safety.validators import validate_candidate
+from humanize_pl.safety.validators import GENERAL_TEXT_RULE, validate_candidate
 
 
 def test_no_split_on_oraz_list_fragment():
@@ -230,6 +233,32 @@ def test_validator_accepts_edits_near_lists_quotes_and_abbreviations():
             max_length_ratio=1.5,
         )
         assert validation.ok, (candidate, validation.reason)
+
+
+@pytest.mark.skipif(try_load_morfeusz() is None, reason="morfeusz2 not installed")
+def test_validator_rejects_words_polish_does_not_have():
+    """A model dropped the diacritics and every other check passed."""
+    original = "Uprzejmie proszę o aktualne informacje dotyczące likwidacji szkody z polisy OC."
+    stripped = validate_candidate(
+        original,
+        "Uprzejmie prosze o aktualne informacje dotyczace likwidacji szkody z polisy OC.",
+        protected=protect_text(original),
+        max_length_ratio=1.5,
+        rule=GENERAL_TEXT_RULE,
+    )
+    assert stripped.reason == "unknown words added: prosze, dotyczace"
+
+    # The source's loanword and name inflected, an acronym and an abbreviation pass
+    original = "Firma Technogaz prosi o opinię na temat nowego backend i wymiany uszczelek."
+    validation = validate_candidate(
+        original,
+        "Technogaz prosi o opinię na temat nowego backendu i wymiany uszczelek, okien itp. – "
+        "pisze dział BOK Technogazu.",
+        protected=protect_text(original),
+        max_length_ratio=1.5,
+        rule=GENERAL_TEXT_RULE,
+    )
+    assert validation.ok, validation.reason
 
 
 def test_validator_rejects_added_imbalance():

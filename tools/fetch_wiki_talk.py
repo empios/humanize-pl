@@ -31,9 +31,11 @@ from pathlib import Path
 import regex as re
 
 API = "https://pl.wikipedia.org/w/api.php"
-USER_AGENT = "humanize-pl reference-corpus builder (research use)"
+# Wikimedia throttles clients that do not say who they are.
+USER_AGENT = "humanize-pl-corpus/1.0 (https://github.com/empios/humanize-pl; research use)"
 USER_TALK = 3
 PER_PAGE = 3  # messages from one mailbox, so a few talkative users do not dominate
+PAGES_PER_REQUEST = 20  # mailbox contents fetched together, a request per 20 pages
 
 _SECTION = re.compile(r"^==+[^=\n].*?==+\s*$", re.MULTILINE)
 # Where a message ends: a signature link or the date "~~~~" expands to.
@@ -133,20 +135,23 @@ def main(argv: list[str] | None = None) -> int:
                 args.timeout,
             )["query"]["allpages"]
             time.sleep(args.delay)
-            for page in pages:
-                if page["pageid"] in held_out or kept >= args.messages:
-                    continue
-                content = call(
+            wanted = [page["pageid"] for page in pages if page["pageid"] not in held_out]
+            for start in range(0, len(wanted), PAGES_PER_REQUEST):
+                if kept >= args.messages:
+                    break
+                batch = call(
                     {"action": "query", "prop": "revisions", "rvprop": "content", "rvslots": "main",
-                     "pageids": page["pageid"]},
+                     "pageids": "|".join(map(str, wanted[start : start + PAGES_PER_REQUEST]))},
                     args.timeout,
-                )["query"]["pages"][0]["revisions"][0]["slots"]["main"]["content"]
+                )["query"]["pages"]
                 time.sleep(args.delay)
-                usable = [m for m in opening_messages(content) if len(m.split()) >= args.min_words]
-                for index, message in enumerate(usable[:PER_PAGE]):
-                    record = {"id": f"wikitalk-{page['pageid']}-{index}", "text": message}
-                    handle.write(json.dumps(record, ensure_ascii=False) + "\n")
-                    kept += 1
+                for page in sorted(batch, key=lambda page: wanted.index(page["pageid"])):
+                    content = page["revisions"][0]["slots"]["main"]["content"]
+                    usable = [m for m in opening_messages(content) if len(m.split()) >= args.min_words]
+                    for index, message in enumerate(usable[:PER_PAGE]):
+                        record = {"id": f"wikitalk-{page['pageid']}-{index}", "text": message}
+                        handle.write(json.dumps(record, ensure_ascii=False) + "\n")
+                        kept += 1
     print(f"{kept} messages kept in {args.out}", file=sys.stderr)
     return 0
 

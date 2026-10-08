@@ -16,6 +16,7 @@ import argparse
 import json
 import sys
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from pathlib import Path
@@ -31,6 +32,18 @@ def fetch_rows(split: str, offset: int, timeout: int) -> tuple[list[dict], int]:
     request = urllib.request.Request(
         f"{API}?{urllib.parse.urlencode(params)}", headers={"User-Agent": USER_AGENT}
     )
+    # The rows API answers 429 under load; it says how long to wait
+    for _ in range(4):
+        try:
+            return _rows(request, timeout)
+        except urllib.error.HTTPError as error:
+            if error.code != 429 and error.code < 500:
+                raise
+            time.sleep(int(error.headers.get("Retry-After") or 30))
+    return _rows(request, timeout)
+
+
+def _rows(request: urllib.request.Request, timeout: int) -> tuple[list[dict], int]:
     with urllib.request.urlopen(request, timeout=timeout) as response:
         payload = json.loads(response.read().decode("utf-8"))
     return [row["row"] for row in payload["rows"]], payload["num_rows_total"]

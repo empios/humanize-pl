@@ -104,8 +104,8 @@ blocks:
     \ udzielaniu świadczeń zdrowotnych \nw zakresie ……………………………………………… (należy wskazać jakie usługi będzie świadczył fizjoterapeuta w ramach współpracy\
     \ B2B)."
   slots:
-  - {id: nalezy_wskazac_jakie_uslugi_bedzie_swiadczyl_fiz, span: [180, 198], type: text, hint: należy wskazać jakie usługi będzie świadczył fizjoterapeuta
-      w ramach współpracy B2B}
+  - {id: nalezy_wskazac_jakie_uslugi_bedzie_swiadczyl_fiz, span: [180, 198], type: content, hint: należy wskazać jakie usługi będzie świadczył
+      fizjoterapeuta w ramach współpracy B2B}
   inline_hints:
   - {span: [199, 284], text: należy wskazać jakie usługi będzie świadczył fizjoterapeuta w ramach współpracy B2B}
 - p: 23

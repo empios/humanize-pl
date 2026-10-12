@@ -143,7 +143,7 @@ document:
     layout: {align: justify, size: 10.0, spans: [{start: 51, end: 72, italic: true}]}
     text: 'Celem Fundacji jest ………………………………………………………………………….. (opis celu fundacji). '
     slots:
-    - {id: opis_celu_fundacji, span: [20, 50], type: text, hint: opis celu fundacji}
+    - {id: opis_celu_fundacji, span: [20, 50], type: content, hint: opis celu fundacji}
     inline_hints:
     - {span: [51, 71], text: opis celu fundacji}
   - {p: 25, role: spacer}
@@ -161,19 +161,19 @@ document:
     layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
     text: ………………………………………………………….
     slots:
-    - {id: p29_1, span: [0, 23], type: text, context: ▢}
+    - {id: p29_1, span: [0, 23], type: content, context: ▢}
   - p: 30
     role: item
     layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
     text: ………………………………………………………….
     slots:
-    - {id: p30_1, span: [0, 23], type: text, context: ▢}
+    - {id: p30_1, span: [0, 23], type: content, context: ▢}
   - p: 31
     role: item
     layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
     text: ………………………………………………………….
     slots:
-    - {id: p31_1, span: [0, 23], type: text, context: ▢}
+    - {id: p31_1, span: [0, 23], type: content, context: ▢}
   - {p: 32, role: spacer}
   - p: 33
     role: clause_heading

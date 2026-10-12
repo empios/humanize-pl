@@ -166,7 +166,7 @@ document:
           italic: true}]}
     text: 'rodzaj umówionej pracy: ……………………………………………….; (nazwa stanowiska)'
     slots:
-    - {id: nazwa_stanowiska, span: [24, 43], type: text, hint: nazwa stanowiska, label: rodzaj umówionej pracy}
+    - {id: nazwa_stanowiska, span: [24, 43], type: content, hint: nazwa stanowiska, label: rodzaj umówionej pracy}
     inline_hints:
     - {span: [45, 63], text: nazwa stanowiska}
   - p: 30
@@ -238,19 +238,19 @@ document:
     layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
     text: ………………………………………………………………………………………..;
     slots:
-    - {id: p44_1, span: [0, 35], type: text, context: ▢}
+    - {id: p44_1, span: [0, 35], type: content, context: ▢}
   - p: 45
     role: item
     layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
     text: ………………………………………………………………………………………..;
     slots:
-    - {id: p45_1, span: [0, 35], type: text, context: ▢}
+    - {id: p45_1, span: [0, 35], type: content, context: ▢}
   - p: 46
     role: item
     layout: {align: justify, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}}
     text: ……………………………………………………………………………………….. .
     slots:
-    - {id: p46_1, span: [0, 35], type: text, context: ▢}
+    - {id: p46_1, span: [0, 35], type: content, context: ▢}
   - {p: 47, role: spacer}
   - p: 48
     role: clause_heading

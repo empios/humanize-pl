@@ -124,20 +124,20 @@ blocks:
   layout: {align: justify, indent: {left: 1068}, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
   text: ……………………………………… ,
   slots:
-  - {id: p32_1, span: [0, 15], type: text, context: ▢}
+  - {id: p32_1, span: [0, 15], type: content, context: ▢}
 - p: 33
   role: item
   layout: {align: justify, indent: {left: 1068}, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
   text: ……………………………………… ,
   slots:
-  - {id: p33_1, span: [0, 15], type: text, context: ▢}
+  - {id: p33_1, span: [0, 15], type: content, context: ▢}
 - p: 34
   role: item
   layout: {align: justify, indent: {left: 1068}, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}, spans: [{start: 17, end: 40,
         italic: true}]}
   text: ………………………………………. (zobowiązania Klienta).
   slots:
-  - {id: zobowiazania_klienta, span: [0, 16], type: text, hint: zobowiązania Klienta}
+  - {id: zobowiazania_klienta, span: [0, 16], type: content, hint: zobowiązania Klienta}
   inline_hints:
   - {span: [17, 39], text: zobowiązania Klienta}
 - p: 35

@@ -97,7 +97,7 @@ document:
     layout: {align: justify, size: 11.0}
     text: 'Pełnomocnictwo obejmuje w szczególności: ……………………………………………… (czynności objęte pełnomocnictwem).'
     slots:
-    - {id: czynnosci_objete_pelnomocnictwem, span: [41, 59], type: text, hint: czynności objęte pełnomocnictwem, label: Pełnomocnictwo obejmuje
+    - {id: czynnosci_objete_pelnomocnictwem, span: [41, 59], type: content, hint: czynności objęte pełnomocnictwem, label: Pełnomocnictwo obejmuje
         w szczególności}
     inline_hints:
     - {span: [60, 94], text: czynności objęte pełnomocnictwem}

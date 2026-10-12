@@ -143,7 +143,7 @@ document:
     text: 1. Zamawiający zleca, a Wykonawca zobowiązuje się świadczyć na rzecz Zamawiającego usługi polegające na ……………………………………………… (opis usług),
       zwane dalej Usługami.
     slots:
-    - {id: opis_uslug, span: [104, 122], type: text, hint: opis usług}
+    - {id: opis_uslug, span: [104, 122], type: content, hint: opis usług}
     inline_hints:
     - {span: [123, 135], text: opis usług}
   - p: 14

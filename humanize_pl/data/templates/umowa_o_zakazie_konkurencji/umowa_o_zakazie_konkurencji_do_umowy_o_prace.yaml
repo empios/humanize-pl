@@ -94,19 +94,19 @@ blocks:
   layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
   text: ………………………………………………………………………………………………………………………………..;
   slots:
-  - {id: p23_1, span: [0, 50], type: text, context: ▢}
+  - {id: p23_1, span: [0, 50], type: content, context: ▢}
 - p: 24
   role: item
   layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
   text: ………………………………………………………………………………………………………………………………..;
   slots:
-  - {id: p24_1, span: [0, 50], type: text, context: ▢}
+  - {id: p24_1, span: [0, 50], type: content, context: ▢}
 - p: 25
   role: item
   layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
   text: ……………………………………………………………………………………………………………………………….. .
   slots:
-  - {id: opisanie_dzialalnosci_konkurencyjnej_moze_polega, span: [0, 50], type: text, hint: opisanie działalności konkurencyjnej może polegać
+  - {id: opisanie_dzialalnosci_konkurencyjnej_moze_polega, span: [0, 50], type: content, hint: opisanie działalności konkurencyjnej może polegać
       w szczególności na wskazaniu prac jakich Pracownik nie może wykonywać w związku z zawartą umową o pracę}
 - p: 26
   role: hint

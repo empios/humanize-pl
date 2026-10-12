@@ -118,13 +118,13 @@ blocks:
   layout: {align: justify, size: 10.0}
   text: Celem/celami Stowarzyszenia jest prowadzenie działalności………………………………………………………….. …………………………………………………………………..…………………………………………………………………………….
   slots:
-  - {id: p29_1, span: [57, 139], type: text, context: Stowarzyszenia jest prowadzenie działalności ▢}
+  - {id: p29_1, span: [57, 139], type: content, context: Stowarzyszenia jest prowadzenie działalności ▢}
 - p: 30
   role: blank_line
   layout: {align: justify, size: 10.0}
   text: …………………………………………………………………………………………………………………………………………………..…………………………………………………………………………………………………………………………………………………...………………………………………………………………………………………………………………………………………………..…..…………………………………………………………………………………………………………………………………….………
   slots:
-  - {id: p30_1, span: [0, 228], type: text, context: ▢}
+  - {id: p30_1, span: [0, 228], type: content, context: ▢}
 - {p: 31, role: spacer}
 - p: 32
   role: clause_heading
@@ -139,31 +139,31 @@ blocks:
   layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
   text: …
   slots:
-  - {id: p34_1, span: [0, 1], type: text, context: ▢}
+  - {id: p34_1, span: [0, 1], type: content, context: ▢}
 - p: 35
   role: item
   layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
   text: …
   slots:
-  - {id: p35_1, span: [0, 1], type: text, context: ▢}
+  - {id: p35_1, span: [0, 1], type: content, context: ▢}
 - p: 36
   role: item
   layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
   text: …
   slots:
-  - {id: p36_1, span: [0, 1], type: text, context: ▢}
+  - {id: p36_1, span: [0, 1], type: content, context: ▢}
 - p: 37
   role: item
   layout: {align: justify, size: 10.0, marker: {text: d), kind: lowerLetter, src: auto, level: 0}}
   text: …
   slots:
-  - {id: p37_1, span: [0, 1], type: text, context: ▢}
+  - {id: p37_1, span: [0, 1], type: content, context: ▢}
 - p: 38
   role: item
   layout: {align: justify, size: 10.0, marker: {text: e), kind: lowerLetter, src: auto, level: 0}}
   text: …
   slots:
-  - {id: p38_1, span: [0, 1], type: text, context: ▢}
+  - {id: p38_1, span: [0, 1], type: content, context: ▢}
 - p: 39
   role: body
   layout: {align: center, size: 12.0, bold: true}

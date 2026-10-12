@@ -145,7 +145,7 @@ document:
     layout: {align: center, size: 10.0}
     text: …………………………………………………………………………………………………………………………………………………
     slots:
-    - {id: nalezy_dokladnie_opisac_jakie_dzielo_ma_wykonac, span: [0, 55], type: text, hint: 'należy dokładnie opisać, jakie dzieło ma wykonać Wykonawca'}
+    - {id: nalezy_dokladnie_opisac_jakie_dzielo_ma_wykonac, span: [0, 55], type: content, hint: 'należy dokładnie opisać, jakie dzieło ma wykonać Wykonawca'}
   - p: 19
     role: hint
     layout: {align: center, size: 10.0, italic: true}

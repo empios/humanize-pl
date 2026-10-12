@@ -150,7 +150,7 @@ document:
     text: Przyjmujący na praktykę przyjmuje Praktykanta na praktykę celem ułatwienia uzyskania doświadczenia i nabycia umiejętności niezbędnych
       do wykonywania pracy w charakterze …………….…………….. .
     slots:
-    - {id: p24_1, span: [169, 182], type: text, context: wykonywania pracy w charakterze ▢}
+    - {id: p24_1, span: [169, 182], type: content, context: wykonywania pracy w charakterze ▢}
   - {p: 25, role: spacer}
   - p: 26
     role: clause_heading
@@ -165,7 +165,7 @@ document:
     layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
     text: rodzaj pracy .…………………………………………………………………………………
     slots:
-    - {id: p28_1, span: [13, 45], type: text, context: rodzaj pracy ▢}
+    - {id: p28_1, span: [13, 45], type: content, context: rodzaj pracy ▢}
   - p: 29
     role: item
     layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}

@@ -98,19 +98,19 @@ blocks:
   layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
   text: (należy wskazać zakres obowiązków pracownika w związku z zawartą umową np. regularne uczęszczanie na zajęcia dydaktyczne) …………………………………
   slots:
-  - {id: p13_1, span: [122, 135], type: text, context: ▢}
+  - {id: p13_1, span: [122, 135], type: content, context: ▢}
 - p: 14
   role: item
   layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
   text: ……………………………………………………
   slots:
-  - {id: p14_1, span: [0, 20], type: text, context: ▢}
+  - {id: p14_1, span: [0, 20], type: content, context: ▢}
 - p: 15
   role: item
   layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
   text: ……………………………………………………
   slots:
-  - {id: p15_1, span: [0, 20], type: text, context: ▢}
+  - {id: p15_1, span: [0, 20], type: content, context: ▢}
 - {p: 16, role: spacer}
 - p: 17
   role: clause_heading

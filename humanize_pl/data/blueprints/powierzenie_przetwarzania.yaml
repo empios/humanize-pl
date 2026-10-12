@@ -163,7 +163,7 @@ document:
     text: Powierzone przez Administratora danych dane osobowe będą przetwarzane przez Podmiot przetwarzający wyłącznie w celu …………… (należy podać
       cel przetwarzania danych przez podmiot przetwarzający, np. realizacji umowy z dnia ………… nr …………… w zakresie ………………..).
     slots:
-    - {id: nalezy_podac_cel_przetwarzania_danych_przez_podm, span: [116, 121], type: text, hint: 'należy podać cel przetwarzania danych przez podmiot
+    - {id: nalezy_podac_cel_przetwarzania_danych_przez_podm, span: [116, 121], type: content, hint: 'należy podać cel przetwarzania danych przez podmiot
         przetwarzający, np. realizacji umowy z dnia ………… nr …………… w zakresie ………………..'}
     - {id: p25_2, span: [219, 223], type: date, context: realizacji umowy z dnia ▢ nr w}
     - {id: p25_3, span: [227, 232], type: text, context: umowy z dnia nr ▢ w zakresie}

@@ -174,7 +174,7 @@ document:
     text: Na mocy niniejszej umowy Strona B zobowiązuje zachować w tajemnicy wszelkie informacje poufne, o których dowiedział się w związku …………………………………………………….
       (należy sprecyzować czynności wykonywane przez Stronę B, w związku z którymi powzięte zostały informację poufne)
     slots:
-    - {id: nalezy_sprecyzowac_czynnosci_wykonywane_przez_st, span: [130, 151], type: text, hint: 'należy sprecyzować czynności wykonywane przez
+    - {id: nalezy_sprecyzowac_czynnosci_wykonywane_przez_st, span: [130, 151], type: content, hint: 'należy sprecyzować czynności wykonywane przez
         Stronę B, w związku z którymi powzięte zostały informację poufne'}
     inline_hints:
     - {span: [152, 264], text: 'należy sprecyzować czynności wykonywane przez Stronę B, w związku z którymi powzięte zostały informację poufne'}
@@ -187,7 +187,7 @@ document:
     layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 34, end: 93, italic: true}]}
     text: ……………………………………………………………………………………… (należy wymienić informację, które będą uznawane za poufne)
     slots:
-    - {id: nalezy_wymienic_informacje_ktore_beda_uznawane_z, span: [0, 33], type: text, hint: 'należy wymienić informację, które będą uznawane za
+    - {id: nalezy_wymienic_informacje_ktore_beda_uznawane_z, span: [0, 33], type: content, hint: 'należy wymienić informację, które będą uznawane za
         poufne'}
     inline_hints:
     - {span: [34, 93], text: 'należy wymienić informację, które będą uznawane za poufne'}
@@ -198,7 +198,7 @@ document:
     text: 'Za naruszenie tajemnicy lub poufności przez Stronę B uważać się będzie w szczególności ……………………………………………………... (wskazanie czynności uznawanych
       za naruszenie obowiązku zachowania poufności) '
     slots:
-    - {id: wskazanie_czynnosci_uznawanych_za_naruszenie_obo, span: [87, 110], type: text, hint: wskazanie czynności uznawanych za naruszenie obowiązku
+    - {id: wskazanie_czynnosci_uznawanych_za_naruszenie_obo, span: [87, 110], type: content, hint: wskazanie czynności uznawanych za naruszenie obowiązku
         zachowania poufności}
     inline_hints:
     - {span: [111, 188], text: wskazanie czynności uznawanych za naruszenie obowiązku zachowania poufności}

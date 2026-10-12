@@ -158,7 +158,7 @@ document:
     layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
     text: '1. Za pośrednictwem Serwisu Usługodawca świadczy następujące Usługi: ……………………………………………… (rodzaje usług świadczonych w Serwisie).'
     slots:
-    - {id: rodzaje_uslug_swiadczonych_w_serwisie, span: [69, 87], type: text, hint: rodzaje usług świadczonych w Serwisie, label: Za pośrednictwem
+    - {id: rodzaje_uslug_swiadczonych_w_serwisie, span: [69, 87], type: content, hint: rodzaje usług świadczonych w Serwisie, label: Za pośrednictwem
         Serwisu Usługodawca świadczy następujące Usługi}
     inline_hints:
     - {span: [88, 127], text: rodzaje usług świadczonych w Serwisie}

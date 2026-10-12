@@ -92,7 +92,7 @@ blocks:
   text: Udzielający zamówienia powierza, a Przyjmujący zamówienie przyjmuje do wykonania udzielanie świadczeń zdrowotnych w zakresie ……………………………………
     w podmiocie leczniczym Udzielającego zamówienia przy ul. ……………………………… w ……...................
   slots:
-  - {id: p21_1, span: [125, 139], type: text, context: świadczeń zdrowotnych w zakresie ▢ w podmiocie}
+  - {id: p21_1, span: [125, 139], type: content, context: świadczeń zdrowotnych w zakresie ▢ w podmiocie}
   - {id: p21_2, span: [197, 209], type: address, context: Udzielającego zamówienia przy ul. ▢ w}
   - {id: p21_3, span: [212, 233], type: place, context: zamówienia przy ul. w ▢}
 - p: 22

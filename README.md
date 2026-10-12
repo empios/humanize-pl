@@ -700,7 +700,10 @@ Dokument z rozpoznaną kategorią prawną jest sprawdzany w dwóch krokach.
    się po kształcie, a samo „dnia” trafia też w „ustawy z dnia …”. Działa na
    każdym dokumencie, także napisanym bez naszego wzoru. Blueprint zawiera też
    `document`: ogólny dokument kategorii, w którym wypełnia się wyłącznie pola
-   (`slots`); treść, kolejność i układ zostają jak we wzorze.
+   (`slots`); treść, kolejność i układ zostają jak we wzorze. Pole ma typ
+   (`type`): dane konkretne (`person`, `date`, `amount`, `pesel` …) pochodzą
+   wyłącznie z materiału użytkownika, a `content` (stanowisko, zakres
+   obowiązków, przedmiot usług, cele) można zredagować z tematu prośby.
 2. **Wzór precyzyjny** (`humanize_pl/data/templates/<kategoria>/*.yaml`) —
    realne warianty, np. najem pokoju, oświadczenie o poddaniu się egzekucji przy
    najmie okazjonalnym, porozumienie stron. Silnik szuka wzoru, z którego tekst

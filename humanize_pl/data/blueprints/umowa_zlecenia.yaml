@@ -131,19 +131,19 @@ document:
     layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
     text: ………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………..
     slots:
-    - {id: p21_1, span: [0, 101], type: text, context: ▢}
+    - {id: p21_1, span: [0, 101], type: content, context: ▢}
   - p: 22
     role: item
     layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
     text: …………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………
     slots:
-    - {id: p22_1, span: [0, 100], type: text, context: ▢}
+    - {id: p22_1, span: [0, 100], type: content, context: ▢}
   - p: 23
     role: item
     layout: {align: justify, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}}
     text: …………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………
     slots:
-    - {id: czynnosci_do_ktorych_wykonania_bedzie_zobowiazan, span: [0, 100], type: text, hint: 'czynności, do których wykonania będzie zobowiązany
+    - {id: czynnosci_do_ktorych_wykonania_bedzie_zobowiazan, span: [0, 100], type: content, hint: 'czynności, do których wykonania będzie zobowiązany
         Zleceniobiorca'}
   - p: 24
     role: hint

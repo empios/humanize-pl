@@ -358,6 +358,9 @@ class Slot:
     end: int
     kind: str  # blank | placeholder
     blank: str
+    # what the blank holds; "content" (duties, subject of services, aims) is set by hand
+    # in a template and may be drafted from the request's subject, every other type only
+    # takes facts the user gave
     type: str = "text"
     hint: str | None = None
     label: str | None = None

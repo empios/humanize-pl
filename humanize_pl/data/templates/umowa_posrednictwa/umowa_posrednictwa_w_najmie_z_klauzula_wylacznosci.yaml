@@ -129,26 +129,26 @@ blocks:
   layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
   text: '……………………………………… '
   slots:
-  - {id: p31_1, span: [0, 15], type: text, context: ▢}
+  - {id: p31_1, span: [0, 15], type: content, context: ▢}
 - p: 32
   role: item
   layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
   text: '……………………………………… '
   slots:
-  - {id: p32_1, span: [0, 15], type: text, context: ▢}
+  - {id: p32_1, span: [0, 15], type: content, context: ▢}
 - p: 33
   role: item
   layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
   text: '……………………………………… '
   slots:
-  - {id: p33_1, span: [0, 15], type: text, context: ▢}
+  - {id: p33_1, span: [0, 15], type: content, context: ▢}
 - p: 34
   role: item
   layout: {align: justify, size: 10.0, marker: {text: d), kind: lowerLetter, src: auto, level: 0}}
   text: '……………………………………… '
   slots:
-  - {id: nalezy_wskazac_jakie_czynnosci_beda_wchodzic_w_z, span: [0, 15], type: text, hint: 'należy wskazać, jakie czynności będą wchodzić w zakres
-      obowiązków Pośrednika'}
+  - {id: nalezy_wskazac_jakie_czynnosci_beda_wchodzic_w_z, span: [0, 15], type: content, hint: 'należy wskazać, jakie czynności będą wchodzić
+      w zakres obowiązków Pośrednika'}
 - p: 35
   role: hint
   layout: {align: justify, indent: {left: 360}, size: 10.0, italic: true}

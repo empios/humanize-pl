@@ -273,3 +273,29 @@ def test_empty_baselines_are_not_scored_and_the_paper_numbers_hold() -> None:
     assert abs(scores["ai_legal_10_opinia_zakaz_konkurencji"] - 0.183) < 0.001
     assert abs(max(scores.values()) - 0.724) < 0.001
     assert abs(min(scores.values()) - 0.183) < 0.001
+
+
+@requires_profile
+def test_burstiness_with_a_non_positive_human_median_is_not_scored() -> None:
+    """Burstiness runs from -1 to 1. Court reasoning has a negative median
+    (-0.113 on the 1 804-document profile), so a deficit below it cannot be
+    scaled: the signal would score 0 for every document while its weight
+    diluted the average by 1/20. A positive median is still scored."""
+    from dataclasses import replace
+
+    from humanize_pl.detect.reference import Distribution
+
+    base = load_profile()
+
+    def scored_names(p50: float) -> set[str]:
+        profile = replace(
+            base, sentence_burstiness=Distribution(p50, 0.2, p50, p50 + 0.2, p50 + 0.3, p50 + 0.4)
+        )
+        calibration = detect_document(
+            AI_LIKE, profile=profile, calibrate_against_default=False
+        ).calibration
+        return {signal.name for signal in calibration.signals if signal.weight > 0}
+
+    assert "sentence_burstiness" not in scored_names(-0.113)
+    assert "sentence_burstiness" not in scored_names(0.0)
+    assert "sentence_burstiness" in scored_names(0.15)

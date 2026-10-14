@@ -182,9 +182,12 @@ def calibrate(
     # Shape signals are scored only once a reference profile carries a measured
     # baseline for them. An empty baseline must not enter the average: a "low"
     # signal would be dead weight (diluting the score) and a "high" one would
-    # fall to the rate floor and fabricate a hit from nothing.
+    # fall to the rate floor and fabricate a hit from nothing. Burstiness runs
+    # from -1 to 1, and a human median at or below zero leaves _exceedance_low
+    # nothing to scale against: it would return 0 for every document while its
+    # weight still diluted the score, so such a baseline is skipped as well.
     burstiness = diagnosis.metrics.get("sentence_burstiness", 0.0)
-    if not profile.sentence_burstiness.is_empty:
+    if not profile.sentence_burstiness.is_empty and profile.sentence_burstiness.p50 > 0:
         signals.append(
             CalibratedSignal(
                 name="sentence_burstiness",

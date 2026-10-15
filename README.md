@@ -25,6 +25,9 @@ Działa warstwowo:
 
 ## Co nowego (niewydane)
 
+- rozpoznawanie pism przychodzących (`humanize_pl.replies`): rodzaj aktu,
+  nadawca, procedura i pouczenie wyznaczają możliwe odpowiedzi z terminem
+  i podstawą prawną (zob. „Odpowiedź na pismo przychodzące”),
 - frontend przeglądarkowy `humanize-pl-ui` (Gradio) dla obu przepływów, bez wiersza poleceń: wgrywanie plików, wynik opisany słowami, pobieranie poprawionych dokumentów i raportów,
 - rozpoznawanie trzech rodzin dokumentów: komunikacja z klientem, umowa,
   pismo procesowe lub urzędowe; wynik zawiera pewność i można go nadpisać
@@ -733,6 +736,31 @@ python -m humanize_pl.layout_ir check wzor.yaml
 trafia do `humanize_pl/data/templates/<kategoria>/` z kluczem `label_pl`; pola
 z identyfikatorem `pNN_k` warto nazwać. Pliki DOCX, z których powstały
 dostarczone wzory, nie są częścią repozytorium.
+
+
+## Odpowiedź na pismo przychodzące
+
+`humanize_pl.replies.analyze(tekst)` czyta dowolne pismo po jego budowie, nie po
+liście urzędów: tytuł aktu i zwroty rozstrzygające wskazują rodzaj aktu (decyzja,
+postanowienie, wezwanie, upomnienie, wyrok, nakaz zapłaty, wezwanie do zapłaty,
+wypowiedzenie…), nazwy w nagłówku nadawcę, cytowane przepisy procedurę (w ich
+braku procedurę nadawcy). Pismo, którego nic nie rozpoznaje, dostaje tylko
+odpowiedzi zawsze dopuszczalne: ogólne pismo w odpowiedzi i wniosek o przywrócenie
+terminu.
+
+Odpowiedzi wynikają z katalogu `humanize_pl/data/replies.yaml`. Każda ma cel
+(kwestionuję, wyjaśniam, potrzebuję czasu, termin minął, ugoda, sam zgłaszam),
+kategorię wzoru, termin i podstawę prawną, zależnie od procedury. Pouczenie
+w piśmie ma pierwszeństwo: środek, który nazywa, trafia na początek listy z jego
+terminem, adresatem i organem pośredniczącym, a termin różny od przepisu jest
+zgłaszany w polu `conflict`, nie poprawiany. Odpowiedzi wrażliwe niosą ostrzeżenia
+(np. skuteczność czynnego żalu, art. 16 § 5 k.k.s.). Fakty, które odpowiedź musi
+przytoczyć bez zmian (sygnatury, daty, kwoty, NIP/PESEL, przepisy), są zwracane
+w `facts`. Nic nie jest składane ani wybierane za użytkownika.
+
+Terminy w katalogu sprawdza się w ISAP przy każdej zmianie pliku. Testy:
+`tests/test_replies.py` z fikcyjnymi pismami w `tests/fixtures/incoming_letters.yaml`,
+także od nadawców, których katalog nie wymienia z nazwy.
 
 
 ## Sygnały strukturalne

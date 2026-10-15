@@ -1,0 +1,313 @@
+# Pisma przychodzące do testów rozpoznawania (humanize_pl.replies).
+# Pisma są fikcyjne: dane osób, sygnatury i kwoty zmyślone.
+# `expect.replies` to odpowiedzi, które muszą się znaleźć wśród pierwszych
+# trzech propozycji; `term` to termin pierwszej z nich.
+
+letters:
+  - name: us_wezwanie_czynnosci_sprawdzajace
+    text: |
+      NACZELNIK URZĘDU SKARBOWEGO WARSZAWA-MOKOTÓW
+      ul. Postępu 16, 02-676 Warszawa
+      Warszawa, 3 października 2026 r.
+      Znak sprawy: 1434-SPV.4012.215.2026
+      Pan Jan Nowak
+      NIP 525-123-45-67
+      WEZWANIE
+      Na podstawie art. 274a § 1 i § 2 ustawy z dnia 29 sierpnia 1997 r. Ordynacja podatkowa
+      Naczelnik Urzędu Skarbowego wzywa Pana do złożenia wyjaśnień dotyczących rozbieżności
+      w deklaracji VAT-7 za sierpień 2026 r. oraz do przedłożenia faktur zakupowych,
+      w terminie 7 dni od dnia doręczenia niniejszego wezwania.
+      Niestawiennictwo lub nieprzedłożenie dokumentów może skutkować nałożeniem kary porządkowej
+      na podstawie art. 262 Ordynacji podatkowej.
+    expect:
+      act: wezwanie
+      sender: organ_podatkowy
+      procedure: op
+      replies: [wyjasnienia, wniosek_o_przedluzenie_terminu, korekta_deklaracji]
+      term: {value: 7, unit: day}
+      references: ["1434-SPV.4012.215.2026"]
+
+  - name: us_decyzja_z_pouczeniem
+    text: |
+      NACZELNIK PIERWSZEGO URZĘDU SKARBOWEGO W KRAKOWIE
+      Kraków, 12.09.2026
+      Nr decyzji: 1201-SPV.4100.33.2026
+      DECYZJA
+      Na podstawie art. 207 i art. 21 § 3 Ordynacji podatkowej Naczelnik Urzędu Skarbowego
+      określa zobowiązanie podatkowe w podatku dochodowym od osób fizycznych za 2024 r.
+      w wysokości 12 450,00 zł.
+      Uzasadnienie
+      W toku postępowania ustalono, że podatnik zaniżył przychód.
+      Pouczenie
+      Od niniejszej decyzji służy stronie odwołanie do Dyrektora Izby Administracji Skarbowej
+      w Krakowie za pośrednictwem Naczelnika Pierwszego Urzędu Skarbowego w Krakowie w terminie
+      14 dni od dnia jej doręczenia.
+    expect:
+      act: decyzja
+      sender: organ_podatkowy
+      procedure: op
+      replies: [odwolanie]
+      term: {value: 14, unit: day}
+      addressee: Dyrektora Izby Administracji Skarbowej w Krakowie
+      via: Naczelnika Pierwszego Urzędu Skarbowego w Krakowie
+      confidence: wysoka
+      amounts: ["12 450,00 zł"]
+
+  - name: zus_decyzja
+    text: |
+      ZAKŁAD UBEZPIECZEŃ SPOŁECZNYCH
+      ODDZIAŁ W POZNANIU
+      Poznań, 2026-08-20
+      Znak: 450000/71/2026/EM
+      DECYZJA
+      Zakład Ubezpieczeń Społecznych odmawia przyznania prawa do emerytury.
+      Odwołanie od decyzji przysługuje do Sądu Okręgowego w Poznaniu Wydział Pracy
+      i Ubezpieczeń Społecznych za pośrednictwem Oddziału ZUS w terminie miesiąca od dnia
+      doręczenia decyzji (art. 477⁹ § 1 Kodeksu postępowania cywilnego).
+    expect:
+      act: decyzja
+      sender: zus
+      replies: [odwolanie_zus]
+      term: {value: 1, unit: month}
+
+  - name: gmina_postanowienie_kpa
+    text: |
+      WÓJT GMINY STARE BABICE
+      Stare Babice, dnia 5 sierpnia 2026 r.
+      Znak sprawy: RGiOŚ.6220.14.2026
+      POSTANOWIENIE
+      Na podstawie art. 123 Kodeksu postępowania administracyjnego Wójt Gminy postanawia
+      odmówić wszczęcia postępowania w sprawie wydania decyzji o warunkach zabudowy.
+      Pouczenie
+      Na niniejsze postanowienie przysługuje zażalenie do Samorządowego Kolegium Odwoławczego
+      w Warszawie za pośrednictwem Wójta Gminy Stare Babice w terminie 7 dni od dnia doręczenia.
+    expect:
+      act: postanowienie
+      sender: samorzad
+      procedure: kpa
+      replies: [zazalenie]
+      term: {value: 7, unit: day}
+      addressee: Samorządowego Kolegium Odwoławczego w Warszawie
+
+  - name: sad_nakaz_upominawczy
+    text: |
+      Sąd Rejonowy dla Warszawy-Śródmieścia w Warszawie
+      I Wydział Cywilny
+      Sygn. akt I Nc 1234/26
+      NAKAZ ZAPŁATY
+      W POSTĘPOWANIU UPOMINAWCZYM
+      Sąd Rejonowy nakazuje pozwanemu Janowi Nowakowi, aby zapłacił powodowi Kredytex sp. z o.o.
+      kwotę 4 800,00 zł z odsetkami ustawowymi za opóźnienie od dnia 1 marca 2026 r.,
+      w terminie dwóch tygodni od doręczenia nakazu albo wniósł w tym terminie sprzeciw.
+      Pouczenie
+      Pozwany może wnieść sprzeciw od nakazu zapłaty do Sądu Rejonowego dla Warszawy-Śródmieścia
+      w terminie dwóch tygodni od dnia doręczenia nakazu.
+    expect:
+      act: nakaz_zaplaty
+      sender: sad_cywilny
+      procedure: kpc
+      replies: [sprzeciw_od_nakazu, propozycja_ugody]
+      term: {value: 2, unit: week}
+      references: ["I Nc 1234/26"]
+
+  - name: sad_wyrok_cywilny
+    text: |
+      Sygn. akt II C 456/25
+      WYROK
+      W IMIENIU RZECZYPOSPOLITEJ POLSKIEJ
+      Dnia 10 września 2026 r.
+      Sąd Okręgowy w Gdańsku II Wydział Cywilny
+      po rozpoznaniu sprawy z powództwa Anny Kowalskiej przeciwko Bankowi Pomorskiemu S.A.
+      zasądza od pozwanego na rzecz powódki kwotę 18 000 zł.
+    expect:
+      act: wyrok
+      sender: sad_cywilny
+      procedure: kpc
+      replies: [wniosek_o_uzasadnienie, apelacja]
+      term: {value: 1, unit: week}
+
+  - name: wyrok_zaoczny
+    text: |
+      Sąd Rejonowy w Lublinie
+      Wydział Cywilny
+      Sygn. akt I C 77/26
+      WYROK ZAOCZNY
+      Sąd zasądza od pozwanego kwotę 2 300 zł.
+      Pouczenie: pozwanemu przysługuje sprzeciw w terminie dwutygodniowym od dnia doręczenia wyroku.
+    expect:
+      act: wyrok_zaoczny
+      replies: [sprzeciw_od_wyroku_zaocznego]
+      term: {value: 2, unit: week}
+
+  - name: upomnienie_us
+    text: |
+      Naczelnik Urzędu Skarbowego w Radomiu
+      Radom, 1 lipca 2026 r.
+      UPOMNIENIE
+      Na podstawie art. 15 § 1 ustawy o postępowaniu egzekucyjnym w administracji Naczelnik
+      Urzędu Skarbowego upomina, że w terminie 7 dni od dnia doręczenia upomnienia należy
+      uregulować zaległość w kwocie 1 250,00 zł wraz z odsetkami, pod rygorem skierowania sprawy
+      na drogę postępowania egzekucyjnego.
+    expect:
+      act: upomnienie
+      sender: organ_podatkowy
+      procedure: upea
+      replies: [wyjasnienie_wplaty, wniosek_o_raty]
+
+  - name: tytul_wykonawczy_zajecie
+    text: |
+      NACZELNIK URZĘDU SKARBOWEGO W TORUNIU
+      ZAWIADOMIENIE O ZAJĘCIU
+      wierzytelności z rachunku bankowego
+      Na podstawie ustawy o postępowaniu egzekucyjnym w administracji organ egzekucyjny dokonuje
+      zajęcia rachunku bankowego zobowiązanego na pokrycie należności z tytułu wykonawczego.
+      Pouczenie
+      Zobowiązanemu przysługuje prawo wniesienia zarzutu w sprawie prowadzenia egzekucji
+      administracyjnej do organu egzekucyjnego w terminie 7 dni od dnia doręczenia odpisu tytułu
+      wykonawczego.
+    expect:
+      act: tytul_wykonawczy
+      sender: organ_podatkowy
+      replies: [zarzuty_egzekucja]
+      term: {value: 7, unit: day}
+
+  - name: prywatne_wezwanie_do_zaplaty
+    text: |
+      Kredytex sp. z o.o.
+      ul. Prosta 10, 00-838 Warszawa
+      Warszawa, 14.10.2026
+      Pan Piotr Zieliński
+      OSTATECZNE PRZEDSĄDOWE WEZWANIE DO ZAPŁATY
+      Działając w imieniu Kredytex sp. z o.o. wzywamy do zapłaty kwoty 3 210,45 zł tytułem
+      nieuregulowanej faktury nr FV/112/2026 wraz z odsetkami ustawowymi (art. 481 k.c.)
+      w terminie 7 dni od otrzymania niniejszego wezwania. Brak zapłaty spowoduje skierowanie
+      sprawy na drogę sądową.
+    expect:
+      act: wezwanie_do_zaplaty
+      sender: podmiot_prywatny
+      procedure: cywilna
+      replies: [wyjasnienie_wplaty, odpowiedz_na_wezwanie_do_zaplaty, propozycja_ugody]
+      amounts: ["3 210,45 zł"]
+
+  - name: wypowiedzenie_umowy_o_prace
+    text: |
+      Logistyka Plus sp. z o.o.
+      Wrocław, 30 września 2026 r.
+      Pani Ewa Mazur
+      WYPOWIEDZENIE UMOWY O PRACĘ
+      Na podstawie art. 30 § 1 pkt 2 Kodeksu pracy wypowiadam umowę o pracę zawartą
+      na czas nieokreślony z zachowaniem trzymiesięcznego okresu wypowiedzenia.
+      Przyczyna wypowiedzenia: likwidacja stanowiska pracy.
+      Pouczenie: od wypowiedzenia przysługuje Pani odwołanie do sądu pracy w terminie 21 dni
+      od dnia doręczenia niniejszego pisma.
+    expect:
+      act: wypowiedzenie
+      sender: podmiot_prywatny
+      procedure: kp
+      replies: [odwolanie_od_wypowiedzenia]
+      term: {value: 21, unit: day}
+
+  - name: inspektorat_decyzja_bez_pouczenia_terminu
+    text: |
+      POWIATOWY INSPEKTOR NADZORU BUDOWLANEGO W OPOLU
+      Opole, 2 października 2026 r.
+      DECYZJA
+      Na podstawie art. 104 Kodeksu postępowania administracyjnego organ nakazuje rozbiórkę
+      wiaty wykonanej bez wymaganego zgłoszenia. Od decyzji przysługuje odwołanie do
+      Opolskiego Wojewódzkiego Inspektora Nadzoru Budowlanego w terminie 30 dni.
+    expect:
+      act: decyzja
+      sender: organ_administracji
+      procedure: kpa
+      replies: [odwolanie]
+      term: {value: 30, unit: day}
+      conflict: true
+
+  - name: odpis_pozwu_z_zarzadzeniem
+    text: |
+      Sąd Rejonowy w Katowicach
+      Wydział Gospodarczy
+      Sygn. akt V GC 310/26
+      ZARZĄDZENIE
+      Sąd doręcza odpis pozwu i zobowiązuje pozwanego do złożenia odpowiedzi na pozew
+      w terminie 21 dni od doręczenia, pod rygorem pominięcia twierdzeń i dowodów.
+    expect:
+      act: odpis_pozwu
+      sender: sad_cywilny
+      replies: [odpowiedz_na_pozew, wniosek_o_przedluzenie_terminu]
+      term: {value: 21, unit: day}
+
+  - name: list_bez_aktu
+    text: |
+      Szanowny Panie,
+      dziękujemy za kontakt w sprawie spotkania. Prosimy o informację, czy termin
+      w przyszłym tygodniu będzie dogodny.
+      Z poważaniem
+      Anna Lis
+    expect:
+      act: null
+      confidence: niska
+      replies: [odpowiedz_ogolna, wniosek_o_przywrocenie_terminu]
+
+  - name: uodo_decyzja_ostateczna
+    text: |
+      PREZES URZĘDU OCHRONY DANYCH OSOBOWYCH
+      Warszawa, 2 września 2026 r.
+      DKN.5131.12.2026
+      DECYZJA
+      Na podstawie art. 104 § 1 Kodeksu postępowania administracyjnego Prezes UODO nakłada
+      administracyjną karę pieniężną w wysokości 20 000 zł.
+      Pouczenie
+      Decyzja jest ostateczna. Stronie przysługuje skarga do Wojewódzkiego Sądu Administracyjnego
+      w Warszawie w terminie 30 dni od dnia doręczenia decyzji, za pośrednictwem Prezesa Urzędu
+      Ochrony Danych Osobowych.
+    expect:
+      act: decyzja
+      sender: organ_administracji
+      procedure: kpa
+      replies: [skarga_wsa]
+      term: {value: 30, unit: day}
+      via: Prezesa Urzędu Ochrony Danych Osobowych
+
+  - name: komornik_zawiadomienie
+    text: |
+      Komornik Sądowy przy Sądzie Rejonowym w Bydgoszczy Anna Nowicka
+      Kancelaria Komornicza nr II
+      Sygn. akt KM 1234/26
+      ZAWIADOMIENIE O WSZCZĘCIU EGZEKUCJI
+      Na wniosek wierzyciela zawiadamiam o wszczęciu egzekucji i dokonuje zajęcia wynagrodzenia
+      za pracę dłużnika.
+      Pouczenie: na czynności komornika przysługuje skarga do Sądu Rejonowego w Bydgoszczy
+      w terminie tygodnia od dnia dokonania czynności.
+    expect:
+      act: tytul_wykonawczy
+      sender: komornik
+      replies: [skarga_na_komornika]
+      term: {value: 1, unit: week}
+
+  - name: prokuratura_umorzenie
+    text: |
+      Prokuratura Rejonowa w Sopocie
+      Sygn. akt PR 1 Ds. 345.2026
+      POSTANOWIENIE
+      o umorzeniu dochodzenia
+      Prokurator postanawia umorzyć dochodzenie wobec braku znamion czynu zabronionego
+      (art. 17 § 1 pkt 2 k.p.k.).
+      Pouczenie: na postanowienie przysługuje zażalenie do Sądu Rejonowego w Sopocie
+      w terminie 7 dni od daty doręczenia.
+    expect:
+      act: postanowienie
+      sender: organy_scigania
+      procedure: kpk
+      replies: [zazalenie]
+      term: {value: 7, unit: day}
+
+  - name: straz_miejska_mandat
+    text: |
+      Straż Miejska w Krakowie
+      MANDAT KARNY nr AB123456
+      Nałożono grzywnę w kwocie 300 zł za wykroczenie z art. 92 § 1 Kodeksu wykroczeń.
+    expect:
+      act: mandat
+      sender: organy_scigania
+      replies: [wniosek_o_uchylenie_mandatu]

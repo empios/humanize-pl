@@ -1,0 +1,434 @@
+# Katalog odpowiedzi na pisma przychodzące.
+#
+# Odpowiedź na pismo zależy od tego, czym pismo jest, a nie od tego, kto je
+# wysłał: decyzję zaskarża się odwołaniem, czy wydał ją naczelnik urzędu
+# skarbowego, wójt, czy ZUS. Dlatego rozpoznanie ma trzy osie:
+#
+# acts        — rodzaj aktu (decyzja, wezwanie, wyrok…), z nagłówka i zwrotów
+#               rozstrzygających;
+# senders     — nadawca (sąd, organ podatkowy, ZUS, podmiot prywatny…);
+# procedures  — procedura, z cytowanych przepisów, a w ich braku z nadawcy.
+#
+# Odpowiedź (`replies`) wybiera się po tych trzech osiach i po celu
+# użytkownika (`goal`). Pouczenie w samym piśmie ma pierwszeństwo przed
+# katalogiem: termin i środek, które podaje, są wiążące dla adresata, a różnica
+# względem katalogu jest zgłaszana, nie rozstrzygana po cichu.
+#
+# Każdy termin ma podstawę (`basis`). Terminy sprawdza się w ISAP przy każdej
+# zmianie tego pliku; katalog nie zastępuje pouczenia ani porady prawnej.
+#
+# Sygnały i nagłówki zapisuje się małymi literami. Skróty przepisów
+# („k.p.a.”) dopasowuje się jako całe słowa, więc „k.p.” nie trafia w „k.p.a.”.
+
+version: 1
+
+goals:
+  kwestionuje: Kwestionuję rozstrzygnięcie lub żądanie
+  wyjasnia: Wyjaśniam lub wykonuję żądanie
+  czas: Potrzebuję więcej czasu
+  spozniony: Termin już minął
+  ugoda: Chcę ugody, rat lub umorzenia
+  zglaszam: Sam zgłaszam nieprawidłowość
+  ogolne: Inna odpowiedź
+
+procedures:
+  - id: op
+    label_pl: Ordynacja podatkowa
+    signals: ["ordynacji podatkowej", "ordynacja podatkowa", "o.p.", "op"]
+  - id: kpa
+    label_pl: Kodeks postępowania administracyjnego
+    signals: ["kodeksu postępowania administracyjnego", "kodeks postępowania administracyjnego", "k.p.a.", "kpa"]
+  - id: kpc
+    label_pl: Kodeks postępowania cywilnego
+    signals: ["kodeksu postępowania cywilnego", "kodeks postępowania cywilnego", "k.p.c.", "kpc"]
+  - id: kpk
+    label_pl: Kodeks postępowania karnego
+    signals: ["kodeksu postępowania karnego", "kodeks postępowania karnego", "k.p.k.", "kpk"]
+  - id: kks
+    label_pl: Kodeks karny skarbowy
+    signals: ["kodeksu karnego skarbowego", "kodeks karny skarbowy", "k.k.s.", "kks"]
+  - id: ppsa
+    label_pl: Prawo o postępowaniu przed sądami administracyjnymi
+    signals: ["postępowaniu przed sądami administracyjnymi", "p.p.s.a.", "ppsa"]
+  - id: upea
+    label_pl: Ustawa o postępowaniu egzekucyjnym w administracji
+    signals: ["postępowaniu egzekucyjnym w administracji", "u.p.e.a.", "upea"]
+  - id: kp
+    label_pl: Kodeks pracy
+    signals: ["kodeksu pracy", "kodeks pracy", "k.p."]
+  - id: kpw
+    label_pl: Kodeks postępowania w sprawach o wykroczenia
+    signals: ["postępowania w sprawach o wykroczenia", "k.p.w.", "kpw"]
+  - id: cywilna
+    label_pl: Prawo cywilne (stosunek prywatny)
+    signals: ["kodeksu cywilnego", "kodeks cywilny", "k.c.", "kc"]
+
+senders:
+  - id: organ_podatkowy
+    label_pl: organ podatkowy (KAS)
+    procedure: op
+    signals_strong: ["naczelnik urzędu skarbowego", "naczelnika urzędu skarbowego", "naczelnik pierwszego urzędu skarbowego", "dyrektor izby administracji skarbowej", "dyrektora izby administracji skarbowej", "naczelnik urzędu celno-skarbowego", "krajowa administracja skarbowa", "urząd skarbowy"]
+    signals: ["podatnik", "zobowiązanie podatkowe", "zaległość podatkow", "deklaracj", "korekt", "vat", "pit"]
+  - id: zus
+    label_pl: ZUS lub KRUS
+    procedure: kpa
+    signals_strong: ["zakład ubezpieczeń społecznych", "zakładu ubezpieczeń społecznych", "kasa rolniczego ubezpieczenia społecznego", "zus oddział", "oddział zus"]
+    signals: ["ubezpieczony", "świadczeni", "składk", "emerytur", "rent"]
+  - id: sad_administracyjny
+    label_pl: sąd administracyjny
+    procedure: ppsa
+    signals_strong: ["wojewódzki sąd administracyjny", "wojewódzkiego sądu administracyjnego", "naczelny sąd administracyjny", "naczelnego sądu administracyjnego"]
+    signals: ["skarżący", "skarga"]
+  - id: sad_pracy
+    label_pl: sąd pracy
+    procedure: kpc
+    signals_strong: ["wydział pracy", "sąd pracy", "wydział pracy i ubezpieczeń społecznych"]
+    signals: ["pracownik", "pracodawca"]
+  - id: sad_karny
+    label_pl: sąd karny
+    procedure: kpk
+    signals_strong: ["wydział karny", "wydział karny odwoławczy"]
+    signals: ["oskarżony", "oskarżyciel", "obwiniony", "skazany"]
+  - id: sad_cywilny
+    label_pl: sąd cywilny
+    procedure: kpc
+    signals_strong: ["wydział cywilny", "wydział gospodarczy", "wydział rodzinny", "e-sąd", "wydział cywilny odwoławczy"]
+    signals: ["sąd rejonowy", "sąd okręgowy", "sąd apelacyjny", "powód", "pozwany", "sygn. akt"]
+  - id: komornik
+    label_pl: komornik sądowy
+    procedure: kpc
+    signals_strong: ["komornik sądowy", "komornika sądowego", "kancelaria komornicza"]
+    signals: ["dłużnik", "wierzyciel", "zajęcie", "egzekucj"]
+  - id: organy_scigania
+    label_pl: policja, prokuratura lub straż miejska
+    procedure: kpk
+    signals_strong: ["prokuratura rejonowa", "prokuratura okręgowa", "straż miejska", "straż gminna", "komenda powiatowa policji", "komenda miejska policji", "komisariat policji", "komenda rejonowa policji"]
+    signals: ["podejrzany", "postępowanie przygotowawcze", "dochodzenie", "śledztwo"]
+  - id: samorzad
+    label_pl: organ samorządu
+    procedure: kpa
+    signals_strong: ["prezydent miasta", "burmistrz", "wójt gminy", "starosta", "marszałek województwa", "urząd miasta", "urząd gminy", "starostwo powiatowe", "samorządowe kolegium odwoławcze"]
+    signals: ["gmina", "powiat", "mieszkaniec"]
+  - id: organ_administracji
+    label_pl: organ administracji rządowej
+    procedure: kpa
+    signals_strong: ["wojewoda", "urząd wojewódzki", "inspektor nadzoru budowlanego", "inspektorat", "prezes urzędu", "minister"]
+    signals: ["strona postępowania", "postępowanie administracyjne"]
+  - id: podmiot_prywatny
+    label_pl: podmiot prywatny (firma, pracodawca, wierzyciel)
+    procedure: cywilna
+    signals_strong: ["sp. z o.o.", "spółka z ograniczoną odpowiedzialnością", "spółka akcyjna", "s.a.", "towarzystwo ubezpieczeń", "windykac", "kancelaria radcy prawnego", "kancelaria adwokacka"]
+    signals: ["pracodawca", "wynajmujący", "najemca", "zleceniodawca", "klient", "umow"]
+
+acts:
+  - id: decyzja
+    label_pl: decyzja
+    header: ["decyzja"]
+    signals_strong: ["orzeka", "orzekam", "określa zobowiązanie", "odmawia przyznania", "przyznaje", "ustala wysokość"]
+    signals: ["uzasadnienie", "od niniejszej decyzji", "decyzja jest ostateczna"]
+  - id: postanowienie
+    label_pl: postanowienie
+    header: ["postanowienie"]
+    signals_strong: ["postanawia", "postanawiam"]
+    signals: ["na niniejsze postanowienie", "zażalenie"]
+  - id: wezwanie
+    label_pl: wezwanie organu
+    header: ["wezwanie"]
+    signals_strong: ["wzywa", "wzywam pana", "wzywam panią", "wzywa się", "w celu złożenia wyjaśnień", "do przedłożenia", "do uzupełnienia braków"]
+    signals: ["w terminie", "pod rygorem", "kary porządkowej"]
+  - id: zawiadomienie
+    label_pl: zawiadomienie
+    header: ["zawiadomienie"]
+    signals_strong: ["zawiadamia", "zawiadamiam", "o wszczęciu postępowania", "o zamiarze wszczęcia kontroli", "o zakończeniu postępowania", "o przedłużeniu terminu"]
+    signals: ["art. 10", "art. 200", "zapoznania się z materiałem"]
+  - id: upomnienie
+    label_pl: upomnienie
+    header: ["upomnienie"]
+    signals_strong: ["upomina", "upominam", "pod rygorem skierowania sprawy na drogę postępowania egzekucyjnego"]
+    signals: ["zaległoś", "koszty upomnienia"]
+  - id: tytul_wykonawczy
+    label_pl: tytuł wykonawczy lub zajęcie
+    header: ["tytuł wykonawczy", "zawiadomienie o zajęciu", "zawiadomienie o wszczęciu egzekucji"]
+    signals_strong: ["zajęcie wierzytelności", "zajęcia rachunku", "dokonuje zajęcia", "zawiadamiam o wszczęciu egzekucji", "tytuł wykonawczy"]
+    signals: ["egzekucj", "zobowiązany", "organ egzekucyjny"]
+  - id: wyrok_zaoczny
+    label_pl: wyrok zaoczny
+    header: ["wyrok zaoczny"]
+    signals_strong: ["wyrok zaoczny"]
+    signals: ["sprzeciw"]
+  - id: wyrok
+    label_pl: wyrok
+    header: ["wyrok"]
+    signals_strong: ["zasądza", "oddala powództwo", "uznaje oskarżonego", "oddala apelację", "w imieniu rzeczypospolitej polskiej"]
+    signals: ["sentencja", "apelacj"]
+  - id: nakaz_zaplaty
+    label_pl: nakaz zapłaty
+    header: ["nakaz zapłaty"]
+    signals_strong: ["w postępowaniu upominawczym", "w postępowaniu nakazowym", "nakazuje pozwanemu", "elektronicznym postępowaniu upominawczym"]
+    signals: ["sprzeciw", "zarzuty"]
+  - id: odpis_pozwu
+    label_pl: odpis pozwu
+    header: ["pozew", "odpis pozwu"]
+    signals_strong: ["doręcza odpis pozwu", "odpowiedzi na pozew", "wnoszę o zasądzenie", "wnosi o zasądzenie"]
+    signals: ["powód", "pozwany", "wartość przedmiotu sporu"]
+  - id: protokol_kontroli
+    label_pl: protokół kontroli
+    header: ["protokół kontroli", "protokół z kontroli", "protokół badania ksiąg"]
+    signals_strong: ["ustalenia kontroli", "zastrzeżenia lub wyjaśnienia"]
+    signals: ["kontrolowany", "kontrolujący"]
+  - id: mandat
+    label_pl: mandat karny
+    header: ["mandat karny"]
+    signals_strong: ["mandat karny", "mandatem karnym", "nałożono grzywnę"]
+    signals: ["wykroczeni", "grzywn"]
+  - id: wezwanie_do_zaplaty
+    label_pl: wezwanie do zapłaty
+    header: ["wezwanie do zapłaty", "przedsądowe wezwanie do zapłaty", "ostateczne wezwanie do zapłaty", "ostateczne przedsądowe wezwanie do zapłaty"]
+    signals_strong: ["wzywam do zapłaty", "wzywamy do zapłaty", "wzywa do zapłaty", "do zapłaty kwoty"]
+    signals: ["zaległoś", "należnoś", "odsetk", "na drogę sądową"]
+  - id: wypowiedzenie
+    label_pl: wypowiedzenie umowy
+    header: ["wypowiedzenie", "wypowiedzenie umowy", "wypowiedzenie umowy o pracę"]
+    signals_strong: ["wypowiadam", "wypowiada", "rozwiązuje umowę", "okres wypowiedzenia"]
+    signals: ["umowy o pracę", "umowy najmu", "przyczyna wypowiedzenia"]
+
+replies:
+  # ------------------------------------------------- akty administracyjne ---
+  - id: odwolanie
+    label_pl: odwołanie od decyzji
+    category: odwolanie_od_decyzji
+    goal: kwestionuje
+    when: {acts: [decyzja], procedures: [kpa, op]}
+    remedy: ["odwołanie", "odwołania"]
+    deadline: {value: 14, unit: day, from: doręczenia}
+    basis: {kpa: art. 129 § 2 k.p.a., op: art. 223 § 2 o.p.}
+    filed_via: organ, który wydał decyzję
+  - id: odwolanie_zus
+    label_pl: odwołanie od decyzji ZUS do sądu
+    category: odwolanie_od_decyzji
+    goal: kwestionuje
+    when: {acts: [decyzja], senders: [zus]}
+    remedy: ["odwołanie do sądu", "odwołanie do sądu okręgowego"]
+    deadline: {value: 1, unit: month, from: doręczenia}
+    basis: {any: art. 477⁹ § 1 k.p.c.}
+    filed_via: oddział ZUS, który wydał decyzję
+  - id: wniosek_o_ponowne_rozpatrzenie
+    label_pl: wniosek o ponowne rozpatrzenie sprawy
+    category: odwolanie_od_decyzji
+    goal: kwestionuje
+    when: {acts: [decyzja], procedures: [kpa]}
+    remedy: ["wniosek o ponowne rozpatrzenie"]
+    deadline: {value: 14, unit: day, from: doręczenia}
+    basis: {kpa: art. 127 § 3 k.p.a.}
+    instruction_only: true
+  - id: skarga_wsa
+    label_pl: skarga do wojewódzkiego sądu administracyjnego
+    category: skarga_wsa
+    goal: kwestionuje
+    when: {acts: [decyzja, postanowienie]}
+    remedy: ["skarga do wojewódzkiego sądu administracyjnego", "skargę do wojewódzkiego sądu administracyjnego", "skarga do sądu administracyjnego"]
+    deadline: {value: 30, unit: day, from: doręczenia}
+    basis: {any: art. 53 § 1 p.p.s.a.}
+    filed_via: organ, który wydał rozstrzygnięcie
+    instruction_only: true
+  - id: zazalenie
+    label_pl: zażalenie na postanowienie
+    category: zazalenie
+    goal: kwestionuje
+    when: {acts: [postanowienie]}
+    remedy: ["zażalenie", "zażalenia"]
+    deadline: {value: 7, unit: day, from: doręczenia}
+    basis: {kpa: art. 141 § 2 k.p.a., op: art. 236 § 2 o.p., kpk: art. 460 k.p.k.}
+    variants:
+      kpc: {deadline: {value: 1, unit: week, from: doręczenia}, basis: art. 394 § 2 k.p.c.}
+  - id: wyjasnienia
+    label_pl: wyjaśnienia w odpowiedzi na wezwanie
+    category: pismo_urzedowe
+    goal: wyjasnia
+    when: {acts: [wezwanie, zawiadomienie]}
+    deadline: {from_letter: true}
+  - id: wniosek_o_przedluzenie_terminu
+    label_pl: wniosek o przedłużenie terminu
+    category: wniosek_procesowy
+    goal: czas
+    when: {acts: [wezwanie, odpis_pozwu, protokol_kontroli]}
+    deadline: {from_letter: true}
+    warnings: [przedluzenie_przed_uplywem]
+  - id: zastrzezenia_do_protokolu
+    label_pl: zastrzeżenia do protokołu kontroli
+    category: pismo_urzedowe
+    goal: kwestionuje
+    when: {acts: [protokol_kontroli]}
+    remedy: ["zastrzeżenia", "zastrzeżenia lub wyjaśnienia"]
+    deadline: {value: 14, unit: day, from: doręczenia}
+    basis: {op: art. 291 § 1 o.p.}
+  - id: korekta_deklaracji
+    label_pl: korekta deklaracji z uzasadnieniem
+    category: pismo_urzedowe
+    goal: zglaszam
+    when: {acts: [wezwanie, zawiadomienie, protokol_kontroli], senders: [organ_podatkowy]}
+    warnings: [korekta_po_kontroli]
+  - id: czynny_zal
+    label_pl: czynny żal
+    category: czynny_zal
+    goal: zglaszam
+    when: {acts: [wezwanie, zawiadomienie, protokol_kontroli], senders: [organ_podatkowy]}
+    basis: {any: art. 16 k.k.s.}
+    warnings: [czynny_zal_skutecznosc]
+
+  # ---------------------------------------------------------- egzekucja ---
+  - id: wyjasnienie_wplaty
+    label_pl: wyjaśnienie z dowodem zapłaty
+    category: pismo_urzedowe
+    goal: wyjasnia
+    when: {acts: [upomnienie, tytul_wykonawczy, wezwanie_do_zaplaty]}
+  - id: wniosek_o_raty
+    label_pl: wniosek o rozłożenie na raty lub umorzenie
+    category: pismo_urzedowe
+    goal: ugoda
+    when: {acts: [upomnienie, decyzja, tytul_wykonawczy], senders: [organ_podatkowy, zus, samorzad]}
+    basis: {op: art. 67a o.p.}
+  - id: zarzuty_egzekucja
+    label_pl: zarzut w sprawie egzekucji administracyjnej
+    category: pismo_urzedowe
+    goal: kwestionuje
+    when: {acts: [tytul_wykonawczy], procedures: [upea, op, kpa]}
+    remedy: ["zarzut", "zarzutu", "zarzuty", "zarzutów"]
+    deadline: {value: 7, unit: day, from: doręczenia odpisu tytułu wykonawczego}
+    basis: {any: art. 33 u.p.e.a.}
+  - id: skarga_na_komornika
+    label_pl: skarga na czynności komornika
+    category: wniosek_procesowy
+    goal: kwestionuje
+    when: {senders: [komornik]}
+    remedy: ["skarga na czynności komornika", "skargę na czynności komornika", "na czynności komornika"]
+    deadline: {value: 1, unit: week, from: dokonania czynności lub zawiadomienia o niej}
+    basis: {any: art. 767 § 4 k.p.c.}
+
+  # ------------------------------------------------------------- sądy ---
+  - id: wniosek_o_uzasadnienie
+    label_pl: wniosek o uzasadnienie wyroku
+    category: wniosek_procesowy
+    goal: kwestionuje
+    when: {acts: [wyrok], procedures: [kpc, kpk]}
+    remedy: ["wniosek o sporządzenie uzasadnienia", "wniosek o uzasadnienie", "wniosek o doręczenie wyroku z uzasadnieniem"]
+    deadline: {value: 1, unit: week, from: ogłoszenia wyroku}
+    basis: {kpc: art. 328 § 1 k.p.c.}
+    variants:
+      kpk: {deadline: {value: 7, unit: day, from: ogłoszenia wyroku}, basis: art. 422 § 1 k.p.k.}
+    warnings: [apelacja_wymaga_uzasadnienia]
+  - id: apelacja
+    label_pl: apelacja
+    category: apelacja
+    goal: kwestionuje
+    when: {acts: [wyrok], procedures: [kpc, kpk]}
+    remedy: ["apelacja", "apelację", "apelacji"]
+    deadline: {value: 2, unit: week, from: doręczenia wyroku z uzasadnieniem}
+    basis: {kpc: art. 369 § 1 k.p.c.}
+    variants:
+      kpk: {deadline: {value: 14, unit: day, from: doręczenia wyroku z uzasadnieniem}, basis: art. 445 § 1 k.p.k.}
+    warnings: [apelacja_wymaga_uzasadnienia]
+  - id: sprzeciw_od_wyroku_zaocznego
+    label_pl: sprzeciw od wyroku zaocznego
+    category: odpowiedz_na_pozew
+    goal: kwestionuje
+    when: {acts: [wyrok_zaoczny]}
+    remedy: ["sprzeciw"]
+    deadline: {value: 2, unit: week, from: doręczenia}
+    basis: {kpc: art. 344 § 1 k.p.c.}
+  - id: sprzeciw_od_nakazu
+    label_pl: sprzeciw od nakazu zapłaty
+    category: odpowiedz_na_pozew
+    goal: kwestionuje
+    when: {acts: [nakaz_zaplaty]}
+    remedy: ["sprzeciw", "sprzeciwu"]
+    deadline: {value: 2, unit: week, from: doręczenia}
+    basis: {kpc: art. 505 § 1 k.p.c.}
+  - id: zarzuty_od_nakazu
+    label_pl: zarzuty od nakazu zapłaty
+    category: odpowiedz_na_pozew
+    goal: kwestionuje
+    when: {acts: [nakaz_zaplaty]}
+    remedy: ["zarzuty", "zarzutów"]
+    deadline: {value: 2, unit: week, from: doręczenia}
+    basis: {kpc: art. 491 § 1 k.p.c.}
+    instruction_only: true
+  - id: odpowiedz_na_pozew
+    label_pl: odpowiedź na pozew
+    category: odpowiedz_na_pozew
+    goal: kwestionuje
+    when: {acts: [odpis_pozwu]}
+    remedy: ["odpowiedź na pozew", "odpowiedzi na pozew"]
+    deadline: {from_letter: true}
+    basis: {kpc: art. 205³ § 1 k.p.c.}
+  - id: wniosek_o_uchylenie_mandatu
+    label_pl: wniosek o uchylenie mandatu karnego
+    category: wniosek_procesowy
+    goal: kwestionuje
+    when: {acts: [mandat]}
+    remedy: ["wniosek o uchylenie"]
+    deadline: {value: 7, unit: day, from: uprawomocnienia się mandatu}
+    basis: {any: art. 101 § 1 k.p.w.}
+    warnings: [mandat_wyjatkowy]
+
+  # ---------------------------------------------------- pisma prywatne ---
+  - id: odpowiedz_na_wezwanie_do_zaplaty
+    label_pl: odpowiedź na wezwanie do zapłaty (zakwestionowanie roszczenia)
+    category: pismo_do_klienta
+    goal: kwestionuje
+    when: {acts: [wezwanie_do_zaplaty]}
+    warnings: [przedawnienie]
+  - id: propozycja_ugody
+    label_pl: propozycja ugody lub spłaty w ratach
+    category: ugoda
+    goal: ugoda
+    when: {acts: [wezwanie_do_zaplaty, nakaz_zaplaty, odpis_pozwu]}
+  - id: odwolanie_od_wypowiedzenia
+    label_pl: odwołanie od wypowiedzenia do sądu pracy
+    category: pozew
+    goal: kwestionuje
+    when: {acts: [wypowiedzenie], procedures: [kp]}
+    remedy: ["odwołanie do sądu pracy", "odwołanie do sądu"]
+    deadline: {value: 21, unit: day, from: doręczenia pisma wypowiadającego}
+    basis: {kp: art. 264 § 1 k.p.}
+
+  # --------------------------------------------------------- zawsze ---
+  - id: odpowiedz_ogolna
+    label_pl: pismo w odpowiedzi
+    category: pismo_urzedowe
+    goal: ogolne
+    when: {}
+  - id: wniosek_o_przywrocenie_terminu
+    label_pl: wniosek o przywrócenie terminu
+    category: wniosek_procesowy
+    goal: spozniony
+    when: {}
+    deadline: {value: 7, unit: day, from: ustania przyczyny uchybienia}
+    basis: {kpa: art. 58 § 2 k.p.a., op: art. 162 § 2 o.p., kpk: art. 126 § 1 k.p.k.}
+    variants:
+      kpc: {deadline: {value: 1, unit: week, from: ustania przyczyny uchybienia}, basis: art. 169 § 1 k.p.c.}
+    warnings: [przywrocenie_z_czynnoscia]
+
+warnings:
+  czynny_zal_skutecznosc: >-
+    Czynny żal jest bezskuteczny, gdy organ ma już udokumentowaną wiadomość
+    o czynie albo rozpoczął czynności (art. 16 § 5 k.k.s.). Pismo organu w tej
+    sprawie może być taką czynnością — sprawdź skuteczność z doradcą.
+  korekta_po_kontroli: >-
+    Korekta deklaracji złożona w trakcie kontroli lub postępowania podatkowego
+    może nie wywołać skutków prawnych. Sprawdź, czy kontrola się rozpoczęła.
+  przedluzenie_przed_uplywem: >-
+    Wniosek o przedłużenie terminu złóż przed jego upływem; organ nie musi
+    go uwzględnić.
+  apelacja_wymaga_uzasadnienia: >-
+    Apelację wnosi się od wyroku z uzasadnieniem. Jeżeli wyroku nie doręczono
+    z urzędu, najpierw złóż wniosek o uzasadnienie (tydzień od ogłoszenia).
+  mandat_wyjatkowy: >-
+    Przyjęty mandat uchyla się tylko, gdy grzywnę nałożono za czyn, który nie
+    jest wykroczeniem. Termin liczy się od uprawomocnienia się mandatu.
+  przedawnienie: >-
+    Sprawdź, czy roszczenie nie jest przedawnione; zarzut przedawnienia trzeba
+    podnieść samemu, a uznanie długu przerywa bieg przedawnienia.
+  przywrocenie_z_czynnoscia: >-
+    Razem z wnioskiem o przywrócenie terminu dokonaj spóźnionej czynności
+    (np. dołącz odwołanie) i uprawdopodobnij brak winy w uchybieniu.

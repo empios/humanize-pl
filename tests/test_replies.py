@@ -89,6 +89,26 @@ def test_instruction_only_replies_need_the_instruction() -> None:
     assert "skarga_wsa" in [c.reply.id for c in analyze(text).candidates]
 
 
+@pytest.mark.parametrize(
+    ("name", "expected"),
+    [
+        ("us_wezwanie_czynnosci_sprawdzajace", "NACZELNIK URZĘDU SKARBOWEGO WARSZAWA-MOKOTÓW"),
+        ("zus_decyzja", "ZAKŁAD UBEZPIECZEŃ SPOŁECZNYCH"),
+        ("prywatne_wezwanie_do_zaplaty", "Kredytex sp. z o.o."),
+        (
+            "sad_nakaz_upominawczy",
+            "Sąd Rejonowy dla Warszawy-Śródmieścia w Warszawie, I Wydział Cywilny",
+        ),
+        ("odpis_pozwu_z_zarzadzeniem", "Sąd Rejonowy w Katowicach, Wydział Gospodarczy"),
+        ("list_bez_aktu", ""),
+    ],
+)
+def test_the_sender_is_named_as_its_head_line_says(name: str, expected: str) -> None:
+    """A reply goes back to whoever wrote; only an office's own name counts."""
+    letter = next(row for row in LETTERS if row["name"] == name)
+    assert analyze(letter["text"]).sender_name == expected
+
+
 def test_czynny_zal_always_carries_its_warning() -> None:
     letter = next(row for row in LETTERS if row["name"] == "us_wezwanie_czynnosci_sprawdzajace")
     zal = next(c for c in analyze(letter["text"]).candidates if c.reply.id == "czynny_zal")

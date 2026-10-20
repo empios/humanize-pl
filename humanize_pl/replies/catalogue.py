@@ -53,6 +53,8 @@ class Procedure:
     id: str
     label_pl: str
     signals: Phrases
+    # The article that moves a term ending on a Saturday or a day off.
+    holiday_rule: str
 
 
 @dataclass(frozen=True)
@@ -188,9 +190,19 @@ def _load(path: Path) -> Catalogue:
         str(k): " ".join(str(v).split()) for k, v in (payload.get("warnings") or {}).items()
     }
     procedures = {
-        row["id"]: Procedure(row["id"], str(row["label_pl"]), phrases(row.get("signals")))
+        row["id"]: Procedure(
+            row["id"],
+            str(row["label_pl"]),
+            phrases(row.get("signals")),
+            str(row.get("holiday_rule") or ""),
+        )
         for row in _rows(payload, "procedures")
     }
+    for procedure in procedures.values():
+        if not procedure.holiday_rule:
+            raise ReplyCatalogueError(
+                f"Procedura {procedure.id}: brak przepisu o terminie w dzień wolny."
+            )
     senders = {
         row["id"]: Sender(row["id"], str(row["label_pl"]), str(row["procedure"]), _signals(row))
         for row in _rows(payload, "senders")

@@ -756,11 +756,39 @@ terminem, adresatem i organem pośredniczącym, a termin różny od przepisu jes
 zgłaszany w polu `conflict`, nie poprawiany. Odpowiedzi wrażliwe niosą ostrzeżenia
 (np. skuteczność czynnego żalu, art. 16 § 5 k.k.s.). Fakty, które odpowiedź musi
 przytoczyć bez zmian (sygnatury, daty, kwoty, NIP/PESEL, przepisy), są zwracane
-w `facts`. Nic nie jest składane ani wybierane za użytkownika.
+w `facts`, a linia nagłówka, w której nadawca się podpisuje, w `sender_name`
+(do niej wraca odpowiedź). Nic nie jest składane ani wybierane za użytkownika.
+
+Z datą doręczenia (`analyze(tekst, delivered=date(2026, 10, 1))`) każdy termin
+liczony od doręczenia lub otrzymania dostaje ostatni dzień na złożenie pisma
+(`deadline` przy odpowiedzi; `humanize_pl/replies/deadlines.py`):
+
+- dnia doręczenia nie wlicza się; termin w tygodniach lub miesiącach kończy się
+  w dniu o tej samej nazwie lub dacie, a gdy takiej daty w miesiącu nie ma —
+  w jego ostatnim dniu (31 stycznia + miesiąc = 28 lub 29 lutego),
+- koniec przypadający na sobotę lub dzień ustawowo wolny od pracy przesuwa się
+  na następny dzień roboczy; przepis podaje pole `holiday_rule` procedury
+  w katalogu (art. 57 § 4 k.p.a., art. 12 § 5 o.p., art. 115 k.c. w zw.
+  z art. 165 § 1 k.p.c., art. 83 § 2 p.p.s.a., art. 123 § 3 k.p.k. i odesłania
+  do nich), a wybiera go kodeks, z którego pochodzi termin — skarga do WSA na
+  decyzję z k.p.a. liczy się według p.p.s.a.,
+- dni wolne według ustawy o dniach wolnych od pracy: święta stałe, drugi dzień
+  Wielkiej Nocy i Boże Ciało liczone od daty Wielkanocy, niedziele oraz od 2025 r.
+  24 grudnia (Dz.U. 2024 poz. 1965, w mocy od 1 lutego 2025 r.),
+- status: `w terminie`, `ostatni dzień` albo `po terminie`, z liczbą dni do
+  ostatniego dnia (`days_left`, ujemna po terminie) i z przesunięciem
+  (`moved_from`, `moved_because`); bez daty doręczenia — `brak daty doręczenia`,
+  a termin liczony od innego zdarzenia (ogłoszenia wyroku, ustania przyczyny
+  uchybienia) — `termin liczony od innego zdarzenia`, bez wyliczania,
+- gdy któryś termin minął, na początek listy trafia wniosek o przywrócenie terminu.
+
+Wyliczenie nie zastępuje sprawdzenia daty doręczenia (np. awizo i doręczenie
+zastępcze) ani pouczenia.
 
 Terminy w katalogu sprawdza się w ISAP przy każdej zmianie pliku. Testy:
 `tests/test_replies.py` z fikcyjnymi pismami w `tests/fixtures/incoming_letters.yaml`,
-także od nadawców, których katalog nie wymienia z nazwy.
+także od nadawców, których katalog nie wymienia z nazwy, oraz
+`tests/test_deadlines.py` (soboty, święta, koniec miesiąca, rok przestępny).
 
 
 ## Sygnały strukturalne

@@ -7,7 +7,10 @@
 # acts        — rodzaj aktu (decyzja, wezwanie, wyrok…), z nagłówka i zwrotów
 #               rozstrzygających;
 # senders     — nadawca (sąd, organ podatkowy, ZUS, podmiot prywatny…);
-# procedures  — procedura, z cytowanych przepisów, a w ich braku z nadawcy.
+# procedures  — procedura, z cytowanych przepisów, a w ich braku z nadawcy;
+#               `holiday_rule` to przepis, według którego termin kończący się
+#               w sobotę lub dzień ustawowo wolny od pracy upływa następnego
+#               dnia roboczego.
 #
 # Odpowiedź (`replies`) wybiera się po tych trzech osiach i po celu
 # użytkownika (`goal`). Pouczenie w samym piśmie ma pierwszeństwo przed
@@ -35,33 +38,43 @@ procedures:
   - id: op
     label_pl: Ordynacja podatkowa
     signals: ["ordynacji podatkowej", "ordynacja podatkowa", "o.p.", "op"]
+    holiday_rule: art. 12 § 5 o.p.
   - id: kpa
     label_pl: Kodeks postępowania administracyjnego
     signals: ["kodeksu postępowania administracyjnego", "kodeks postępowania administracyjnego", "k.p.a.", "kpa"]
+    holiday_rule: art. 57 § 4 k.p.a.
   - id: kpc
     label_pl: Kodeks postępowania cywilnego
     signals: ["kodeksu postępowania cywilnego", "kodeks postępowania cywilnego", "k.p.c.", "kpc"]
+    holiday_rule: art. 115 k.c. w zw. z art. 165 § 1 k.p.c.
   - id: kpk
     label_pl: Kodeks postępowania karnego
     signals: ["kodeksu postępowania karnego", "kodeks postępowania karnego", "k.p.k.", "kpk"]
+    holiday_rule: art. 123 § 3 k.p.k.
   - id: kks
     label_pl: Kodeks karny skarbowy
     signals: ["kodeksu karnego skarbowego", "kodeks karny skarbowy", "k.k.s.", "kks"]
+    holiday_rule: art. 123 § 3 k.p.k. w zw. z art. 113 § 1 k.k.s.
   - id: ppsa
     label_pl: Prawo o postępowaniu przed sądami administracyjnymi
     signals: ["postępowaniu przed sądami administracyjnymi", "p.p.s.a.", "ppsa"]
+    holiday_rule: art. 83 § 2 p.p.s.a.
   - id: upea
     label_pl: Ustawa o postępowaniu egzekucyjnym w administracji
     signals: ["postępowaniu egzekucyjnym w administracji", "u.p.e.a.", "upea"]
+    holiday_rule: art. 57 § 4 k.p.a. w zw. z art. 18 u.p.e.a.
   - id: kp
     label_pl: Kodeks pracy
     signals: ["kodeksu pracy", "kodeks pracy", "k.p."]
+    holiday_rule: art. 115 k.c. w zw. z art. 300 k.p.
   - id: kpw
     label_pl: Kodeks postępowania w sprawach o wykroczenia
     signals: ["postępowania w sprawach o wykroczenia", "k.p.w.", "kpw"]
+    holiday_rule: art. 123 § 3 k.p.k. w zw. z art. 8 k.p.w.
   - id: cywilna
     label_pl: Prawo cywilne (stosunek prywatny)
     signals: ["kodeksu cywilnego", "kodeks cywilny", "k.c.", "kc"]
+    holiday_rule: art. 115 k.c.
 
 senders:
   - id: organ_podatkowy

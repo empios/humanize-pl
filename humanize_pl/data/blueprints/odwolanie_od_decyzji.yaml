@@ -38,7 +38,11 @@ sections:
 - id: podpis
   label_pl: podpis
   severity: required
-  matches: [podpis, z poważaniem]
+  matches: [podpis]
+  # „Z poważaniem” zamyka pismo, nie tytułuje sekcji: pod nim jest tylko
+  # odręczny podpis. Wzorzec, w przeciwieństwie do `matches`, nie każe
+  # szukać pod nim treści.
+  patterns: ['z poważaniem']
 
 # Dokument ogólny: odwołanie do organu odwoławczego, bez nazwy konkretnego organu,
 # więc pasuje do decyzji każdego organu. Wzór dla decyzji ZUS jest wzorem

@@ -41,7 +41,11 @@ sections:
 - id: podpis
   label_pl: podpis wnioskodawcy
   severity: required
-  matches: [podpis, z poważaniem]
+  matches: [podpis]
+  # „Z poważaniem” zamyka pismo, nie tytułuje sekcji: pod nim jest tylko
+  # odręczny podpis. Wzorzec, w przeciwieństwie do `matches`, nie każe
+  # szukać pod nim treści.
+  patterns: ['z poważaniem']
 - id: zalaczniki
   label_pl: załączniki
   severity: expected

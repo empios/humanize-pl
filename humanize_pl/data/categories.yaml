@@ -175,15 +175,16 @@ categories:
   - id: wniosek_procesowy
     label_pl: wniosek procesowy
     family: filing_official
-    signals_strong: ["wnoszę o dopuszczenie", "wniosek dowodowy", "wnoszę o przywrócenie terminu", "wnoszę o przedłużenie terminu", "wnoszę o sporządzenie uzasadnienia", "wnoszę skargę na czynność komornika", "składam wniosek w sprawie"]
-    signals: ["na okoliczność", "świadka", "biegłego"]
-    requires_any: ["wnoszę o dopuszczenie", "wniosek dowodowy", "wnoszę o przeprowadzenie", "wnoszę o przywrócenie terminu", "wnoszę o przedłużenie terminu", "wnoszę o sporządzenie uzasadnienia", "wnoszę skargę na czynność komornika", "składam wniosek w sprawie"]
+    signals_strong: ["wnoszę o dopuszczenie", "wniosek dowodowy", "wnoszę o przywrócenie terminu", "wnoszę o przedłużenie terminu", "wnoszę o sporządzenie uzasadnienia", "wnoszę skargę na czynność komornika", "składam wniosek w sprawie", "wniosek o zmianę terminu", "terminu przesłuchania", "uchylenie mandatu", "mandatu karnego"]
+    signals: ["na okoliczność", "świadka", "biegłego", "w sprawach o wykroczenia"]
+    requires_any: ["wnoszę o dopuszczenie", "wniosek dowodowy", "wnoszę o przeprowadzenie", "wnoszę o przywrócenie terminu", "wnoszę o przedłużenie terminu", "wnoszę o sporządzenie uzasadnienia", "wnoszę skargę na czynność komornika", "składam wniosek w sprawie", "wniosek o zmianę terminu", "uchylenie mandatu"]
 
   - id: pismo_urzedowe
     label_pl: pismo urzędowe
     family: filing_official
-    signals_strong: ["działając w imieniu", "na podstawie art"]
-    signals: ["organ", "wnoszę o udostępnienie", "informacja publiczna", "w załączeniu"]
+    # „na podstawie art.” cytuje niemal każde pismo procesowe, więc tylko waży.
+    signals_strong: ["działając w imieniu"]
+    signals: ["na podstawie art", "organ", "wnoszę o udostępnienie", "informacja publiczna", "w załączeniu"]
     requires_any: ["działając w imieniu", "wnoszę o udostępnienie", "zwracam się z wnioskiem"]
 
   - id: wezwanie_do_zaplaty

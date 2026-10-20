@@ -52,7 +52,11 @@ sections:
   - id: podpis
     label_pl: podpis wzywającego
     severity: required
-    matches: ["podpis", "pełnomocnik", "z poważaniem"]
+    matches: ["podpis", "pełnomocnik"]
+    # „Z poważaniem” zamyka pismo, nie tytułuje sekcji: pod nim jest tylko
+    # odręczny podpis. Wzorzec, w przeciwieństwie do `matches`, nie każe
+    # szukać pod nim treści.
+    patterns: ["z poważaniem"]
 
 # Dokument ogólny napisany dla tej kategorii: wśród realnych wzorów nie było
 # ogólnego. Przy użyciu wypełnia się wyłącznie pola (`slots`).

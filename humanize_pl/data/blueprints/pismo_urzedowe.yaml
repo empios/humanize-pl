@@ -53,144 +53,139 @@ sections:
   severity: expected
   matches: [podpis, własnoręczny podpis, z wyrazami szacunku]
 
-# Dokument ogólny: realny wzór tej kategorii. Przy użyciu wypełnia się wyłącznie
-# pola (`slots`); treść, kolejność i układ zostają jak we wzorze.
+# Dokument ogólny: pismo do urzędu lub sądu bez nazwy konkretnej sprawy, więc
+# pasuje do odpowiedzi na wezwanie, wyjaśnień i zwykłych wniosków. Wniosek
+# o udostępnienie informacji publicznej jest wzorem szczególnym
+# w data/templates/pismo_urzedowe/. Przy użyciu wypełnia się wyłącznie pola
+# (`slots`); treść, kolejność i układ zostają jak we wzorze.
 document:
-  template: Wniosek o udostępnienie informacji publicznej.docx
-  label_pl: Wniosek o udostępnienie informacji publicznej
+  label_pl: Pismo do urzędu lub sądu
   default_size: 11.0
-  page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+  page: {size: [11906, 16838], margins: {top: 1417, bottom: 1417, left: 1417, right: 1417}}
   blocks:
   - p: 0
     role: body
-    layout: {align: right, indent: {first: 708}, size: 10.0}
-    text: ………………….. (miejscowość), dnia ………… r.
+    layout: {align: right, size: 11.0}
+    text: '………………… (miejscowość), dnia ………………… (data)'
     slots:
-    - {id: miejscowosc, span: [0, 9], type: place, hint: miejscowość}
-    - {id: p0_2, span: [30, 34], type: date, context: dnia ▢ r.}
+    - {id: miejscowosc, span: [0, 7], type: place, hint: miejscowość}
+    - {id: data, span: [28, 35], type: date, hint: data}
     inline_hints:
-    - {span: [10, 23], text: miejscowość}
+    - {span: [8, 21], text: miejscowość}
+    - {span: [36, 42], text: data}
   - {p: 1, role: spacer}
   - p: 2
-    role: blank_line
-    layout: {size: 10.0}
-    text: …………………………………
-    slots:
-    - {id: p2_1, span: [0, 13], type: text, context: ▢}
+    role: field_header
+    layout: {align: justify, size: 11.0}
+    text: 'Wnoszący pismo:'
   - p: 3
     role: blank_line
-    layout: {size: 10.0}
-    text: …………………………………
+    layout: {align: justify, size: 11.0}
+    text: '………………………………………………………………………………………………'
     slots:
-    - {id: p3_1, span: [0, 13], type: text, context: ▢}
+    - {id: wnoszacy, span: [0, 36], type: text, hint: 'imię i nazwisko lub nazwa, adres do doręczeń, PESEL lub NIP', label: Wnoszący pismo}
   - p: 4
-    role: blank_line
-    layout: {size: 10.0}
-    text: …………………………………
-    slots:
-    - {id: adres_wnioskodawcy, span: [0, 13], type: address, hint: adres wnioskodawcy}
-  - p: 5
     role: hint
-    layout: {size: 10.0, italic: true}
-    text: (adres wnioskodawcy)
-    hint_for: 4
+    layout: {align: justify, size: 8.0, italic: true}
+    text: '(imię i nazwisko lub nazwa, adres do doręczeń, PESEL lub NIP)'
+    hint_for: 3
     hint_kind: label
-  - {p: 6, role: spacer}
-  - {p: 7, role: spacer}
+  - {p: 5, role: spacer}
+  - p: 6
+    role: field_header
+    layout: {align: justify, size: 11.0}
+    text: 'Do:'
+  - p: 7
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: '………………………………………………………………………………………………'
+    slots:
+    - {id: adresat, span: [0, 36], type: text, hint: nazwa i siedziba urzędu lub sądu, label: Do}
   - p: 8
-    role: blank_line
-    layout: {indent: {left: 4820}, size: 10.0}
-    text: ……………………………………
-    slots:
-    - {id: p8_1, span: [0, 14], type: text, context: ▢}
-  - p: 9
-    role: blank_line
-    layout: {indent: {left: 4820}, size: 10.0}
-    text: ……………………………………
-    slots:
-    - {id: p9_1, span: [0, 14], type: text, context: ▢}
-  - p: 10
-    role: blank_line
-    layout: {indent: {left: 4820}, size: 10.0}
-    text: ……………………………………
-    slots:
-    - {id: adres_organu, span: [0, 14], type: address, hint: adres organu}
-  - p: 11
     role: hint
-    layout: {indent: {left: 4820}, size: 10.0, italic: true}
-    text: (adres organu)
-    hint_for: 10
+    layout: {align: justify, size: 8.0, italic: true}
+    text: '(nazwa i siedziba urzędu lub sądu)'
+    hint_for: 7
     hint_kind: label
+  - {p: 9, role: spacer}
+  - p: 10
+    role: field
+    layout: {align: justify, size: 11.0}
+    text: 'Znak sprawy: …………………'
+    slots:
+    - {id: znak_sprawy, span: [13, 20], type: text, label: Znak sprawy}
+  - p: 11
+    role: field
+    layout: {align: justify, size: 11.0}
+    text: 'Dotyczy: …………………'
+    slots:
+    - {id: dotyczy, span: [9, 16], type: text, label: Dotyczy}
   - {p: 12, role: spacer}
   - p: 13
-    role: body
-    layout: {align: center, size: 12.0, bold: true}
-    text: WNIOSEK O UDZIELENIE INFORMACJI PUBLICZNEJ
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: PISMO
   - {p: 14, role: spacer}
   - p: 15
     role: body
-    layout: {align: justify, size: 10.0, spans: [{start: 216, end: 290, italic: true}]}
-    text: 'Niniejszym, działając w imieniu własnym na podstawie art. 2 ust. 1 ustawy o dostępie do informacji publicznej z dnia 6 września 2001
-      zwracam się z prośbą o udostępnienie informacji w zakresie dotyczącym ……………………………… (należy wskazać czego dotyczy wniosek o udzielenie informacji
-      publicznej) poprzez odpowiedzi na następujące pytanie: '
+    layout: {align: justify, size: 11.0}
+    text: Działając w imieniu własnym, nawiązując do pisma z dnia ………………… (data otrzymanego pisma), zwracam się z następującym stanowiskiem.
     slots:
-    - {id: nalezy_wskazac_czego_dotyczy_wniosek_o_udzieleni, span: [203, 215], type: text, hint: należy wskazać czego dotyczy wniosek o udzielenie
-        informacji publicznej}
+    - {id: data_otrzymanego_pisma, span: [56, 63], type: date, hint: data otrzymanego pisma}
     inline_hints:
-    - {span: [216, 289], text: należy wskazać czego dotyczy wniosek o udzielenie informacji publicznej}
-    optional: true
-    condition: należy wskazać czego dotyczy wniosek o udzielenie informacji publicznej
+    - {span: [64, 88], text: data otrzymanego pisma}
   - p: 16
-    role: item
-    layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}, tabs: 1}
-    text: "………………………………… ……………………………………………………………………………………… (miejsce na wskazanie pytania na które organ ma udzielić odpowiedzi)\t"
-    slots:
-    - {id: miejsce_na_wskazanie_pytania_na_ktore_organ_ma_u, span: [0, 47], type: text, hint: miejsce na wskazanie pytania na które organ ma udzielić
-        odpowiedzi}
-    inline_hints:
-    - {span: [48, 116], text: miejsce na wskazanie pytania na które organ ma udzielić odpowiedzi}
-  - {p: 17, role: spacer}
-  - p: 18
-    role: body
-    layout: {align: justify, size: 10.0}
-    text: 'Jeżeli odpowiedź na powyższe pytanie jest twierdząca proszę o udzielenie informacji: '
-  - p: 19
-    role: item
-    layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
-    text: ……………………………………………………………………………………………………
-    slots:
-    - {id: p19_1, span: [0, 38], type: text, context: ▢}
-  - p: 20
-    role: item
-    layout: {align: justify, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}}
-    text: ……………………………………………………………………………………………………
-    slots:
-    - {id: miejsce_na_wskazanie_zakresu_informacji_publiczn, span: [0, 38], type: text, hint: miejsce na wskazanie zakresu informacji publicznej
-        jaką organ ma udzielić w związku z wniesionym wnioskiem}
-  - p: 21
-    role: hint
-    layout: {align: justify, indent: {left: 720}, size: 10.0, italic: true}
-    text: (miejsce na wskazanie zakresu informacji publicznej jaką organ ma udzielić w związku z wniesionym wnioskiem)
-    hint_for: 20
-    hint_kind: instruction
-  - {p: 22, role: spacer}
-  - p: 23
-    role: body
-    layout: {align: justify, size: 10.0}
-    text: Powyższe informacje uprzejmie proszę o przesłanie na mój adres email/adres zamieszkania wskazany we wniosku
-  - {p: 24, role: spacer}
-  - {p: 25, role: spacer}
-  - p: 26
     role: blank_line
-    layout: {align: right, indent: {first: 708}, size: 10.0}
-    text: …………………………………………
+    layout: {align: justify, size: 11.0}
+    text: '………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………'
     slots:
-    - {id: wlasnoreczny_podpis, span: [0, 16], type: signature, hint: własnoręczny podpis}
-  - p: 27
+    - {id: tresc, span: [0, 108], type: text, hint: 'wyjaśnienia, wnioski lub żądanie wraz z uzasadnieniem'}
+  - p: 17
     role: hint
-    layout: {align: right, indent: {first: 708}, size: 10.0, italic: true}
-    text: (własnoręczny podpis)
-    hint_for: 26
+    layout: {align: justify, size: 8.0, italic: true}
+    text: '(wyjaśnienia, wnioski lub żądanie wraz z uzasadnieniem)'
+    hint_for: 16
+    hint_kind: instruction
+  - {p: 18, role: spacer}
+  - p: 19
+    role: body
+    layout: {align: justify, size: 11.0}
+    text: Pismo składam na podstawie ………………… (podstawa prawna).
+    slots:
+    - {id: podstawa_prawna, span: [27, 34], type: text, hint: podstawa prawna}
+    inline_hints:
+    - {span: [35, 52], text: podstawa prawna}
+  - p: 20
+    role: body
+    layout: {align: justify, size: 11.0}
+    text: Odpowiedź proszę przesłać na adres ………………… (adres pocztowy lub elektroniczny).
+    slots:
+    - {id: adres_odpowiedzi, span: [35, 42], type: text, hint: adres pocztowy lub elektroniczny}
+    inline_hints:
+    - {span: [43, 77], text: adres pocztowy lub elektroniczny}
+  - {p: 21, role: spacer}
+  - p: 22
+    role: blank_line
+    layout: {align: right, size: 11.0}
+    text: '………………………………'
+    slots:
+    - {id: podpis, span: [0, 12], type: signature, hint: podpis}
+  - p: 23
+    role: hint
+    layout: {align: right, size: 8.0, italic: true}
+    text: '(podpis)'
+    hint_for: 22
     hint_kind: label
-  - {p: 28, role: spacer}
-  - {p: 29, role: spacer}
+  - {p: 24, role: spacer}
+  - p: 25
+    role: field_header
+    layout: {align: justify, size: 11.0, bold: true}
+    text: 'Załączniki:'
+  - p: 26
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: '………………… (kopie dokumentów, jeśli są dołączone).'
+    slots:
+    - {id: zalaczniki, span: [0, 7], type: text, hint: 'kopie dokumentów, jeśli są dołączone'}
+    inline_hints:
+    - {span: [8, 46], text: 'kopie dokumentów, jeśli są dołączone'}

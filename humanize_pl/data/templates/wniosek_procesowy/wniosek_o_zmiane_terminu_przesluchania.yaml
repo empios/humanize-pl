@@ -1,0 +1,159 @@
+template: wniosek o zmianę terminu przesłuchania.docx
+category: wniosek_procesowy
+label_pl: Wniosek o zmianę terminu przesłuchania
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- {p: 0, role: spacer}
+- p: 1
+  role: body
+  layout: {align: right, indent: {first: 708}, size: 10.0, spans: [{start: 8, end: 21, italic: true}, {start: 35, end: 41, italic: true}]}
+  text: ………………… (miejscowość), dnia ……………… (data)
+  slots:
+  - {id: miejscowosc, span: [0, 7], type: place, hint: miejscowość}
+  - {id: data, span: [28, 34], type: date, hint: data}
+  inline_hints:
+  - {span: [8, 21], text: miejscowość}
+  - {span: [35, 41], text: data}
+- {p: 2, role: spacer}
+- {p: 3, role: spacer}
+- {p: 4, role: spacer}
+- p: 5
+  role: body
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: Sąd …………………………
+  slots:
+  - {id: p5_1, span: [4, 14], type: text, context: Sąd ▢}
+- p: 6
+  role: body
+  layout: {indent: {left: 4820}, size: 10.0, spans: [{start: 13, end: 26, italic: true}]}
+  text: w ………………………… (miejscowość)
+  slots:
+  - {id: miejscowosc_2, span: [2, 12], type: place, hint: miejscowość}
+  inline_hints:
+  - {span: [13, 26], text: miejscowość}
+- p: 7
+  role: body
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: Wydział ………………………….
+  slots:
+  - {id: p7_1, span: [8, 19], type: text, context: Wydział ▢}
+- {p: 8, role: spacer}
+- p: 9
+  role: field_header
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: 'Powód:'
+- p: 10
+  role: blank_line
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: …………………………..………
+  slots:
+  - {id: powod, span: [0, 15], type: text, label: Powód}
+- p: 11
+  role: blank_line
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: …………………………………..
+  slots:
+  - {id: powod_2, span: [0, 15], type: text, label: Powód}
+- p: 12
+  role: blank_line
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: …………………………………..
+  slots:
+  - {id: imie_nazwisko, span: [0, 15], type: person, hint: 'Imię, nazwisko', label: Powód}
+- p: 13
+  role: hint
+  layout: {indent: {left: 4820}, size: 10.0, italic: true}
+  text: (Imię, nazwisko)
+  hint_for: 12
+  hint_kind: label
+- {p: 14, role: spacer}
+- p: 15
+  role: field_header
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: 'Pozwany:'
+- p: 16
+  role: blank_line
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: …………………………..………
+  slots:
+  - {id: pozwany, span: [0, 15], type: text, label: Pozwany}
+- p: 17
+  role: blank_line
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: …………………………………..
+  slots:
+  - {id: pozwany_2, span: [0, 15], type: text, label: Pozwany}
+- p: 18
+  role: blank_line
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: …………………………………..
+  slots:
+  - {id: imie_nazwisko_2, span: [0, 15], type: person, hint: 'Imię, nazwisko', label: Pozwany}
+- p: 19
+  role: hint
+  layout: {indent: {left: 4820}, size: 10.0, italic: true}
+  text: (Imię, nazwisko)
+  hint_for: 18
+  hint_kind: label
+- {p: 20, role: spacer}
+- {p: 21, role: spacer}
+- p: 22
+  role: field
+  layout: {align: justify, size: 10.0, spans: [{start: 0, end: 21, bold: true}]}
+  text: 'Sygnatura akt sprawy: ………………………………….'
+  slots:
+  - {id: sygnatura_akt_sprawy, span: [22, 36], type: text, label: Sygnatura akt sprawy}
+- {p: 23, role: spacer}
+- {p: 24, role: spacer}
+- p: 25
+  role: body
+  layout: {align: center, size: 14.0, bold: true}
+  text: 'WNIOSEK O ZMIANĘ TERMINU PRZESŁUCHANIA '
+- p: 26
+  role: body
+  layout: {align: center, size: 14.0, bold: true}
+  text: W CHARAKTERZE ŚWIADKA
+- {p: 27, role: spacer}
+- p: 28
+  role: body
+  layout: {align: justify, indent: {first: 708}, size: 10.0}
+  text: 'Niniejszym działając w imieniu własnym, w związku z odebraniem wezwania do osobistego stawiennictwa na rozprawie, która została wyznaczona
+    na dzień _________r., celem przesłuchania mojej osoby w charakterze świadka, zwracam się z uprzejmym wnioskiem o zmianę wskazanego terminu
+    przesłuchania. '
+  slots:
+  - {id: p28_1, span: [148, 157], type: date, context: została wyznaczona na dzień ▢ r. celem}
+- {p: 29, role: spacer}
+- p: 30
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: 'Powyższy wniosek motywuję faktem, iż we wskazanym dniu będę przebywać _______________. '
+  slots:
+  - {id: p30_1, span: [70, 85], type: text, context: wskazanym dniu będę przebywać ▢}
+- p: 31
+  role: body
+  layout: {align: justify, size: 10.0, italic: true}
+  text: '(dalej należy szczegółowo opisać powód przez który Klient nie może się stawić w terminie na przesłuchanie. '
+- p: 32
+  role: blank_line
+  layout: {align: right, indent: {first: 708}, size: 10.0, tabs: 9}
+  text: "\t\t\t\t\t\t\t\t\t…………………………………………."
+  slots:
+  - {id: wlasnoreczny_podpis_klientki, span: [9, 26], type: signature, hint: własnoręczny podpis Klientki}
+- p: 33
+  role: hint
+  layout: {align: right, indent: {first: 708}, size: 10.0, italic: true}
+  text: ' (własnoręczny podpis Klientki)'
+  hint_for: 32
+  hint_kind: label
+- {p: 34, role: spacer}
+- {p: 35, role: spacer}
+- p: 36
+  role: field_header
+  layout: {align: justify, size: 10.0, bold: true}
+  text: 'Załącznik:'
+- p: 37
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 2 odpisy wniosku.
+- {p: 38, role: spacer}

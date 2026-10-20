@@ -133,9 +133,9 @@ categories:
   - id: odpowiedz_na_pozew
     label_pl: odpowiedź na pozew
     family: filing_official
-    signals_strong: ["odpowiedź na pozew", "wnoszę o oddalenie powództwa"]
+    signals_strong: ["odpowiedź na pozew", "wnoszę o oddalenie powództwa", "wnoszę sprzeciw od nakazu zapłaty", "wnoszę sprzeciw od wyroku zaocznego"]
     signals: ["zaprzeczam", "podnoszę zarzut", "powództwo jest bezzasadne"]
-    requires_any: ["odpowiedź na pozew", "wnoszę o oddalenie powództwa"]
+    requires_any: ["odpowiedź na pozew", "wnoszę o oddalenie powództwa", "wnoszę sprzeciw od nakazu zapłaty", "wnoszę sprzeciw od wyroku zaocznego"]
 
   - id: apelacja
     label_pl: apelacja
@@ -175,9 +175,9 @@ categories:
   - id: wniosek_procesowy
     label_pl: wniosek procesowy
     family: filing_official
-    signals_strong: ["wnoszę o dopuszczenie", "wniosek dowodowy"]
+    signals_strong: ["wnoszę o dopuszczenie", "wniosek dowodowy", "wnoszę o przywrócenie terminu", "wnoszę o przedłużenie terminu", "wnoszę o sporządzenie uzasadnienia", "wnoszę skargę na czynność komornika", "składam wniosek w sprawie"]
     signals: ["na okoliczność", "świadka", "biegłego"]
-    requires_any: ["wnoszę o dopuszczenie", "wniosek dowodowy", "wnoszę o przeprowadzenie"]
+    requires_any: ["wnoszę o dopuszczenie", "wniosek dowodowy", "wnoszę o przeprowadzenie", "wnoszę o przywrócenie terminu", "wnoszę o przedłużenie terminu", "wnoszę o sporządzenie uzasadnienia", "wnoszę skargę na czynność komornika", "składam wniosek w sprawie"]
 
   - id: pismo_urzedowe
     label_pl: pismo urzędowe

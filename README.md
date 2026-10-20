@@ -83,8 +83,8 @@ Działa warstwowo:
   i odtworzeniem obu stron pomiaru z gotowego arkusza XLSX,
 - przepływ XLSX zapisuje raport JSON domyślnie, tak jak DOCX (wcześniej tylko
   po podaniu `--report`, więc zwykły przebieg nie zostawiał czego odtworzyć),
-- kontrola struktury oparta na realnych wzorach: 42 blueprinty ogólne (lista
-  sekcji kategorii, w 40 także ogólny dokument do wypełnienia) oraz 67 wzorów
+- kontrola struktury oparta na realnych wzorach: 46 blueprintów ogólnych (lista
+  sekcji kategorii, w 44 także ogólny dokument do wypełnienia) oraz 77 wzorów
   precyzyjnych; dokument jest sprawdzany najpierw według blueprintu kategorii,
   potem według wzoru, z którego powstał (zob. „Kontrola struktury”),
 - walidator NLI (silnik `hybrid`) korzysta domyślnie z
@@ -784,6 +784,14 @@ liczony od doręczenia lub otrzymania dostaje ostatni dzień na złożenie pisma
 
 Wyliczenie nie zastępuje sprawdzenia daty doręczenia (np. awizo i doręczenie
 zastępcze) ani pouczenia.
+
+Odpowiedź korzysta ze wzorów kategorii, do której należy: najczęstsze pisma
+w odpowiedzi mają wzory ogólne (odwołanie od decyzji, pismo do urzędu lub sądu,
+zażalenie, apelacja, skarga do WSA, odpowiedź na pozew, wniosek w toczącej się
+sprawie) i szczególne (sprzeciw od nakazu zapłaty i od wyroku zaocznego, wnioski
+o przywrócenie i przedłużenie terminu oraz o uzasadnienie wyroku, skarga na
+czynność komornika, odwołanie od wypowiedzenia umowy o pracę, odwołanie od
+decyzji ZUS). Wzór ogólny nie nazywa konkretnego sądu ani organu.
 
 Terminy w katalogu sprawdza się w ISAP przy każdej zmianie pliku. Testy:
 `tests/test_replies.py` z fikcyjnymi pismami w `tests/fixtures/incoming_letters.yaml`,

@@ -1,0 +1,236 @@
+# Szkielet struktury: skarga do wojewódzkiego sądu administracyjnego.
+#
+# Art. 57 § 1 p.p.s.a.: wymogi pisma w postępowaniu sądowym oraz wskazanie
+# zaskarżonego aktu lub czynności, oznaczenie organu i określenie naruszenia prawa
+# lub interesu prawnego. Skargę wnosi się za pośrednictwem organu (art. 54 § 1).
+
+category: skarga_wsa
+label_pl: skarga do sądu administracyjnego
+check_order: false
+sections:
+- id: data_miejsce
+  label_pl: miejscowość i data
+  severity: required
+  # Linia „miejscowość, data” albo jej podpis we wzorze.
+  patterns:
+  - '^(?=.{0,90}$)[\p{L}…. ()\t\-]{1,60},\s*(?:dnia\s+)?(?:\d{1,2}\b|…|\.{2,})'
+  - '\(miejscowość\W+(?:i\s+)?data'
+- id: sad
+  label_pl: oznaczenie sądu
+  severity: required
+  matches: [wojewódzki sąd administracyjny]
+- id: posrednictwo
+  label_pl: organ pośredniczący
+  severity: expected
+  matches: [za pośrednictwem]
+- id: skarzacy
+  label_pl: oznaczenie skarżącego
+  severity: required
+  matches: [skarżący]
+- id: organ
+  label_pl: oznaczenie organu
+  severity: required
+  matches: ['organ:']
+- id: akt
+  label_pl: wskazanie zaskarżonego aktu
+  severity: required
+  matches: [wnoszę skargę]
+- id: naruszenie
+  label_pl: określenie naruszenia prawa
+  severity: required
+  matches: [zarzucam]
+- id: wnioski
+  label_pl: wnioski
+  severity: required
+  matches: ['wnoszę o:']
+- id: uzasadnienie
+  label_pl: uzasadnienie
+  severity: required
+  matches: [uzasadnienie]
+- id: podpis
+  label_pl: podpis
+  severity: required
+  matches: [podpis]
+
+# Dokument ogólny: wzór do wypełnienia, bez nazwy konkretnego sądu ani organu.
+# Przy użyciu wypełnia się wyłącznie pola (`slots`); treść, kolejność i układ
+# zostają jak we wzorze.
+document:
+  label_pl: Skarga do wojewódzkiego sądu administracyjnego
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 1417, bottom: 1417, left: 1417, right: 1417}}
+  blocks:
+  - p: 0
+    role: body
+    layout: {align: right, size: 11.0}
+    text: '………………… (miejscowość), dnia ………………… (data)'
+    slots:
+    - {id: miejscowosc, span: [0, 7], type: place, hint: miejscowość}
+    - {id: data, span: [28, 35], type: date, hint: data}
+    inline_hints:
+    - {span: [8, 21], text: miejscowość}
+    - {span: [36, 42], text: data}
+  - {p: 1, role: spacer}
+  - p: 2
+    role: body
+    layout: {align: left, size: 11.0}
+    text: Wojewódzki Sąd Administracyjny ………………… (siedziba sądu, np. w Warszawie)
+    slots:
+    - {id: sad, span: [31, 38], type: place, hint: 'siedziba sądu, np. w Warszawie'}
+    inline_hints:
+    - {span: [39, 71], text: 'siedziba sądu, np. w Warszawie'}
+  - p: 3
+    role: field_header
+    layout: {align: justify, size: 11.0}
+    text: 'Za pośrednictwem:'
+  - p: 4
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: '………………………………………………………………………………………………'
+    slots:
+    - {id: organ_posredniczacy, span: [0, 36], type: text, hint: 'organ, który wydał zaskarżony akt', label: Za pośrednictwem}
+  - p: 5
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true}
+    text: '(organ, który wydał zaskarżony akt)'
+    hint_for: 4
+    hint_kind: label
+  - {p: 6, role: spacer}
+  - p: 7
+    role: field_header
+    layout: {align: justify, size: 11.0}
+    text: 'Skarżący:'
+  - p: 8
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: '………………………………………………………………………………………………'
+    slots:
+    - {id: skarzacy, span: [0, 36], type: text, hint: 'imię i nazwisko lub nazwa, adres, PESEL lub NIP', label: Skarżący}
+  - p: 9
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true}
+    text: '(imię i nazwisko lub nazwa, adres, PESEL lub NIP)'
+    hint_for: 8
+    hint_kind: label
+  - p: 10
+    role: field_header
+    layout: {align: justify, size: 11.0}
+    text: 'Organ:'
+  - p: 11
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: '………………………………………………………………………………………………'
+    slots:
+    - {id: organ, span: [0, 36], type: text, hint: 'organ, którego działania dotyczy skarga', label: Organ}
+  - p: 12
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true}
+    text: '(organ, którego działania dotyczy skarga)'
+    hint_for: 11
+    hint_kind: label
+  - {p: 13, role: spacer}
+  - p: 14
+    role: field
+    layout: {align: justify, size: 11.0}
+    text: 'Znak sprawy: …………………'
+    slots:
+    - {id: znak_sprawy, span: [13, 20], type: text, label: Znak sprawy}
+  - {p: 15, role: spacer}
+  - p: 16
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: SKARGA
+  - {p: 17, role: spacer}
+  - p: 18
+    role: body
+    layout: {align: justify, size: 11.0}
+    text: Wnoszę skargę do Wojewódzkiego Sądu Administracyjnego na akt organu wskazany niżej.
+  - p: 19
+    role: body
+    layout: {align: justify, size: 11.0}
+    text: 'Zaskarżony akt: ………………… (rodzaj i numer aktu) z dnia ………………… (data aktu), doręczony mi dnia ………………… (data doręczenia).'
+    slots:
+    - {id: zaskarzony_akt, span: [16, 23], type: text, hint: rodzaj i numer aktu}
+    - {id: data_aktu, span: [53, 60], type: date, hint: data aktu}
+    - {id: data_doreczenia, span: [92, 99], type: date, hint: data doręczenia}
+    inline_hints:
+    - {span: [24, 45], text: rodzaj i numer aktu}
+    - {span: [61, 72], text: data aktu}
+    - {span: [100, 117], text: data doręczenia}
+  - {p: 20, role: spacer}
+  - p: 21
+    role: field_header
+    layout: {align: justify, size: 11.0}
+    text: 'Zaskarżonemu aktowi zarzucam:'
+  - p: 22
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: '………………… (naruszenie przepisu prawa i na czym polega).'
+    slots:
+    - {id: naruszenie, span: [0, 7], type: text, hint: naruszenie przepisu prawa i na czym polega}
+    inline_hints:
+    - {span: [8, 52], text: naruszenie przepisu prawa i na czym polega}
+  - {p: 23, role: spacer}
+  - p: 24
+    role: field_header
+    layout: {align: justify, size: 11.0}
+    text: 'Wnoszę o:'
+  - p: 25
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: '………………… (uchylenie zaskarżonego aktu albo stwierdzenie jego nieważności);'
+    slots:
+    - {id: wnioski, span: [0, 7], type: text, hint: uchylenie zaskarżonego aktu albo stwierdzenie jego nieważności}
+    inline_hints:
+    - {span: [8, 72], text: uchylenie zaskarżonego aktu albo stwierdzenie jego nieważności}
+  - p: 26
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+    text: zasądzenie zwrotu kosztów postępowania.
+  - {p: 27, role: spacer}
+  - p: 28
+    role: body
+    layout: {align: center, size: 12.0, bold: true}
+    text: Uzasadnienie
+  - p: 29
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: '………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………'
+    slots:
+    - {id: uzasadnienie, span: [0, 108], type: text, hint: okoliczności sprawy i argumenty wskazujące naruszenie prawa}
+  - p: 30
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true}
+    text: '(okoliczności sprawy i argumenty wskazujące naruszenie prawa)'
+    hint_for: 29
+    hint_kind: instruction
+  - {p: 31, role: spacer}
+  - p: 32
+    role: blank_line
+    layout: {align: right, size: 11.0}
+    text: '………………………………'
+    slots:
+    - {id: podpis, span: [0, 12], type: signature, hint: podpis}
+  - p: 33
+    role: hint
+    layout: {align: right, size: 8.0, italic: true}
+    text: '(podpis)'
+    hint_for: 32
+    hint_kind: label
+  - {p: 34, role: spacer}
+  - p: 35
+    role: field_header
+    layout: {align: justify, size: 11.0, bold: true}
+    text: 'Załączniki:'
+  - p: 36
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: odpis skargi;
+  - p: 37
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+    text: '………………… (inne załączniki).'
+    slots:
+    - {id: zalaczniki, span: [0, 7], type: text, hint: inne załączniki}
+    inline_hints:
+    - {span: [8, 25], text: inne załączniki}

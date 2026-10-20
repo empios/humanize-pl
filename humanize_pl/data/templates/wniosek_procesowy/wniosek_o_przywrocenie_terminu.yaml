@@ -1,0 +1,136 @@
+category: wniosek_procesowy
+label_pl: Wniosek o przywrócenie terminu
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 1417, bottom: 1417, left: 1417, right: 1417}}
+blocks:
+- p: 0
+  role: body
+  layout: {align: right, size: 11.0}
+  text: ………………… (miejscowość), dnia ………………… (data)
+  slots:
+  - {id: miejscowosc, span: [0, 7], type: place, hint: miejscowość}
+  - {id: data, span: [28, 35], type: date, hint: data}
+  inline_hints:
+  - {span: [8, 21], text: miejscowość}
+  - {span: [36, 42], text: data}
+- {p: 1, role: spacer}
+- p: 2
+  role: field_header
+  layout: {align: justify, size: 11.0}
+  text: 'Do:'
+- p: 3
+  role: blank_line
+  layout: {align: justify, size: 11.0}
+  text: ………………………………………………………………………………………………
+  slots:
+  - {id: sad, span: [0, 36], type: text, hint: 'sąd albo organ, przed którym uchybiono terminowi', label: Do}
+- p: 4
+  role: hint
+  layout: {align: justify, size: 8.0, italic: true}
+  text: (sąd albo organ, przed którym uchybiono terminowi)
+  hint_for: 3
+  hint_kind: label
+- p: 5
+  role: field
+  layout: {align: justify, size: 11.0}
+  text: 'Sygnatura lub znak sprawy: …………………'
+  slots:
+  - {id: sygnatura, span: [27, 34], type: text, label: Sygnatura lub znak sprawy}
+- {p: 6, role: spacer}
+- p: 7
+  role: field_header
+  layout: {align: justify, size: 11.0}
+  text: 'Wnioskodawca:'
+- p: 8
+  role: blank_line
+  layout: {align: justify, size: 11.0}
+  text: ………………………………………………………………………………………………
+  slots:
+  - {id: wnioskodawca, span: [0, 36], type: text, hint: 'imię i nazwisko lub nazwa, adres, PESEL lub NIP', label: Wnioskodawca}
+- p: 9
+  role: hint
+  layout: {align: justify, size: 8.0, italic: true}
+  text: (imię i nazwisko lub nazwa, adres, PESEL lub NIP)
+  hint_for: 8
+  hint_kind: label
+- {p: 10, role: spacer}
+- p: 11
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: WNIOSEK O PRZYWRÓCENIE TERMINU
+- {p: 12, role: spacer}
+- p: 13
+  role: body
+  layout: {align: justify, size: 11.0}
+  text: Wnoszę o przywrócenie terminu do ………………… (czynność, której nie dokonano w terminie).
+  slots:
+  - {id: czynnosc, span: [33, 40], type: text, hint: 'czynność, której nie dokonano w terminie'}
+  inline_hints:
+  - {span: [41, 83], text: 'czynność, której nie dokonano w terminie'}
+- p: 14
+  role: body
+  layout: {align: justify, size: 11.0}
+  text: Przyczyna uchybienia terminu ustała dnia ………………… (data ustania przyczyny).
+  slots:
+  - {id: data_ustania_przyczyny, span: [41, 48], type: date, hint: data ustania przyczyny}
+  inline_hints:
+  - {span: [49, 73], text: data ustania przyczyny}
+- p: 15
+  role: body
+  layout: {align: justify, size: 11.0}
+  text: Jednocześnie dokonuję uchybionej czynności i składam ………………… (pismo dołączone do wniosku).
+  slots:
+  - {id: pismo, span: [53, 60], type: text, hint: pismo dołączone do wniosku}
+  inline_hints:
+  - {span: [61, 89], text: pismo dołączone do wniosku}
+- {p: 16, role: spacer}
+- p: 17
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: Uzasadnienie
+- p: 18
+  role: blank_line
+  layout: {align: justify, size: 11.0}
+  text: ………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………
+  slots:
+  - {id: uzasadnienie, span: [0, 108], type: text, hint: 'dlaczego termin uchybiono bez winy wnioskodawcy, z dowodami'}
+- p: 19
+  role: hint
+  layout: {align: justify, size: 8.0, italic: true}
+  text: (dlaczego termin uchybiono bez winy wnioskodawcy, z dowodami)
+  hint_for: 18
+  hint_kind: instruction
+- {p: 20, role: spacer}
+- p: 21
+  role: blank_line
+  layout: {align: right, size: 11.0}
+  text: ………………………………
+  slots:
+  - {id: podpis, span: [0, 12], type: signature, hint: podpis}
+- p: 22
+  role: hint
+  layout: {align: right, size: 8.0, italic: true}
+  text: (podpis)
+  hint_for: 21
+  hint_kind: label
+- {p: 23, role: spacer}
+- p: 24
+  role: field_header
+  layout: {align: justify, size: 11.0, bold: true}
+  text: 'Załączniki:'
+- p: 25
+  role: item
+  layout: {align: justify, size: 11.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+  text: ………………… (pismo, którego termin uchybiono);
+  slots:
+  - {id: zalacznik_pismo, span: [0, 7], type: text, hint: 'pismo, którego termin uchybiono'}
+  inline_hints:
+  - {span: [8, 41], text: 'pismo, którego termin uchybiono'}
+- p: 26
+  role: item
+  layout: {align: justify, size: 11.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+  text: ………………… (dowody braku winy).
+  slots:
+  - {id: zalacznik_dowody, span: [0, 7], type: text, hint: dowody braku winy}
+  inline_hints:
+  - {span: [8, 27], text: dowody braku winy}

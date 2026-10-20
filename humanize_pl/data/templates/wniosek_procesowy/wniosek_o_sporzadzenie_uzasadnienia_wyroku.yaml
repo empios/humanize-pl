@@ -1,0 +1,98 @@
+category: wniosek_procesowy
+label_pl: Wniosek o sporządzenie uzasadnienia wyroku
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 1417, bottom: 1417, left: 1417, right: 1417}}
+blocks:
+- p: 0
+  role: body
+  layout: {align: right, size: 11.0}
+  text: ………………… (miejscowość), dnia ………………… (data)
+  slots:
+  - {id: miejscowosc, span: [0, 7], type: place, hint: miejscowość}
+  - {id: data, span: [28, 35], type: date, hint: data}
+  inline_hints:
+  - {span: [8, 21], text: miejscowość}
+  - {span: [36, 42], text: data}
+- {p: 1, role: spacer}
+- p: 2
+  role: field_header
+  layout: {align: justify, size: 11.0}
+  text: 'Sąd:'
+- p: 3
+  role: blank_line
+  layout: {align: justify, size: 11.0}
+  text: ………………………………………………………………………………………………
+  slots:
+  - {id: sad, span: [0, 36], type: text, hint: 'sąd, który wydał wyrok, i wydział', label: Sąd}
+- p: 4
+  role: hint
+  layout: {align: justify, size: 8.0, italic: true}
+  text: (sąd, który wydał wyrok, i wydział)
+  hint_for: 3
+  hint_kind: label
+- p: 5
+  role: field
+  layout: {align: justify, size: 11.0}
+  text: 'Sygn. akt: …………………'
+  slots:
+  - {id: sygnatura, span: [11, 18], type: text, label: Sygn. akt}
+- {p: 6, role: spacer}
+- p: 7
+  role: field_header
+  layout: {align: justify, size: 11.0}
+  text: 'Wnioskodawca:'
+- p: 8
+  role: blank_line
+  layout: {align: justify, size: 11.0}
+  text: ………………………………………………………………………………………………
+  slots:
+  - {id: wnioskodawca, span: [0, 36], type: text, hint: 'imię i nazwisko lub nazwa, adres, rola w sprawie', label: Wnioskodawca}
+- p: 9
+  role: hint
+  layout: {align: justify, size: 8.0, italic: true}
+  text: (imię i nazwisko lub nazwa, adres, rola w sprawie)
+  hint_for: 8
+  hint_kind: label
+- {p: 10, role: spacer}
+- p: 11
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: WNIOSEK O SPORZĄDZENIE UZASADNIENIA WYROKU
+- {p: 12, role: spacer}
+- p: 13
+  role: body
+  layout: {align: justify, size: 11.0}
+  text: Wnoszę o sporządzenie uzasadnienia wyroku wydanego dnia ………………… (data ogłoszenia wyroku) w zakresie ………………… (całego wyroku albo wskazanej
+    części) i doręczenie mi wyroku wraz z uzasadnieniem.
+  slots:
+  - {id: data_wyroku, span: [56, 63], type: date, hint: data ogłoszenia wyroku}
+  - {id: zakres, span: [100, 107], type: text, hint: całego wyroku albo wskazanej części}
+  inline_hints:
+  - {span: [64, 88], text: data ogłoszenia wyroku}
+  - {span: [108, 145], text: całego wyroku albo wskazanej części}
+- {p: 14, role: spacer}
+- p: 15
+  role: blank_line
+  layout: {align: right, size: 11.0}
+  text: ………………………………
+  slots:
+  - {id: podpis, span: [0, 12], type: signature, hint: podpis}
+- p: 16
+  role: hint
+  layout: {align: right, size: 8.0, italic: true}
+  text: (podpis)
+  hint_for: 15
+  hint_kind: label
+- {p: 17, role: spacer}
+- p: 18
+  role: field_header
+  layout: {align: justify, size: 11.0, bold: true}
+  text: 'Załączniki:'
+- p: 19
+  role: item
+  layout: {align: justify, size: 11.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+  text: ………………… (dowód uiszczenia opłaty).
+  slots:
+  - {id: zalaczniki, span: [0, 7], type: text, hint: dowód uiszczenia opłaty}
+  inline_hints:
+  - {span: [8, 33], text: dowód uiszczenia opłaty}

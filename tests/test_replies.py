@@ -109,6 +109,23 @@ def test_the_sender_is_named_as_its_head_line_says(name: str, expected: str) -> 
     assert analyze(letter["text"]).sender_name == expected
 
 
+def test_where_a_reply_goes_is_described_when_the_letter_does_not_name_it() -> None:
+    """A remedy goes through whoever ruled, and a reply to someone other than
+    the sender says where; the catalogue describes the body, it names no one."""
+    judgment = next(row for row in LETTERS if row["name"] == "sad_wyrok_cywilny")
+    appeal = next(
+        c.to_json() for c in analyze(judgment["text"]).candidates if c.reply.id == "apelacja"
+    )
+    assert (appeal["via"], appeal["filed_via"]) == ("", "sąd, który wydał wyrok")
+    notice = next(row for row in LETTERS if row["name"] == "wypowiedzenie_umowy_o_prace")
+    claim = next(
+        c.to_json()
+        for c in analyze(notice["text"]).candidates
+        if c.reply.id == "odwolanie_od_wypowiedzenia"
+    )
+    assert claim["filed_with"] == "sąd pracy" and not claim["filed_via"]
+
+
 def test_czynny_zal_always_carries_its_warning() -> None:
     letter = next(row for row in LETTERS if row["name"] == "us_wezwanie_czynnosci_sprawdzajace")
     zal = next(c for c in analyze(letter["text"]).candidates if c.reply.id == "czynny_zal")

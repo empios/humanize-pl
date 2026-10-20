@@ -74,6 +74,7 @@ class Candidate:
     # "pouczenie", "pismo" or "przepis": where the term comes from.
     term_source: str
     basis: str
+    # Named by the letter's instruction; the catalogue only describes the body.
     addressee: str
     via: str
     warnings: tuple[str, ...]
@@ -93,6 +94,8 @@ class Candidate:
             "basis": self.basis,
             "addressee": self.addressee,
             "via": self.via,
+            "filed_via": self.reply.filed_via,
+            "filed_with": self.reply.filed_with,
             "warnings": list(self.warnings),
             "conflict": self.conflict,
             "deadline": self.deadline.to_json() if self.deadline else None,
@@ -279,7 +282,7 @@ def _candidate(
         term_source=source,
         basis=basis,
         addressee=remedy.addressee if remedy else "",
-        via=(remedy.via if remedy and remedy.via else reply.filed_via),
+        via=remedy.via if remedy else "",
         warnings=tuple(cat.warnings[w] for w in reply.warnings),
         conflict=conflict,
         deadline=compute_deadline(term, delivered, _holiday_rule(cat, basis, procedure), today),

@@ -121,7 +121,10 @@ class Reply:
     term: Term | None = None
     basis: tuple[tuple[str, str], ...] = ()
     variants: tuple[tuple[str, Term | None, str], ...] = ()
+    # Whoever ruled, when a remedy goes through them; the body a reply goes to
+    # when that is not the sender. Descriptions, not names.
     filed_via: str = ""
+    filed_with: str = ""
     warnings: tuple[str, ...] = ()
 
     def fits(self, act: str | None, sender: str | None, procedure: str | None) -> bool:
@@ -239,6 +242,7 @@ def _load(path: Path) -> Catalogue:
                 for name, v in (row.get("variants") or {}).items()
             ),
             filed_via=str(row.get("filed_via", "")),
+            filed_with=str(row.get("filed_with", "")),
             warnings=tuple(row.get("warnings") or ()),
         )
         _check(reply, goals, procedures, senders, acts, warnings)

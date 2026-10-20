@@ -753,7 +753,11 @@ Odpowiedzi wynikają z katalogu `humanize_pl/data/replies.yaml`. Każda ma cel
 kategorię wzoru, termin i podstawę prawną, zależnie od procedury. Pouczenie
 w piśmie ma pierwszeństwo: środek, który nazywa, trafia na początek listy z jego
 terminem, adresatem i organem pośredniczącym, a termin różny od przepisu jest
-zgłaszany w polu `conflict`, nie poprawiany. Odpowiedzi wrażliwe niosą ostrzeżenia
+zgłaszany w polu `conflict`, nie poprawiany. Bez nazw z pouczenia katalog opisuje,
+dokąd pismo trafia: środek odwoławczy za pośrednictwem tego, kto wydał
+rozstrzygnięcie (`filed_via`, np. zażalenie i apelacja), a pismo do kogoś innego
+niż nadawca w `filed_with` (skarga na czynność komornika do sądu rejonowego,
+odwołanie od wypowiedzenia do sądu pracy). Odpowiedzi wrażliwe niosą ostrzeżenia
 (np. skuteczność czynnego żalu, art. 16 § 5 k.k.s.). Fakty, które odpowiedź musi
 przytoczyć bez zmian (sygnatury, daty, kwoty, NIP/PESEL, przepisy), są zwracane
 w `facts`, a linia nagłówka, w której nadawca się podpisuje, w `sender_name`

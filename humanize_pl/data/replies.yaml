@@ -398,7 +398,7 @@ replies:
   # ---------------------------------------------------- pisma prywatne ---
   - id: odpowiedz_na_wezwanie_do_zaplaty
     label_pl: odpowiedź na wezwanie do zapłaty (zakwestionowanie roszczenia)
-    category: pismo_do_klienta
+    category: odpowiedz_na_wezwanie_do_zaplaty
     goal: kwestionuje
     when: {acts: [wezwanie_do_zaplaty]}
     warnings: [przedawnienie]

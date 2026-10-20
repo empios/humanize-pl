@@ -406,6 +406,13 @@ categories:
     signals: ["rękojmi", "prawach konsumenta", "niezgodność towaru", "wady"]
     requires_any: ["rękojmi", "składam reklamację"]
 
+  - id: odpowiedz_na_wezwanie_do_zaplaty
+    label_pl: odpowiedź na wezwanie do zapłaty
+    family: client_communication
+    signals_strong: ["w odpowiedzi na wezwanie do zapłaty", "odpowiedź na wezwanie do zapłaty", "nie uznaję roszczenia", "kwestionuję roszczenie"]
+    signals: ["przedawnienie", "roszczenie jest bezzasadne", "dokonałem zapłaty", "dokonałam zapłaty"]
+    requires_any: ["w odpowiedzi na wezwanie do zapłaty", "odpowiedź na wezwanie do zapłaty"]
+
   # ------------------------------------- wydzielone 05.10 z innych kategorii ---
   #
   # Wnioski do pracodawcy leżały pod wnioskiem procesowym, a umowy o zakazie

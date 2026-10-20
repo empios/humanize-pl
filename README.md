@@ -83,8 +83,8 @@ Działa warstwowo:
   i odtworzeniem obu stron pomiaru z gotowego arkusza XLSX,
 - przepływ XLSX zapisuje raport JSON domyślnie, tak jak DOCX (wcześniej tylko
   po podaniu `--report`, więc zwykły przebieg nie zostawiał czego odtworzyć),
-- kontrola struktury oparta na realnych wzorach: 46 blueprintów ogólnych (lista
-  sekcji kategorii, w 44 także ogólny dokument do wypełnienia) oraz 77 wzorów
+- kontrola struktury oparta na realnych wzorach: 47 blueprintów ogólnych (lista
+  sekcji kategorii, w 45 także ogólny dokument do wypełnienia) oraz 77 wzorów
   precyzyjnych; dokument jest sprawdzany najpierw według blueprintu kategorii,
   potem według wzoru, z którego powstał (zob. „Kontrola struktury”),
 - walidator NLI (silnik `hybrid`) korzysta domyślnie z
@@ -792,7 +792,7 @@ zastępcze) ani pouczenia.
 Odpowiedź korzysta ze wzorów kategorii, do której należy: najczęstsze pisma
 w odpowiedzi mają wzory ogólne (odwołanie od decyzji, pismo do urzędu lub sądu,
 zażalenie, apelacja, skarga do WSA, odpowiedź na pozew, wniosek w toczącej się
-sprawie) i szczególne (sprzeciw od nakazu zapłaty i od wyroku zaocznego, wnioski
+sprawie, odpowiedź na wezwanie do zapłaty) i szczególne (sprzeciw od nakazu zapłaty i od wyroku zaocznego, wnioski
 o przywrócenie i przedłużenie terminu oraz o uzasadnienie wyroku, skarga na
 czynność komornika, odwołanie od wypowiedzenia umowy o pracę, odwołanie od
 decyzji ZUS). Wzór ogólny nie nazywa konkretnego sądu ani organu.

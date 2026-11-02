@@ -305,6 +305,12 @@ def analyze(
     remedies = remedies_in(
         letter.instruction, tuple(p for r in cat.replies.values() for p in r.remedy)
     )
+    instruction = letter.instruction.casefold()
+
+    def available(reply: Reply) -> bool:
+        # "Decyzja jest ostateczna" or "nie przysługuje odwołanie" names the remedy
+        # only to deny it.
+        return not any(pattern.search(instruction) for _, pattern in reply.ruled_out)
 
     def offer(reply: Reply, remedy: Remedy | None = None) -> Candidate:
         return _candidate(reply, cat, procedure.id, letter, remedy, delivered, today)
@@ -319,7 +325,7 @@ def analyze(
             or [r for r in owners if r.answers(act.id)]
             or owners
         )
-        for reply in fitting:
+        for reply in filter(available, fitting):
             chosen.setdefault(reply.id, offer(reply, remedy))
     general = [r for r in cat.replies.values() if not (r.acts or r.senders or r.procedures)]
     if act.id:
@@ -328,12 +334,16 @@ def analyze(
                 reply not in general
                 and not reply.instruction_only
                 and reply.fits(act.id, sender.id, procedure.id)
+                and available(reply)
             ):
                 chosen.setdefault(reply.id, offer(reply))
     for reply in general:
         chosen.setdefault(reply.id, offer(reply))
 
-    if any(c.deadline and c.deadline.status == AFTER_TERM for c in chosen.values()):
+    # A passed term counts when it is one the instruction gives, if it gives any:
+    # a catalogue remedy the letter does not offer is no reason to ask for more time.
+    binding = [c for c in chosen.values() if c.from_instruction] or list(chosen.values())
+    if any(c.deadline and c.deadline.status == AFTER_TERM for c in binding):
         chosen = {RESTORE_TERM: chosen.pop(RESTORE_TERM), **chosen}
 
     named = any(c.from_instruction and c.reply.answers(act.id) for c in chosen.values())

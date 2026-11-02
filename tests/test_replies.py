@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from datetime import date
 from pathlib import Path
 
 import pytest
@@ -126,6 +127,22 @@ def test_where_a_reply_goes_is_described_when_the_letter_does_not_name_it() -> N
     assert claim["filed_with"] == "sąd pracy" and not claim["filed_via"]
 
 
+def test_a_final_decision_offers_no_appeal_and_its_term_moves_nothing() -> None:
+    """A final decision cannot be appealed, so no appeal is offered; and a term the
+    instruction does not give cannot put the request to restore a term first."""
+    final = next(row for row in LETTERS if row["name"] == "uodo_decyzja_ostateczna")
+    ids = [c.reply.id for c in analyze(final["text"]).candidates]
+    assert "odwolanie" not in ids and ids[0] == "skarga_wsa"
+    text = (
+        "DECYZJA\nNa podstawie art. 104 k.p.a. Wójt Gminy orzeka o odmowie.\n"
+        "Pouczenie: przysługuje skarga do Wojewódzkiego Sądu Administracyjnego"
+        " w terminie 30 dni od dnia doręczenia."
+    )
+    # Delivered 20 days ago: the catalogue's 14-day appeal is past, the complaint is not.
+    result = analyze(text, date(2026, 9, 10), today=date(2026, 9, 30))
+    assert result.candidates[0].reply.id == "skarga_wsa"
+
+
 def test_czynny_zal_always_carries_its_warning() -> None:
     letter = next(row for row in LETTERS if row["name"] == "us_wezwanie_czynnosci_sprawdzajace")
     zal = next(c for c in analyze(letter["text"]).candidates if c.reply.id == "czynny_zal")
@@ -161,6 +178,14 @@ def test_abbreviations_match_whole_words_only() -> None:
     assert phrase_pattern("k.p.").search("art. 30 k.p. stanowi")
     assert not phrase_pattern("op").search("opłata skarbowa")
     assert phrase_pattern("deklaracj").search("deklaracji vat")
+
+
+def test_a_labelled_mark_comes_before_a_case_the_letter_cites() -> None:
+    facts = facts_of(
+        "Sygn. akt KM 1207/26\nna podstawie nakazu zapłaty, sygn. akt I Nc 99/26.\n"
+        "Nasz znak: w 2026 r."
+    )
+    assert facts.references == ("KM 1207/26", "I Nc 99/26")
 
 
 def test_facts_keep_references_identifiers_and_amounts_verbatim() -> None:

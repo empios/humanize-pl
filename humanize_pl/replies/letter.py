@@ -95,7 +95,8 @@ _COURT_REFERENCE = re.compile(
 _FILE_MARK = re.compile(
     r"(?i)(?:sygn\.\s*akt|sygnatura(?:\s+akt)?|znak(?:\s+sprawy|\s+pisma)?|nasz\s+znak|"
     r"nr\s+sprawy|numer\s+sprawy|sprawa\s+nr|nr\s+decyzji|numer\s+decyzji)"
-    r"\s*:?\s*(?P<mark>[\p{L}\d][\w./\-–]*\d[\w./\-–]*)"
+    # A bailiff's or registry prefix may stand apart from the number ("KM 1207/26").
+    r"\s*:?\s*(?P<mark>(?:(?-i:\p{Lu}\p{L}{0,3})\s(?=\d))?[\p{L}\d][\w./\-–]*\d[\w./\-–]*)"
 )
 _NUMERIC_DATE = re.compile(r"\b(?P<d>\d{1,2})[.\-/](?P<m>\d{1,2})[.\-/](?P<y>\d{4})\b")
 _WORD_DATE = re.compile(r"(?i)\b(?P<d>\d{1,2})\s+(?P<m>" + "|".join(MONTHS) + r")\s+(?P<y>\d{4})\b")
@@ -269,9 +270,11 @@ def facts_of(text: str) -> Facts:
     """What a reply must quote unchanged: references, dates, amounts, identifiers."""
     letter_date = _LETTER_DATE.search(text)
     return Facts(
+        # A labelled mark is the letter's own; a bare court reference may be
+        # another case it cites (the judgment a bailiff enforces).
         references=_unique(
-            [m.group(0) for m in _COURT_REFERENCE.finditer(text)]
-            + [m["mark"].rstrip(".,") for m in _FILE_MARK.finditer(text)]
+            [m["mark"].rstrip(".,") for m in _FILE_MARK.finditer(text)]
+            + [m.group(0) for m in _COURT_REFERENCE.finditer(text)]
         ),
         letter_date=" ".join(letter_date["date"].split()) if letter_date else "",
         dates=_unique(

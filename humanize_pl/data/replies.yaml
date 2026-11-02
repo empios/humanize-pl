@@ -20,7 +20,8 @@
 # Gdzie pismo trafia: środek odwoławczy wnosi się za pośrednictwem tego, kto
 # wydał rozstrzygnięcie (`filed_via`); pismo, które idzie do kogoś innego niż
 # nadawca, a pouczenie go nie nazywa, opisuje `filed_with` (np. sąd pracy).
-# W pozostałych odpowiedzi wracają do nadawcy.
+# W pozostałych odpowiedzi wracają do nadawcy. `ruled_out` to zwroty pouczenia,
+# które wykluczają środek („decyzja jest ostateczna”), choć go nazywają.
 #
 # Każdy termin ma podstawę (`basis`). Terminy sprawdza się w ISAP przy każdej
 # zmianie tego pliku; katalog nie zastępuje pouczenia ani porady prawnej.
@@ -221,6 +222,8 @@ replies:
     deadline: {value: 14, unit: day, from: doręczenia}
     basis: {kpa: art. 129 § 2 k.p.a., op: art. 223 § 2 o.p.}
     filed_via: organ, który wydał decyzję
+    # art. 16 § 1 k.p.a., art. 128 o.p.: od decyzji ostatecznej odwołanie nie przysługuje.
+    ruled_out: ["decyzja jest ostateczna", "nie przysługuje odwołanie", "odwołanie nie przysługuje"]
   - id: odwolanie_zus
     label_pl: odwołanie od decyzji ZUS do sądu
     category: odwolanie_od_decyzji
@@ -262,6 +265,7 @@ replies:
     # art. 144 w zw. z art. 129 § 1 k.p.a., art. 239 w zw. z art. 223 § 1 o.p.,
     # art. 395 § 1 k.p.c., art. 428 § 1 k.p.k.
     filed_via: sąd lub organ, który wydał postanowienie
+    ruled_out: ["postanowienie jest ostateczne", "nie przysługuje zażalenie", "zażalenie nie przysługuje"]
   - id: wyjasnienia
     label_pl: wyjaśnienia w odpowiedzi na wezwanie
     category: pismo_urzedowe

@@ -125,6 +125,8 @@ class Reply:
     # when that is not the sender. Descriptions, not names.
     filed_via: str = ""
     filed_with: str = ""
+    # Instruction phrases that say the remedy is not available ("decyzja jest ostateczna").
+    ruled_out: Phrases = ()
     warnings: tuple[str, ...] = ()
 
     def fits(self, act: str | None, sender: str | None, procedure: str | None) -> bool:
@@ -243,6 +245,7 @@ def _load(path: Path) -> Catalogue:
             ),
             filed_via=str(row.get("filed_via", "")),
             filed_with=str(row.get("filed_with", "")),
+            ruled_out=phrases(row.get("ruled_out")),
             warnings=tuple(row.get("warnings") or ()),
         )
         _check(reply, goals, procedures, senders, acts, warnings)

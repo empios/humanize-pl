@@ -669,10 +669,13 @@ def _captions(text: str) -> list[tuple[int, int, str]]:
 
 
 def _hint_groups(text: str) -> list[str] | None:
-    """`(a)   (b)` -> ['a', 'b'] when the whole paragraph is captions."""
+    """`(a)   (b)` -> ['a', 'b'] when the whole paragraph is captions. An editor's
+    note whose bracket is never closed ("(dalej należy opisać powód …") is one."""
     stripped = text.strip()
     if not stripped.startswith(("(", "[")):
         return None
+    if stripped[0] == "(" and ")" not in stripped and _INSTRUCTION.search(stripped):
+        return [stripped[1:].strip()]
     groups = _captions(stripped)
     rest = stripped
     for start, end, _inner in reversed(groups):
@@ -693,7 +696,9 @@ def _is_only_blank(b: Block) -> bool:
 
 def _split_captions(content: list[Block]) -> dict[int, list[int]]:
     """Captions broken over paragraphs ("(dane Pracodawcy, … adres lub" /
-    "określenie firmy, … NIP-u)"): the paragraphs of each, by paragraph."""
+    "określenie firmy, … NIP-u)"): the paragraphs of each, by paragraph. A note
+    left open on a colon ("(… należy uzasadnić …, np.:") goes on over the list
+    below it: the examples are the note's, not the document's."""
     split: dict[int, list[int]] = {}
     for pos, b in enumerate(content):
         if pos in split or not b.text.strip().startswith(("(", "[")):
@@ -708,6 +713,16 @@ def _split_captions(content: list[Block]) -> dict[int, list[int]]:
         joined = " ".join(content[k].text.strip() for k in parts)
         if depth <= 0 and len(parts) > 1 and _hint_groups(joined):
             split.update(dict.fromkeys(parts, parts))
+        elif b.text.rstrip().endswith(":") and _hint_groups(b.text):
+            parts = [pos]
+            for k in range(pos + 1, len(content)):
+                # an empty paragraph, a paragraph unmarked or one with dots ends the list
+                item = content[k]
+                if item.p != content[k - 1].p + 1 or item.label is None or item.slots:
+                    break
+                parts.append(k)
+            if len(parts) > 1:
+                split.update(dict.fromkeys(parts, parts))
     return split
 
 

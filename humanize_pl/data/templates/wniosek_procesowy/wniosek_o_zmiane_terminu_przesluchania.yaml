@@ -129,11 +129,14 @@ blocks:
   layout: {align: justify, size: 10.0}
   text: 'Powyższy wniosek motywuję faktem, iż we wskazanym dniu będę przebywać _______________. '
   slots:
-  - {id: p30_1, span: [70, 85], type: text, context: wskazanym dniu będę przebywać ▢}
+  - {id: p30_1, span: [70, 85], type: text, hint: dalej należy szczegółowo opisać powód przez który Klient nie może się stawić w terminie na przesłuchanie.,
+    context: wskazanym dniu będę przebywać ▢}
 - p: 31
-  role: body
+  role: hint
   layout: {align: justify, size: 10.0, italic: true}
   text: '(dalej należy szczegółowo opisać powód przez który Klient nie może się stawić w terminie na przesłuchanie. '
+  hint_for: 30
+  hint_kind: instruction
 - p: 32
   role: blank_line
   layout: {align: right, indent: {first: 708}, size: 10.0, tabs: 9}

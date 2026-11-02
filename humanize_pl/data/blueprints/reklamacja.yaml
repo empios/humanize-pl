@@ -204,28 +204,42 @@ document:
     layout: {align: justify, size: 10.0}
     text: …………………………………………………………………………………………………………………………………………………
     slots:
-    - {id: p27_1, span: [0, 55], type: text, context: ▢}
+    - {id: p27_1, span: [0, 55], type: text, hint: 'w tym miejscu należy uzasadnić złożenie reklamacji, w tym wskazanie w jaki sposób zakupiona
+        rzecz jest niezgodna z umową np.: - nie ma właściwości, które rzecz tego rodzaju powinna mieć ze względu na cel w umowie oznaczony albo
+        wynikający z jej przeznaczenia; - nie ma właściwości, o których istnieniu sprzedawca zapewnił kupującego, w tym przedstawiając próbkę lub
+        wzór; - nie nadaje się do celu, o którym kupujący poinformował sprzedawcę przy zawieraniu umowy, a sprzedawca nie zgłosił zastrzeżenia co
+        do takiego jej przeznaczenia; - została kupującemu wydana w stanie niezupełnym.', context: ▢}
   - p: 28
-    role: body
+    role: hint
     layout: {align: justify, size: 10.0, italic: true}
     text: '(w tym miejscu należy uzasadnić złożenie reklamacji, w tym wskazanie w jaki sposób zakupiona rzecz jest niezgodna z umową np.: '
+    hint_for: 27
+    hint_kind: instruction
   - p: 29
-    role: item
+    role: hint
     layout: {align: justify, size: 10.0, italic: true, marker: {text: '-', kind: bullet, src: manual, level: 2}}
     text: '- nie ma właściwości, które rzecz tego rodzaju powinna mieć ze względu na cel w umowie oznaczony albo wynikający z jej przeznaczenia;'
+    hint_for: 27
+    hint_kind: instruction
   - p: 30
-    role: item
+    role: hint
     layout: {align: justify, size: 10.0, italic: true, marker: {text: '-', kind: bullet, src: manual, level: 2}}
     text: '- nie ma właściwości, o których istnieniu sprzedawca zapewnił kupującego, w tym przedstawiając próbkę lub wzór;'
+    hint_for: 27
+    hint_kind: instruction
   - p: 31
-    role: item
+    role: hint
     layout: {align: justify, size: 10.0, italic: true, marker: {text: '-', kind: bullet, src: manual, level: 2}}
     text: '- nie nadaje się do celu, o którym kupujący poinformował sprzedawcę przy zawieraniu umowy, a sprzedawca nie zgłosił zastrzeżenia co do
       takiego jej przeznaczenia;'
+    hint_for: 27
+    hint_kind: instruction
   - p: 32
-    role: item
+    role: hint
     layout: {align: justify, size: 10.0, italic: true, marker: {text: '-', kind: bullet, src: manual, level: 2}}
     text: '- została kupującemu wydana w stanie niezupełnym.'
+    hint_for: 27
+    hint_kind: instruction
   - {p: 33, role: spacer}
   - {p: 34, role: spacer}
   - p: 35

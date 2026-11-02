@@ -150,6 +150,26 @@ def test_a_caption_broken_over_paragraphs_names_the_dots_above_it() -> None:
     assert blocks[3]["hint_for"] is None
 
 
+def test_an_editors_note_left_unclosed_is_still_a_note() -> None:
+    """A filled document must not carry "(dalej należy opisać …" as its own text."""
+    blocks = layout_ir.from_text(
+        "Powyższy wniosek motywuję tym, że ………………\n"
+        "(dalej należy szczegółowo opisać powód.\n"
+        "UZASADNIENIE\n"
+        "………………………………\n"
+        "(w tym miejscu należy uzasadnić reklamację, np.:\n"
+        "- nie ma właściwości, które rzecz powinna mieć;\n"
+        "- została wydana w stanie niezupełnym.\n"
+        "\n"
+        "- paragon"
+    )["blocks"]
+    roles = [b["role"] for b in blocks]
+    assert roles == ["body", "hint", "body", "blank_line", "hint", "hint", "hint", "spacer", "item"]
+    assert [b["hint_for"] for b in blocks if b["role"] == "hint"] == [0, 3, 3, 3]
+    assert {b["hint_kind"] for b in blocks if b["role"] == "hint"} == {"instruction"}
+    assert blocks[0]["slots"][0]["hint"] == "dalej należy szczegółowo opisać powód."
+
+
 def test_a_slash_inside_a_caption_is_not_a_choice() -> None:
     date_line = "W dniu ……………… (dzień/miesiąc/rok) w ……………… (miejscowość)"
     choice = "na okres próbny od ……………… / na czas określony do ……………… / na czas nieokreślony"

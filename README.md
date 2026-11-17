@@ -81,7 +81,9 @@ Działa warstwowo:
 - rejestr udziału modelu językowego (`ai_use` w każdej pozycji i w `summary`
   raportu JSON, sekcja 4.2 raportu PDF): nazwa modelu, liczba fragmentów
   zredagowanych przez model i przez reguły, propozycje modelu odrzucone przez
-  lokalne kontrole oraz pozycje, w których zamówiony model był niedostępny.
+  lokalne kontrole, błędy połączenia z modelem oraz pozycje, w których
+  zamówiony model był niedostępny. Raport odtworzony z gotowego arkusza mówi,
+  że udziału modelu nie da się z niego ustalić.
   Zmiana zaczęta regułą i dokończona przez model liczy się jako zmiana modelu,
 - `humanize-pl-flow report <folder|json|xlsx>` — sam raport PDF z zakończonej
   pracy, z doczytaniem brakujących pomiarów ze starszych przebiegów DOCX

@@ -4,6 +4,7 @@ import tempfile
 from pathlib import Path
 
 import docx as pydocx
+import pytest
 
 from humanize_pl.config import Engine, Mode
 from humanize_pl.document import DocumentType, StyleProfile, build_style_profile
@@ -177,6 +178,7 @@ def test_tone_is_serialised_for_the_report(tmp_path) -> None:
 
 
 def test_ui_names_the_three_states_apart() -> None:
+    pytest.importorskip("gradio", reason="frontend jest opcjonalnym dodatkiem [ui]")
     from humanize_pl.flows.base import ItemOutcome
     from humanize_pl.ui.app import tone_label
 

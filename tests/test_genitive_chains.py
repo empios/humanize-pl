@@ -1,6 +1,8 @@
 import pytest
 
-from humanize_pl.config import Mode
+pytest.importorskip("stanza", reason="Stanza jest opcjonalnym dodatkiem [nlp]")
+
+from humanize_pl.config import Mode  # noqa: E402
 from humanize_pl.nlp.stanza_engine import StanzaEngine
 from humanize_pl.rules.genitive_chains import genitive_chain_candidates
 

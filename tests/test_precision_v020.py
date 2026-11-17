@@ -1,4 +1,5 @@
 import json
+from importlib.util import find_spec
 
 import pytest
 
@@ -516,6 +517,10 @@ def test_safe_nlp_nominalizations_still_work():
             "nie później niż w terminie 30 dni."
         )
     )
+
+
+@pytest.mark.skipif(find_spec("stanza") is None, reason="Stanza jest opcjonalnym dodatkiem [nlp]")
+def test_nlp_engine_replaces_powyzszy_with_a_demonstrative():
     assert (
         humanize_text(
             "Brak zapłaty w powyższym terminie może skutkować skierowaniem sprawy do sądu.",

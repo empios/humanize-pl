@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 
 import pytest
+from rich.text import Text
 from typer.testing import CliRunner
 
 import humanize_pl.core as core
@@ -401,7 +402,8 @@ def test_cli_exposes_offline_models_flag():
     runner = CliRunner()
     result = runner.invoke(app, ["--help"])
     assert result.exit_code == 0
-    assert "--offline-models" in result.stdout
+    # Typer forces ANSI styling on GitHub Actions, even under CliRunner.
+    assert "--offline-models" in Text.from_ansi(result.stdout).plain
 
 
 def test_cli_exposes_version():

@@ -89,6 +89,12 @@ def describe_visible_change(before: Any, after: Any) -> str:
     return "Brak widocznej zmiany."
 
 
+# The rule name every model edit carries, and the backend that marks a run in
+# which the model actually answered.
+LLM_RULE = "llm_rewrite"
+LLM_BACKEND = "openai_compatible_chat_completions"
+
+
 def collapse_visible_changes(changes: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Return final, visible edits instead of internal rewrite steps.
 
@@ -362,6 +368,25 @@ class ItemOutcome:
     def signal_delta(self) -> float:
         return round(self.signal_after - self.signal_before, 4)
 
+    @property
+    def ai_use(self) -> dict[str, Any]:
+        """What the language model changed here, against what the rules did.
+
+        A visible edit counts as the model's when the model took part in it at
+        all, even if a rule started it: the reader approving it is approving
+        the model's wording.
+        """
+        model_segments = sum(
+            1 for change in self.applied_changes if LLM_RULE in change.get("rules", [])
+        )
+        used = self.llm.get("backend") == LLM_BACKEND
+        return {
+            "model": self.llm.get("model") if used else None,
+            "model_segments": model_segments,
+            "rule_segments": len(self.applied_changes) - model_segments,
+            "model_rejections": int(self.llm.get("rejected", 0)) if used else 0,
+        }
+
     def to_json(self) -> dict[str, Any]:
         return {
             "name": self.name,
@@ -395,6 +420,7 @@ class ItemOutcome:
             "style_compliance": self.style_compliance,
             "legal_sensitive_check": self.legal_sensitive_check,
             "llm": self.llm,
+            "ai_use": self.ai_use,
             "formatting": self.formatting,
         }
 
@@ -581,7 +607,7 @@ def run_all_layers(
                 rewriter.metadata.duration_ms,
             )
             outcome.llm = {
-                "backend": "openai_compatible_chat_completions",
+                "backend": LLM_BACKEND,
                 "model": rewriter.metadata.model,
                 "status": rewriter.metadata.status,
                 "proposals": counters_after[0] - counters_before[0],
@@ -773,7 +799,7 @@ def _rewrite_remaining_with_llm(
             rejected += 1
             continue
         after = result.text.replace("\n", " ").strip()
-        rules = ["llm_rewrite"]
+        rules = [LLM_RULE]
         if session is not None:
             polished = session.humanize(after)
             if polished.changed:
@@ -788,7 +814,7 @@ def _rewrite_remaining_with_llm(
             {
                 "before": job["source"],
                 "after": after,
-                "issue": "llm_rewrite",
+                "issue": LLM_RULE,
                 "rules": rules,
                 "risk": 0.45,
                 "semantic_similarity": None,
@@ -946,6 +972,21 @@ def attach_pdf_report(payload: dict[str, Any], path) -> dict[str, Any]:
     return payload
 
 
+def ai_use_summary(outcomes: list[ItemOutcome]) -> dict[str, Any]:
+    """The language model's share of a run, for the report's register."""
+    rows = [item.ai_use for item in outcomes]
+    return {
+        "models": sorted({row["model"] for row in rows if row["model"]}),
+        "documents_with_model_edits": sum(1 for row in rows if row["model_segments"]),
+        "model_segments": sum(row["model_segments"] for row in rows),
+        "rule_segments": sum(row["rule_segments"] for row in rows),
+        "model_rejections": sum(row["model_rejections"] for row in rows),
+        "model_unavailable": sum(
+            1 for item in outcomes if item.llm.get("backend") == "rules_fallback"
+        ),
+    }
+
+
 def summarise(outcomes: list[ItemOutcome]) -> dict[str, Any]:
     done = [item for item in outcomes if item.status == "ok"]
     if not done:
@@ -956,6 +997,7 @@ def summarise(outcomes: list[ItemOutcome]) -> dict[str, Any]:
             "needs_review": 0,
             "ready": 0,
             "ready_with_warnings": 0,
+            "ai_use": ai_use_summary(done),
         }
     return {
         "items": len(outcomes),
@@ -980,4 +1022,5 @@ def summarise(outcomes: list[ItemOutcome]) -> dict[str, Any]:
         "mean_signal_before": round(sum(i.signal_before for i in done) / len(done), 4),
         "mean_signal_after": round(sum(i.signal_after for i in done) / len(done), 4),
         "mean_signal_delta": round(sum(i.signal_delta for i in done) / len(done), 4),
+        "ai_use": ai_use_summary(done),
     }

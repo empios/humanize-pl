@@ -219,3 +219,14 @@ def test_small_ai_corpus_against_a_large_human_corpus_still_ranks() -> None:
     }
     human = corpus(4000, phrase="Warto podkreślić", every=40)
     assert "warto podkreślić" in terms(slop_candidates(ai, human, genre="legal"))
+
+
+def test_ngram_pattern_spans_punctuation_like_the_measurement() -> None:
+    """Measured tokens drop punctuation, so "wskazała że" counts "wskazała, że"."""
+    from humanize_pl.detect.fingerprint import SlopEntry, compile_pattern
+
+    pattern = compile_pattern(SlopEntry("wskazała że", "bigram", "legal",
+                                        "accepted", "", False, False))
+    assert pattern.search("Pozwana wskazała, że roszczenie jest przedawnione.")
+    assert pattern.search("Pozwana wskazała że roszczenie jest przedawnione.")
+    assert not pattern.search("Pozwana wskazałaże roszczenie.")

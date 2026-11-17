@@ -73,8 +73,12 @@ def _validate(entry: SlopEntry, path: Path) -> None:
 
 
 def compile_pattern(entry: SlopEntry) -> re.Pattern:
-    """Surface-form match: the list measures the forms models actually write."""
-    body = r"\s+".join(re.escape(token) for token in entry.term.split())
+    """Surface-form match: the list measures the forms models actually write.
+
+    Tokens are joined by any run of non-letters, as the measurement counted
+    them: "wskazała że" was measured on "wskazała, że".
+    """
+    body = r"\P{L}+".join(re.escape(token) for token in entry.term.split())
     _n, opening = KINDS[entry.kind]
     prefix = r"^[\W\d_]*" if opening else r"(?<!\p{L})"
     return re.compile(prefix + body + r"(?!\p{L})", re.IGNORECASE)

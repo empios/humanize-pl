@@ -55,8 +55,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
 - term: wskazała że
   kind: bigram
   genre: legal
@@ -71,8 +71,9 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: accepted
+  note: Stała formuła referowania stanowiska strony; na odłożonej połowie 0,50 wobec 0,18 na 1000 słów
+    orzeczeń.
 - term: wskazała
   kind: unigram
   genre: legal
@@ -87,8 +88,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Sam czasownik jest zbyt szeroki; formułę obejmuje bigram „wskazała, że”.
 - term: w uzasadnieniu
   kind: opening_bigram
   genre: legal
@@ -103,8 +104,9 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Na odłożonej połowie tak samo częste jak w orzeczeniach (0,60 wobec 0,61 na 1000 słów); formuła
+    gatunku.
 - term: w uzasadnieniu
   kind: bigram
   genre: legal
@@ -119,8 +121,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
 - term: uzasadnieniu
   kind: unigram
   genre: legal
@@ -135,8 +137,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
 - term: pozwana
   kind: unigram
   genre: legal
@@ -151,8 +153,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
 - term: ponieważ
   kind: unigram
   genre: legal
@@ -167,8 +169,9 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: accepted
+  note: Modele piszą „ponieważ” tam, gdzie sędziowie piszą „gdyż”, „albowiem”, „bowiem”; na odłożonej
+    połowie przepisań 1,20 wobec 0,15 na 1000 słów orzeczeń.
 - term: również że
   kind: bigram
   genre: legal
@@ -182,8 +185,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: 'Za słabe na odłożonej połowie: 0,20 wobec 0,11 na 1000 słów.'
 - term: zł
   kind: unigram
   genre: legal
@@ -198,8 +201,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
 - term: pozwem
   kind: unigram
   genre: legal
@@ -213,8 +216,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
 - term: wniosła
   kind: unigram
   genre: legal
@@ -229,8 +232,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
 - term: sąd rejonowy w
   kind: trigram
   genre: legal
@@ -245,8 +248,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
 - term: wskutek
   kind: unigram
   genre: legal
@@ -260,8 +263,9 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: accepted
+  note: Spójnik przyczynowy nadużywany w przepisaniach; na odłożonej połowie 0,70 wobec 0,13 na 1000 słów.
+    Trafia w 3 z 77 ludzkich szablonów.
 - term: n
   kind: unigram
   genre: legal
@@ -276,8 +280,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
 - term: rejonowy w
   kind: bigram
   genre: legal
@@ -292,8 +296,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
 - term: w o
   kind: bigram
   genre: legal
@@ -308,8 +312,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
 - term: wyrokiem z
   kind: bigram
   genre: legal
@@ -324,8 +328,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
 - term: wyrokiem
   kind: unigram
   genre: legal
@@ -340,8 +344,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
 - term: lutego
   kind: unigram
   genre: legal
@@ -356,8 +360,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
 - term: roku
   kind: unigram
   genre: legal
@@ -371,8 +375,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
 - term: w kwocie zł
   kind: trigram
   genre: legal
@@ -387,8 +391,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
 - term: l
   kind: unigram
   genre: legal
@@ -403,8 +407,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
 - term: z tego
   kind: bigram
   genre: legal
@@ -419,8 +423,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
 - term: kwocie zł
   kind: bigram
   genre: legal
@@ -435,8 +439,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
 - term: postanowienia
   kind: unigram
   genre: legal
@@ -451,8 +455,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
 - term: pojazdu
   kind: unigram
   genre: legal
@@ -467,8 +471,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
 - term: lat
   kind: unigram
   genre: legal
@@ -483,8 +487,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
 - term: strona
   kind: unigram
   genre: legal
@@ -499,8 +503,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
 - term: lutego r
   kind: bigram
   genre: legal
@@ -514,8 +518,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
 - term: opłat
   kind: unigram
   genre: legal
@@ -530,8 +534,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
 - term: ponadto
   kind: unigram
   genre: legal
@@ -546,8 +550,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Już zgłaszane jako transition_marker (detect:ai_transition).
 - term: miejscu
   kind: unigram
   genre: legal
@@ -562,8 +566,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
 - term: umowa
   kind: unigram
   genre: legal
@@ -578,8 +582,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
 - term: w całości
   kind: bigram
   genre: legal
@@ -594,8 +598,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
 - term: odsetek
   kind: unigram
   genre: legal
@@ -610,8 +614,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
 - term: się od
   kind: bigram
   genre: legal
@@ -626,8 +630,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
 - term: całości
   kind: unigram
   genre: legal
@@ -642,8 +646,8 @@ entries:
   - sonnet
   protected: false
   indicative: false
-  status: candidate
-  note: ''
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
 - term: listopada
   kind: unigram
   genre: general

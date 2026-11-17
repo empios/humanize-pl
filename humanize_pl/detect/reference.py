@@ -7,6 +7,7 @@ from statistics import mean, pstdev
 
 import regex as re
 
+
 WORD_RE = re.compile(r"\p{L}+")
 
 
@@ -22,11 +23,11 @@ class Distribution:
     p99: float
 
     @classmethod
-    def empty(cls) -> Distribution:
+    def empty(cls) -> "Distribution":
         return cls(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 
     @classmethod
-    def of(cls, values: list[float]) -> Distribution:
+    def of(cls, values: list[float]) -> "Distribution":
         if not values:
             return cls(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
         ordered = sorted(values)
@@ -80,20 +81,13 @@ class ReferenceProfile:
     anonymisation_rate: Distribution
     signal_score: Distribution
     family_rates: dict[str, Distribution] = field(default_factory=dict)
-    # Families that are not a machine's habit in this register, measured on
-    # it: the em dash is ordinary Polish typography and opens every line of
-    # dialogue in prose (55-86% of human general texts carry one, 14% of
-    # assistant answers). A profile that lists a family here makes the
-    # detector drop its findings, so they neither score nor count against
-    # a sentence.
-    ignored_families: tuple[str, ...] = ()
 
     def to_json(self) -> dict:
         payload = asdict(self)
         return payload
 
     @classmethod
-    def from_json(cls, payload: dict) -> ReferenceProfile:
+    def from_json(cls, payload: dict) -> "ReferenceProfile":
         data = dict(payload)
         # An old profile's `windowed_ttr` (windowed type-token ratio, scale
         # ~0.5-0.7) is NOT a substitute for `mtld` (MTLD, scale ~10-30): they
@@ -122,7 +116,6 @@ class ReferenceProfile:
             family: Distribution(**values)
             for family, values in (data.get("family_rates") or {}).items()
         }
-        data["ignored_families"] = tuple(data.get("ignored_families") or ())
         known = {field.name for field in fields(cls)}
         return cls(**{key: value for key, value in data.items() if key in known})
 
@@ -135,7 +128,7 @@ class ReferenceProfile:
         )
 
     @classmethod
-    def load(cls, path: str | Path) -> ReferenceProfile:
+    def load(cls, path: str | Path) -> "ReferenceProfile":
         return cls.from_json(json.loads(Path(path).read_text(encoding="utf-8")))
 
 

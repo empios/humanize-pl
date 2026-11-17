@@ -17,19 +17,43 @@ Two severities, deliberately. `required` blocks readiness; `expected` is only
 noted. A legitimate document that departs from the pattern must be reportable
 without being failed, otherwise the blueprint becomes a straitjacket and people
 learn to switch it off.
+
+A checklist is the general measure. Each blueprint also carries the general
+document of its category, and data/templates/ holds the precise variants (a
+room lease, a notarial submission to enforcement): real documents whose only
+moving parts are their blanks. The check runs in two stages: the category
+checklist first, then the template the text was evidently written from, if
+any. A real document of the exact kind is the better measure - it knows that a
+porozumienie stron has no uzasadnienie - so when one matches, its gaps decide.
 """
 
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
 from functools import lru_cache
+from itertools import pairwise
 from pathlib import Path
 from typing import Any
 
 import regex as re
 import yaml
 
+from humanize_pl import layout_ir
+
 BLUEPRINT_DIR = Path(__file__).resolve().parent / "data" / "blueprints"
+TEMPLATE_DIR = Path(__file__).resolve().parent / "data" / "templates"
+
+# A text counts as written from a template when it carries this share of the
+# template's fixed words in the template's order. Below it, the text merely
+# shares a genre with the template, and the template's wording is no measure.
+TEMPLATE_MATCH = 0.6
+# Shared word pairs, as a share of the template's own: a cheap filter, so the
+# in-order comparison runs on a short list rather than on every template.
+_TEMPLATE_PREFILTER = 0.4
+_TEMPLATE_SHORTLIST = 3
+
+# libyaml when installed: the shipped files parse in 0.2 s instead of 1.3 s.
+_YAML_LOADER = getattr(yaml, "CSafeLoader", yaml.SafeLoader)
 
 # A section whose heading is present but which carries less than this much text
 # is reported as empty. Model output fails this way often: the skeleton gets
@@ -40,14 +64,17 @@ BLUEPRINT_DIR = Path(__file__).resolve().parent / "data" / "blueprints"
 # nothing - so anything higher reports terseness as absence. What this catches
 # is a heading followed by nothing, or by a stub like "Do uzupełnienia."
 MIN_SECTION_WORDS = 4
+# Words a heading may carry beyond its section's phrase and still only title
+# it: "Wnioski dowodowe powoda", but not "Sąd Rejonowy dla Krakowa".
+_TITLE_EXTRA_WORDS = 2
 
 # Leading unit markers: "§ 3.", "III.", "3.", "3)" — the shapes Polish legal
 # drafting actually uses for a top-level unit.
-# The optional letter is how Polish drafting adds a unit between two
-# existing ones without renumbering: "§ 2a" sits after "§ 2".
-_PARAGRAPH_UNIT = re.compile(r"^\s*§\s*(\d+)(\p{Ll}?)(?!\p{L})")
+_PARAGRAPH_UNIT = re.compile(r"^\s*§\s*(\d+)")
 _ROMAN_UNIT = re.compile(r"^\s*([IVXLC]+)[.)]\s+\p{Lu}")
 _ARABIC_UNIT = re.compile(r"^\s*(\d+)[.)]\s+\p{Lu}")
+# The marker alone ("§ 3."): the title, if any, follows on the next line.
+_BARE_UNIT = re.compile(r"^\s*§\s*\d+[a-z]?\s*[.)]?\s*$")
 
 _ROMAN_VALUES = {"I": 1, "V": 5, "X": 10, "L": 50, "C": 100}
 
@@ -61,48 +88,6 @@ _FORM_BLANK = re.compile(r"(\.\.\.|…)")
 # A heading is short, unterminated, and usually numbered. Length alone is not
 # enough: a one-line clause is short too, but it ends in a full stop.
 _MAX_HEADING_CHARS = 90
-
-# What follows a unit number, for telling a title from an ustęp.
-_UNIT_PREFIX = re.compile(r"^(?:§\s*\d+\p{Ll}?|[IVXLC]+|\d+)[.)]?\s*")
-# A title is a few words ("Przedmiot umowy", "Stan faktyczny"); a line
-# longer than this after its number is running text. One that also ends
-# like a sentence needs fewer words to count as one: "1. Umowa wchodzi
-# w życie." is an ustęp, "1. Kary umowne." may still be a title.
-_MAX_TITLE_WORDS = 8
-_MAX_TERMINATED_TITLE_WORDS = 3
-
-# A signature block recognised by its shape, whatever the parties are called:
-# a line of dots next to a short line naming a party, in either order; two
-# dotted places closing the document; or the parties' names alone on its
-# last line. Matched against the lowered text with blank lines dropped.
-#
-# Measured 2026-09-21 on the 50 contract-family documents of the firm: found
-# in 45 (the other five - a regulamin, a privacy notice, a notarial
-# statement - have no party signatures). The role-specific pattern it
-# replaced found 0: the firm puts the dots over the names, and pads the
-# name line with runs of spaces. None of the 592 held-out judgments match.
-_SIGNATURE_ROLE = (
-    r"(?:stron[aęy]?\b|zamawiając|wykonawc|zleceniodawc|zleceniobiorc|usługodawc|usługobiorc"
-    r"|przyjmując|udzielając|kancelari|klient|wynajmując|najemc|podnajemc|wydzierżawiając"
-    r"|dzierżawc|sprzedając|sprzedawc|kupując|nabywc|zbywc|pracodawc|pracownik|autor"
-    r"|licencjodawc|licencjobiorc|korzystając|udostępniając|ujawniając|otrzymując"
-    r"|pożyczkodawc|pożyczkobiorc|darczyńc|obdarowan|użyczając|biorąc|zamieniając"
-    r"|administrator|podmiot\s+przetwarzając|pośrednik|poręczyciel|wierzyciel|dłużnik"
-    r"|podpis|\(podpis)"
-)
-# Whitespace short of a newline: DOCX lines arrive padded with long runs of
-# spaces and non-breaking spaces.
-_SP = r"[^\S\n]"
-_ROLE_LINE = _SP + r"*[*_#]*" + _SIGNATURE_ROLE + r"(?:[\p{L}\d*_:()/-]|" + _SP + r")*"
-_DOTS_LINE = _SP + r"*(?:[.…_]{3,}" + _SP + r"*)+"
-SIGNATURE_BLOCK = (
-    re.compile(r"^" + _DOTS_LINE + r"\n" + _ROLE_LINE + r"$", re.MULTILINE),
-    re.compile(r"^" + _ROLE_LINE + r"\n" + _DOTS_LINE + r"$", re.MULTILINE),
-    re.compile(
-        r"^" + _SP + r"*(?:[.…_]{3,}" + _SP + r"+)+[.…_]{3,}" + _SP + r"*\Z", re.MULTILINE
-    ),
-    re.compile(r"^" + _ROLE_LINE + r"\Z", re.MULTILINE),
-)
 
 
 class BlueprintError(RuntimeError):
@@ -125,43 +110,30 @@ class Section:
     label_pl: str
     matches: tuple[str, ...]
     severity: str = "required"
-    # What the section is supposed to say, one clause per entry. Optional and
-    # empty in every shipped blueprint: `matches` answers "is this section
-    # here", which is all the structural check needs. Only the clause-level
-    # check (`humanize_pl.nli`) reads this, and where it is absent that check
-    # falls back to asking whether the section deals with `label_pl` at all.
-    expects: tuple[str, ...] = ()
-    # Whether the section is a numbered unit of the document ("§ 4.
-    # Odpowiedzialność") or sits outside the numbering - the preamble naming
-    # the parties, the signature block. Only matters when a missing section
-    # is supplied: a signature block does not get a "§" of its own.
-    unit: bool = True
-    # Regular expressions, for a section recognised by its shape rather than
-    # a word. A signature block is a party's role alone on a line over a
-    # dotted line; "zleceniodawca" as a word is in every clause of the
-    # contract, so no substring can tell the block from the body.
-    patterns: tuple[Any, ...] = ()
+    # Line patterns, for a section a phrase cannot pin down: the place and date
+    # line has no word of its own ("Toruń, 7 kwietnia 2026 r."), and "dnia" or
+    # "r." alone also match "ustawy z dnia 26 czerwca 1974 r.".
+    patterns: tuple[re.Pattern, ...] = ()
 
     @property
     def required(self) -> bool:
         return self.severity == "required"
 
     def found_in(self, lowered: str) -> str | None:
-        located = self.locate(lowered)
-        return located[0] if located else None
-
-    def locate(self, lowered: str) -> tuple[str, int] | None:
-        """The first matching phrase and where it starts, or None."""
-        best: tuple[str, int] | None = None
+        """The text that shows the section in the (casefolded) document."""
         for phrase in self.matches:
-            at = lowered.find(phrase)
-            if at >= 0 and (best is None or at < best[1]):
-                best = (phrase, at)
+            if phrase in lowered:
+                return phrase
         for pattern in self.patterns:
-            match = pattern.search(lowered)
-            if match and (best is None or match.start() < best[1]):
-                best = (match.group(0), match.start())
-        return best
+            found = pattern.search(lowered)
+            if found and found.group(0):
+                return found.group(0)
+        return None
+
+    def in_line(self, lowered_line: str) -> bool:
+        return any(phrase in lowered_line for phrase in self.matches) or any(
+            pattern.search(lowered_line) for pattern in self.patterns
+        )
 
 
 @dataclass(frozen=True)
@@ -171,10 +143,24 @@ class DocumentBlueprint:
     sections: tuple[Section, ...]
     numbering: str | None = None
     check_order: bool = True
+    # The category's general document (layout_ir IR): what to fill when no
+    # precise template fits. None for a checklist with no document behind it.
+    document: dict[str, Any] | None = field(default=None, compare=False, repr=False)
 
     @property
     def required_sections(self) -> tuple[Section, ...]:
         return tuple(row for row in self.sections if row.required)
+
+
+@dataclass(frozen=True)
+class Template:
+    """A real document of one kind; using it means filling its blanks, nothing else."""
+
+    id: str
+    category: str
+    label_pl: str
+    document: dict[str, Any] = field(compare=False, repr=False)
+    general: bool = False
 
 
 @dataclass
@@ -192,10 +178,21 @@ class BlueprintReport:
     order_issues: list[str] = field(default_factory=list)
     present_sections: list[str] = field(default_factory=list)
     note: str | None = None
+    # The template the text was evidently written from: id, label_pl, category,
+    # general, score, and its own gaps (missing, unfilled, order). When set, it
+    # decides the findings; the checklist fields above stay as context.
+    template: dict[str, Any] | None = None
 
     @property
     def issues(self) -> list[str]:
         """Everything worth a reader's attention, in Polish, most severe first."""
+        if self.template:
+            name = self.template["label_pl"]
+            rows = [f"brak fragmentu wzoru „{name}”: {text}" for text in self.template["missing"]]
+            rows += [f"niewypełnione pole: {caption}" for caption in self.template["unfilled"]]
+            rows += list(self.numbering_issues)
+            rows += [f"kolejność inna niż we wzorze: {text}" for text in self.template["order"]]
+            return rows
         rows = [f"brak wymaganej sekcji: {name}" for name in self.missing_required]
         rows += [f"sekcja bez treści: {name}" for name in self.empty_sections]
         rows += list(self.numbering_issues)
@@ -205,7 +202,12 @@ class BlueprintReport:
 
     @property
     def blocking(self) -> bool:
-        """Only a missing required section or an empty one blocks readiness."""
+        """Only a missing required section or an empty one blocks readiness.
+
+        Against a template: a dropped fragment of it, or a blank left unfilled.
+        """
+        if self.template:
+            return bool(self.template["missing"] or self.template["unfilled"])
         return bool(self.missing_required or self.empty_sections)
 
     def to_json(self) -> dict[str, Any]:
@@ -217,12 +219,10 @@ class BlueprintReport:
 
 def _load(path: Path) -> DocumentBlueprint:
     try:
-        payload = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-    except (OSError, yaml.YAMLError) as exc:
+        payload = yaml.load(path.read_text(encoding="utf-8"), Loader=_YAML_LOADER) or {}
+    except OSError as exc:
         raise BlueprintError(f"Nie można wczytać szablonu: {exc}") from exc
 
-    if not isinstance(payload, dict):
-        raise BlueprintError(f"Szablon {path.name} musi zawierać mapę YAML.")
     category = str(payload.get("category", "")).strip()
     if not category:
         raise BlueprintError(f"Szablon {path.name} nie wskazuje kategorii.")
@@ -233,8 +233,6 @@ def _load(path: Path) -> DocumentBlueprint:
     sections: list[Section] = []
     seen: set[str] = set()
     for row in rows:
-        if not isinstance(row, dict):
-            raise BlueprintError(f"Szablon {category} zawiera niepoprawną sekcję.")
         identifier = str(row.get("id", "")).strip()
         if not identifier:
             raise BlueprintError(f"Sekcja bez `id` w szablonie {category}.")
@@ -247,43 +245,23 @@ def _load(path: Path) -> DocumentBlueprint:
                 f"Sekcja {identifier}: `severity` musi być required albo expected."
             )
         matches = tuple(str(v).casefold() for v in row.get("matches") or ())
-        if not matches:
-            raise BlueprintError(f"Sekcja {identifier} nie ma żadnego wzorca `matches`.")
-        raw_expects = row.get("expects") or ()
-        if isinstance(raw_expects, str) or not isinstance(raw_expects, (list, tuple)):
-            raise BlueprintError(f"Sekcja {identifier}: `expects` musi być listą zdań.")
-        # Kept verbatim, unlike `matches`: this is content a person wrote for a
-        # person to read, and it reaches a report and a prompt, not a substring
-        # test.
-        expects = tuple(line for line in (str(v).strip() for v in raw_expects) if line)
-        unit = row.get("unit", True)
-        if not isinstance(unit, bool):
-            raise BlueprintError(f"Sekcja {identifier}: `unit` musi być true albo false.")
-        patterns: list[Any] = []
-        for raw in row.get("patterns") or ():
-            try:
-                # Matched against the lowered text, lines joined by "\n".
-                patterns.append(re.compile(str(raw), re.MULTILINE))
-            except re.error as exc:
-                raise BlueprintError(
-                    f"Sekcja {identifier}: niepoprawny wzorzec `patterns`: {exc}"
-                ) from exc
-        signature_block = row.get("signature_block", False)
-        if not isinstance(signature_block, bool):
-            raise BlueprintError(
-                f"Sekcja {identifier}: `signature_block` musi być true albo false."
+        try:
+            patterns = tuple(
+                re.compile(str(v), re.IGNORECASE | re.MULTILINE) for v in row.get("patterns") or ()
             )
-        if signature_block:
-            patterns.extend(SIGNATURE_BLOCK)
+        except re.error as exc:
+            raise BlueprintError(f"Sekcja {identifier}: błędny wzorzec `patterns`: {exc}") from exc
+        if not matches and not patterns:
+            raise BlueprintError(
+                f"Sekcja {identifier} nie ma żadnego wzorca `matches` ani `patterns`."
+            )
         sections.append(
             Section(
                 id=identifier,
                 label_pl=str(row.get("label_pl", identifier)),
                 matches=matches,
                 severity=severity,
-                expects=expects,
-                unit=unit,
-                patterns=tuple(patterns),
+                patterns=patterns,
             )
         )
 
@@ -292,12 +270,37 @@ def _load(path: Path) -> DocumentBlueprint:
         raise BlueprintError(
             f"Szablon {category}: `numbering` musi być paragraph, roman albo arabic."
         )
+    document = payload.get("document")
+    if document is not None and not (isinstance(document, dict) and document.get("blocks")):
+        raise BlueprintError(f"Szablon {category}: `document` musi zawierać bloki (`blocks`).")
     return DocumentBlueprint(
         category=category,
         label_pl=str(payload.get("label_pl", category)),
         sections=tuple(sections),
         numbering=str(numbering) if numbering is not None else None,
         check_order=bool(payload.get("check_order", True)),
+        document=layout_ir.from_data({**document, "category": category}) if document else None,
+    )
+
+
+def _load_template(path: Path) -> Template:
+    try:
+        payload = yaml.load(path.read_text(encoding="utf-8"), Loader=_YAML_LOADER) or {}
+    except OSError as exc:
+        raise BlueprintError(f"Nie można wczytać wzoru: {exc}") from exc
+    category = str(payload.get("category", "")).strip()
+    if category != path.parent.name:
+        raise BlueprintError(
+            f"Wzór {path.name} leży w katalogu {path.parent.name}, "
+            f"a wskazuje kategorię „{category}”."
+        )
+    if not payload.get("label_pl") or not payload.get("blocks"):
+        raise BlueprintError(f"Wzór {path.name} nie ma nazwy (`label_pl`) albo bloków.")
+    return Template(
+        id=f"{category}/{path.stem}",
+        category=category,
+        label_pl=str(payload["label_pl"]),
+        document=layout_ir.from_data(payload),
     )
 
 
@@ -319,23 +322,102 @@ def blueprint_for(category: str) -> DocumentBlueprint | None:
     return blueprints().get(category)
 
 
-def resolve_blueprint(value: str | Path) -> DocumentBlueprint:
-    """A string may name a built-in blueprint; a Path always names a file."""
-    if isinstance(value, str):
-        name = value.strip()
-        builtin = blueprint_for(name)
-        if builtin is not None:
-            return builtin
-        value = Path(name)
-    return _load(value)
+@lru_cache(maxsize=1)
+def templates() -> tuple[Template, ...]:
+    """Every document a user can fill: each category's general one, then the
+    precise variants from data/templates/<category>/."""
+    rows = [
+        Template(
+            id=category,
+            category=category,
+            label_pl=blueprint.document["label_pl"] or blueprint.label_pl,
+            document=blueprint.document,
+            general=True,
+        )
+        for category, blueprint in blueprints().items()
+        if blueprint.document is not None
+    ]
+    if TEMPLATE_DIR.is_dir():
+        rows += [_load_template(path) for path in sorted(TEMPLATE_DIR.glob("*/*.yaml"))]
+    return tuple(rows)
 
 
-def _heading_rank(line: str) -> int:
-    """1 for a top-level unit ("§ 3", "III.", an unnumbered title), 2 below it."""
-    stripped = line.strip()
-    if _ARABIC_UNIT.match(stripped) and not _PARAGRAPH_UNIT.match(stripped):
-        return 2
-    return 1
+def _pairs(words: list[str]) -> set[tuple[str, str]]:
+    return set(pairwise(words))
+
+
+@lru_cache(maxsize=1)
+def _template_pairs() -> tuple[set[tuple[str, str]], ...]:
+    return tuple(_pairs(layout_ir.fixed_words(row.document)) for row in templates())
+
+
+def _ranked(text: str, *, min_recall: float = 0.0) -> list[tuple[float, Template]]:
+    """Templates sharing word pairs with `text`, best first, by the balanced
+    share of pairs (F1 over both directions): a one-page annex is wholly
+    contained in the contract it is appended to, and must not outrank the
+    contract itself. `min_recall` drops templates with less of their own
+    pairs in the text."""
+    pairs = _pairs(layout_ir.tokens(text))
+    ranked: list[tuple[float, Template]] = []
+    for row, own in zip(templates(), _template_pairs(), strict=True):
+        shared = len(own & pairs)
+        if not shared or shared / len(own) < min_recall:
+            continue
+        recall, precision = shared / len(own), shared / len(pairs)
+        ranked.append((2 * recall * precision / (recall + precision), row))
+    return sorted(ranked, key=lambda pair: pair[0], reverse=True)
+
+
+def nearest_template(text: str, *, leave_out: str | None = None) -> tuple[Template, float] | None:
+    """The template sharing the most word pairs with `text`, and that share;
+    None when none shares any. `leave_out` names a template to pass over, so
+    a template's own text can be placed as if it were a new document."""
+    for share, row in _ranked(text):
+        if row.id != leave_out:
+            return row, share
+    return None
+
+
+def match_template(text: str) -> tuple[Template, dict[str, Any]] | None:
+    """The template `text` was evidently written from, with the comparison.
+
+    Candidates are ranked by shared word pairs (`_ranked`). The first that
+    also carries the template's words in order wins; None when no template
+    is close enough.
+    """
+    ranked = _ranked(text, min_recall=_TEMPLATE_PREFILTER)
+    if not ranked:
+        return None
+    candidate = layout_ir.from_text(text)
+    size = sum(1 for b in candidate["blocks"] if b["role"] not in ("spacer", "pagebreak"))
+    for _score, row in ranked[:_TEMPLATE_SHORTLIST]:
+        own_size = sum(1 for b in row.document["blocks"] if b["role"] not in ("spacer", "pagebreak"))
+        if size > 4 * own_size + 40:
+            # Far longer than the template: not a copy of it, and the in-order
+            # comparison would cost seconds to say so.
+            continue
+        result = layout_ir.evaluate(layout_ir.text_lines(row.document), candidate, layout=False)
+        if result["words_recalled"] >= TEMPLATE_MATCH:
+            return row, result
+    return None
+
+
+def _template_findings(template: Template, result: dict[str, Any]) -> dict[str, Any]:
+    captions = {
+        slot["id"]: slot["hint"] or slot["label"] or slot["id"]
+        for block in template.document["blocks"]
+        for slot in block["slots"]
+    }
+    return {
+        "id": template.id,
+        "label_pl": template.label_pl,
+        "category": template.category,
+        "general": template.general,
+        "score": result["words_recalled"],
+        "missing": [row["text"] for row in result["missing"]],
+        "unfilled": [captions[row["id"]] for row in result["slots"] if row["status"] == "unfilled"],
+        "order": [row["text"] for row in result["order"]],
+    }
 
 
 def is_heading(line: str) -> bool:
@@ -343,21 +425,15 @@ def is_heading(line: str) -> bool:
     stripped = line.strip()
     if not stripped or len(stripped) > _MAX_HEADING_CHARS:
         return False
-    unit = (
+    numbered = bool(
         _PARAGRAPH_UNIT.match(stripped)
         or _ROMAN_UNIT.match(stripped)
         or _ARABIC_UNIT.match(stripped)
     )
-    if unit:
-        # A number opens a heading and an ustęp alike. "§ 7. Postanowienia
-        # końcowe" is a heading; "1. W sprawach nieuregulowanych stosuje się
-        # przepisy Kodeksu cywilnego." under it is the section's body. Read
-        # as a heading, every ustęp made the section above it look empty -
-        # the way most Polish contracts are written, human ones included.
-        title = _UNIT_PREFIX.sub("", stripped, count=1).strip()
-        words = len(title.split())
-        sentence = title.endswith((".", ";", ":")) and words > _MAX_TERMINATED_TITLE_WORDS
-        return words <= _MAX_TITLE_WORDS and not sentence
+    if numbered:
+        # A numbered sentence is a clause, not a title: "1. Zmiany umowy wymagają
+        # formy pisemnej." read as a heading left the section above it empty.
+        return not stripped.endswith((".", ";")) or bool(_BARE_UNIT.match(stripped))
     # A label carrying its own value ("Wartość przedmiotu sporu: 27 300 zł")
     # is a field, not a heading. Read as a heading it looks like a section
     # whose body was never written, which is the opposite of the truth.
@@ -371,22 +447,31 @@ def is_heading(line: str) -> bool:
     return not stripped.endswith((".", ",", ";", ":")) and stripped[:1].isupper()
 
 
-def _unit_numbers(lines: list[str], numbering: str) -> list[tuple[int, str, bool]]:
-    """(value, as written, added between existing units) for each unit."""
+def _titles_section(line: str, phrase: str) -> bool:
+    """True if a heading line only titles its section: numbered ("§ 2.
+    Wynagrodzenie i sposób zapłaty") or little beyond the matched phrase
+    ("Uzasadnienie", "II. Wnioski dowodowe")."""
+    stripped = line.strip()
+    if any(unit.match(stripped) for unit in (_PARAGRAPH_UNIT, _ROMAN_UNIT, _ARABIC_UNIT)):
+        return True
+    rest = stripped.casefold().replace(phrase, " ")
+    return len(re.findall(r"\p{L}+", rest)) <= _TITLE_EXTRA_WORDS
+
+
+def _unit_numbers(lines: list[str], numbering: str) -> list[tuple[int, str]]:
     pattern = {
         "paragraph": _PARAGRAPH_UNIT,
         "roman": _ROMAN_UNIT,
         "arabic": _ARABIC_UNIT,
     }[numbering]
-    found: list[tuple[int, str, bool]] = []
+    found: list[tuple[int, str]] = []
     for line in lines:
         match = pattern.match(line.strip())
         if not match:
             continue
         raw = match.group(1)
         value = _roman_to_int(raw) if numbering == "roman" else int(raw)
-        suffix = match.group(2) if numbering == "paragraph" else ""
-        found.append((value, raw + suffix, bool(suffix)))
+        found.append((value, raw))
     return found
 
 
@@ -396,12 +481,7 @@ def _numbering_issues(lines: list[str], numbering: str) -> list[str]:
         return []
     issues: list[str] = []
     expected = found[0][0]
-    for value, raw, added in found:
-        # "§ 2a" and "§ 2b" after "§ 2" neither repeat nor skip: they are the
-        # one way to add a unit that leaves every reference to "§ 3" pointing
-        # where it did.
-        if added and value == expected - 1:
-            continue
+    for value, raw in found:
         if value == expected:
             expected += 1
             continue
@@ -423,26 +503,11 @@ def check(text: str, blueprint: DocumentBlueprint) -> BlueprintReport:
     lowered_all = "\n".join(lowered_lines)
     heading_indices = [index for index, line in enumerate(lines) if is_heading(line)]
 
-    def words_after(index: int) -> int:
-        # Up to the next heading of the same rank or higher: "V. Analiza
-        # prawna" with its body under "1. Istota kary umownej." is not an
-        # empty section, and stopping at the first heading of any rank said
-        # it was.
-        rank = _heading_rank(lines[index])
-        stop = next(
-            (row for row in heading_indices if row > index and _heading_rank(lines[row]) <= rank),
-            len(lines),
-        )
-        return sum(
-            len(lines[row].split())
-            for row in range(index + 1, stop)
-            if row not in heading_indices
-        )
-
     order: list[tuple[int, str]] = []
+    titles: list[tuple[Section, int]] = []
     for section in blueprint.sections:
-        located = section.locate(lowered_all)
-        if located is None:
+        phrase = section.found_in(lowered_all)
+        if phrase is None:
             if section.required:
                 report.missing_required.append(section.label_pl)
             else:
@@ -450,21 +515,35 @@ def check(text: str, blueprint: DocumentBlueprint) -> BlueprintReport:
             continue
 
         report.present_sections.append(section.id)
-        # The line the match starts on, counted from its offset: looking the
-        # phrase up line by line again found the first line containing it,
-        # which for a pattern's first word can be any clause of the body.
-        position = lowered_all.count("\n", 0, located[1])
+        position = next(
+            (index for index, line in enumerate(lowered_lines) if phrase in line), None
+        )
+        if position is None:
+            continue
         order.append((position, section.id))
-        # Emptiness is only decidable when the match landed on a heading: in
-        # running prose there is no boundary to measure the section against.
-        # And only for a unit with a body: "Sąd Rejonowy w Krakowie" over
-        # "Wydział I Cywilny" is a designation block whose content is the
-        # line itself, not a heading waiting for text.
+        # Emptiness is only decidable when the match landed on a heading that
+        # titles the section: in running prose there is no boundary to measure
+        # against, and a heading-like line naming the court or the office
+        # ("Sąd Okręgowy w Szczecinie") is the section's content itself, as is
+        # any line a pattern found ("Warszawa, dnia 12 lipca 2026 r.").
         if (
-            section.unit
-            and position in heading_indices
-            and words_after(position) < MIN_SECTION_WORDS
+            position in heading_indices
+            and phrase in section.matches
+            and _titles_section(lines[position], phrase)
         ):
+            titles.append((section, position))
+
+    # A section's body runs to the later of the next heading and the next
+    # section found: heading-like lines of an address block or a numbered list
+    # of evidence are its body, and so is a clause after the document's title
+    # when the title happens to name the section.
+    starts = sorted({position for position, _ in order})
+    for section, position in titles:
+        stop = max(
+            next((row for row in heading_indices if row > position), len(lines)),
+            next((row for row in starts if row > position), len(lines)),
+        )
+        if sum(len(lines[row].split()) for row in range(position + 1, stop)) < MIN_SECTION_WORDS:
             report.empty_sections.append(section.label_pl)
 
     if blueprint.numbering:
@@ -493,17 +572,27 @@ def check(text: str, blueprint: DocumentBlueprint) -> BlueprintReport:
 
 
 def check_category(text: str, category: str) -> BlueprintReport:
-    """Check `text` against the blueprint for `category`, if one exists.
+    """Check `text` against the blueprint for `category`, then against the
+    template it was written from, if any.
 
     A category with no blueprint, or an unrecognised document, produces a
     report that says so rather than a pass. "Nothing was checked" and "nothing
-    was wrong" must not look the same in a report someone signs off on.
+    was wrong" must not look the same in a report someone signs off on. The
+    template search is not limited to `category`: a document read as another
+    category still finds its own template.
     """
     blueprint = blueprint_for(category)
     if blueprint is None:
-        return BlueprintReport(
+        report = BlueprintReport(
             category=category,
             checked=False,
             note=f"Brak szablonu struktury dla kategorii „{category}”.",
         )
-    return check(text, blueprint)
+    else:
+        report = check(text, blueprint)
+    found = match_template(text)
+    if found is not None:
+        report.template = _template_findings(*found)
+        report.checked = True
+        report.passed = not report.issues
+    return report

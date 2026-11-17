@@ -1,0 +1,172 @@
+category: odpowiedz_na_pozew
+label_pl: Sprzeciw od nakazu zapłaty
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 1417, bottom: 1417, left: 1417, right: 1417}}
+blocks:
+- p: 0
+  role: body
+  layout: {align: right, size: 11.0}
+  text: ………………… (miejscowość), dnia ………………… (data)
+  slots:
+  - {id: miejscowosc, span: [0, 7], type: place, hint: miejscowość}
+  - {id: data, span: [28, 35], type: date, hint: data}
+  inline_hints:
+  - {span: [8, 21], text: miejscowość}
+  - {span: [36, 42], text: data}
+- {p: 1, role: spacer}
+- p: 2
+  role: field_header
+  layout: {align: justify, size: 11.0}
+  text: 'Sąd:'
+- p: 3
+  role: blank_line
+  layout: {align: justify, size: 11.0}
+  text: ………………………………………………………………………………………………
+  slots:
+  - {id: sad, span: [0, 36], type: text, hint: 'nazwa sądu, wydział i adres', label: Sąd}
+- p: 4
+  role: hint
+  layout: {align: justify, size: 8.0, italic: true}
+  text: (nazwa sądu, wydział i adres)
+  hint_for: 3
+  hint_kind: label
+- p: 5
+  role: field
+  layout: {align: justify, size: 11.0}
+  text: 'Sygn. akt: …………………'
+  slots:
+  - {id: sygnatura, span: [11, 18], type: text, label: Sygn. akt}
+- {p: 6, role: spacer}
+- p: 7
+  role: field_header
+  layout: {align: justify, size: 11.0}
+  text: 'Powód:'
+- p: 8
+  role: blank_line
+  layout: {align: justify, size: 11.0}
+  text: ………………………………………………………………………………………………
+  slots:
+  - {id: powod, span: [0, 36], type: text, hint: 'imię i nazwisko lub nazwa, adres', label: Powód}
+- p: 9
+  role: hint
+  layout: {align: justify, size: 8.0, italic: true}
+  text: (imię i nazwisko lub nazwa, adres)
+  hint_for: 8
+  hint_kind: label
+- p: 10
+  role: field_header
+  layout: {align: justify, size: 11.0}
+  text: 'Pozwany:'
+- p: 11
+  role: blank_line
+  layout: {align: justify, size: 11.0}
+  text: ………………………………………………………………………………………………
+  slots:
+  - {id: pozwany, span: [0, 36], type: text, hint: 'imię i nazwisko lub nazwa, adres, PESEL lub NIP', label: Pozwany}
+- p: 12
+  role: hint
+  layout: {align: justify, size: 8.0, italic: true}
+  text: (imię i nazwisko lub nazwa, adres, PESEL lub NIP)
+  hint_for: 11
+  hint_kind: label
+- {p: 13, role: spacer}
+- p: 14
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: SPRZECIW OD NAKAZU ZAPŁATY
+- {p: 15, role: spacer}
+- p: 16
+  role: body
+  layout: {align: justify, size: 11.0}
+  text: Wnoszę sprzeciw od nakazu zapłaty wydanego w postępowaniu upominawczym dnia ………………… (data nakazu).
+  slots:
+  - {id: data_nakazu, span: [76, 83], type: date, hint: data nakazu}
+  inline_hints:
+  - {span: [84, 97], text: data nakazu}
+- p: 17
+  role: body
+  layout: {align: justify, size: 11.0}
+  text: Nakaz doręczono mi dnia ………………… (data doręczenia); zaskarżam go ………………… (w całości albo w części).
+  slots:
+  - {id: data_doreczenia, span: [24, 31], type: date, hint: data doręczenia}
+  - {id: zakres_zaskarzenia, span: [64, 71], type: text, hint: w całości albo w części}
+  inline_hints:
+  - {span: [32, 49], text: data doręczenia}
+  - {span: [72, 97], text: w całości albo w części}
+- {p: 18, role: spacer}
+- p: 19
+  role: field_header
+  layout: {align: justify, size: 11.0}
+  text: 'Wnoszę o:'
+- p: 20
+  role: item
+  layout: {align: justify, size: 11.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+  text: ………………… (oddalenie powództwa w całości albo w części);
+  slots:
+  - {id: wnioski, span: [0, 7], type: text, hint: oddalenie powództwa w całości albo w części}
+  inline_hints:
+  - {span: [8, 53], text: oddalenie powództwa w całości albo w części}
+- p: 21
+  role: item
+  layout: {align: justify, size: 11.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+  text: zasądzenie od powoda zwrotu kosztów postępowania.
+- {p: 22, role: spacer}
+- p: 23
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: Uzasadnienie
+- p: 24
+  role: blank_line
+  layout: {align: justify, size: 11.0}
+  text: ………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………
+  slots:
+  - {id: uzasadnienie, span: [0, 108], type: text, hint: 'zarzuty, twierdzenia faktyczne i dowody'}
+- p: 25
+  role: hint
+  layout: {align: justify, size: 8.0, italic: true}
+  text: (zarzuty, twierdzenia faktyczne i dowody)
+  hint_for: 24
+  hint_kind: instruction
+- {p: 26, role: spacer}
+- p: 27
+  role: field_header
+  layout: {align: justify, size: 11.0}
+  text: 'Dowody:'
+- p: 28
+  role: item
+  layout: {align: justify, size: 11.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+  text: ………………… (dokumenty, świadkowie i inne dowody na poparcie twierdzeń).
+  slots:
+  - {id: dowody, span: [0, 7], type: text, hint: 'dokumenty, świadkowie i inne dowody na poparcie twierdzeń'}
+  inline_hints:
+  - {span: [8, 67], text: 'dokumenty, świadkowie i inne dowody na poparcie twierdzeń'}
+- {p: 29, role: spacer}
+- p: 30
+  role: blank_line
+  layout: {align: right, size: 11.0}
+  text: ………………………………
+  slots:
+  - {id: podpis, span: [0, 12], type: signature, hint: podpis}
+- p: 31
+  role: hint
+  layout: {align: right, size: 8.0, italic: true}
+  text: (podpis)
+  hint_for: 30
+  hint_kind: label
+- {p: 32, role: spacer}
+- p: 33
+  role: field_header
+  layout: {align: justify, size: 11.0, bold: true}
+  text: 'Załączniki:'
+- p: 34
+  role: item
+  layout: {align: justify, size: 11.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+  text: odpis sprzeciwu;
+- p: 35
+  role: item
+  layout: {align: justify, size: 11.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+  text: ………………… (dokumenty powołane jako dowody).
+  slots:
+  - {id: zalaczniki, span: [0, 7], type: text, hint: dokumenty powołane jako dowody}
+  inline_hints:
+  - {span: [8, 40], text: dokumenty powołane jako dowody}

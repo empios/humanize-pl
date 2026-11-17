@@ -1,0 +1,242 @@
+# Szkielet struktury: umowa o przechowywanie dokumentacji.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: umowa_przechowywania_dokumentacji
+label_pl: umowa o przechowywanie dokumentacji
+# Kolejności sekcji nie sprawdzamy: realne wzory tej kategorii układają je różnie.
+check_order: false
+numbering: paragraph
+sections:
+- id: komparycja
+  label_pl: komparycja
+  severity: required
+  # Formuły zawarcia i oznaczenia stron, nie nazwy ról: „najemca” czy „zawarta”
+  # powtarzają się w całej umowie i utrzymywały usuniętą komparycję jako obecną.
+  matches: [zawarta w dniu, zawarta dnia, zawarta pomiędzy, zawarta między, zawarto umowę,
+    zwanym dalej, zwaną dalej, zwanymi dalej, zwany dalej, zwana dalej, zwanego dalej,
+    zwanej dalej, zwani dalej, z siedzibą w, zamieszkał, pesel, 'nip:', 'nip ', krs, legitymując]
+- id: podstawa
+  label_pl: podstawa (art. 30a u.p.p.)
+  severity: required
+  matches: [art. 30a, praw pacjenta, na podstawie, przechowywanie]
+- id: przedmiot
+  label_pl: przedmiot (dokumentacja medyczna)
+  severity: required
+  matches: [dokumentację medyczną, dokumentacja, przechow]
+- id: miejsce
+  label_pl: miejsce przechowywania
+  severity: required
+  matches: [miejsce przechowywania, budynek, przy ul]
+- id: czas
+  label_pl: okres przechowywania
+  severity: required
+  matches: [okres, czas, art. 29, termin]
+- id: postanowienia_koncowe
+  label_pl: postanowienia końcowe
+  severity: required
+  matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
+      formy pisemnej, wymagają zachowania formy pisemnej]
+
+# Dokument ogólny: realny wzór tej kategorii. Przy użyciu wypełnia się wyłącznie
+# pola (`slots`); treść, kolejność i układ zostają jak we wzorze.
+document:
+  template: umowa o przechowywanie dokumentacji medycznej.docx
+  label_pl: Umowa o przechowywanie dokumentacji medycznej
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+  blocks:
+  - p: 0
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: UMOWA
+  - p: 1
+    role: body
+    layout: {align: center, size: 14.0, bold: true}
+    text: o przechowywanie dokumentacji medycznej
+  - {p: 2, role: spacer}
+  - p: 3
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: 'zawarta w ………………. w dniu ……………………….. roku, pomiędzy:'
+    slots:
+    - {id: p3_1, span: [10, 17], type: place, context: zawarta w ▢ w dniu}
+    - {id: p3_2, span: [25, 36], type: date, context: zawarta w w dniu ▢ roku pomiędzy}
+  - {p: 4, role: spacer}
+  - p: 5
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: ………………………………………………………………………………………………
+    slots:
+    - {id: p5_1, span: [0, 36], type: text, context: ▢}
+  - p: 6
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: ………………………………………………………………………………………………
+    slots:
+    - {id: p6_1, span: [0, 36], type: text, context: ▢}
+  - {p: 7, role: spacer}
+  - p: 8
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 30, end: 43, bold: true}]}
+    text: 'zwanym w dalszej części umowy Przechowawcą, '
+    alias: Przechowawcą
+  - {p: 9, role: spacer}
+  - p: 10
+    role: party_connector
+    layout: {align: justify, size: 10.0}
+    text: a
+  - {p: 11, role: spacer}
+  - p: 12
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: ………………………………………………………………………………………………
+    slots:
+    - {id: p12_1, span: [0, 36], type: text, context: ▢}
+  - p: 13
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: ………………………………………………………………………………………………
+    slots:
+    - {id: p13_1, span: [0, 36], type: text, context: ▢}
+  - {p: 14, role: spacer}
+  - p: 15
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 30, end: 41, bold: true}]}
+    text: zwanym w dalszej części umowy Składającym,
+    alias: Składającym
+  - {p: 16, role: spacer}
+  - p: 17
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 12, end: 17, bold: true}]}
+    text: zwana dalej Umową,
+    alias: Umową
+  - {p: 18, role: spacer}
+  - p: 19
+    role: field_header
+    layout: {align: justify, size: 10.0}
+    text: 'o następującej treści:'
+  - {p: 20, role: spacer}
+  - p: 21
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+    text: § 1
+  - p: 22
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 134, end: 145, bold: true}, {
+          start: 159, end: 172, bold: true}]}
+    text: "Na podstawie art. 30a ust. 3 pkt 2 ustawy z dnia 6 listopada 2008 r. o prawach pacjenta i Rzeczniku Praw Pacjenta (dalej jako u.p.p.),\
+      \ Składający powierza, \na Przechowawca przyjmuje do przechowania dokumentację medyczną."
+  - p: 23
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 12, bold: true}]}
+    text: Przechowawca zobowiązuje się przechowywać dokumentację medyczną przez okres czasu, który został szczegółowo wskazany w art. 29 u.p.p.
+  - {p: 24, role: spacer}
+  - p: 25
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+    text: § 2
+  - p: 26
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: 'Miejscem przechowywania dokumentacji medycznej będzie budynek przy ul. ………………………… w ………………………. '
+    slots:
+    - {id: p26_1, span: [71, 81], type: address, context: będzie budynek przy ul. ▢ w}
+    - {id: p26_2, span: [84, 94], type: place, context: budynek przy ul. w ▢}
+  - p: 27
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 63, end: 74, bold: true}]}
+    text: Dokumentację do miejsca przechowywania dostarcza na swój koszt Składający.
+  - p: 28
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: Strony ustalają termin przejęcia dokumentów na dzień ……………………………..
+    slots:
+    - {id: p28_1, span: [53, 66], type: date, context: przejęcia dokumentów na dzień ▢}
+  - p: 29
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 12, bold: true}, {start: 259,
+          end: 270, bold: true}]}
+    text: 'Przechowawca w razie likwidacji lub upadłości zobowiązuje się przekazać przechowywaną dokumentację wskazanemu przez siebie podmiotowi
+      do dalszego przechowywania, zapewniając na ten cel środki finansowe na okres, jaki pozostał do wygaśnięcia Umowy zawartej ze Składającym. '
+  - {p: 30, role: spacer}
+  - p: 31
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+    text: § 3
+  - p: 32
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 12, bold: true}, {start: 67,
+          end: 79, bold: true}]}
+    text: Przechowawca za czynności określone w niniejszej umowie otrzyma od Składającego jednorazowe wynagrodzenie w wysokości ………………………...
+    slots:
+    - {id: p32_1, span: [118, 130], type: amount, context: jednorazowe wynagrodzenie w wysokości ▢}
+  - p: 33
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 12, bold: true}]}
+    text: 'Przechowawca oświadcza, ze zapłata wynagrodzenia nastąpiła w dniu podpisania umowy. '
+  - {p: 34, role: spacer}
+  - p: 35
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+    text: § 4
+  - p: 36
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 12, bold: true}, {start: 60,
+          end: 72, bold: true}]}
+    text: Przechowawca zobowiązuje się do przechowywania dokumentacji Składającego w stanie niepogorszonym, umożliwiającym pełne korzystanie z nich
+      przez cały okres zakwalifikowany do przechowywania.
+  - p: 37
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 13, bold: true}]}
+    text: Przechowawca zobowiązuje się do przestrzegania przepisów przeciwpożarowych, bhp oraz zabezpieczenia przechowywanej dokumentacji przed
+      uszkodzeniem, zniszczeniem lub kradzieżą.
+  - p: 38
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 13, bold: true}]}
+    text: Przechowawca zapewnia dostęp do dokumentacji medycznej Składającemu i podmiotom uprawnionym na zasadach określonych w u.p.p.
+  - {p: 39, role: spacer}
+  - p: 40
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+    text: § 5
+  - p: 41
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 131, end: 143, bold: true}]}
+    text: "Przejęta do przechowania dokumentacja medyczna po upływie obligatoryjnych okresów wskazanych \nw § 1 ust. 2 Umowy, podlega na koszt Przechowawcy\
+      \ zniszczeniu w trybie przewidzianym w art. 29 ust. 2 u.p.p."
+  - {p: 42, role: spacer}
+  - p: 43
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 6, kind: paragraph, src: manual, level: 0}}
+    text: § 6
+  - p: 44
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Zmiany umowy wymagają formy pisemnej pod rygorem nieważności.
+  - p: 45
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 118, end: 130, bold: true}]}
+    text: Ewentualne spory mogące wyniknąć przy realizacji umowy, rozstrzygane będą przez właściwy miejscowo sąd powszechny dla Składającego.
+  - p: 46
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: W sprawach nieuregulowanych niniejszą umową mają zastosowanie przepisy ustawy z dnia 23 kwietnia 1964 r. - Kodeks cywilny oraz u.p.p.
+  - p: 47
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+    text: 'Umowę sporządzono w 2 (dwóch) jednobrzmiących egzemplarzach, po 1 (jednym) egzemplarzu dla każdej ze Stron. '
+  - {p: 48, role: spacer}
+  - {p: 49, role: spacer}
+  - p: 50
+    role: signature_line
+    layout: {align: justify, size: 10.0, tabs: 2}
+    text: "                ………………………………………\t\t                                  ……………………………………"
+    slots:
+    - {id: p50_1, span: [16, 31], type: signature, context: ▢}
+    - {id: p50_2, span: [67, 81], type: signature, context: ▢}
+  - p: 51
+    role: body
+    layout: {align: justify, size: 10.0, bold: true, tabs: 5}
+    text: "                         Składający\t\t\t\t\t                  Przechowawca"
+  - {p: 52, role: spacer}
+  - {p: 53, role: spacer}

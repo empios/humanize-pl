@@ -1,0 +1,254 @@
+template: umowa przedwstępna sprzedaży nieruchomości.docx
+category: umowa_przedwstepna
+label_pl: Umowa przedwstępna sprzedaży nieruchomości
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: PRZEDWSTĘPNA UMOWA
+- p: 1
+  role: body
+  layout: {align: center, size: 14.0, bold: true}
+  text: SPRZEDAŻY NIERUCHOMOŚCI
+- {p: 2, role: spacer}
+- p: 3
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: 'Zawarta dnia ……………………….. roku w ……………………………………………….., '
+  slots:
+  - {id: p3_1, span: [13, 24], type: date, context: Zawarta dnia ▢ roku w}
+  - {id: p3_2, span: [32, 52], type: place, context: Zawarta dnia roku w ▢}
+- {p: 4, role: spacer}
+- p: 5
+  role: party_connector
+  layout: {align: justify, size: 10.0}
+  text: 'pomiędzy:'
+- {p: 6, role: spacer}
+- p: 7
+  role: body
+  layout: {align: justify, size: 10.0, tabs: 1}
+  text: " …………………………… zam. …………………………………………………. w ……………………………….., \tnr dowodu osobistego …………………, posiadającym nr PESEL: …………………….………., "
+  slots:
+  - {id: p7_1, span: [1, 12], type: text, context: ▢ zam. w}
+  - {id: p7_2, span: [18, 38], type: text, context: zam. ▢ w nr}
+  - {id: p7_3, span: [41, 55], type: place, context: zam. w ▢ nr dowodu}
+  - {id: p7_4, span: [79, 86], type: text, context: w nr dowodu osobistego ▢ posiadającym nr}
+  - {id: p7_5, span: [111, 124], type: pesel, context: osobistego posiadającym nr PESEL ▢}
+- p: 8
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 13, end: 23, bold: true}]}
+  text: 'zwanym dalej Sprzedawcą, '
+  alias: Sprzedawcą
+- {p: 9, role: spacer}
+- p: 10
+  role: party_connector
+  layout: {align: justify, size: 10.0}
+  text: a
+- {p: 11, role: spacer}
+- p: 12
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 141, end: 149, bold: true}]}
+  text: '………...…….………………… zam. ……………………………………………. w ………………………………..nr dowodu osobistego:………………………………………, posiadającą nr PESEL …………….……….,
+
+    zwanym dalej Kupującą,'
+  slots:
+  - {id: p12_1, span: [0, 16], type: text, context: ▢ zam. w}
+  - {id: p12_2, span: [22, 40], type: text, context: zam. ▢ w nr}
+  - {id: p12_3, span: [43, 57], type: place, context: zam. w ▢ nr dowodu}
+  - {id: p12_4, span: [78, 93], type: text, context: w nr dowodu osobistego ▢ posiadającą nr}
+  - {id: p12_5, span: [116, 126], type: pesel, context: osobistego posiadającą nr PESEL ▢ zwanym dalej}
+  alias: Kupującą
+- {p: 13, role: spacer}
+- p: 14
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 22, end: 30, bold: true}]}
+  text: 'zwanymi dalej łącznie Stronami '
+  alias: Stronami
+- {p: 15, role: spacer}
+- p: 16
+  role: field_header
+  layout: {align: justify, size: 10.0}
+  text: 'o następującej treści:'
+- {p: 17, role: spacer}
+- {p: 18, role: spacer}
+- p: 19
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 1., kind: paragraph, src: manual, level: 0}, tabs: 1}
+  text: "§ 1.\t PRZEDMIOT UMOWY"
+- {p: 20, role: spacer}
+- p: 21
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 10, bold: true}]}
+  text: Sprzedawca oświadcza, iż jest właścicielem nieruchomości lokalowej - mieszkania położonego w ………………… przy ul. …………………, o pow. …………………,
+    dla którego Sąd Rejonowy w ………………… prowadzi księgę wieczystą nr …………………. Wydruk księgi wieczystej prowadzonej dla w/w nieruchomości stanowi
+    załącznik nr 1 do niniejszej umowy.
+  slots:
+  - {id: p21_1, span: [93, 100], type: place, context: lokalowej mieszkania położonego w ▢ przy ul.}
+  - {id: p21_2, span: [110, 117], type: address, context: położonego w przy ul. ▢ o pow.}
+  - {id: p21_3, span: [126, 133], type: text, context: przy ul. o pow. ▢ dla którego}
+  - {id: p21_4, span: [162, 169], type: place, context: którego Sąd Rejonowy w ▢ prowadzi księgę}
+  - {id: p21_5, span: [199, 207], type: text, context: prowadzi księgę wieczystą nr ▢ Wydruk księgi}
+- p: 22
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 10, bold: true}]}
+  text: Sprzedawca oświadcza i zobowiązuje się, że nieruchomość, o której mowa w § 1 ust. 1 do dnia zawarcia umowy przyrzeczonej będzie zwolniona
+    od jakichkolwiek obciążeń i praw osób trzecich oraz wszelkich innych wad prawnych. Obecnie nieruchomość jest obciążona służebnością mieszkania.
+    Zawarcie umowy przyrzeczonej nastąpi pod warunkiem prawomocnego wykreślenia z księgi wieczystej nr …………… wpisu dotyczącego służebności mieszkania
+    ustanowionej na rzecz ………….. do dnia przewidzianego na zawarcie umowy przyrzeczonej określonego w § 2 ust. 2.
+  slots:
+  - {id: p22_1, span: [381, 386], type: text, context: z księgi wieczystej nr ▢ wpisu dotyczącego}
+  - {id: p22_2, span: [450, 456], type: text, context: mieszkania ustanowionej na rzecz ▢ do dnia}
+- p: 23
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 8, bold: true}]}
+  text: Kupująca oświadcza, iż dokonała oględzin nieruchomości, o której mowa w § 1 ust. 1, i że nie wnosi żadnych zastrzeżeń co do jej stanu
+    technicznego.
+- {p: 24, role: spacer}
+- p: 25
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 2., kind: paragraph, src: manual, level: 0}, tabs: 1}
+  text: "§ 2.\t ZOBOWIĄZANIA STRON"
+- {p: 26, role: spacer}
+- p: 27
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 10, bold: true}, {start: 136,
+        end: 144, bold: true}, {start: 322, end: 332, bold: true}]}
+  text: 'Sprzedawca zobowiązuje się sprzedać nieruchomość, o której mowa w § 1 ust. 1 niniejszej umowy  za cenę ………………… zł (słownie: ………. zł),
+    a Kupująca zobowiązuje się kupić powyższą nieruchomość i zapłacić ww. cenę. Zapłata umówionej ceny nastąpi w dniu podpisania umowy przyrzeczonej,
+    przelewem na następujący rachunek bankowy Sprzedawcy: Bank ………………… nr rachunku …………………'
+  slots:
+  - {id: p27_1, span: [103, 110], type: text, context: niniejszej umowy za cenę ▢ zł a}
+  - {id: p27_2, span: [124, 128], type: amount, context: za cenę zł słownie ▢ zł a}
+  - {id: p27_3, span: [339, 346], type: text, context: rachunek bankowy Sprzedawcy Bank ▢ nr rachunku}
+  - {id: p27_4, span: [359, 366], type: text, context: Sprzedawcy Bank nr rachunku ▢}
+- p: 28
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Zawarcie umowy przyrzeczonej nastąpi do dnia …………………
+  slots:
+  - {id: p28_1, span: [45, 52], type: date, context: przyrzeczonej nastąpi do dnia ▢}
+- p: 29
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 8, end: 17, bold: true}]}
+  text: Wydanie Kupującej nieruchomości, o której mowa w § 1 ust. 1 niniejszej umowy, nastąpi w dniu …………….. .
+  slots:
+  - {id: p29_1, span: [93, 100], type: date, context: umowy nastąpi w dniu ▢}
+- {p: 30, role: spacer}
+- {p: 31, role: spacer}
+- p: 32
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 3., kind: paragraph, src: manual, level: 0}, tabs: 1}
+  text: "§ 3.\t ZADATEK"
+- {p: 33, role: spacer}
+- p: 34
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 35, end: 43, bold: true}, {start: 64,
+        end: 74, bold: true}]}
+  text: 'W dniu podpisania niniejszej umowy Kupująca przekazuje na rzecz Sprzedawcy zadatek w kwocie ………………… zł  (słownie: ……………………………………………..
+    zł), którego odbiór Sprzedawca potwierdza.'
+  slots:
+  - {id: p34_1, span: [92, 99], type: text, context: Sprzedawcy zadatek w kwocie ▢ zł którego}
+  - {id: p34_2, span: [114, 133], type: amount, context: w kwocie zł słownie ▢ zł którego}
+- p: 35
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: W przypadku zawarcia umowy przyrzeczonej w terminie, o którym mowa w § 2 ust. 2, zadatek ulegnie zaliczeniu na poczet ceny.
+- p: 36
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 33, end: 41, bold: true}, {start: 43,
+        end: 53, bold: true}]}
+  text: W razie niewykonania umowy przez Kupującą, Sprzedawca będzie uprawniony zatrzymać niniejszy zadatek w pełnej kwocie.
+- p: 37
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 33, end: 43, bold: true}, {start: 197,
+        end: 206, bold: true}]}
+  text: W razie niewykonania umowy przez Sprzedawcę w szczególności w przypadku, w którym umowa nie zostanie zawarta na skutek niespełnienia warunku
+    określonego w § 1 ust. 2, będzie on zobowiązany zwrócić Kupującej kwotę stanowiącą dwukrotność zadatku, tj. …………………
+  slots:
+  - {id: p37_1, span: [249, 256], type: text, context: stanowiącą dwukrotność zadatku tj. ▢}
+- {p: 38, role: spacer}
+- {p: 39, role: spacer}
+- p: 40
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 4., kind: paragraph, src: manual, level: 0}, tabs: 1}
+  text: "§ 4.\t PRAWO ODSTĄPIENIA"
+- {p: 41, role: spacer}
+- p: 42
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 9, bold: true}, {start: 323,
+        end: 331, bold: true}]}
+  text: Kupującej przysługuje prawo odstąpienia od umowy, jeżeli do czasu zawarcia umowy przyrzeczonej, tj. do dnia …………………, ujawnią się jakiekolwiek
+    inne wady prawne nieruchomości, o której mowa w § 1 ust. 1 niniejszej umowy. Prawo do odstąpienia przysługuje w terminie 21 dni od uzyskania
+    wiedzy o przesłankach odstąpienia przez Kupującą.
+  slots:
+  - {id: p42_1, span: [108, 115], type: date, context: przyrzeczonej tj. do dnia ▢ ujawnią się}
+- p: 43
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 31, end: 39, bold: true}, {start: 97,
+        end: 107, bold: true}, {start: 135, end: 144, bold: true}]}
+  text: 'W przypadku skorzystania przez Kupującą z prawa odstąpienia od umowy, o którym mowa w § 4 ust. 1 Sprzedawca zobowiązany będzie zwrócić
+    Kupującej kwotę stanowiącą dwukrotność zadatku, tj. …………………  zł (słownie: …….. zł). '
+  slots:
+  - {id: p43_1, span: [187, 194], type: text, context: stanowiącą dwukrotność zadatku tj. ▢ zł}
+  - {id: p43_2, span: [209, 213], type: amount, context: zadatku tj. zł słownie ▢ zł}
+- {p: 44, role: spacer}
+- {p: 45, role: spacer}
+- p: 46
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 5., kind: paragraph, src: manual, level: 0}, tabs: 1}
+  text: "§ 5.\t POSTANOWIENIA KOŃCOWE"
+- {p: 47, role: spacer}
+- p: 48
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Wszelkie zmiany niniejszej umowy pod rygorem nieważności wymagają zachowania formy pisemnej.
+- p: 49
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Umowa została sporządzona w 2 jednobrzmiących egzemplarzach, po jednym dla każdej ze Stron. '
+- p: 50
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: 'W sprawach nieuregulowanych niniejszą umową będą miały zastosowanie przepisy ustawy
+
+    z dnia 23 kwietnia 1964 r. – Kodeks cywilny.'
+- p: 51
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: 'Wszelkie spory, których nie da się rozstrzygnąć w drodze wzajemnych negocjacji będą rozpatrywane przez sąd powszechny właściwy ze względu
+    na miejsce zamieszkania …………………………………. . '
+  slots:
+  - {id: p51_1, span: [162, 176], type: address, context: względu na miejsce zamieszkania ▢}
+- {p: 52, role: spacer}
+- {p: 53, role: spacer}
+- p: 54
+  role: field_header
+  layout: {align: justify, size: 10.0, bold: true, tabs: 6}
+  text: "    SPRZEDAWCA:\t\t\t\t\t\t              KUPUJĄCA:"
+- {p: 55, role: spacer}
+- {p: 56, role: spacer}
+- p: 57
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: …………………………………..                                                             ……………………………………
+  slots:
+  - {id: p57_1, span: [0, 15], type: signature, context: ▢}
+  - {id: p57_2, span: [76, 90], type: signature, context: ▢}
+- {p: 58, role: spacer}
+- {p: 59, role: spacer}
+- p: 60
+  role: field_header
+  layout: {align: justify, size: 10.0, spans: [{start: 0, end: 10, bold: true}]}
+  text: 'Załączniki: '
+- p: 61
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'Wydruk księgi wieczystej nr KW ………………………………..…  '
+  slots:
+  - {id: p61_1, span: [31, 46], type: text, context: księgi wieczystej nr KW ▢}
+- {p: 62, role: spacer}
+- {p: 63, role: spacer}
+- {p: 64, role: spacer}
+- {p: 65, role: spacer}

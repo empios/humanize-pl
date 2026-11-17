@@ -1,0 +1,712 @@
+template: Statut stowarzyszenia.docx
+category: statut
+label_pl: Statut stowarzyszenia
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: title
+  layout: {align: center, size: 14.0, bold: true, spans: [{start: 33, end: 55, italic: true}]}
+  text: Statut Stowarzyszenia ………………………. (nazwa stowarzyszenia)
+  slots:
+  - {id: nazwa_stowarzyszenia, span: [22, 32], type: text, hint: nazwa stowarzyszenia}
+  inline_hints:
+  - {span: [33, 55], text: nazwa stowarzyszenia}
+- {p: 1, role: spacer}
+- p: 2
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: Rozdział I. Postanowienia ogólne
+- {p: 3, role: spacer}
+- p: 4
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+  text: § 1
+- p: 5
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 27, end: 50, italic: true}]}
+  text: Stowarzyszenie …………………………… (nazwa stowarzyszenia) zwane dalej Stowarzyszeniem, działa na podstawie ustawy z dnia 7 kwietnia 1989 r. -
+    Prawo o stowarzyszeniach oraz postanowień niniejszego statutu.
+  slots:
+  - {id: nazwa_stowarzyszenia_2, span: [15, 26], type: text, hint: nazwa stowarzyszenia}
+  inline_hints:
+  - {span: [27, 49], text: nazwa stowarzyszenia}
+  alias: Stowarzyszeniem
+- {p: 6, role: spacer}
+- p: 7
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+  text: § 2
+- p: 8
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 42, end: 62, italic: true}]}
+  text: Siedzibą Stowarzyszenia jest ………………………….. (nazwa miejscowości).
+  slots:
+  - {id: nazwa_miejscowosci, span: [29, 41], type: place, hint: nazwa miejscowości}
+  inline_hints:
+  - {span: [42, 62], text: nazwa miejscowości}
+- {p: 9, role: spacer}
+- p: 10
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+  text: § 3
+- p: 11
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Terenem działania Stowarzyszenia jest ……………………………. (np. konkretne województwo, obszar całej Rzeczypospolitej Polskiej).
+  slots:
+  - {id: np_konkretne_wojewodztwo_obszar_calej_rzeczyposp, span: [38, 50], type: text, hint: 'np. konkretne województwo, obszar całej Rzeczypospolitej
+      Polskiej'}
+  inline_hints:
+  - {span: [51, 118], text: 'np. konkretne województwo, obszar całej Rzeczypospolitej Polskiej'}
+- p: 12
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: W celu realizacji celów statutowych Stowarzyszenie może prowadzić działalność poza granicami kraju na terenie innych państw, z uwzględnieniem
+    i poszanowaniem przepisów obowiązujących w danym państwie.
+- {p: 13, role: spacer}
+- p: 14
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+  text: § 4
+- p: 15
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'Stowarzyszenie posiada osobowość prawną. '
+- p: 16
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Stowarzyszenie jest powołane na czas nieokreślony. '
+- {p: 17, role: spacer}
+- p: 18
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+  text: § 5
+- p: 19
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Stowarzyszenie współpracuje z krajowymi, zagranicznymi i międzynarodowymi organizacjami pozarządowymi i innymi instytucjami.
+- p: 20
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Stowarzyszenie może pozostawać członkiem tych organizacji na zasadach pełnej autonomii i równości podmiotów.
+- {p: 21, role: spacer}
+- p: 22
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 6, kind: paragraph, src: manual, level: 0}}
+  text: § 6
+- p: 23
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'Stowarzyszenie opiera swoją działalność na pracy społecznej członków. '
+- p: 24
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Do prowadzenia swoich działań Stowarzyszenie może zatrudniać pracowników oraz powoływać biura.
+- {p: 25, role: spacer}
+- {p: 26, role: spacer}
+- p: 27
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: Rozdział II. Cele i sposoby ich realizacji
+- p: 28
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 7, kind: paragraph, src: manual, level: 0}}
+  text: § 7
+- p: 29
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: Celem/celami Stowarzyszenia jest prowadzenie działalności………………………………………………………….. …………………………………………………………………..…………………………………………………………………………….
+  slots:
+  - {id: p29_1, span: [57, 139], type: content, context: Stowarzyszenia jest prowadzenie działalności ▢}
+- p: 30
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: …………………………………………………………………………………………………………………………………………………..…………………………………………………………………………………………………………………………………………………...………………………………………………………………………………………………………………………………………………..…..…………………………………………………………………………………………………………………………………….………
+  slots:
+  - {id: p30_1, span: [0, 228], type: content, context: ▢}
+- {p: 31, role: spacer}
+- p: 32
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 8, kind: paragraph, src: manual, level: 0}}
+  text: § 8
+- p: 33
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 44, end: 110, italic: true}]}
+  text: 'Stowarzyszenie realizuje swoje cele poprzez (np. poprzez organizowanie, promowanie, propagowanie, wspieranie…):'
+- p: 34
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+  text: …
+  slots:
+  - {id: p34_1, span: [0, 1], type: content, context: ▢}
+- p: 35
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+  text: …
+  slots:
+  - {id: p35_1, span: [0, 1], type: content, context: ▢}
+- p: 36
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
+  text: …
+  slots:
+  - {id: p36_1, span: [0, 1], type: content, context: ▢}
+- p: 37
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: d), kind: lowerLetter, src: auto, level: 0}}
+  text: …
+  slots:
+  - {id: p37_1, span: [0, 1], type: content, context: ▢}
+- p: 38
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: e), kind: lowerLetter, src: auto, level: 0}}
+  text: …
+  slots:
+  - {id: p38_1, span: [0, 1], type: content, context: ▢}
+- p: 39
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: Rozdział III. Członkowie Stowarzyszenia
+- {p: 40, role: spacer}
+- p: 41
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 9, kind: paragraph, src: manual, level: 0}}
+  text: § 9
+- p: 42
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Członkiem zwyczajnym Stowarzyszenia może być każda osoba fizyczna, która złoży pisemną deklarację i uzyska rekomendację dwóch członków
+    Stowarzyszenia.
+- p: 43
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Przyjęcia nowych członków dokonuje Zarząd uchwałą podjętą nie później niż w ciągu miesiąca od daty złożenia deklaracji. '
+- {p: 44, role: spacer}
+- p: 45
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 10, kind: paragraph, src: manual, level: 0}}
+  text: § 10
+- p: 46
+  role: field_header
+  layout: {align: justify, indent: {left: 227, hanging: 227}, size: 10.0}
+  text: 'Członkowie zwyczajni mają prawo do:'
+- p: 47
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+  text: biernego i czynnego uczestniczenia w wyborach do władz Stowarzyszenia,
+- p: 48
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+  text: korzystania z dorobku i wszelkich form działalności Stowarzyszenia,
+- p: 49
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
+  text: udziału w zebraniach, wykładach oraz imprezach organizowanych przez Stowarzyszenie,
+- p: 50
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: d), kind: lowerLetter, src: auto, level: 0}}
+  text: zgłaszania wniosków co do działalności Stowarzyszenia.
+- {p: 51, role: spacer}
+- p: 52
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 11, kind: paragraph, src: manual, level: 0}}
+  text: § 11
+- p: 53
+  role: field_header
+  layout: {align: justify, indent: {left: 227, hanging: 227}, size: 10.0}
+  text: 'Członkowie zwyczajni mają obowiązek: '
+- p: 54
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+  text: brania udziału w działalności Stowarzyszenia i w realizacji jego celów,
+- p: 55
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+  text: uczestniczenia w walnych zebraniach członków,
+- p: 56
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
+  text: przestrzegania statutu i uchwał władz Stowarzyszenia,
+- p: 57
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: d), kind: lowerLetter, src: auto, level: 0}}
+  text: regularnego opłacania składek.
+- {p: 58, role: spacer}
+- p: 59
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 12, kind: paragraph, src: manual, level: 0}}
+  text: § 12
+- p: 60
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'Członkostwo w Stowarzyszeniu ustaje na skutek:'
+- p: 61
+  role: item
+  layout: {align: justify, indent: {left: 1428}, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+  text: dobrowolnej rezygnacji pisemnej z przynależności do Stowarzyszenia złożonej na ręce Zarządu,
+- p: 62
+  role: item
+  layout: {align: justify, indent: {left: 1428}, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+  text: śmierci członka lub utraty osobowości prawnej przez członka wspierającego,
+- p: 63
+  role: item
+  layout: {align: justify, indent: {left: 1428}, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
+  text: utraty praw obywatelskich na mocy prawomocnego wyroku sądu.
+- p: 64
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Członkostwo w Stowarzyszeniu ustaje także na skutek wykluczenia przez Zarząd z powodu: '
+- p: 65
+  role: item
+  layout: {align: justify, indent: {left: 1428}, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+  text: nieusprawiedliwionego zalegania z opłatą składek członkowskich przez pół roku,
+- p: 66
+  role: item
+  layout: {align: justify, indent: {left: 1428}, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+  text: rażącego naruszenia Statutu, nieprzestrzegania postanowień i uchwał władz Stowarzyszenia.
+- p: 67
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Od uchwały Zarządu w sprawie pozbawienia członkostwa w Stowarzyszeniu przysługuje odwołanie do Walnego Zebrania Członków w terminie ………..
+    dni od daty doręczenia stosownej uchwały. Odwołanie jest rozpatrywane na najbliższym Walnym Zebraniu Członków. Uchwała Walnego Zebrania jest
+    ostateczna.
+  slots:
+  - {id: p67_1, span: [132, 137], type: text, context: Zebrania Członków w terminie ▢ dni od}
+- {p: 68, role: spacer}
+- p: 69
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: Rozdział IV. Władze Stowarzyszenia
+- p: 70
+  role: clause_heading
+  layout: {align: center, size: 10.0, bold: true, marker: {text: § 13, kind: paragraph, src: manual, level: 0}}
+  text: § 13
+- {p: 71, role: spacer}
+- p: 72
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'Władzami Stowarzyszenia są: '
+- p: 73
+  role: item
+  layout: {align: justify, indent: {left: 1428}, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+  text: 'Walne Zebranie Członków, '
+- p: 74
+  role: item
+  layout: {align: justify, indent: {left: 1428}, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+  text: 'Zarząd, '
+- p: 75
+  role: item
+  layout: {align: justify, indent: {left: 1428}, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
+  text: 'Komisja Rewizyjna. '
+- p: 76
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Kadencja wszystkich wybieralnych władz Stowarzyszenia trwa ……. lat.
+  slots:
+  - {id: p76_1, span: [59, 62], type: text, context: wybieralnych władz Stowarzyszenia trwa ▢ lat.}
+- {p: 77, role: spacer}
+- p: 78
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 14, kind: paragraph, src: manual, level: 0}}
+  text: § 14
+- p: 79
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Władze Stowarzyszenia wybierane są przez Walne Zebranie Członków w głosowaniu jawnym zwykłą większością głosów. Walne Zebranie może zdecydować
+    o przeprowadzeniu głosowania tajnego.
+- p: 80
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: W razie, gdy skład władz Stowarzyszenia ulegnie zmniejszeniu w czasie trwania kadencji, uzupełnienie ich składu może nastąpić w drodze
+    kooptacji, której dokonują pozostali członkowie organu, który uległ zmniejszeniu. W trybie tym można powołać nie więcej niż połowę składu
+    organu.
+- p: 81
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Pierwszego wyboru władz Stowarzyszenia dokonują założyciele Stowarzyszenia.
+- {p: 82, role: spacer}
+- p: 83
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 15, kind: paragraph, src: manual, level: 0}}
+  text: § 15
+- p: 84
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: Uchwały wszystkich władz Stowarzyszenia zapadają w głosowaniu jawnym zwykłą większością głosów, przy obecności co najmniej połowy członków
+    uprawnionych do głosowania w pierwszym terminie. W drugim terminie uchwały zapadają bez względu na liczbę obecnych członków, chyba, że dalsze
+    postanowienia statutu stanowią inaczej.
+- {p: 85, role: spacer}
+- p: 86
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 16, kind: paragraph, src: manual, level: 0}}
+  text: § 16
+- p: 87
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'Najwyższą władzą Stowarzyszenia jest Walne Zebranie Członków. '
+- p: 88
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Walne Zebranie może być zwyczajne i nadzwyczajne.
+- p: 89
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Zwyczajne Walne Zebranie sprawozdawcze Zarząd zwołuje raz w roku, zaś sprawozdawczo-wyborcze co 5 lat, zawiadamiając członków o jego terminie,
+    miejscu i proponowanym porządku obrad co najmniej na …… dni przed terminem. Jeśli na Walnym Zebraniu nie ma wymaganego kworum, zwołuje się
+    zebranie w drugim terminie nie później niż w ciągu miesiąca od dnia zwołania Walnego Zebrania.
+  slots:
+  - {id: p89_1, span: [196, 198], type: text, context: obrad co najmniej na ▢ dni przed}
+- p: 90
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: 'Nadzwyczajne Walne Zebranie zwołuje Zarząd:'
+- p: 91
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+  text: z własnej inicjatywy,
+- p: 92
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+  text: na żądanie członków Komisji Rewizyjnej,
+- p: 93
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}, spans: [{start: 35, end: 44, italic: true}]}
+  text: na pisemny wniosek co najmniej ……… (np. 1/3) ogólnej liczby członków zwyczajnych Stowarzyszenia.
+  slots:
+  - {id: np_1_3, span: [31, 34], type: text, hint: np. 1/3}
+  inline_hints:
+  - {span: [35, 44], text: np. 1/3}
+- p: 94
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+  text: Nadzwyczajne Walne Zebranie powinno zostać zwołane przed upływem …… dni od daty zgłoszenia wniosku lub żądania i obradować nad sprawami,
+    dla których zostało zwołane.
+  slots:
+  - {id: p94_1, span: [65, 67], type: text, context: zostać zwołane przed upływem ▢ dni od}
+- {p: 95, role: spacer}
+- p: 96
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 17, kind: paragraph, src: manual, level: 0}}
+  text: § 17
+- p: 97
+  role: field_header
+  layout: {align: justify, indent: {left: 227, hanging: 227}, size: 10.0}
+  text: 'Do kompetencji Walnego Zebrania należy: '
+- p: 98
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+  text: 'określenie głównych kierunków działania i rozwoju Stowarzyszenia, '
+- p: 99
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+  text: uchwalanie zmian statutu,
+- p: 100
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
+  text: wybór i odwoływanie wszystkich władz Stowarzyszenia,
+- p: 101
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: d), kind: lowerLetter, src: auto, level: 0}}
+  text: 'udzielanie Zarządowi absolutorium na wniosek Komisji Rewizyjnej, '
+- p: 102
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: e), kind: lowerLetter, src: auto, level: 0}}
+  text: 'rozpatrywanie i zatwierdzanie sprawozdania finansowego i merytorycznego oraz sprawozdań władz Stowarzyszenia, '
+- p: 103
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: f), kind: lowerLetter, src: auto, level: 0}}
+  text: 'rozpatrywanie odwołań od uchwał Zarządu, '
+- p: 104
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: g), kind: lowerLetter, src: auto, level: 0}}
+  text: podejmowanie uchwały o rozwiązaniu Stowarzyszenia i przeznaczeniu jego majątku.
+- {p: 105, role: spacer}
+- p: 106
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 18, kind: paragraph, src: manual, level: 0}}
+  text: § 18
+- p: 107
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'Zarząd jest powołany do kierowania całą działalnością Stowarzyszenia zgodnie z uchwałami Walnego Zebrania Członków, a także reprezentuje
+    Stowarzyszenie na zewnątrz. '
+- p: 108
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 25, end: 42, italic: true}]}
+  text: Zarząd składa się z ………… (liczba członków) członków, w tym z prezesa wybieranego na pierwszym posiedzeniu.
+  slots:
+  - {id: liczba_czlonkow, span: [20, 24], type: text, hint: liczba członków}
+  inline_hints:
+  - {span: [25, 42], text: liczba członków}
+- p: 109
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Członkowie zarządu mogą otrzymywać wynagrodzenie za pełnione funkcje.
+- p: 110
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: Posiedzenia Zarządu odbywają się w miarę potrzeb, nie rzadziej jednak niż raz na kwartał.
+- p: 111
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}, spans: [{start: 34, end: 35, size: 12.0}]}
+  text: Posiedzenia Zarządu zwołuje prezes.
+- {p: 112, role: spacer}
+- p: 113
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 19, kind: paragraph, src: manual, level: 0}}
+  text: § 19
+- p: 114
+  role: field_header
+  layout: {align: justify, indent: {left: 227, hanging: 227}, size: 10.0}
+  text: 'Do kompetencji Zarządu należy:'
+- p: 115
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+  text: kierowanie bieżącą pracą Stowarzyszenia,
+- p: 116
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+  text: realizowanie uchwał Walnego Zebrania,
+- p: 117
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
+  text: zarządzanie majątkiem Stowarzyszenia,
+- p: 118
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: d), kind: lowerLetter, src: auto, level: 0}}
+  text: planowanie i prowadzenie gospodarki finansowej,
+- p: 119
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: e), kind: lowerLetter, src: auto, level: 0}}
+  text: reprezentowanie Stowarzyszenia na zewnątrz i działanie w jego imieniu,
+- p: 120
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: f), kind: lowerLetter, src: auto, level: 0}}
+  text: przyjmowanie i wykluczanie członków Stowarzyszenia,
+- p: 121
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: g), kind: lowerLetter, src: auto, level: 0}}
+  text: zwoływanie Walnego Zebrania,
+- p: 122
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: h), kind: lowerLetter, src: auto, level: 0}}
+  text: ustalanie wysokości składek członkowskich.
+- {p: 123, role: spacer}
+- p: 124
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 20, kind: paragraph, src: manual, level: 0}}
+  text: § 20
+- p: 125
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Komisja Rewizyjna powołana jest do sprawowania kontroli nad działalnością Stowarzyszenia.
+- p: 126
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Komisja składa się z ………… członków, w tym z przewodniczącego wybieranego na pierwszym posiedzeniu.
+  slots:
+  - {id: p126_1, span: [21, 25], type: text, context: Komisja składa się z ▢ członków w}
+- p: 127
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Posiedzenia Komisji Rewizyjnej odbywają się w miarę potrzeb, nie rzadziej jednak niż raz w roku.
+- p: 128
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: Posiedzenia Komisji zwołuje przewodniczący.
+- {p: 129, role: spacer}
+- p: 130
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 21, kind: paragraph, src: manual, level: 0}}
+  text: § 21
+- p: 131
+  role: field_header
+  layout: {align: justify, indent: {left: 227, hanging: 227}, size: 10.0}
+  text: 'Do kompetencji Komisji Rewizyjnej należy:'
+- p: 132
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+  text: kontrola całokształtu działalności Stowarzyszenia,
+- p: 133
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+  text: ocena pracy Zarządu, w tym corocznych sprawozdań i bilansu,
+- p: 134
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
+  text: składanie sprawozdań na Walnym Zebraniu Członków wraz z oceną działalności Stowarzyszenia i Zarządu Stowarzyszenia,
+- p: 135
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: d), kind: lowerLetter, src: auto, level: 0}}
+  text: 'wnioskowanie do Walnego Zebrania Członków o udzielanie absolutorium Zarządowi, '
+- p: 136
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: e), kind: lowerLetter, src: auto, level: 0}}
+  text: wnioskowanie o odwołanie całego Zarządu w razie jego bezczynności lub bezczynnego członka Zarządu,
+- p: 137
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: f), kind: lowerLetter, src: auto, level: 0}}
+  text: wnioskowanie o zwołanie Nadzwyczajnego Walnego Zebrania Członków;
+- p: 138
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: g), kind: lowerLetter, src: auto, level: 0}}
+  text: zwoływanie Walnego Zebrania Członków w razie nie zwołania walnego zebrania członków przez zarząd w określnym terminie.
+- {p: 139, role: spacer}
+- p: 140
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: Rozdział V. Majątek i gospodarka finansowa
+- {p: 141, role: spacer}
+- p: 142
+  role: clause_heading
+  layout: {align: center, size: 10.0, bold: true, marker: {text: § 22, kind: paragraph, src: manual, level: 0}}
+  text: § 22
+- p: 143
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'Źródłami majątku Stowarzyszenia są: '
+- p: 144
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+  text: składki członkowskie,
+- p: 145
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+  text: 'darowizny, zapisy i spadki, środki pochodzące z ofiarności publicznej, '
+- p: 146
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
+  text: dotacje, subwencje, udziały, lokaty,
+- p: 147
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: d), kind: lowerLetter, src: auto, level: 0}}
+  text: dochody z majątku stowarzyszenia,
+- p: 148
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: e), kind: lowerLetter, src: auto, level: 0}}
+  text: dochody z własnej działalności gospodarczej.
+- p: 149
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Stowarzyszenie prowadzi działalność gospodarczą zgodnie z obowiązującymi przepisami. Dochód z działalności gospodarczej Stowarzyszenia
+    służy realizacji celów statutowych i nie może być przeznaczony do podziału między jego członków.
+- p: 150
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Decyzje w sprawie nabywania, zbywania i obciążania majątku Stowarzyszenia podejmuje Zarząd.
+- {p: 151, role: spacer}
+- p: 152
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 23, kind: paragraph, src: manual, level: 0}}
+  text: § 23
+- {p: 153, role: spacer}
+- p: 154
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 108, end: 220, italic: true}, {start: 258, end: 259, size: 12.0}]}
+  text: Do składania oświadczeń woli w imieniu Stowarzyszenia, w tym w sprawach majątkowych, uprawnionych jest ………… (liczba członków – powinna
+    ona być mniejsza lub równa liczbie członków zarządu wskazanej w  § 18 ust. 2 statutu) członków zarządu działających łącznie.
+  slots:
+  - {id: liczba_czlonkow_powinna_ona_byc_mniejsza_lub_row, span: [103, 107], type: text, hint: liczba członków – powinna ona być mniejsza lub
+      równa liczbie członków zarządu wskazanej w  § 18 ust. 2 statutu}
+  inline_hints:
+  - {span: [108, 220], text: liczba członków – powinna ona być mniejsza lub równa liczbie członków zarządu wskazanej w  § 18 ust. 2 statutu}
+- {p: 155, role: spacer}
+- p: 156
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: Rozdział VI. Postanowienia końcowe
+- p: 157
+  role: clause_heading
+  layout: {align: center, size: 10.0, bold: true, marker: {text: § 24, kind: paragraph, src: manual, level: 0}}
+  text: § 24
+- {p: 158, role: spacer}
+- p: 159
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: Uchwałę w sprawie zmiany statutu Stowarzyszenia podejmuje Walne Zebranie Członków zwykłą większością głosów, przy obecności przynajmniej
+    połowy członków uprawnionych do głosowania.
+- {p: 160, role: spacer}
+- p: 161
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 25, kind: paragraph, src: manual, level: 0}}
+  text: § 25
+- {p: 162, role: spacer}
+- p: 163
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Uchwałę o rozwiązaniu Stowarzyszenia podejmuje Walne Zebranie Członków zwykłą większością głosów przy obecności co najmniej połowy członków
+    uprawnionych do głosowania.
+- p: 164
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Podejmując uchwałę o rozwiązaniu Stowarzyszenia, Walne Zebranie Członków wybiera likwidatora oraz określa  przeznaczenie majątku Stowarzyszenia.
+- {p: 165, role: spacer}
+- p: 166
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 26, kind: paragraph, src: manual, level: 0}}
+  text: § 26
+- {p: 167, role: spacer}
+- p: 168
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: Statut przyjęto uchwałą w dniu ………………………
+  slots:
+  - {id: p168_1, span: [31, 40], type: date, context: przyjęto uchwałą w dniu ▢}
+- {p: 169, role: spacer}
+- p: 170
+  role: field_header
+  layout: {align: justify, indent: {left: 227, hanging: 227}, size: 10.0}
+  text: 'Podpisy założycieli:'
+- p: 171
+  role: blank_line
+  layout: {align: justify, indent: {left: 227, hanging: 227}, size: 10.0}
+  text: ……………………
+  slots:
+  - {id: podpisy_zalozycieli, span: [0, 8], type: signature, label: Podpisy założycieli}
+- p: 172
+  role: blank_line
+  layout: {align: justify, indent: {left: 227, hanging: 227}, size: 10.0}
+  text: ……………………
+  slots:
+  - {id: podpisy_zalozycieli_2, span: [0, 8], type: signature, label: Podpisy założycieli}
+- p: 173
+  role: blank_line
+  layout: {align: justify, indent: {left: 227, hanging: 227}, size: 10.0}
+  text: ……………………
+  slots:
+  - {id: podpisy_zalozycieli_3, span: [0, 8], type: signature, label: Podpisy założycieli}
+- p: 174
+  role: blank_line
+  layout: {align: justify, indent: {left: 227, hanging: 227}, size: 10.0}
+  text: ……………………
+  slots:
+  - {id: podpisy_zalozycieli_4, span: [0, 8], type: signature, label: Podpisy założycieli}
+- p: 175
+  role: blank_line
+  layout: {align: justify, indent: {left: 227, hanging: 227}, size: 10.0}
+  text: ……………………
+  slots:
+  - {id: podpisy_zalozycieli_5, span: [0, 8], type: signature, label: Podpisy założycieli}
+- p: 176
+  role: blank_line
+  layout: {align: justify, indent: {left: 227, hanging: 227}, size: 10.0}
+  text: ……………………
+  slots:
+  - {id: podpisy_zalozycieli_6, span: [0, 8], type: signature, label: Podpisy założycieli}
+- p: 177
+  role: blank_line
+  layout: {align: justify, indent: {left: 227, hanging: 227}, size: 10.0}
+  text: ……………………
+  slots:
+  - {id: podpisy_zalozycieli_7, span: [0, 8], type: signature, hint: 'podpisy założycieli stowarzyszenia, zgodnie z art. 9 ustawy – Prawo o stowarzyszeniach
+      powinno być to co najmniej 7 osób', label: Podpisy założycieli}
+- p: 178
+  role: hint
+  layout: {align: justify, size: 10.0, italic: true}
+  text: (podpisy założycieli stowarzyszenia, zgodnie z art. 9 ustawy – Prawo o stowarzyszeniach powinno być to co najmniej 7 osób)
+  hint_for: 177
+  hint_kind: instruction
+- {p: 179, role: spacer}
+- {p: 180, role: spacer}
+- {p: 181, role: spacer}

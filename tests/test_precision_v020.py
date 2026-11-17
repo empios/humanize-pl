@@ -1,16 +1,19 @@
 import json
+from importlib.util import find_spec
 
 import pytest
 
-from humanize_pl.config import HumanizeConfig, Mode
+from humanize_pl.config import Mode
+from humanize_pl.config import HumanizeConfig
 from humanize_pl.core import humanize_text
+from humanize_pl.nlp.morfeusz import try_load_morfeusz
 from humanize_pl.reports.report import write_json_report
 from humanize_pl.rules.base import Candidate
 from humanize_pl.rules.features import analyze_sentence_features
 from humanize_pl.rules.scoring import score_candidate
 from humanize_pl.safety.anchors import content_anchor_retention, content_anchor_tokens
 from humanize_pl.safety.protectors import protect_text
-from humanize_pl.safety.validators import validate_candidate
+from humanize_pl.safety.validators import GENERAL_TEXT_RULE, validate_candidate
 
 
 def test_no_split_on_oraz_list_fragment():
@@ -40,9 +43,7 @@ def test_bad_split_rejected_reported():
 
 def test_legal_style_boundaries():
     result = humanize_text("Podporządkowanie pracownika nie jest jednak nieograniczone.", mode="standard")
-    # The shared logical guard conservatively declines changes to negation,
-    # including this idiomatic double negative, instead of guessing its scope.
-    assert result.text == "Podporządkowanie pracownika nie jest jednak nieograniczone."
+    assert result.text == "Podporządkowanie pracownika ma jednak swoje granice."
 
 
 def test_formal_legal_candidates_are_precise():
@@ -56,7 +57,8 @@ def test_formal_legal_candidates_are_precise():
     assert "Duże znaczenie ma sposób wykonywania pracy." in result.text
     assert "Oznacza to, że pracownik wykonuje zadania pod kierownictwem." in result.text
     assert "Zależność widać także w obowiązku stosowania poleceń" in result.text
-    assert "w znacznym stopniu" in result.text
+    # "w znacznym stopniu" is a style frame the detector counts as an AI signal
+    assert "w dużej mierze" in result.text
 
 
 def test_przejawia_sie_rewrite_depends_on_sentence_position():
@@ -73,7 +75,8 @@ def test_przejawia_sie_rewrite_depends_on_sentence_position():
 def test_legal_terms_are_preserved():
     text = "Co do zasady zgodnie z art. 22 § 1 Kodeksu pracy pracownik wykonuje pracę osobiście."
     result = humanize_text(text, mode="standard")
-    # "Co do zasady" is a bureaucratic filler → replaced with "zasadniczo"; legal citation preserved
+    # "Co do zasady" is a term of art and stays, as does the legal citation
+    assert result.text.startswith("Co do zasady")
     assert "art. 22 § 1 Kodeksu pracy" in result.text
 
 
@@ -109,8 +112,9 @@ def test_rejects_fragment_sentence_without_finite_verb():
 
 
 def test_report_contains_paragraph_sentence_and_rejection_reason(tmp_path):
+    # One main clause throughout, so the split is proposed and then rejected
     text = (
-        "To jest bardzo długie zdanie, które opisuje obowiązki pracownika, "
+        "Pracodawca opisuje obowiązki pracownika, "
         "wskazuje podstawy podporządkowania, przedstawia skutki organizacyjne, "
         "omawia zakres odpowiedzialności, pokazuje praktyczne znaczenie tej oceny, "
         "odnosi się do praktyki sądowej i opisuje typowe spory, "
@@ -196,6 +200,104 @@ def test_validator_rejects_numbers_dates_english_and_placeholder_leaks():
     )
     assert not placeholder.ok
     assert "placeholder" in placeholder.reason
+
+
+def test_validator_accepts_edits_near_lists_quotes_and_abbreviations():
+    edits = [
+        # Inline list: ")" without "(" in both versions
+        (
+            "Najemca zobowiązuje się do: 1) terminowej zapłaty czynszu, 2) dbania o lokal.",
+            "Najemca jest zobowiązany do: 1) terminowej zapłaty czynszu, 2) dbania o lokal.",
+        ),
+        # „…“ quotes as Word types them
+        (
+            "Wynajmujący, zwany dalej „Właścicielem“, oddaje lokal w najem na czas nieokreślony.",
+            "Wynajmujący, zwany dalej „Właścicielem“, oddaje lokal w najem na czas "
+            "bliżej nieokreślony.",
+        ),
+        # Abbreviation periods inside a sentence
+        (
+            "Strony podpisują umowę w dniu 5 maja 2024 r. w Krakowie przy ulicy Długiej.",
+            "Strony podpisują umowę dnia 5 maja 2024 r. w Krakowie przy ulicy Długiej.",
+        ),
+        (
+            "Strony stosują art. 471 k.c. do szkody wyrządzonej przez Najemcę.",
+            "Strony stosują przepis art. 471 k.c. do szkody wyrządzonej przez Najemcę.",
+        ),
+    ]
+    for original, candidate in edits:
+        protected = protect_text(original)
+        validation = validate_candidate(
+            protected.text,
+            protected.re_protect(candidate),
+            protected=protected,
+            max_length_ratio=1.5,
+        )
+        assert validation.ok, (candidate, validation.reason)
+
+
+@pytest.mark.skipif(try_load_morfeusz() is None, reason="morfeusz2 not installed")
+def test_validator_rejects_words_polish_does_not_have():
+    """A model dropped the diacritics and every other check passed."""
+    original = "Uprzejmie proszę o aktualne informacje dotyczące likwidacji szkody z polisy OC."
+    stripped = validate_candidate(
+        original,
+        "Uprzejmie prosze o aktualne informacje dotyczace likwidacji szkody z polisy OC.",
+        protected=protect_text(original),
+        max_length_ratio=1.5,
+        rule=GENERAL_TEXT_RULE,
+    )
+    assert stripped.reason == "unknown words added: prosze, dotyczace"
+
+    # The source's loanword and name inflected, an acronym and an abbreviation pass
+    original = "Firma Technogaz prosi o opinię na temat nowego backend i wymiany uszczelek."
+    validation = validate_candidate(
+        original,
+        "Technogaz prosi o opinię na temat nowego backendu i wymiany uszczelek, okien itp. – "
+        "pisze dział BOK Technogazu.",
+        protected=protect_text(original),
+        max_length_ratio=1.5,
+        rule=GENERAL_TEXT_RULE,
+    )
+    assert validation.ok, validation.reason
+
+    # Another form of the source's words passes; a word that lost its mark does not
+    original = "Wikipedysta zgłosił problem przy włączonym np. Yanosiku."
+    validation = validate_candidate(
+        original,
+        "Problem pojawia się, gdy włączony jest np. Yanosik – zgłosiło to dwóch wikipedystów.",
+        protected=protect_text(original),
+        max_length_ratio=2.0,
+        rule=GENERAL_TEXT_RULE,
+    )
+    assert "known_words" in [check.name for check in validation.checks if check.ok]
+
+
+def test_validator_rejects_added_imbalance():
+    original = "Strona (Najemca) płaci czynsz co miesiąc w kwocie ustalonej w umowie."
+    validation = validate_candidate(
+        original,
+        "Strona (Najemca płaci czynsz co miesiąc w kwocie ustalonej w umowie.",
+        protected=protect_text(original),
+        max_length_ratio=1.5,
+    )
+    assert validation.reason == "unbalanced punctuation"
+
+
+def test_validator_accepts_a_dropped_emoticon_and_a_closed_bracket():
+    edits = [
+        ("A witam, witam;) Teraz też raczej przelotem niż na stałe.",
+         "A, witam. Teraz też raczej przelotem niż na stałe."),
+        # The source left a bracket open; the rewrite closes it
+        ("Opłatę uiszczono przelewem (zgodnie z ustawą o opłacie skarbowej.",
+         "Opłatę uiszczono przelewem (zgodnie z ustawą o opłacie skarbowej)."),
+    ]
+    for original, candidate in edits:
+        validation = validate_candidate(
+            original, candidate, protected=protect_text(original), max_length_ratio=1.5,
+            rule=GENERAL_TEXT_RULE,
+        )
+        assert validation.ok, (candidate, validation.reason)
 
 
 def test_validator_rejects_length_outliers():
@@ -318,8 +420,8 @@ def test_nlp_nominalization_does_not_strand_relative_clause():
 
     cases = [
         (
-            ("Użytkownik nie może również podejmować działań, "
-            "które zakłócają funkcjonowanie platformy."),
+            "Użytkownik nie może również podejmować działań, "
+            "które zakłócają funkcjonowanie platformy.",
             "działań",
             "działanie",
         ),
@@ -402,20 +504,31 @@ def test_validator_rejects_stranded_relative_clause_after_infinitive():
     assert valid.ok
 
 
-def test_legal_deadlines_remain_explicit_during_nlp_editing():
-    for source in (
-        ("Administrator powinien udzielić odpowiedzi bez zbędnej zwłoki, "
-         "nie później niż w terminie 30 dni."),
-        "Brak zapłaty w powyższym terminie może skutkować skierowaniem sprawy do sądu.",
-    ):
-        result = humanize_text(source, mode="standard", engine="nlp", include_candidates=True, offline_models=True)
-        assert result.text == source
-        if result.engine_used != "nlp":
-            pytest.skip("Test integracyjny kandydatów NLP wymaga lokalnych wag Stanza.")
-        assert any(
-            gate["name"] == "legal_scope_preserved" and not gate["ok"]
-            for trace in result.all_candidates for gate in trace.gate_results
+def test_safe_nlp_nominalizations_still_work():
+    assert (
+        humanize_text(
+            "Administrator powinien udzielić odpowiedzi bez zbędnej zwłoki, "
+            "nie później niż w terminie 30 dni.",
+            mode="standard",
+            engine="nlp",
+        ).text
+        == (
+            "Administrator powinien odpowiedzieć bez zbędnej zwłoki, "
+            "nie później niż w terminie 30 dni."
         )
+    )
+
+
+@pytest.mark.skipif(find_spec("stanza") is None, reason="Stanza jest opcjonalnym dodatkiem [nlp]")
+def test_nlp_engine_replaces_powyzszy_with_a_demonstrative():
+    assert (
+        humanize_text(
+            "Brak zapłaty w powyższym terminie może skutkować skierowaniem sprawy do sądu.",
+            mode="standard",
+            engine="nlp",
+        ).text
+        == "Brak zapłaty w tym terminie może skutkować skierowaniem sprawy do sądu."
+    )
 
 
 def test_mode_to_intensity_mapping_is_stable():
@@ -510,17 +623,16 @@ def test_same_rule_is_not_applied_twice_in_sequence():
     assert len(rules) == len(set(rules))
 
 
-def test_redundancy_reduction_keeps_an_explicit_legal_party():
+def test_redundancy_reduction_drops_repeated_opening_in_standard():
     result = humanize_text(
         "Podporządkowanie pracownika jest cechą stosunku pracy. "
         "Podporządkowanie pracownika wynika z art. 22 Kodeksu pracy.",
         mode="standard",
         include_candidates=True,
     )
-    assert "Podporządkowanie pracownika wynika z art. 22 Kodeksu pracy." in result.text
+    assert "Wynika z art. 22 Kodeksu pracy." in result.text
     assert any(
-        trace.operation_type == "redundancy_reduction" and trace.status == "rejected"
-        and any(g["name"] == "legal_party_roles_preserved" and not g["ok"] for g in trace.gate_results)
+        trace.operation_type == "redundancy_reduction" and trace.status == "accepted"
         for trace in result.all_candidates
     )
 

@@ -145,7 +145,7 @@ def load(path: Path | str | None) -> Inflector:
         return Inflector(None)
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, ValueError):
+    except Exception:
         return Inflector(None)
     if not isinstance(data, dict):
         return Inflector(None)

@@ -1,0 +1,313 @@
+template: Umowa licencji.docx
+category: umowa_o_dzielo
+label_pl: Umowa licencji
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: UMOWA LICENCJI
+- {p: 1, role: spacer}
+- p: 2
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 24, end: 37, italic: true}, {start: 55, end: 61, italic: true}]}
+  text: 'Zawarta w ………………………………… (miejscowość) w dniu ……………………… (data) '
+  slots:
+  - {id: miejscowosc, span: [10, 23], type: place, hint: miejscowość}
+  - {id: data, span: [45, 54], type: date, hint: data}
+  inline_hints:
+  - {span: [24, 37], text: miejscowość}
+  - {span: [55, 61], text: data}
+- {p: 3, role: spacer}
+- p: 4
+  role: party_connector
+  layout: {align: justify, size: 10.0}
+  text: 'pomiędzy: '
+- {p: 5, role: spacer}
+- p: 6
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: …………………………………………………………………………………………………………………………………………………
+  slots:
+  - {id: p6_1, span: [0, 55], type: text, context: ▢}
+- p: 7
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: …………………………………………………………………………………………………………………………………………………
+  slots:
+  - {id: p7_1, span: [0, 55], type: text, context: ▢}
+- p: 8
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: …………………………………………………………………………………………………………………………………………………
+  slots:
+  - {id: imie_i_nazwisko_firma_miejsce_zamieszkania_siedz, span: [0, 55], type: text, hint: 'imię i nazwisko/firma; miejsce zamieszkania/siedziba
+      i adres; nr i seria dokumentu tożsamości; PESEL, NIP'}
+- p: 9
+  role: hint
+  layout: {align: justify, size: 10.0, bold: true}
+  text: (imię i nazwisko/firma; miejsce zamieszkania/siedziba i adres; nr i seria dokumentu tożsamości; PESEL, NIP)
+  hint_for: 8
+  hint_kind: instruction
+- {p: 10, role: spacer}
+- p: 11
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 22, end: 35, bold: true}]}
+  text: 'zwanym w treści umowy Licencjodawcą, '
+  alias: Licencjodawcą
+- {p: 12, role: spacer}
+- p: 13
+  role: party_connector
+  layout: {align: justify, size: 10.0}
+  text: a
+- {p: 14, role: spacer}
+- p: 15
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: …………………………………………………………………………………………………………………………………………………
+  slots:
+  - {id: p15_1, span: [0, 55], type: text, context: ▢}
+- p: 16
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: …………………………………………………………………………………………………………………………………………………
+  slots:
+  - {id: p16_1, span: [0, 55], type: text, context: ▢}
+- p: 17
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: …………………………………………………………………………………………………………………………………………………
+  slots:
+  - {id: imie_i_nazwisko_firma_miejsce_zamieszkania_siedz_2, span: [0, 55], type: text, hint: 'imię i nazwisko/firma; miejsce zamieszkania/siedziba
+      i adres; nr i seria dokumentu tożsamości; PESEL, NIP'}
+- p: 18
+  role: hint
+  layout: {align: justify, size: 10.0, bold: true}
+  text: ' (imię i nazwisko/firma; miejsce zamieszkania/siedziba i adres; nr i seria dokumentu tożsamości; PESEL, NIP)'
+  hint_for: 17
+  hint_kind: instruction
+- {p: 19, role: spacer}
+- p: 20
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 22, end: 36, bold: true}]}
+  text: 'zwanym w treści umowy Licencjobiorcą, '
+  alias: Licencjobiorcą
+- {p: 21, role: spacer}
+- p: 22
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 31, end: 39, bold: true}]}
+  text: zwanymi łącznie w treści umowy Stronami.
+  alias: Stronami
+- {p: 23, role: spacer}
+- p: 24
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 1., kind: paragraph, src: manual, level: 0}}
+  text: § 1.
+- {p: 25, role: spacer}
+- p: 26
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 183, end: 312, italic: true}]}
+  text: "Przedmiotem niniejszej umowy jest upoważnienie do korzystania z utworu w rozumieniu ustawy \nz dnia 4 lutego 1994 r. o prawie autorskim\
+    \ i prawach pokrewnych, który stanowi …………………………… (w tym miejscu należy wskazać co jest przedmiotem licencji np. artykuł, film, wraz z jego\
+    \ określeniem np. tytuł i data powstania), w dalszej części umowy zwanym Utworem, który zostanie wykorzystany przez Licencjobiorcę na polach\
+    \ eksploatacji, z określeniem zakresu, miejsca i czasu tego korzystania. "
+  slots:
+  - {id: w_tym_miejscu_nalezy_wskazac_co_jest_przedmiotem, span: [171, 182], type: text, hint: 'w tym miejscu należy wskazać co jest przedmiotem
+      licencji np. artykuł, film, wraz z jego określeniem np. tytuł i data powstania'}
+  inline_hints:
+  - {span: [183, 312], text: 'w tym miejscu należy wskazać co jest przedmiotem licencji np. artykuł, film, wraz z jego określeniem np. tytuł i
+      data powstania'}
+- p: 27
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Autorem Utworu jest Licencjodawca.
+- {p: 28, role: spacer}
+- p: 29
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 2., kind: paragraph, src: manual, level: 0}}
+  text: § 2.
+- {p: 30, role: spacer}
+- p: 31
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Licencjodawca oświadcza, że jest wyłącznym właścicielem praw autorskich majątkowych do Utworu i że nie występują przeszkody prawne do
+    zawarcia przez niego niniejszej umowy.
+- p: 32
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Licencjodawca oświadcza, że korzystanie z Utworu przez Licencjobiorcę nie będzie naruszać praw osób trzecich.
+- {p: 33, role: spacer}
+- p: 34
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 3., kind: paragraph, src: manual, level: 0}}
+  text: § 3.
+- {p: 35, role: spacer}
+- p: 36
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: 'Licencjodawca udziela Licencjobiorcy prawa do korzystania z autorskich praw majątkowych do Utworu, w zakresie następujących pól eksploatacji: '
+- p: 37
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+  text: ………………………………………………………………………………………………………………………… .
+  slots:
+  - {id: p37_1, span: [0, 46], type: text, context: ▢}
+- p: 38
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+  text: ………………………………………………………………………………………………………………………… .
+  slots:
+  - {id: p38_1, span: [0, 46], type: text, context: ▢}
+- p: 39
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}}
+  text: ………………………………………………………………………………………………………………………… .
+  slots:
+  - {id: w_tym_postanowieniu_nalezy_okreslic_pola_eksploa, span: [0, 46], type: text, hint: 'w tym postanowieniu należy określić pola eksploatacji
+      utworu, do których upoważnia umowa, Licencjobiorca nie będzie mógł korzystać z utworu na polach eksploatacji niewymienionych w umowie. Możliwe
+      jest wskazanie np. tylko jednego pola eksploatacji, jak publikacja utworu na stronie internetowej lub określenie różnych pół eksploatacji'}
+  optional: true
+  condition: w tym postanowieniu należy określić pola eksploatacji utworu, do których upoważnia umowa, Licencjobiorca nie będzie mógł korzystać
+    z utworu na polach eksploatacji niewymienionych w umowie. Możliwe jest wskazanie np. tylko jednego pola eksploatacji, jak publikacja utworu
+    na stronie internetowej lub określenie różnych pół eksploatacji
+- p: 40
+  role: hint
+  layout: {align: justify, size: 10.0}
+  text: (w tym postanowieniu należy określić pola eksploatacji utworu, do których upoważnia umowa, Licencjobiorca nie będzie mógł korzystać z
+    utworu na polach eksploatacji niewymienionych w umowie. Możliwe jest wskazanie np. tylko jednego pola eksploatacji, jak publikacja utworu
+    na stronie internetowej lub określenie różnych pół eksploatacji)
+  hint_for: 39
+  hint_kind: instruction
+- p: 41
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 22, end: 42, bold: true}]}
+  text: 'Licencja ma charakter niewyłączny/wyłączny i uprawnia do korzystania z Utworu przez Licencjobiorcę bez ograniczeń terytorialnych. '
+- p: 42
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}, spans: [{start: 59, end: 82, bold: true}]}
+  text: Licencja na korzystanie z Utworu zostaje udzielona na czas oznaczony/nieoznaczony.
+- p: 43
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}}
+  text: Licencjobiorca nie ma prawa ingerowania w treść Utworu, oraz nie ma prawa do tworzenia utworów zależnych.
+- {p: 44, role: spacer}
+- p: 45
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 4., kind: paragraph, src: manual, level: 0}}
+  text: § 4.
+- {p: 46, role: spacer}
+- p: 47
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 15, end: 28, bold: true}]}
+  text: 'Licencjobiorca jest/nie jest uprawniony do udzielania dalszej licencji osobom trzecim. '
+- {p: 48, role: spacer}
+- p: 49
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 5., kind: paragraph, src: manual, level: 0}}
+  text: § 5.
+- {p: 50, role: spacer}
+- p: 51
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 83, end: 106, bold: true}]}
+  text: Korzystanie z Utworu zgodnie z postanowieniami niniejszej umowy będzie odbywać się odpłatnie/ nieodpłatnie.
+- p: 52
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: '[opcjonalnie w przypadku wersji odpłatnej] Tytułem wynagrodzenia za korzystanie z Utworu zgodnie z postanowieniami niniejszej umowy Licencjobiorca
+    uiści na rzecz Licencjodawcy kwotę
+
+    w wysokości ………………………………… zł, słownie: ( ……………………………… złotych).'
+  slots:
+  - {id: p52_1, span: [194, 207], type: amount, context: Licencjodawcy kwotę w wysokości ▢ zł słownie}
+  - {id: p52_2, span: [223, 235], type: amount, context: w wysokości zł słownie ▢ złotych}
+- p: 53
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: 'Wynagrodzenie zostanie przekazane Licencjodawcy przelewem bankowym  w terminie ………… dni  od podpisania niniejszej umowy, na rachunek
+    bankowy Licencjodawcy o numerze: …………………… .'
+  slots:
+  - {id: p53_1, span: [79, 83], type: text, context: przelewem bankowym w terminie ▢ dni od}
+  - {id: p53_2, span: [166, 174], type: text, context: bankowy Licencjodawcy o numerze ▢}
+- {p: 54, role: spacer}
+- p: 55
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 6., kind: paragraph, src: manual, level: 0}}
+  text: § 6.
+- {p: 56, role: spacer}
+- p: 57
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Umowę może wypowiedzieć każda ze stron z zachowaniem …………… okresu wypowiedzenia ze skutkiem na koniec miesiąca kalendarzowego.
+  slots:
+  - {id: p57_1, span: [53, 58], type: text, context: ze stron z zachowaniem ▢ okresu wypowiedzenia}
+- p: 58
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Licencjodawca ma prawo do rozwiązania niniejszej umowy bez zachowania okresu wypowiedzenia, w razie użytkowania Utworu przekraczającego
+    zakres udzielonej licencji przez Licencjobiorcę.
+- {p: 59, role: spacer}
+- p: 60
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 7., kind: paragraph, src: manual, level: 0}}
+  text: § 7.
+- {p: 61, role: spacer}
+- p: 62
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: "W wypadku podniesienia roszczeń przez osoby trzecie przeciwko Licencjobiorcy na drodze procesu \no naruszenie praw autorskich do Utworu\
+    \ lub praw do wizerunku w związku z korzystaniem przez Licencjobiorcę z Utworu zgodnie z postanowieniami niniejszej Umowy, Licencjodawca zobowiązany\
+    \ będzie niezwłocznie wstąpić do sprawy po stronie pozwanego (Licencjobiorcy), zwolnić Licencjobiorcę \nz obowiązku zaspokojenia wszelkich\
+    \ roszczeń, zaspokoić wszelkie uznane lub prawomocnie zasądzone roszczenia powoda wraz z kosztami ewentualnego procesu lub negocjacji ugodowych. "
+- {p: 63, role: spacer}
+- p: 64
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 8., kind: paragraph, src: manual, level: 0}}
+  text: § 8.
+- {p: 65, role: spacer}
+- p: 66
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Wszelkie zmiany niniejszej umowy wymagają formy pisemnej pod rygorem nieważności.
+- p: 67
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: "W sprawach nieuregulowanych niniejszą umową zastosowanie mają przepisy ustawy z dnia \n4 lutego 1994 r. o prawie autorskim i prawach\
+    \ pokrewnych oraz ustawy z dnia 23 kwietnia 1964 r. – Kodeks cywilny."
+- p: 68
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Ewentualne spory powstałe na tle obowiązywania niniejszej umowy będą rozstrzygane przez sąd powszechny właściwy miejscowo ze względu na
+    siedzibę Licencjodawcy/Licencjobiorcy.
+- p: 69
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: Niniejsza umowa została sporządzona w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze Stron.
+- {p: 70, role: spacer}
+- {p: 71, role: spacer}
+- p: 72
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ……………………………………………                                                             ………………………………………
+  slots:
+  - {id: p72_1, span: [0, 17], type: signature, context: ▢}
+  - {id: p72_2, span: [78, 93], type: signature, context: ▢}
+- p: 73
+  role: body
+  layout: {align: justify, size: 10.0, bold: true}
+  text: '          Licencjobiorca                                                                                       Licencjodawca'
+- {p: 74, role: spacer}
+- p: 75
+  role: field_header
+  layout: {align: justify, size: 10.0, bold: true, italic: true}
+  text: 'Załączniki:'
+- p: 76
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: ……………………………………………………………… (załącznik może stanowić przykładowo opis utworu, który jest przedmiotem umowy)
+  slots:
+  - {id: zalacznik_moze_stanowic_przykladowo_opis_utworu, span: [0, 24], type: text, hint: 'załącznik może stanowić przykładowo opis utworu, który
+      jest przedmiotem umowy'}
+  inline_hints:
+  - {span: [25, 104], text: 'załącznik może stanowić przykładowo opis utworu, który jest przedmiotem umowy'}
+- {p: 77, role: spacer}

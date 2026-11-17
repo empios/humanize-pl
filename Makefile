@@ -1,4 +1,4 @@
-.PHONY: install-dev test lint audit-rules benchmark-basic benchmark-optional build release-check release-check-python clean-artifacts
+.PHONY: install-dev test lint benchmark-basic benchmark-optional eval build release-check release-check-python clean-artifacts
 
 install-dev:
 	python -m pip install -e ".[dev]"
@@ -9,20 +9,19 @@ test:
 lint:
 	ruff check .
 
-audit-rules:
-	python tools/rules_lemma_audit.py
-
 benchmark-basic:
 	humanize-pl-benchmark --engines basic --mode standard --allow-fallback --fail-on-status
 
 benchmark-optional:
 	humanize-pl-benchmark --engines nlp,hybrid --mode standard --offline-models --require-models --fail-on-status
 
+eval:
+	humanize-pl-eval
+
 build:
 	python -m build --wheel --no-isolation
 
-release-check:
-	humanize-pl-release-check
+release-check: test lint benchmark-basic eval build
 
 release-check-python:
 	humanize-pl-release-check

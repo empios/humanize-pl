@@ -1,0 +1,303 @@
+# Szkielet struktury: umowa o praktykę.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: umowa_praktyki
+label_pl: umowa o praktykę
+numbering: paragraph
+sections:
+- id: komparycja
+  label_pl: komparycja
+  severity: required
+  # Formuły zawarcia i oznaczenia stron, nie nazwy ról: „najemca” czy „zawarta”
+  # powtarzają się w całej umowie i utrzymywały usuniętą komparycję jako obecną.
+  matches: [zawarta w dniu, zawarta dnia, zawarta pomiędzy, zawarta między, zawarto umowę,
+    zwanym dalej, zwaną dalej, zwanymi dalej, zwany dalej, zwana dalej, zwanego dalej,
+    zwanej dalej, zwani dalej, z siedzibą w, zamieszkał, pesel, 'nip:', 'nip ', krs, legitymując]
+- id: oświadczenie
+  label_pl: oświadczenie praktykanta
+  severity: required
+  matches: [praktykant oświadcza, ukończył, szkoła]
+- id: warunki
+  label_pl: warunki odbywania praktyki
+  severity: required
+  matches: [warunki odbywania, praktyki, zakres, miejsce]
+- id: czas
+  label_pl: czas trwania
+  severity: required
+  matches: [czas, okres, od dnia, do dnia, termin]
+- id: stypendium
+  label_pl: stypendium / koszty
+  severity: expected
+  matches: [stypendium, wynagrodzenie, koszt, zł]
+- id: postanowienia_koncowe
+  label_pl: postanowienia końcowe
+  severity: required
+  matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
+      formy pisemnej, wymagają zachowania formy pisemnej]
+
+# Dokument ogólny: realny wzór tej kategorii. Przy użyciu wypełnia się wyłącznie
+# pola (`slots`); treść, kolejność i układ zostają jak we wzorze.
+document:
+  template: umowa o praktyki absolwenckie.docx
+  label_pl: Umowa o praktyki absolwenckie
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+  blocks:
+  - p: 0
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: Umowa o praktyki absolwenckie
+  - {p: 1, role: spacer}
+  - p: 2
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 17, end: 30, italic: true}, {start: 46, end: 52, italic: true}]}
+    text: Zawarta w ……………… (miejscowość) dnia ……..…………. (data)
+    slots:
+    - {id: miejscowosc, span: [10, 16], type: place, hint: miejscowość}
+    - {id: data, span: [36, 45], type: date, hint: data}
+    inline_hints:
+    - {span: [17, 30], text: miejscowość}
+    - {span: [46, 52], text: data}
+  - {p: 3, role: spacer}
+  - p: 4
+    role: party_connector
+    layout: {align: justify, size: 10.0}
+    text: 'pomiędzy:'
+  - p: 5
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: ………………………………………………………………………………………………………………………………………………….
+    slots:
+    - {id: p5_1, span: [0, 56], type: text, context: ▢}
+  - p: 6
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: ………………………………………………………………………………………………………………………………………………….
+    slots:
+    - {id: oznaczenie_spolki_oraz_imie_i_nazwisko_osoby_rep, span: [0, 56], type: text, hint: oznaczenie spółki oraz imię i nazwisko osoby reprezentującej
+        spółkę}
+  - p: 7
+    role: hint
+    layout: {align: justify, size: 10.0, italic: true}
+    text: (oznaczenie spółki oraz imię i nazwisko osoby reprezentującej spółkę)
+    hint_for: 6
+    hint_kind: label
+  - {p: 8, role: spacer}
+  - p: 9
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 13, end: 37, bold: true}]}
+    text: zwanym dalej Przyjmującym na praktykę,
+    alias: Przyjmującym
+  - {p: 10, role: spacer}
+  - p: 11
+    role: party_connector
+    layout: {align: justify, size: 10.0}
+    text: a
+  - {p: 12, role: spacer}
+  - p: 13
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: '………………………………………………………………………………………………, zamieszkałym/ą w …………………. , urodzonym/ą w dniu ………………… w …………………………, posiadającym/ą numer PESEL:
+      …………….., legitymującym/ą się dowodem osobistym seria i numer: ………………………….………………'
+    slots:
+    - {id: p13_1, span: [0, 36], type: text, context: ▢ zamieszkałym ą}
+    - {id: p13_2, span: [55, 63], type: place, context: zamieszkałym ą w ▢ urodzonym ą}
+    - {id: p13_3, span: [85, 92], type: date, context: urodzonym ą w dniu ▢ w posiadającym}
+    - {id: p13_4, span: [95, 105], type: place, context: ą w dniu w ▢ posiadającym ą}
+    - {id: p13_5, span: [135, 142], type: pesel, context: posiadającym ą numer PESEL ▢ legitymującym ą}
+    - {id: p13_6, span: [197, 214], type: text, context: osobistym seria i numer ▢}
+    alternatives: 5
+  - {p: 14, role: spacer}
+  - p: 15
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 13, end: 26, bold: true}]}
+    text: zwanym dalej Praktykantem,
+    alias: Praktykantem
+  - p: 16
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 22, end: 30, bold: true}]}
+    text: zwanymi dalej łącznie Stronami.
+    alias: Stronami
+  - {p: 17, role: spacer}
+  - p: 18
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+    text: § 1
+  - p: 19
+    role: field_header
+    layout: {align: justify, size: 10.0}
+    text: 'Praktykant oświadcza, że:'
+  - p: 20
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: 'ukończył szkołę: …………………………………………………………………………….'
+    slots:
+    - {id: ukonczyl_szkole, span: [17, 47], type: text, label: ukończył szkołę}
+  - p: 21
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+    text: 'w chwili rozpoczęcia praktyk ukończył lat: …………………………………………………     '
+    slots:
+    - {id: w_chwili_rozpoczecia_praktyk_ukonczyl_lat, span: [43, 62], type: text, label: w chwili rozpoczęcia praktyk ukończył lat}
+  - {p: 22, role: spacer}
+  - p: 23
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+    text: § 2
+  - p: 24
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: Przyjmujący na praktykę przyjmuje Praktykanta na praktykę celem ułatwienia uzyskania doświadczenia i nabycia umiejętności niezbędnych
+      do wykonywania pracy w charakterze …………….…………….. .
+    slots:
+    - {id: p24_1, span: [169, 182], type: content, context: wykonywania pracy w charakterze ▢}
+  - {p: 25, role: spacer}
+  - p: 26
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+    text: § 3
+  - p: 27
+    role: field_header
+    layout: {align: justify, size: 10.0, tabs: 4}
+    text: "Strony ustalają następujące warunki odbywania praktyki:\t\t\t\t           "
+  - p: 28
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: rodzaj pracy .…………………………………………………………………………………
+    slots:
+    - {id: p28_1, span: [13, 45], type: content, context: rodzaj pracy ▢}
+  - p: 29
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+    text: miejsce odbywania praktyki …………………………………………………………………
+    slots:
+    - {id: p29_1, span: [27, 52], type: text, context: miejsce odbywania praktyki ▢}
+  - p: 30
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}}
+    text: tygodniowy wymiar czasu pracy …………………………………………………………….
+    slots:
+    - {id: p30_1, span: [30, 54], type: text, context: tygodniowy wymiar czasu pracy ▢}
+  - p: 31
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 4), kind: decimal, src: auto, level: 0}}
+    text: 'wysokość świadczenia pieniężnego – nieodpłatnie    '
+  - p: 32
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 5), kind: decimal, src: auto, level: 0}}
+    text: data rozpoczęcia praktyki ……………………………………………………………………
+    slots:
+    - {id: p32_1, span: [26, 52], type: text, context: data rozpoczęcia praktyki ▢}
+  - p: 33
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 6), kind: decimal, src: auto, level: 0}}
+    text: czas trwania praktyki .………………………………………………………………………..
+    slots:
+    - {id: p33_1, span: [22, 52], type: text, context: czas trwania praktyki ▢}
+  - {p: 34, role: spacer}
+  - p: 35
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+    text: § 4
+  - p: 36
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Każda ze stron może wypowiedzieć umowę w każdym czasie.
+  - p: 37
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Strony zobowiązują się do uprzedniego zawiadomienia drugiej strony o zamiarze wypowiedzenia umowy z co najmniej 2-dniowym wyprzedzeniem
+      przynajmniej w formie ustnej.
+  - {p: 38, role: spacer}
+  - p: 39
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+    text: § 5
+  - p: 40
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: Przyjmujący na praktykę, na wniosek Praktykanta, jest obowiązany wystawić na piśmie zaświadczenie o rodzaju wykonywanej pracy i umiejętnościach
+      nabytych w czasie odbywania praktyki.
+  - {p: 41, role: spacer}
+  - p: 42
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 6, kind: paragraph, src: manual, level: 0}}
+    text: § 6
+  - p: 43
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Praktykant zobowiązuje się do zachowania w tajemnicy wszelkich materiałów, dokumentów oraz informacji otrzymanych lub uzyskanych w związku
+      z odbywaniem praktyki.
+  - p: 44
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Obowiązek zachowania w tajemnicy materiałów, dokumentów oraz informacji opisanych w § 1 ust. 1 niniejszej umowy obejmuje w szczególności
+      zakaz ich udostępniania osobom trzecim.
+  - p: 45
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: Obowiązek zachowania w tajemnicy materiałów, dokumentów oraz informacji opisanych w § 1 ust. 1 niniejszej umowy obowiązuje w trakcie trwania
+      umowy, a także bezterminowo po jej wygaśnięciu lub rozwiązaniu.
+  - {p: 46, role: spacer}
+  - p: 47
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 7, kind: paragraph, src: manual, level: 0}}
+    text: § 7
+  - p: 48
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: "Obowiązek zachowania w tajemnicy informacji nie dotyczy sytuacji, gdy obowiązek ich udostępnienia osobom trzecim wynika z obowiązujących\
+      \ przepisów prawa i osoby te zażądają od Praktykanta ich przekazania. Praktykant jest zobowiązany niezwłocznie poinformować Przyjmującego\
+      \ na praktykę \no zgłoszeniu powyższego żądania."
+  - {p: 49, role: spacer}
+  - p: 50
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: §  8, kind: paragraph, src: manual, level: 0}}
+    text: §  8
+  - p: 51
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: Niniejszym Przyjmujący na praktykę upoważnia Praktykanta do przetwarzania danych osobowych, do których posiada dostęp w celu realizacji
+      niniejszej umowy.
+  - {p: 52, role: spacer}
+  - p: 53
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 9, kind: paragraph, src: manual, level: 0}}
+    text: § 9
+  - p: 54
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: W sprawach nieuregulowanych niniejszą umową stosuje się przepisy ustawy o praktykach absolwenckich oraz przepisy Kodeksu cywilnego.
+  - {p: 55, role: spacer}
+  - p: 56
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: §  10, kind: paragraph, src: manual, level: 0}}
+    text: §  10
+  - p: 57
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Wszelkie zmiany niniejszej umowy wymagają zachowania formy pisemnej, pod rygorem nieważności.
+  - p: 58
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: "W sprawach nieuregulowanych niniejszą umową stosuje się przepisy ustawy z dnia 17 lipca 2009 r. \no praktykach absolwenckich oraz ustawy\
+      \ z dnia 23 kwietnia 1964 r.  – Kodeks cywilny."
+  - p: 59
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: Umowę sporządzono w dwóch egzemplarzach, po jednym egzemplarzu dla stron.
+  - {p: 60, role: spacer}
+  - p: 61
+    role: signature_line
+    layout: {align: justify, size: 10.0, tabs: 1}
+    text: "..........................................................\t......................................................"
+    slots:
+    - {id: p61_1, span: [0, 58], type: signature, context: ▢}
+    - {id: p61_2, span: [59, 113], type: signature, context: ▢}
+  - p: 62
+    role: body
+    layout: {align: justify, size: 10.0, bold: true, tabs: 1}
+    text: "        Przyjmujący na praktykę\t                                                       Praktykant"
+  - {p: 63, role: spacer}
+  - {p: 64, role: spacer}
+  - {p: 65, role: spacer}

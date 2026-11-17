@@ -76,3 +76,35 @@ def connective_density(text: str) -> float:
     connective_count = len(_CONNECTIVES_RE.findall(text))
     
     return round((connective_count / word_count) * 1000.0, 4)
+
+
+_VOWELS = frozenset("aąeęioóuy")
+# FOG-PL counts a word as hard from four syllables on; Polish words run longer
+# than English, so the English three would mark most of any text as hard.
+HARD_WORD_SYLLABLES = 4
+
+
+def syllables(word: str) -> int:
+    """Syllables of a Polish word, counted as vowel nuclei. An "i" before
+    another vowel only softens the consonant ("nie", "się" have one)."""
+    lowered = word.casefold()
+    return sum(
+        1
+        for index, letter in enumerate(lowered)
+        if letter in _VOWELS
+        and not (letter == "i" and index + 1 < len(lowered) and lowered[index + 1] in _VOWELS)
+    )
+
+
+def fog_pl(sentence_words: list[list[str]]) -> float:
+    """FOG-PL readability: 0.4 x (words per sentence + percent of hard words).
+
+    Roughly the years of schooling a reader needs; the Polish adaptation of
+    Gunning's FOG used by Jasnopis counts words of four syllables or more as
+    hard. It measures how hard a text is to follow, not how it was written.
+    """
+    words = [word for sentence in sentence_words for word in sentence]
+    if not words:
+        return 0.0
+    hard = sum(1 for word in words if syllables(word) >= HARD_WORD_SYLLABLES)
+    return round(0.4 * (len(words) / len(sentence_words) + 100 * hard / len(words)), 2)

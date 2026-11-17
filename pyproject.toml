@@ -62,8 +62,9 @@ all = [
 
 [project.scripts]
 humanize-pl = "humanize_pl.cli:app"
-humanize-pl-flow = "humanize_pl.cli:app"
+humanize-pl-flow = "humanize_pl.flows.cli:app"
 humanize-pl-benchmark = "humanize_pl.benchmark:app"
+humanize-pl-eval = "humanize_pl.evaluation:app"
 humanize-pl-release-check = "humanize_pl.release_check:app"
 humanize-pl-ui = "humanize_pl.ui.app:main"
 
@@ -77,12 +78,12 @@ path = "humanize_pl/version.py"
 line-length = 100
 target-version = "py310"
 
-[tool.ruff.lint.flake8-bugbear]
-# typer declares CLI options as default values; that is the library's idiom,
-# not a shared mutable default.
-extend-immutable-calls = ["typer.Option", "typer.Argument"]
+[tool.ruff.lint]
+# The rule set this code is written against: ruff's long-standing default.
+# Newer ruff releases widen the unpinned default, so pin it for `ruff check .`
+# to mean the same thing on every machine.
+select = ["E4", "E7", "E9", "F"]
 
-[tool.ruff.lint.per-file-ignores]
-# A sample document written as "\n".join([...lines...]) reads as a document;
-# the f-string ruff proposes reads as one long line.
-"tests/*" = ["FLY002"]
+[tool.pytest.ini_options]
+# document-studio/ is a separate project with its own suite and environment.
+testpaths = ["tests"]

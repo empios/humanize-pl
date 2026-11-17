@@ -1,15 +1,13 @@
 # humanize-pl
 
-Narzędzie redakcji polskich tekstów z dwiema ścieżkami: ostrożną redakcją
-dla prawników oraz redakcją ogólną. Działa regułowo albo jako reguły +
-skonfigurowany model.
+Silnik kontroli i redakcji AI-generowanych polskich tekstów prawniczych,
+działający regułowo albo w trybie reguły + hostowany model.
 
 Projekt **nie używa `texthumanize`** i nie jest narzędziem do obchodzenia
 detektorów AI. Opcjonalnie korzysta z modelu pod kontrolowanym przez
 użytkownika endpointem OpenAI-compatible. Jego celem jest
-poprawienie języka przy zachowaniu treści. Ścieżka prawna obsługuje umowy,
-opinie, analizy, pisma i regulaminy; ogólna — m.in. artykuły, opisy i maile.
-Wskaźnik stylu jest pomocniczy, nie potwierdza autorstwa ani poprawności prawnej.
+bezpieczne przepisanie roboczego tekstu AI na precyzyjny język prawny:
+umowy, opinie, analizy, pisma, regulaminy i podobne dokumenty prawnicze.
 
 Działa warstwowo:
 
@@ -27,33 +25,19 @@ Działa warstwowo:
 
 ## Co nowego (niewydane)
 
-- profile redakcji ogólnej, poziomy ingerencji i limit skrócenia;
-  redakcja akapitu z kontekstem oraz odrębne uwagi redakcyjne,
-- przegląd i cofanie propozycji z ponownym pomiarem wybranej wersji,
-- maskowanie wszystkich pól zapytań, retencja lokalnych przebiegów,
-  anulowanie oraz wymaganie modelu także przy awarii podczas pracy,
-- kanoniczny benchmark, `uv.lock`, CI i diagnostyka `humanize-pl doctor`.
-  Odbiór na zatwierdzonym korpusie przez prawnika/czytelnika oraz wizualna
-  ocena DOCX pozostają do wykonania; zielone testy techniczne ich nie zastępują.
-
-- kategoria dokumentu najpierw według tytułu („UMOWA DZIERŻAWY”,
-  „Oświadczenie o rozwiązaniu…”), potem według słownictwa; dziewięć nowych
-  kategorii (dzierżawa, darowizna, pośrednictwo, powierzenie danych, licencja
-  i prawa autorskie, porozumienie, oświadczenie, klauzula informacyjna,
-  „umowa inna”). Historyczny pomiar sprzed bramki obecności sekcji:
-  dokumenty kancelarii, którym przypisywano cudzy szkielet:
-  9 → 1; dokumenty oznaczone przez wzorce jako niekompletne: 22 z 28 → 14 z 20.
-  Nie jest to wynik obecnej bramki dopisywania; pomiar bieżący opisano poniżej,
-- tryb „tekst ogólny” (`--document-type general`) dla tekstów spoza prawa:
-  artykułów, opisów, maili, prozy; osobny wzorzec i próg, bez szkieletów
-  i bez reguł, które psują tekst ludzki (patrz „Tekst ogólny” niżej),
+- rozpoznawanie pism przychodzących (`humanize_pl.replies`): rodzaj aktu,
+  nadawca, procedura i pouczenie wyznaczają możliwe odpowiedzi z terminem
+  i podstawą prawną (zob. „Odpowiedź na pismo przychodzące”),
 - frontend przeglądarkowy `humanize-pl-ui` (Gradio) dla obu przepływów, bez wiersza poleceń: wgrywanie plików, wynik opisany słowami, pobieranie poprawionych dokumentów i raportów,
 - rozpoznawanie trzech rodzin dokumentów: komunikacja z klientem, umowa,
   pismo procesowe lub urzędowe; wynik zawiera pewność i można go nadpisać
   przez `--document-type`,
 - nowy backend `--rewrite-backend hybrid`: reguły, a następnie hostowany model
   OpenAI-compatible tylko dla pozostałych problemów,
-- profile kancelarii z co najmniej 5 zatwierdzonych dokumentów, zanonimizowanych
+- rodzaj `--document-type general` dla tekstu spoza rodzin prawnych (e-mail,
+  list, notatka): model hostowany redaguje całe akapity, pod tymi samymi
+  kontrolami co zawsze i z kontrolą znaczenia NLI (zob. „Tekst ogólny”),
+- profile kancelarii z 5–20 zatwierdzonych dokumentów, zanonimizowanych
   przykładów, instrukcji YAML i opcjonalnego szablonu,
 - DOCX analizowany w kolejności OOXML, razem z tabelami; redakcja nie czyści
   akapitów i zachowuje runy, hiperłącza, zakładki oraz formatowanie mieszane,
@@ -81,6 +65,12 @@ Działa warstwowo:
 - rodziny i metryki liczone po obu stronach redakcji (`family_counts_before/after`,
   `metrics_before/after` w raporcie JSON), bez czego nie dało się powiedzieć,
   *co* się zmieniło, a jedynie *czy*,
+- mglistość FOG-PL (`fog_pl` w `metrics_before/after` i wiersz w raporcie PDF):
+  0,4 × (słowa na zdanie + odsetek słów co najmniej czterosylabowych), czyli
+  przybliżona liczba lat nauki potrzebna do zrozumienia tekstu. Nie wpływa na
+  wynik sygnału AI. Pomiar pokazał, że obecna redakcja nie upraszcza tekstu:
+  na dokumentach AI FOG-PL zmienia się z 13,53 na 13,59, bo usunięte rozbiegi
+  („Warto wskazać, że”) to krótkie słowa, a zdania nie są przebudowywane,
 - przykłady „było → jest” w raporcie PDF (`examples` w raporcie JSON), z sklejaniem
   wieloetapowych poprawek tego samego zdania w jedną parę,
 - ocena słowna przy każdej metryce („w normie”, „wyraźnie poniżej normy”) —
@@ -92,7 +82,29 @@ Działa warstwowo:
   pracy, z doczytaniem brakujących pomiarów ze starszych przebiegów DOCX
   i odtworzeniem obu stron pomiaru z gotowego arkusza XLSX,
 - przepływ XLSX zapisuje raport JSON domyślnie, tak jak DOCX (wcześniej tylko
-  po podaniu `--report`, więc zwykły przebieg nie zostawiał czego odtworzyć).
+  po podaniu `--report`, więc zwykły przebieg nie zostawiał czego odtworzyć),
+- kontrola struktury oparta na realnych wzorach: 47 blueprintów ogólnych (lista
+  sekcji kategorii, w 45 także ogólny dokument do wypełnienia) oraz 77 wzorów
+  precyzyjnych; dokument jest sprawdzany najpierw według blueprintu kategorii,
+  potem według wzoru, z którego powstał (zob. „Kontrola struktury”),
+- walidator NLI (silnik `hybrid`) korzysta domyślnie z
+  `MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7`, uczonego m.in. na
+  polskich danych NLI; poprzedni domyślny model nie widział polskiego. Na 318
+  polskich parach (zachowana treść wobec zmienionej modalności, przeczenia,
+  liczby lub ról stron) rozdziela je lepiej: AUC 0,971 wobec 0,948. Poza
+  werdyktem „sprzeczność” walidator wymaga, by redakcja i źródło wynikały z
+  siebie nawzajem z prawdopodobieństwem co najmniej 0,2: zmiana modalności
+  rzadko wygląda na sprzeczność, ale przestaje wynikać ze źródła (wykryte
+  zmiany modalności: 40 z 60 zamiast 17, odrzucone dobre redakcje: 3 ze 124
+  zamiast 1). Para dłuższa niż 512 tokenów (cały długi akapit i jego redakcja)
+  jest sprawdzana w dopasowanych częściach, z których każda musi przejść:
+  model czyta najwyżej 512 tokenów, więc koniec długiej pary szedł bez kontroli.
+  Na 20 długich redakcjach zdanie dopisane na końcu wychwycono w 19 przypadkach
+  zamiast 4, przy 17 zamiast 19 przyjętych dobrych redakcjach,
+- nowe kategorie `wniosek_pracowniczy` (wnioski do pracodawcy: urlop, dni
+  wolne, świadectwo pracy) i `umowa_o_zakazie_konkurencji`; ich wzory leżały
+  wcześniej pod wnioskiem procesowym i NDA, których lista kontrolna blokowała
+  je niesłusznie (wymagała m.in. oznaczenia sądu),
 
 ## Co nowego w 0.2.2
 
@@ -120,104 +132,32 @@ python -m pip install -e ".[ui]"
 humanize-pl-ui
 ```
 
-Otwiera się lokalna strona (`http://127.0.0.1:7860`). Najpierw wybierz
-ścieżkę „Dla prawników” albo „Ogólna” i backend. Zakładki przyjmują tekst,
-dokumenty Word oraz kolumnę arkusza Excel. W ścieżce prawnej dostępna jest
-dodatkowa sekcja ustawień gatunku, szkieletu, NLI i profilu kancelarii;
-przejście na ścieżkę ogólną ukrywa i wyłącza te ustawienia. Schemat
-pracy to wgranie plików, uruchomienie i pobranie wyników — poprawionych
+Otwiera się lokalna strona (`http://127.0.0.1:7860`) z trzema zakładkami:
+dokumenty Word, kolumna arkusza Excel i budowanie profilu kancelarii. Schemat
+pracy to wgranie plików, jeden przycisk i pobranie wyników — poprawionych
 dokumentów, `raport.pdf`, `flow-report.json` i `summary.csv`, spakowanych też
 razem w `wyniki.zip`.
 
 Strona pokazuje wynik zdaniem, nie samą liczbą: ile pozycji wymaga przeglądu,
-czy średni sygnał AI spadł i o ile. Tabela z metrykami oraz log silnika —
+czy zachowano liczby, daty, kwoty, przepisy i nazwy, ile wprowadzono poprawek,
+a na końcu, orientacyjnie, jak zmienił się wskaźnik stylu. Tabela z metrykami oraz log silnika —
 łącznie z informacją o degradacji silnika do `basic` — są zwinięte pod
 wynikiem. Ustawienia mają domyślne wartości identyczne z CLI; wszystko, co
-dotyczy lokalnych modeli walidacji i formatowania, siedzi w sekcji
-„Zaawansowane”. Aktywny backend oraz ograniczenia są opisane w wyniku.
+dotyczy modeli i formatowania, siedzi w sekcji „Zaawansowane”.
 
 Flagi: `--host`, `--port`, `--no-browser` oraz `--share` (publiczny tunel
-Gradio, domyślnie wyłączony). Reguły działają lokalnie; redakcja modelem
-i weryfikacja klauzul wysyłają fragmenty do endpointu z `.env`, lokalnego
-lub zewnętrznego. Kluczy API nie wpisuje się w przeglądarce.
-Pliki robocze i wyniki trafiają do `outputs/ui` względem katalogu uruchomienia.
-Ten katalog jest ignorowany przez Git. Sekcja „Pliki przebiegów i usuwanie danych”
-umożliwia usunięcie zakończonego przebiegu; aktywnych przebiegów nie usuwa.
-Przy rozpoczęciu kolejnej pracy usuwane są zakończone przebiegi starsze niż 7 dni.
-Gradio czyści własny cache co godzinę, usuwając pliki starsze niż dobę.
-Raporty zawierają źródło i propozycje potrzebne do cofania zmian. Usunięcie lokalne
-nie usuwa pobranych kopii ani danych, które zachował dostawca modelu.
+Gradio, domyślnie wyłączony). Liczenie jest lokalne; hostowany model dalej
+czyta konfigurację z `.env`, kluczy API nie wpisuje się w przeglądarce.
+Pliki robocze i wyniki trafiają do katalogu tymczasowego systemu, nigdy do
+folderu ze źródłowymi dokumentami.
 
-Przycisk „Anuluj bieżący przebieg” zatrzymuje pracę na najbliższym punkcie kontroli.
-Anulowanie przerywa również aktywne połączenie z modelem; jego odpowiedź
-nie jest publikowana. Ukończone wcześniej pliki partii pozostają dostępne i mogą
-posłużyć do `resume`. CLI obsługuje przerwanie przez Ctrl+C, a API przyjmuje
-`control=RunControl(on_progress=callback)`; inny wątek może wywołać `control.cancel()`.
-API sygnalizuje anulowanie przez `RunCancelled`, osobno od błędu dokumentu.
+## Gotowe przepływy
 
-Maskowanie obejmuje źródło, sąsiedztwo, uwagi, profile i inne pola wiadomości
-wychodzących do modelu. Rozpoznaje m.in. część nazwisk, adresy, e-maile i identyfikatory.
-To pseudonimizacja wzorcami, **nie gwarancja pełnej anonimizacji**; nietypowe zapisy
-mogą pozostać jawne. Wynik podaje, czy endpoint jest lokalnym adresem pętli zwrotnej,
-czy adresem sieciowym/zewnętrznym. Nie zapisuje klucza ani adresu endpointu.
-`--require-llm` odrzuca wynik także przy błędzie po udanym teście połączenia.
-
-### Przegląd propozycji
-
-Po przetworzeniu tekstu otwórz „Przegląd i cofanie zmian”. Dla plików wczytaj
-raport JSON i wybierz numer pozycji. Zaznacz propozycje do zachowania i zastosuj
-wybór. Powiązane zmiany w jednym akapicie tworzą jedną propozycję; dopiski są osobne.
-Tekst i raport są ponownie liczone lokalnie, bez powtórnego wywołania modelu/NLI.
-Zapisana ocena NLI pozostaje ważna dla dokładnie tej wersji tekstu, której dotyczyła.
-Wybór tworzący inną wersję oznacza ocenę jako `unknown` i wymaga ponownej weryfikacji;
-ostrzeżenia nie znikają przez samo zatwierdzenie propozycji.
-Zapis DOCX wymaga oryginału i przechodzi kontrolę struktury. W XLSX wybrana wersja
-jednej komórki trafia do nowej kolumny kopii oryginału, z zachowaniem jej stylu;
-pozostałe komórki i formuły pozostają jak w źródle.
-
-```bash
-humanize-pl review raport.json --source oryginal.docx -o wybrana-wersja.docx --reject ID_PROPOZYCJI
-humanize-pl review raport.json --source oryginal.docx -o zrodlo.docx --reject-all
-```
-
-Identyfikatory są w `documents[].review.proposals` (dla XLSX: `rows[]`).
-Przegląd zapisuje nowy JSON/PDF oraz decyzje accepted/rejected; odrzucenie wszystkich
-propozycji przywraca tekst źródłowy. Oryginału nie można nadpisać.
-
-## Jedno kanoniczne flow humanizacji
-
-Głównym i zunifikowanym wejściem do całego silnika jest polecenie `humanize-pl` (polecenie `humanize-pl-flow` pozostaje w pełni kompatybilnym aliasem):
-
-Ścieżkę wybiera `--track legal` albo `--track general`. W Pythonie:
-`humanize(tekst, track="general")`. Automatyczne rozpoznawanie gatunku
-dotyczy tylko ścieżki prawnej. Bez nowej opcji zachowane jest wcześniejsze
-zachowanie: `--document-type general` wybiera ogólną, pozostałe gatunki
-wybierają prawną. Sprzeczne jawne ustawienia kończą się błędem.
+`humanize-pl-flow` uruchamia wszystkie warstwy jedną komendą:
 
 ```
-Wejście (Tekst / DOCX / Folder / XLSX) → rozpoznanie gatunku i wzorca →
-diagnoza AI (przed) → reguły polskie → opcjonalny model hostowany →
-diagnoza AI (po) → bramka jakości i ton → audyt struktury i NLI →
-zapis z zachowaniem formatowania + raporty (PDF, JSON, CSV)
-```
-
-Niezależnie od tego, czy podasz tekst w cudzysłowie, pojedynczy dokument Word, cały folder czy arkusz Excel – wszystko przechodzi przez **dokładnie to samo flow**:
-
-```bash
-# 1. Zwykły tekst w terminalu
-humanize-pl "Podsumowując źródła prawa pracy tworzą system."
-
-# 2. Pojedynczy dokument .docx (z audytem formatowania i raportem PDF)
-humanize-pl umowa.docx -o umowa_poprawiona.docx
-
-# 3. Cały folder z dokumentami .docx
-humanize-pl docs/ -o wyniki/
-
-# 4. Arkusz Excel (wskazana kolumna z odpowiedziami AI)
-humanize-pl odpowiedzi.xlsx --column "Odpowiedź AI"
-
-# 5. Sprawdzenie klauzul umownych modelem przez NLI
-humanize-pl umowa.docx --blueprint szkielet.yaml --nli
+DOCX/XLSX → rozpoznanie gatunku → reguły → opcjonalny model →
+kontrola znaczenia → styl kancelarii → audyt dokumentu → wynik z ostrzeżeniami
 ```
 
 Pomiar sygnału **przed i po** redakcji jest tu istotą rzeczy. Wcześniej silnik
@@ -240,60 +180,6 @@ python -m humanize_pl.download_models --stanza --transformers --fluency --morfeu
 
 Bez nich flow zejdzie do `nlp` albo `basic` — widocznie, z instrukcją instalacji
 w nagłówku. `--require-models` zamienia degradację w błąd.
-
-Wynik i raport muszą mieć inne ścieżki niż źródła i niż pozostałe pliki
-wynikowe. Ochrona uwzględnia także aliasy i hardlinki. Każdy plik wynikowy
-powstaje najpierw w pliku roboczym w katalogu docelowym; po udanym zapisie
-zastępuje poprzedni wynik atomowo. Błąd pozostawia poprzedni plik i usuwa
-plik roboczy. Nie jest to transakcja obejmująca cały zestaw plików.
-`--resume` ponownie używa pozycji tylko przy zgodnych odciskach źródła,
-wyniku, ustawień, zasobów, kodu i zależności. Uszkodzony lub starszy zapis
-szczegółów powoduje ponowne przeliczenie. Odciski są przechowywane w istniejącym
-pliku szczegółów; nie powstaje osobny cache. Zmiany wag modelu zewnętrznego pod
-tym samym identyfikatorem nie da się wykryć — po takiej zmianie uruchom bez
-`--resume`. Dane konfiguracji endpointu nie trafiają do zapisu wznowienia.
-
-Propozycje hostowanego modelu przechodzą kontrolę znaczenia przed przyjęciem.
-Lokalny NLI musi potwierdzić wynikanie w obu kierunkach z pewnością co najmniej
-0,80; odpowiedź neutralna, błąd lub nieznana etykieta nie wystarczają.
-Bez NLI model może jedynie usunąć rozpoznaną ramę wstępną (np. „Warto
-podkreślić, że”) lub poprawić odstępy, zachowując pozostałą treść i kolejność.
-Zmiany negacji, warunków i kwantyfikatorów zatrzymuje dodatkowa kontrola
-stosowana też w regułach i operacjach rytmicznych. Może ona zatrzymać także
-poprawną parafrazę; nie jest gwarancją poprawności prawnej ani faktycznej.
-
-Ścieżka prawna ma dodatkowy limit niezależny od NLI. Zachowuje kolejność
-i formy rozpoznanych ról stron oraz ich czynności, podstawy odesłań, a przy
-rozpoznanych obowiązkach, warunkach, wyjątkach i terminach — treść zdania
-wraz z interpunkcją. Dopuszcza usunięcie wąskiej listy ram wstępnych oraz
-korektę odstępów. Oznacza to również odrzucanie części poprawnych parafraz,
-skrótów powtórzeń i zmian nominalizacji. Kontrola nie jest pełnym parserem
-prawa: nierozpoznane nazwy i konstrukcje nadal wymagają przeglądu człowieka.
-Te dodatkowe ograniczenia nie są nakładane na ścieżkę ogólną.
-
-Weryfikacja klauzul względem szkieletu jest osobną funkcją. Nieznany werdykt,
-brak oceny, błędny JSON i błąd endpointu dają `unknown`, nie `entailed`.
-Raport podaje liczbę wymagań sprawdzonych przez model, ocenionych na podstawie
-struktury oraz niesprawdzonych. Sekcja przekraczająca limit zapytania zostaje
-niesprawdzona; narzędzie nie ocenia jej na podstawie uciętej treści.
-Szkielet wybierasz identyfikatorem (np. `--blueprint umowa_uslug`) albo
-ścieżką YAML. Sam wybór uruchamia kontrolę struktury; ocenę klauzul modelem
-włącza osobno `--nli`. W ścieżce ogólnej kontrole prawnego szkieletu są pomijane.
-
-Audyt szkieletów uruchamiasz przez `python tools/audit_blueprints.py`.
-Bez dodatkowych argumentów mierzy dostępne korpusy AI lokalnie i wypisuje
-JSON, bez tworzenia plików ani wywoływania modelu. Opcjonalny argument
-katalogu wskazuje kompletne, zatwierdzone dokumenty kancelarii.
-`--presence-model` jawnie włącza osobny pomiar bramki obecności — dokumenty
-po maskowaniu trafiają wtedy do endpointu z `.env`.
-
-Wynik rozdziela klasyfikację, zgłoszenia wzorców, testy usuniętych sekcji
-oraz decyzje bramki modelowej. Podaje odciski zasobów i korpusu, liczbę
-pominiętych przypadków i ograniczenia. Pomiar lokalny z 23.09.2026 na
-64 tekstach z `ai_v2` i `ai_bielik`: kategoria zgodna z manifestem w 48/64,
-wykryte 157/242 wyciętych sekcji. Metoda nie mogła wyciąć kolejnych 182
-sekcji. To pomiar wzorców na korpusie AI, bez oceny realnego modelu i bez
-pomiaru fałszywych alarmów na zatwierdzonych dokumentach prawnika.
 
 Każdy przebieg zaczyna się od nagłówka mówiącego, co faktycznie się załadowało:
 
@@ -338,14 +224,23 @@ humanize-pl-flow docx docs/ -o wyniki/ \
   --require-llm --require-renderer
 ```
 
+Tak wygląda wynik w terminalu (tu: przepływ XLSX, cztery teksty z
+`docs_tests/ai_generated`, same reguły bez modelu):
+
 ```
-do przeglądu ai_legal_03_esej_prawo_pracy.docx: sygnał 0.72 → 0.60, zmian 11
-do przeglądu claude_real_01.docx: sygnał 0.70 → 0.63, zmian 1
+do przeglądu wiersz 2: treść zachowana, zmian 7, zwroty 12 → 8, status ready_with_warnings, wskaźnik stylu (orientacyjnie) 1.00 → 0.74
+do przeglądu wiersz 3: treść zachowana, zmian 6, zwroty 8 → 7, status ready_with_warnings, wskaźnik stylu (orientacyjnie) 1.00 → 0.89
+do przeglądu wiersz 4: treść zachowana, zmian 8, zwroty 15 → 12, status ready_with_warnings, wskaźnik stylu (orientacyjnie) 1.00 → 1.00
+do przeglądu wiersz 5: treść zachowana, zmian 5, zwroty 6 → 4, status ready_with_warnings, wskaźnik stylu (orientacyjnie) 0.97 → 0.51
 
 Podsumowanie
-  pozycje: 5  poprawnie: 5  błędy: 0
-  do przeglądu: 5
-  średni sygnał: 0.52 → 0.46 (delta -0.06)
+  pozycje: 4  poprawnie: 4  błędy: 0
+  treść zachowana: 4 z 4
+  do przeglądu: 4
+  zastosowane zmiany: 26
+  wychwycone zwroty: 41 → 31
+  gotowe: 0  gotowe z ostrzeżeniami: 4
+  wskaźnik stylu (orientacyjnie): 0.99 → 0.78
 ```
 
 Powstaje: `<nazwa>_humanized.docx` dla każdego pliku, `summary.csv`,
@@ -354,48 +249,9 @@ metrykami i werdyktem bramki oraz `raport.pdf` — opisowy raport po polsku dla
 odbiorcy nietechnicznego (patrz niżej). Błąd jednego pliku nie zatrzymuje
 pozostałych; komenda kończy się kodem `1`, jeżeli którykolwiek zawiódł.
 
-Trzy czynności mają osobne ustawienia i wyniki:
-
-- Redakcja istniejącego tekstu jest domyślnie włączona; `--no-rewrite` ją wyłącza.
-- Kontrola kompletności według szkieletu jest domyślnie włączona w ścieżce
-  prawnej; `--no-check-completeness` ją wyłącza. `--nli` w komendzie `run`
-  dodaje kontrolę klauzul modelem. Wynik nie potwierdza poprawności prawnej.
-- Dopisywanie jest **domyślnie wyłączone**. `--draft-missing` włącza model
-  do uzupełniania brakujących sekcji, także przy `--no-rewrite` i backendzie
-  redakcji `rules`. Wymaga kontroli kompletności i skonfigurowanego modelu.
-  Działa dla tekstu i DOCX; XLSX odrzuca takie żądanie. Każdy dopisek wymaga
-  przeglądu prawnika; pełna treść jest w rejestrze JSON/PDF i wyniku tekstowym
-  UI, choć sam dokument nie oznacza dopisków.
-
-Te same opcje są w formularzu i API: `no_rewrite`, `check_completeness`,
-`draft_missing`. Wynik API ma `operations` i `drafted_sections`; dla partii
-są one przy każdej pozycji w `payload`. Samą kontrolę uruchamia
-`humanize-pl run umowa.docx --no-rewrite --no-pdf`, a samo dopisywanie
-`humanize-pl run umowa.docx --no-rewrite --draft-missing --no-pdf`.
-
-`--format-policy audit` zachowuje
+`--no-rewrite` daje samą diagnozę i bramkę. `--format-policy audit` zachowuje
 wygląd i tylko go kontroluje, a `normalize` stosuje neutralny szablon A4 albo
 szablon przekazany przez `--template`. Oryginał nigdy nie jest nadpisywany.
-
-Ochrona DOCX obejmuje całe akapity z hiperłączami, odsyłaczami do przypisów,
-zakładkami, komentarzami, polami, śledzonymi zmianami, kontrolkami, obiektami
-i ręcznymi podziałami/tabulatorami. Chronione są też akapity wewnątrz
-wieloakapitowych zakresów. Raport `formatting.skipped_units` podaje lokalizacje
-i przyczyny pominięcia redakcji, a `excluded_parts` — części poza pomiarem
-tekstu, takie jak nagłówki, stopki, przypisy i komentarze. Pozostałe akapity
-i tekst w tabelach można redagować bez spłaszczania formatowania runów.
-
-Kontrola po zapisie porównuje tekst, numerację, cele odsyłaczy, treść
-chronionych elementów i formatowanie. Przy niezgodności wynik jest kopią
-źródła, a pomiary, bramka i uwagi opisują tę kopię. Dopiski, które nie
-trafiły do pliku, pozostają w raporcie jako propozycje. Nowe sekcje nie są
-wstawiane do tabel ani chronionych zakresów. Sama diagnoza (`--no-rewrite`,
-bez dopisywania i normalizacji) tworzy raport, ale nie nowy DOCX.
-
-Kontrola XML nie potwierdza wyglądu stron. Render wymaga LibreOffice;
-`--require-renderer` wymusza jego dostępność. Bieżące testy struktury wykonano
-na syntetycznych dokumentach; wizualny odbiór reprezentatywnych dokumentów
-pozostaje do wykonania.
 
 #### Hostowany model OpenAI-compatible
 
@@ -410,19 +266,121 @@ HUMANIZE_PL_LLM_TIMEOUT_SECONDS=120
 ```
 
 `BASE_URL` może kończyć się na `/v1` albo na pełnym
-`/v1/chat/completions`. Przed partią wykonywany jest test możliwości endpointu.
+`/v1/chat/completions`. `HUMANIZE_PL_LLM_DISABLE_THINKING=1` prosi model
+rozumujący (Qwen, MiMo) o odpowiedź bez etapu „myślenia”: lokalny model 9B
+zużywał wtedy ok. 30% mniej tokenów na fragment. Domyślnie wyłączone, bo
+ścisły endpoint OpenAI odrzuca nieznane pole. Przed partią wykonywany jest test możliwości endpointu.
 Do modelu trafiają tylko zanonimizowane fragmenty z sąsiednim kontekstem,
 profilem gatunku, profilem kancelarii i krótkim konspektem. Nie trafia cały
 DOCX ani jego metadane. Nazwy, kwoty, daty, przepisy, identyfikatory i cytaty
 są zastępowane placeholderami, a następnie przywracane lokalnie.
 
+Do modelu trafiają zdania z uwagami detektora oraz zdania dłuższe niż 35 słów,
+z prośbą o podział albo uproszczenie bez zmiany treści: detektor szuka
+nawyków starszych modeli, a zrozumiałość tekstu prawniczego psują przede
+wszystkim długie zdania.
+
+Propozycję modelu sprawdzają te same lokalne walidatory co reguły (modalność,
+przeczenia, czynności, liczby, role stron, przepisy, daty, kwoty, orzeczenie)
+oraz pisownia: słowo, którego Morfeusz2 nie zna, a którego nie było w źródle,
+odrzuca propozycję, a w naprawie model dostaje je wprost. Na 49 tekstach model
+9B napisał tak 6 słów („objmie”, „wznowiamy”, „uiszczyłem”), które wcześniej
+przechodziły. Przechodzą słowa źródła, także odmienione („backend” →
+„backendu”), skrótowce, skróty bez kropki („itp”) i wyrazy z wielkiej litery
+w środku zdania (nazwy); bez Morfeusza2 kontrola nie działa.
+Czynności to czasowniki, którymi pismo działa w czasie teraźniejszym
+(„wzywam”, „wnoszę”, „żądam”, „oświadczam”, „wypowiadam”, „odwołuję się”):
+redakcja nie może zamienić wezwania w prośbę ani usunąć oświadczenia, choćby
+zachowała wszystkie liczby i modalność. Propozycja
+odrzucona wraca do modelu raz, z konkretną wskazówką, co poprawić (np.
+„Zachowaj modalność źródła…”); jeżeli i druga nie przejdzie kontroli, zostaje
+tekst źródłowy. Raport liczy próby naprawy (`repair:<kontrola>`) i propozycje
+przyjęte dopiero po niej (`accepted:after_repair`).
+
+Przyjęta propozycja przechodzi jeszcze raz przez warstwę reguł, za tymi samymi
+walidatorami: model potrafi przywrócić to, co reguły właśnie usunęły (w 6 ze
+106 przyjętych akapitów wpisał z powrotem „niniejszego wezwania” w miejsce
+„tego wezwania”). Raport wymienia reguły, które poprawiły tekst po modelu.
+
 Przy timeoutach, HTTP 429 i 5xx klient wykonuje najwyżej dwie ponowne próby.
-`HUMANIZE_PL_LLM_TIMEOUT_SECONDS` ogranicza łączny czas zapytania, ponownych prób
-i uzgadniania formatu odpowiedzi. Po jego przekroczeniu połączenie jest zamykane,
-także gdy serwer stale przesyła małe fragmenty odpowiedzi.
 Potem wynik regułowy jest zapisywany jako `ready_with_warnings`;
 `--require-llm` zamienia to w błąd. URL, token, pełne prompty i surowe
 odpowiedzi nie trafiają do logów ani raportów.
+
+#### Tekst ogólny (`--document-type general`)
+
+```bash
+humanize-pl-flow docx maile/ -o wyniki/ \
+  --document-type general --rewrite-backend hybrid
+```
+
+Dla tekstu spoza rodzin prawnych: e-maila, listu, notatki. Cel to naturalny,
+jasny tekst, a nie ominięcie detektora AI. Rodzaj wybiera tylko użytkownik;
+automatyczne rozpoznanie nigdy go nie zwraca, więc dokument prawny nie trafi
+tu przypadkiem. Różnice wobec rodzin prawnych:
+
+- do modelu trafia każdy akapit prozy w całości (krótsze niż 12 słów, jak
+  nagłówki, adresy i podpisy, zostają bez zmian), z poleceniem przebudowy
+  zdań, a nie tylko zdania z uwagami detektora,
+- obowiązują te same kontrole treści co zawsze: liczby, daty, kwoty,
+  przepisy, nazwy, modalność, przeczenia, czynności, strony i pisownia; akapit, który ich
+  nie przejdzie (także po jednej próbie naprawy), zostaje bez zmian,
+- nie obowiązują trzy kontrole pisane pod prozę prawniczą: obecność orzeczenia
+  w każdym zdaniu, zakaz dzielenia zdania z „oraz” i zachowanie pojęć
+  prawnych. Na 1573 parach „szkic AI → tekst człowieka” odrzucały naturalne
+  pisanie („Cena adekwatna do świadczonych usług.”, zdanie podzielone na dwa);
+  bez nich przechodzi 721 par zamiast 479, przy tych samych odrzuceniach za
+  wartości, modalność i przeczenia. Raport nie wymienia ich jako sprawdzonych,
+- dochodzi kontrola znaczenia NLI: akapit i redakcja muszą wynikać z siebie
+  nawzajem. Oceniany jest tylko zmieniony fragment: zdania, którymi oba teksty
+  zaczynają się i kończą bez zmian, są pomijane (czytany w całości, długi akapit
+  pełen liczb był dla modelu NLI „neutralny” nawet wobec samego siebie), a
+  dopisane lub usunięte zdanie jest oceniane wobec całości. Ładowana jest sama,
+  bez reszty silnika `hybrid`; bez dodatku
+  `[transformers]` przebieg idzie dalej z ostrzeżeniem, a `--require-models`
+  zamienia to w błąd,
+- warstwa reguł działa z profilem komunikacji z klientem, a dokument DOCX
+  dostaje jego rodzinę stylów.
+
+Pomiar na 25 projektach pism (modele Claude i próbki AI), z lokalnym modelem 9B:
+
+| | dokumenty bez utraty wartości, modalności i stron | zredagowane akapity |
+|---|---|---|
+| cały dokument naraz, bez kontroli | 13 z 25 | — |
+| tekst ogólny, bez NLI | 25 z 25 | 114 ze 196 |
+| tekst ogólny, z NLI | 25 z 25 | 106 ze 196 |
+
+NLI odrzucił m.in. dopisane przez model twierdzenie („…ma znaczenie dla
+ustalenia terminu płatności” w wezwaniu, które o terminie nie mówiło) oraz
+usunięte „Działając w imieniu własnym”. Nie wychwycił osłabienia „Wzywam do
+zapłaty” do „proszę dokonać”; tę zmianę odrzuca teraz kontrola czynności.
+Przegląd człowieka pozostaje potrzebny.
+Mglistość FOG-PL prawie się nie zmienia (13,7 → 13,6).
+
+Na 24 e-mailach, listach i notatkach napisanych przez Claude Haiku (zaproszenia,
+oferty, przypomnienia o płatności, reklamacje, rezygnacje, komunikaty)
+redakcję przeszło 57 z 86 akapitów, wszystkie 24 teksty zachowały wartości,
+modalność, czynności i strony, a FOG-PL spadł z 13,3 do 12,8. Polecenie
+nastawione wprost na krótsze zdania i krótsze słowa nie pomogło (12,7 przy
+46 z 86 przyjętych akapitów): zdania tych tekstów mają średnio 11 słów, a
+mglistość tworzą głównie długie wyrazy, których model 9B prawie nie zamienia.
+
+Na tekstach pisanych przez ludzi, 155 wiadomościach, które wikipedyści
+napisali do siebie na stronach dyskusji, i 40 opiniach klientów Allegro (oba
+źródła na licencji CC BY-SA 4.0, korpus zostaje lokalnie), redakcję przeszło
+105 z 222 i 18 z 40 akapitów, a wszystkie 195 tekstów zachowało wartości,
+modalność, czynności i strony. Odrzucenia to głównie zmieniona modalność
+(model zamienia „mógłbyś” na tryb rozkazujący), NLI, przeczenia i liczby.
+Model usuwa emotikony („;)”, „:)”); kontrola nawiasów ich nie liczy.
+
+```bash
+python tools/fetch_wiki_talk.py --messages 150
+python tools/fetch_allegro_reviews.py --split test
+```
+
+Sprawdzony i
+odrzucony wariant z tłumaczeniem PL → EN → PL (TranslateGemma 4B): już sam
+przekład w obie strony gubił liczby i przepisy we wszystkich 25 dokumentach.
 
 #### Profil kancelarii
 
@@ -438,40 +396,19 @@ preferowane terminy, zakazane zwroty, skróty i krótkie zanonimizowane
 przykłady. Nie kopiuje pełnych spraw i nie służy do kalibracji detektora
 „tekstu ludzkiego”.
 
-Publiczne API oferuje jedną, spójną funkcję `humanize()` obsługującą wszystkie typy wejść:
-
-```python
-from humanize_pl import humanize, FlowResult, FlowSettings
-
-# 1. Zwykły tekst
-result = humanize("Podsumowując źródła prawa pracy tworzą system.")
-print(result.text)
-print(f"Sygnał AI: {result.signal_before:.2f} → {result.signal_after:.2f}")
-
-# 2. Pojedynczy dokument Word (DOCX)
-result = humanize("umowa.docx", "umowa_poprawiona.docx")
-
-# 3. Folder dokumentów DOCX
-result = humanize("dokumenty/", "wyniki/")
-
-# 4. Arkusz Excel (XLSX)
-result = humanize("odpowiedzi.xlsx", column="Odpowiedź AI")
-
-# 5. Weryfikacja semantyczna klauzul ze szkieletem (NLI)
-result = humanize("umowa.docx", blueprint="szkielet.yaml", nli=True)
-```
-
-Typy publiczne są dostępne bezpośrednio z pakietu:
+Publiczne typy API są dostępne bezpośrednio z pakietu:
 
 ```python
 from humanize_pl import (
     DocumentType, RewriteBackend, StyleProfile,
     FormattingReport, FormatPolicy, ReadinessStatus,
-    FlowResult, FlowSettings, GateVerdict,
 )
 ```
 
-Dotychczasowe `humanize_text()` i `process_docx()` zachowują pełną kompatybilność swoich sygnatur.
+Dotychczasowe `humanize_text()` i `process_docx()` zachowują swoje sygnatury.
+`LegalReviewProfile.legal_ai_review` pozostaje aliasem kompatybilności;
+nowe przepływy używają jawnego gatunku i nie oceniają umów ani komunikacji
+z klientem profilem uzasadnień SAOS.
 
 ### Kolumna w arkuszu XLSX
 
@@ -491,12 +428,13 @@ zamienione fragmenty są wyróżnione na zielono i pogrubione. Dopisane kolumny
 mają czytelne nagłówki, dobrane szerokości i zawijanie dłuższej treści; format
 kolumn źródłowych pozostaje bez zmian.
 
-Przy redakcji powstają trzy statyczne arkusze informacyjne:
+Przy redakcji powstają trzy arkusze informacyjne:
 
 - `Do akceptacji` — każda faktycznie zastosowana poprawka jako osobny wiersz:
   `Było`, `Jest po poprawce`, uzasadnienie, poziom ryzyka, wykonane kontrole,
-  bez pól do ręcznego wypełniania. Fragment usunięty lub zastąpiony jest
-  czerwony i przekreślony, a dodany lub poprawiony jest zielony i pogrubiony.
+  kolumna `Decyzja` (lista: „przyjmuję” / „odrzucam”) i identyfikatory reguł,
+  które dały poprawkę. Fragment usunięty lub zastąpiony jest czerwony i
+  przekreślony, a dodany lub poprawiony jest zielony i pogrubiony.
 - `Uwagi bez poprawki` — każde wykrycie nadal obecne po redakcji, z cytatem,
   zaleceniem i wyjaśnieniem, dlaczego pozostało nierozwiązane.
 - `Podstawa analizy` — prosty opis reguł, korpusu referencyjnego, przebiegu,
@@ -506,6 +444,16 @@ Przy redakcji powstają trzy statyczne arkusze informacyjne:
 Arkusz `Do akceptacji` otwiera się jako pierwszy widok. Raport rozróżnia
 wykrycie od poprawki, więc identyczne teksty źródłowy i wynikowy oznaczają
 jawnie „uwaga do ręcznej decyzji”, a nie niewidoczną zmianę.
+
+Decyzje z przejrzanych arkuszy zbiera komenda:
+
+```bash
+humanize-pl-flow decisions wyniki_1.xlsx wyniki_2.xlsx
+```
+
+Dla każdej reguły podaje liczbę przyjętych, odrzuconych i nierozstrzygniętych
+poprawek oraz odsetek przyjętych, czyli trafność reguły w ocenie recenzentów.
+Poprawka złożona z kilku reguł liczy się dla każdej z nich.
 
 Obok arkusza wynikowego powstają `<nazwa>_flow_raport.json` (pełny raport
 przebiegu, tak jak w przepływie DOCX) i `<nazwa>_flow_raport.pdf`. Ścieżkę
@@ -531,9 +479,13 @@ Dlatego oba przepływy zapisują dodatkowo `raport.pdf` (DOCX) albo
 `<nazwa>_flow_raport.pdf` (XLSX) — po polsku, bez żargonu. Obie wersje mają ten
 sam układ i są statycznym raportem informacyjnym, a nie formularzem do wypełniania:
 
-1. **Najważniejsze liczby** — wskaźnik przed → po na narysowanej skali
-   z zaznaczonym progiem przeglądu, liczba zmian, ile pozycji zostaje do
-   przejrzenia, plus jedno zdanie podsumowania.
+1. **Najważniejsze liczby** — najpierw to, na czym można polegać: w ilu
+   pozycjach zachowano liczby, daty, kwoty, przepisy i nazwy, ile zwrotów
+   wychwycono przed i po, ile poprawek wprowadzono i ile pozycji zostaje do
+   przejrzenia; na końcu, drobnym drukiem, wskaźnik stylu „orientacyjnie”.
+   Zdanie podsumowania idzie w tej samej kolejności. Wskaźnik stylu nie
+   otwiera raportu, bo na współczesnych modelach słabo odróżnia tekst AI od
+   ludzkiego (zob. „Kalibracja”); jego skala z progiem jest w części 5.
 2. **Wykaz zastosowanych zmian** — komplet faktycznie zastosowanych poprawek.
    Każda ma własną kartę: czerwone przekreślenie pokazuje dokładnie tekst usunięty,
    zielone pogrubienie tekst dodany, a dalej są rodzaj zmiany, ryzyko,
@@ -634,8 +586,8 @@ Detekcja działa w każdym trybie, także w `conservative`, gdzie żadna reguła
 przepisująca nie jest uruchamiana. Sekcja `detection` w raporcie JSON zawiera:
 
 - `ai_signal_score` — nasycająca się ważona gęstość sygnałów (0–1),
-- `score_is_calibrated` — dziś zawsze `false`; próg wymaga ludzkiego korpusu
-  referencyjnego polskich tekstów prawniczych,
+- `score_is_calibrated` — `true`, gdy wynik odniesiono do profilu ludzkiego
+  (dziś tylko uzasadnienia SAOS; zob. „Kalibracja”),
 - `families` — rodziny sygnałów z gęstością na 1000 słów,
 - `findings` — pojedyncze znaleziska ze spanami znakowymi i dowodem,
 - `findings_rewritable` / `findings_detect_only` — ile znalezisk ma za sobą
@@ -660,359 +612,196 @@ Odtworzenie:
 
 ```bash
 python tools/fetch_saos_corpus.py --pages 40 --start-date 2018-01-01 --court-type COMMON
-python tools/split_corpus.py --corpus docs_tests/corpus/saos.jsonl
-python tools/build_reference_profile.py --corpus docs_tests/corpus/saos_train.jsonl \
+python tools/build_reference_profile.py --corpus docs_tests/corpus/saos.jsonl \
   --name saos_common_2018_2024 --genre court_reasoning
 ```
 
-Podział na train i holdout jest deterministyczny — przynależność wynika z hasha
-identyfikatora orzeczenia, nie z losowania. Dzięki temu dociągnięcie kolejnych
-orzeczeń nie przenosi żadnego dokumentu na drugą stronę i profil nie zaczyna
-po cichu uczyć się na własnym holdoucie.
+Pierwszy punkt pracy zmierzono na 599 odłożonych uzasadnieniach wobec 9
+dokumentów AI pełnych nawyków starszych modeli: przy progu 0,25 recall 100%,
+0% fałszywych alarmów. Pomiar powtórzony na 300 odłożonych uzasadnieniach
+wobec 171 przeredagowań uzasadnień SAOS, 48 projektów pism i 24 e-maili
+napisanych przez Claude Haiku, Sonnet i Opus pokazuje coś innego:
 
-Punkt pracy zmierzony na **korpusie dokumentów pełnej długości** (27 pozycji
-z `tools/build_ai_corpus.py`, 244–2778 słów, jeden model, trzy rejestry
-polecenia i trzy temperatury) wobec 300 odłożonych uzasadnień i 51 ludzkich
-umów:
+| próg | fałszywe alarmy (uzasadnienia) | recall: przeredagowania | projekty pism | e-maile |
+|------|------|------|------|------|
+| 0.10 | 9,7% | 59,6% | 68,8% | 95,8% |
+| 0.14 | 4,7% | 32,7% | 33,3% | 66,7% |
+| 0.20 | 1,7% | 9,9% | 4,2% | 12,5% |
+| 0.25 | 0,0% | 1,8% | 0,0% | 0,0% |
 
-| rodzina | próg | recall AI | FPR |
-|---------|------|-----------|-----|
-| pisma (`filing_official`) | **0.15** | 100% | 3,0% |
-| pisma | 0.20 | 56% | 0,7% |
-| pisma | 0.25 | 22% | 0,0% |
-| umowy (`contract`) | **0.08** | 78% | 5,9% |
-| umowy | 0.12 i wyżej | 0% | 0,0% |
+W obrębie gatunku wskaźnik wciąż porządkuje teksty (AUC 0,84 dla przeredagowań
+wobec uzasadnień; 0,75, gdy uzasadnienia przyciąć do długości przeredagowań),
+ale niemal w całości dzięki zmienności długości zdań (sama daje 0,87).
+`humanize-pl-eval` śledzi obie separacje jako bramkowane metryki
+(`detector_auc_rewrites`, `detector_auc_drafts`), więc zmiana detektora jest
+mierzona, a nie zgadywana. Rodziny zwrotów mają AUC bliskie 0,5: współczesne modele tych
+zwrotów już nie piszą. Projekty umów i pism wobec 49 ludzkich wzorów: AUC 0,56,
+czyli dla tych gatunków wskaźnik nie odróżnia tekstu AI od ludzkiego.
 
-**Ten punkt pracy jest nieaktualny.** Pomiar liczył markdownowe linie `---`
-i separatory tabel `|---|` jako angielską pauzę: z 268 „pauz” w korpusie 259
-było markdownem, a 9 pauzami. Po poprawce detektora, przy tych samych progach:
-
-| rodzina | próg | recall AI | FPR |
-|---------|------|-----------|-----|
-| pisma | 0.15 | 50% (6/12) | 2,4% (592 odłożone uzasadnienia) |
-| umowy | 0.08 | **0% (0/12)** | – |
-
-(592 = część odłożona obecnego podziału na dysku korpusu 2396, 1804/592, na którym zbudowano profil SAOS; liczba 599 w starszym pomiarze progu 0.25 pochodzi z wcześniejszego podziału 1797/599.)
-
-Drugi model, na tekście bez markdownu (`tools/compare_generators.py`): qwen-local pisma 7/12, umowy 0/12;
-Bielik 7B pisma 6/12, umowy 3/12 (wyniki umów 0,037–0,134). Bielik pisze o połowę krócej (mediana 414
-słów), a poniżej ok. 600 słów wynik jest mniej stabilny. Kontrola długości nie rozstrzyga: dokumenty qwena
-przycięte do długości Bielika wypadają niżej (pisma 0/12, umowy 1/12), ale przycięcie zostawia sam
-początek dokumentu, w którym jest mało prozy.
-
-Wyniki umów AI spadły do 0,016–0,061, poniżej ludzkich (korpus uzupełniony
-do 32 dokumentów, po dogenerowaniu pięciu, które wcześniej padły na limicie czasu). Wykrywanie umów
-opierało się więc na markdownie, nie na stylu. Progi czekają na ponowny
-pomiar; markdown wykrywa teraz osobna warstwa (patrz „Ślady narzędzia” niżej).
-
-Flaga `needs_review` w raporcie oznacza „dokument wart przejrzenia przez
-człowieka", nigdy „napisane przez AI".
-
-**Wcześniejsze wydania podawały próg 0.25 przy 86% wykrycia i to nie było
-prawdą dla realnych dokumentów.** Tamten pomiar wykonano na tekstach
-89–160-słowowych, gdzie wynik jest zawyżony i niestabilny: przycięcie
-dokumentu do 150 słów podwaja jego wynik, i dotyczy to również tekstu
-ludzkiego. Strona ludzka była zawsze pełnowymiarowa, więc porównywano
-populację zawyżoną ze stabilną. Na dokumentach pełnej długości próg 0.25
-łapie 22% pism i ani jednej umowy.
-
-**Umowy pozostają słabym przypadkiem** i liczba to mówi: przy progu 0.08
-populacje nadal zachodzą (AI 0,064–0,114, ludzie do 0,114). Powód jest
-strukturalny — patrz niżej.
-
-**Populacje stykają się**: maksimum ludzkie 0,2309, minimum AI 0,1919. Wcześniej
-dokumentacja podawała rozłączność (0,215 vs 0,332) i było to prawdą wyłącznie
-dlatego, że po stronie AI liczono wtedy również osiem tekstów **napisanych ręcznie
-tak, aby zawierały wykrywane wzorce**. Zmierzone osobno: te osiem dostaje 0,318–0,682,
-a siedem realnych wyjść modelu 0,192–0,335. Rozłączność była w znacznej części
-artefaktem fixture'ów.
-
-Trzy zastrzeżenia, które trzeba czytać razem z tymi liczbami:
-
-1. Strona ludzka jest wiarygodna, strona AI **nie** — to 7 dokumentów.
-   Potrzebny jest korpus AI z różnymi promptami i modelami.
-2. Obie strony różniły się nie tylko autorstwem, ale i **gatunkiem**
-   (uzasadnienia vs opinie, umowy, pisma). To zastrzeżenie zostało zmierzone —
-   patrz „Profil umów" niżej.
-3. Strony różnią się też **długością**, i to o rząd wielkości: dokumenty AI mają
-   89–160 słów, uzasadnienia — tysiące. Każdy sygnał rodzinowy jest częstością
-   na 1000 słów, więc w tekście 89-słowowym jedno wystąpienie to 11,2 na 1000
-   i nasyca sygnał samo z siebie. Nowy korpus AI musi składać się z dokumentów
-   pełnej długości, inaczej mierzymy długość zamiast autorstwa.
-
-### Jedenaście z czternastu rodzin nie działa na dokumentach
-
-Potwierdzone na drugim modelu: w korpusie Bielika (24 umowy i pisma) milczą
-te same rodziny co u qwena, łącznie na 48 dokumentach dwóch modeli. To cecha
-gatunku, nie jednego generatora.
-
-Zmierzone na 32 dokumentach korpusu, z rotacją po rejestrach i temperaturach.
-Kolumny mówią, w ilu dokumentach dana rodzina w ogóle się pojawiła:
-
-| rodzina | eseje i opinie (n=8) | umowy, pozwy, regulaminy, wezwania, pisma (n=24) |
-|---------|----------------------|--------------------------------------------------|
-| `nominalization` | 8/8 | **22/24** |
-| `tricolon` | 7/8 | 14/24 |
-| `transition_marker` | 0/8 | 4/24 |
-| `typography_artifact` | 2/8 | **1/24** |
-| `repeated_opening` | 3/8 | **0/24** |
-| `vague_reference` | 2/8 | **0/24** |
-| `discourse_frame` | 1/8 | **0/24** |
-| `abstract_frame` | 1/8 | **0/24** |
-| `summary_frame` | 1/8 | **0/24** |
-| `empty_emphasis` | 1/8 | **0/24** |
-| `antithesis` | 1/8 | **0/24** |
-| `practical_implication` | 1/8 | **0/24** |
-| `balanced_pair` | 0/8 | **0/24** |
-| `concessive_reversal` | 0/8 | **0/24** |
-
-Ramy retoryczne — połowa zestawu reguł — **ani razu** nie odpaliły na umowie,
-pozwie, regulaminie, wezwaniu ani piśmie urzędowym. Żyją wyłącznie w prozie
-eseistycznej, bo gatunek dokumentu na nie nie pozwala: umowa nie zaczyna
-paragrafu od „Warto wskazać, że". Wcześniejsza wersja tej tabeli podawała
-angielską pauzę we wszystkich dokumentach; były to markdownowe linie `---`.
-Stylistycznie model zdradza się tu tylko gęstością nominalizacji
-i wyliczeniami, a te występują też u ludzi. Raport mówi przy każdej partii,
-których zwrotów brak niczego nie dowodzi (`humanize_pl/data/family_activity.json`).
-
-### Ślady narzędzia
-
-Tym, co naprawdę odróżnia surowy tekst z modelu od dokumentu kancelarii, jest
-częściej kanał niż styl, ale który ślad, zależy od modelu. Zmierzone na dwóch
-korpusach po 32 dokumenty z tej samej siatki poleceń wobec 2396 orzeczeń:
-
-| ślad | qwen-local | Bielik 7B | orzeczenia | co robi silnik |
-|------|-----------|-----------|------------|----------------|
-| pogrubienie `**…**` | 30/32 | 0/32 | 1 | usuwa znaczniki |
-| nagłówek `#` | 30/32 | 0/32 | 0 | usuwa znaczniki |
-| linia `---` | 29/32 | 0/32 | 0 | zamienia na pustą linię |
-| tabela markdown | 6/32 | 0/32 | 0 | zgłasza |
-| zwrot do użytkownika, zastrzeżenie „nie stanowi porady prawnej” | 26/32 | 25/32 | 2 | zgłasza, blokuje „gotowy” |
-| pole `[data]`, `[kwota]` | 21/32 | 23/32 | 2 | zgłasza, blokuje „gotowy” |
-
-Markdown to nawyk jednego modelu (albo jego szablonu czatu), nie wyjścia modeli
-w ogóle: Bielik nie napisał ani jednego znacznika. Wspólne obu modelom są pola
-do uzupełnienia i zwroty do użytkownika, tyle że innymi słowami: wzorzec
-zbudowany na qwenie łapał je u Bielika w 11 z 32 dokumentów, po dopisaniu
-jego form („Oto przykładowy…”, „może wymagać dostosowania”) w 25. Bielik
-pisze też o połowę krócej (mediana 414 słów wobec 885).
-
-Te ślady nie wchodzą do wskaźnika stylu (`humanize_pl/artifacts.py`):
-wskaźnik mierzyłby wtedy, z jakiego okna skopiowano tekst. Myślnik na początku
-linii (756 orzeczeń) i wykropkowanie (52 orzeczenia) nie są śladami modelu;
-wykropkowanie liczy się jednak jako pole do uzupełnienia.
-
-To tłumaczy też, dlaczego ręcznie pisane fixture'y wypadały tak wysoko.
-Powstawały w rejestrze eseistycznym, bo tak się naturalnie pisze „tekst
-wyglądający na AI" — i trafiały dokładnie w te osiem rodzin, których realne
-dokumenty nie zawierają.
-
-Konsekwencja dla umów: ich wynik opiera się na trzech sygnałach zamiast
-czternastu, stąd cienki margines w tabeli punktu pracy.
-
-### Profil umów — zastrzeżenie gatunkowe zmierzone
-
-Profil `law_firm_contract` zbudowano z 51 zatwierdzonych dokumentów kancelarii
-z rodziny `contract` (umowy, ugody, regulaminy, statuty; mediana 524 słowa).
-Wszystkie 51 mieści się poniżej progu przeglądu wobec profilu SAOS, więc
-czytają się jako ludzkie według naszej własnej miary — to jedyna kontrola,
-jaka ma znaczenie dla bazy odniesienia. Do repozytorium trafia wyłącznie
-wyprowadzona statystyka; dokumenty źródłowe zostają lokalnie.
-
-Porównanie w **tym samym gatunku** przywraca rozdzielność, której zabrakło
-przy porównaniu międzygatunkowym:
-
-| | ludzie (kancelaria) | AI: wyjście modelu | AI: fixture'y ręczne |
-|---|---|---|---|
-| mediana | 0,0354 | 0,2177 | 0,3054 |
-| skrajna | maks **0,1137** | min **0,2009** | min 0,2880 |
-
-Czyli część wcześniejszego stykania się populacji (0,2309 vs 0,1919) faktycznie
-pochodziła z gatunku, nie z autorstwa. Strona AI to tu jednak **trzy
-dokumenty** — wniosek jest kierunkowy, nie ostateczny.
-
-### Próg przeglądu zależy od rodziny
-
-Wynik skalibrowany to średnia ważona przekroczeń ponad zakres **jednego**
-profilu, więc znaczy „jak daleko poza tych konkretnych ludzi" i przesuwa się
-razem z profilem. Próg 0.25 wybrano, mierząc, gdzie kończą się uzasadnienia
-SAOS (maksimum 0,2309). Dla umów ludzie kończą na 0,1137, więc ten sam próg
-leżałby powyżej całego zakresu AI i rodzina byłaby skalibrowana, a mimo to
-zawsze cicha.
-
-| rodzina | profil | próg |
-|---------|--------|------|
-| `filing_official` | `saos_common_2018_2024` | 0.25 |
-| `contract` | `law_firm_contract` | **0.15** (prowizoryczny) |
-| `client_communication` | brak | nieskalibrowana |
-
-Próg dla umów jest **prowizoryczny**: luka jest szeroka, ale jej strona AI to
-trzy dokumenty. Do przemierzenia, gdy `tools/build_ai_corpus.py` wygeneruje
-korpus wart dopasowywania.
-
-### Warstwa rytmu
-
-Rytm zdań i kształt akapitu były dotąd wyłącznie mierzone — bramka zwracała
-instrukcję do regeneracji i oddawała sprawę modelowi wywołującego.
-`humanize_pl/rhythm/` przenosi granice zdań i akapitów, przechodząc przez te
-same walidatory co każda inna redakcja. Nie zmienia ani jednego słowa: łączy
-zdania przez średnik albo odwrócenie łącznika, dzieli je wyłącznie w punktach,
-które `sentence_flow` już akceptuje.
-
-Celem jest **pasmo p50–p95**, nie maksimum. Dokument z CV 2,5 jest równie
-nieludzki jak ten z 0,4, tylko z drugiej strony, a detektor tego nie widzi —
-punktuje wyłącznie „poniżej mediany". Funkcja celu jest więc dwustronna, a
-pętla zatrzymuje się, gdy dokument wejdzie w pasmo.
-
-Zmierzone na 15 dokumentach korpusu, tryb `standard`, zakres `sentences_only`:
-warstwa ruszyła 10 z nich, w każdym przypadku podnosząc CV w stronę ludzkiej
-mediany (np. 0,4339 → 0,6079), i w żadnym nie zmieniła liczby akapitów.
-Pozostałe pięć albo już mieściło się w paśmie, albo nie miało dopuszczalnej
-operacji — wtedy warstwa odmawia, zamiast szukać na siłę.
-
-**Czego się po niej nie spodziewać.** Zmierzony sufit obu osi razem to około
-0,045 punktu wyniku skalibrowanego, a `UNCERTAIN_BAND` — rozrzut samego wyniku
-przy przebudowie profilu z niezależnych próbek — wynosi 0,035. W DOCX, gdzie
-oś akapitowa jest niedostępna, sufit to 0,014. Warstwa jest zbudowana tak, żeby
-była poprawna i żeby odmawiała w razie wątpliwości, nie żeby rozstrzygała.
-
-Oś akapitowa nie działa w DOCX i nie jest to ustawienie do zmiany:
-`DocxInventory.structural_differences` porównuje liczbę akapitów, a
-rozbieżność powoduje odrzucenie **całej** redakcji dokumentu i przywrócenie
-źródła. Przepływ DOCX wymusza `sentences_only` i mówi o tym w ostrzeżeniach.
-
-W trybie `conservative` warstwa nie działa wcale — ten tryb wybiera ktoś, kto
-nie akceptuje ryzyka strukturalnego, a edycja rytmu jest z definicji
-strukturalna.
-
-### Krótkie teksty a bramka jakości
-
-Poniżej **150 słów** wynik skalibrowany przestaje być pomiarem — z tego samego
-powodu co w zastrzeżeniu 3. Bramka `review_response` ocenia wtedy odpowiedź po
-tym, **ile różnych ram** maszynowych uruchamia, a nie po liczbie: odpowiedź
-maszynowa sięga po sześć rodzin naraz, odpowiedź prawnika po dwie, i to są
-rodziny higieniczne (pauza, nominalizacja), a nie rejestrowe. Wynik jest nadal
-raportowany, ale `score_is_meaningful` mówi wprost, że nie on zdecydował.
-
-Próg 150 słów to ta sama wartość, której `humanize_pl/corpus/normalize.py` używa
-do uznania dokumentu za nadający się do pomiaru.
+Próg przeglądu **0.25** zostaje tam, gdzie prawie nie zaznacza ludzkich
+uzasadnień. Flaga `needs_review` oznacza „dokument wart przejrzenia przez
+człowieka", nigdy „napisane przez AI", a wynik poniżej progu mówi tylko, że w
+tekście brak cech schematycznych — nie, że napisał go człowiek. Wiarygodną
+część raportu stanowią konkretne znaleziska i kontrole treści, nie sama liczba.
 
 ### Metryki wykluczone ze scoringu
 
 Pomiar na korpusie pokazał, że dwie metryki opisywane w literaturze
 anglojęzycznej jako wskaźniki AI działają dla tej pary gatunków **odwrotnie**:
 
-| metryka | ludzie (p50) | tekst AI (mediana) | wniosek |
-|---------|--------------|--------------------|---------|
-| `type_token_ratio` (MTLD) | 117,6 | 127,1 | AI **wyżej** — odwrotnie niż w literaturze |
-| `opening_diversity` | 0,83 | 1,00 | AI **wyżej** — odwrotnie niż w literaturze |
+| metryka | ludzie (p50) | tekst AI | wniosek |
+|---------|--------------|----------|---------|
+| `type_token_ratio` | 0,66 | 0,72 | AI **wyżej** — odwrotnie niż w literaturze |
+| `opening_diversity` | 0,81 | 1,00 | AI **wyżej** — odwrotnie niż w literaturze |
 
 Powód jest gatunkowy: uzasadnienia sądowe intensywnie powtarzają nazwy stron,
 terminy prawne i formuły otwierające. Obie metryki są raportowane z etykietą
 `genre_confounded` i mają wagę 0 — użycie ich karałoby ludzkie pisarstwo.
 
-Najsilniejszym pojedynczym dyskryminatorem jest **kształt akapitu**: CV liczby
-zdań na akapit wynosi u ludzi 0,90, a w realnych wyjściach modelu 0,35 — teksty
-AI trzymają się stałego rozmiaru akapitu.
+Najsilniejszym pojedynczym dyskryminatorem okazała się **burstiness**: CV
+długości zdań wynosi u ludzi 0,83, a w tekstach AI 0,45–0,53. Podobnie działa
+**kształt akapitu**: CV liczby zdań na akapit to u ludzi 0,92, w tekstach AI
+0,42 — teksty AI trzymają się stałego rozmiaru akapitu.
 
-| metryka | ludzie (p50) | AI: wyjście modelu | AI: fixture'y pisane ręcznie |
-|---------|--------------|--------------------|------------------------------|
-| `paragraph_shape_cv` | 0,90 | 0,35 | 0,40 |
-| `sentence_length_cv` | 0,80 | **0,73** | 0,56 |
+## Kontrola struktury: blueprinty i wzory
 
-Wcześniejsze wydania opisywały jako najsilniejszy dyskryminator **burstiness**
-długości zdań (ludzie 0,83 vs AI 0,45–0,53). Po rozdzieleniu strony AI według
-proweniencji ta przewaga w dużej mierze znika: realne wyjście modelu ma CV 0,73
-przy ludzkim 0,80, a niskie 0,56 pochodziło z fixture'ów pisanych ręcznie.
-Kształt akapitu trzyma separację w obu grupach — rytm zdań nie.
+Kategorię rozpoznaje `humanize_pl/data/categories.yaml`. Tekst, który
+opisuje dokumenty, zamiast nimi być, zostaje nieokreślony, choćby cytował całe
+ich słownictwo: zawiera zwrot, którym sąd mówi we własnym imieniu („zważył, co
+następuje”), albo opowiada w czasie przeszłym (ponad 60% czasowników, z
+Morfeuszem2) i ani razu nie działa w pierwszej osobie czasu teraźniejszego
+(„wnoszę”, „wzywam”). Na próbie orzeczeń SAOS odsetek błędnie przypisanych
+kategorii spadł z 50% do poniżej 1%.
 
-Sama `sentence_burstiness` jest zresztą tą samą wielkością co `sentence_length_cv`
-w innej skali: po podzieleniu wzoru `(σ−μ)/(σ+μ)` przez `μ` zostaje `(CV−1)/(CV+1)`,
-funkcja ściśle rosnąca. Jest raportowana, ale ma wagę 0 — liczenie jej obok CV
-liczyłoby jeden dowód dwa razy, a na ujemnej skali `_exceedance_low` i tak
-zwracałoby zawsze zero.
+Poza sygnałami kategorię wskazują też wzory. Dokument, który dzieli z
+dostarczonym wzorem co najmniej połowę par sąsiednich słów, dostaje kategorię
+tego wzoru, niezależnie od słownictwa (wniosek o urlop pełen zwrotów pisma
+urzędowego nadal jest wnioskiem o urlop). Dokument, którego nie rozpoznał
+żaden sygnał, dostaje kategorię najbliższego wzoru, jeśli dzieli z nim co
+najmniej jedną czwartą par; orzeczenia nie przekraczają 0,08, a swobodnie
+pisane dokumenty AI 0,2. Mierzone z pominięciem własnego wzoru dokumentu:
+trafność na wzorach wzrosła z 74 do 80 na 107, a na wzorach bez tytułu z 45
+do 67.
 
-## Tekst ogólny (nie prawniczy)
+Gdy dwie kategorie mają zbliżony wynik (różnica do 2 punktów, a obie są
+znaleziskami, czyli mają co najmniej 3 punkty), dokument zostaje nieokreślony
+z uzasadnieniem „niepewne: A albo B”: takie rozstrzygnięcia były trafne w
+jednej trzeciej przypadków, a błędna lista kontrolna jest gorsza niż żadna.
+Pewność (`confidence`) to zmierzony odsetek trafnych rozstrzygnięć danej
+ścieżki: 0,92 dla silnych sygnałów (co najmniej 9 punktów), 0,63 dla
+słabszych, 0,98 dla wzoru dzielącego co najmniej połowę par słów i 0,81 dla
+bliskiego wzoru. Odsetek błędnych kategorii na wzorach spadł z 24% do 14%.
 
-Aktualna konfiguracja (23.09.2026):
+Dokument z rozpoznaną kategorią prawną jest sprawdzany w dwóch krokach.
+
+1. **Blueprint ogólny** (`humanize_pl/data/blueprints/<kategoria>.yaml`) — lista
+   sekcji, które dokument tej kategorii powinien zawierać (`required` blokuje
+   gotowość, `expected` tylko odnotowuje), z kontrolą numeracji i — tam, gdzie
+   realne wzory trzymają jedną kolejność — kolejności. Sekcję wskazują zwroty
+   (`matches`) albo, gdy żaden zwrot jej nie wyróżnia, wzorce linii
+   (`patterns`, wyrażenia regularne): linię „Toruń, 7 kwietnia 2026 r.” poznaje
+   się po kształcie, a samo „dnia” trafia też w „ustawy z dnia …”. Działa na
+   każdym dokumencie, także napisanym bez naszego wzoru. Blueprint zawiera też
+   `document`: ogólny dokument kategorii, w którym wypełnia się wyłącznie pola
+   (`slots`); treść, kolejność i układ zostają jak we wzorze. Pole ma typ
+   (`type`): dane konkretne (`person`, `date`, `amount`, `pesel` …) pochodzą
+   wyłącznie z materiału użytkownika, a `content` (stanowisko, zakres
+   obowiązków, przedmiot usług, cele) można zredagować z tematu prośby.
+2. **Wzór precyzyjny** (`humanize_pl/data/templates/<kategoria>/*.yaml`) —
+   realne warianty, np. najem pokoju, oświadczenie o poddaniu się egzekucji przy
+   najmie okazjonalnym, porozumienie stron. Silnik szuka wzoru, z którego tekst
+   powstał: najpierw wspólne pary słów, potem porównanie blok po bloku w
+   kolejności wzoru (próg: 60% słów wzoru). Szuka we wszystkich kategoriach, bo
+   klasyfikator bywa mniej precyzyjny niż wzór.
+
+Gdy wzór pasuje, to on rozstrzyga: raport wskazuje brakujące fragmenty wzoru
+i niewypełnione pola, a lista sekcji blueprintu zostaje jako kontekst. Realny
+dokument danego rodzaju jest lepszą miarą niż ogólna lista — porozumienie stron
+nie ma uzasadnienia i nie jest to brak. Miejsce na podpis z kropkami nie jest
+niewypełnionym polem. Rozpoznaje je opis („(podpis Najemcy)”, sam rzeczownik,
+nie „data podpisania”) albo nazwy stron przy kropkach po ostatnim paragrafie
+(„Wynajmujący ⇥ Najemca”, „Z poważaniem”).
+
+Wzór to jeden blok na akapit: rola (`title`, `clause_heading`, `item`,
+`blank_line`, `hint`…), układ (wyrównanie, wcięcia, numeracja, pogrubienia),
+tekst dosłowny i pola z dokładnym zakresem znaków oraz opisem. Nowy wzór
+z własnego pliku DOCX:
 
 ```bash
-humanize-pl tekst.txt --track general --general-profile email --audience "nowy klient" \
-  --tone warm --formality standard --intensity style --max-shortening 20 \
-  --protected-term "nazwa produktu" --rewrite-backend hybrid -o wynik.txt
+python -m humanize_pl.layout_ir extract wzor.docx --category umowa_najmu -o wzor.yaml
+python -m humanize_pl.layout_ir check wzor.yaml
 ```
 
-Profile: `preserve`, `email`, `article`, `product`, `information`, `prose`.
-Ton: `preserve/neutral/warm/direct`; formalność: `preserve/casual/standard/formal`.
-Domyślnie zachowywany jest gatunek, rejestr i głos autora. API przyjmuje
-`GeneralOptions(profile="email", intensity="style", max_shortening=20)` przez
-`humanize(..., track="general", general_options=...)`.
+`check` porównuje plik YAML z DOCX leżącym obok (klucz `template`). Gotowy plik
+trafia do `humanize_pl/data/templates/<kategoria>/` z kluczem `label_pl`; pola
+z identyfikatorem `pNN_k` warto nazwać. Pliki DOCX, z których powstały
+dostarczone wzory, nie są częścią repozytorium.
 
-`light`, `style` i `rewrite` ograniczają zakres ingerencji. Skrócenie 0–50% to
-osobny maksymalny ubytek słów (domyślnie 30%), nie cel do osiągnięcia. Usuwanie faktów
-jest zabronione na każdym poziomie. Chronione terminy zachowują literalną postać.
-Backend regułowy respektuje limity, ale nie obiecuje dopasowania tonu lub odbiorcy.
 
-Model redaguje jeden akapit z sąsiedztwem i zarysem dokumentu. Akapity powyżej
-4000 znaków pozostają bez zmian, bez wysyłania uciętego fragmentu. Każda propozycja
-przechodzi kontrolę treści; bez lokalnego NLI swobodne parafrazy są odrzucane.
-Dialogi, cytaty, kod i wskazane terminy są chronione. Uwagi redakcyjne przed/po
-obejmują powtórzenia, rozwlekłość, gęste zdania i odniesienia, bez orzekania o autorstwie.
-Krótkie teksty nadal można poprawiać; poniżej 150 słów główne widoki nie prezentują
-wskaźnika jako oceny. JSON zachowuje surowy pomiar z `signal_interpretable=false`.
+## Odpowiedź na pismo przychodzące
 
-Poniższe dane opisują historyczną kalibrację i wcześniejsze wersje redakcji,
-nie odbiór jakości obecnego przepływu akapitowego.
+`humanize_pl.replies.analyze(tekst)` czyta dowolne pismo po jego budowie, nie po
+liście urzędów: tytuł aktu i zwroty rozstrzygające wskazują rodzaj aktu (decyzja,
+postanowienie, wezwanie, upomnienie, wyrok, nakaz zapłaty, wezwanie do zapłaty,
+wypowiedzenie…), nazwy w nagłówku nadawcę, cytowane przepisy procedurę (w ich
+braku procedurę nadawcy). Pismo, którego nic nie rozpoznaje, dostaje tylko
+odpowiedzi zawsze dopuszczalne: ogólne pismo w odpowiedzi i wniosek o przywrócenie
+terminu.
 
-`--document-type general` (w interfejsie: „tekst ogólny”) uruchamia ten sam
-silnik na tekście spoza prawa. Nic go nie wybiera samo, więc ścieżka
-prawnicza się nie zmienia. Zmierzone na trzech zbiorach:
-- ŚMIGIEL (PolEval 2025): teksty ludzkie i generowane;
-- Wolne Lektury: proza polskich autorów;
-- WildChat-1M: 314 polskich odpowiedzi ChatGPT napisanych na prośbę, takich
-  jak artykuły, opisy, maile czy wypracowania.
+Odpowiedzi wynikają z katalogu `humanize_pl/data/replies.yaml`. Każda ma cel
+(kwestionuję, wyjaśniam, potrzebuję czasu, termin minął, ugoda, sam zgłaszam),
+kategorię wzoru, termin i podstawę prawną, zależnie od procedury. Pouczenie
+w piśmie ma pierwszeństwo: środek, który nazywa, trafia na początek listy z jego
+terminem, adresatem i organem pośredniczącym, a termin różny od przepisu jest
+zgłaszany w polu `conflict`, nie poprawiany. Bez nazw z pouczenia katalog opisuje,
+dokąd pismo trafia: środek odwoławczy za pośrednictwem tego, kto wydał
+rozstrzygnięcie (`filed_via`, np. zażalenie i apelacja), a pismo do kogoś innego
+niż nadawca w `filed_with` (skarga na czynność komornika do sądu rejonowego,
+odwołanie od wypowiedzenia do sądu pracy). Odpowiedzi wrażliwe niosą ostrzeżenia
+(np. skuteczność czynnego żalu, art. 16 § 5 k.k.s.). Fakty, które odpowiedź musi
+przytoczyć bez zmian (sygnatury, daty, kwoty, NIP/PESEL, przepisy), są zwracane
+w `facts`, a linia nagłówka, w której nadawca się podpisuje, w `sender_name`
+(do niej wraca odpowiedź). Nic nie jest składane ani wybierane za użytkownika.
 
-- **Wzorzec** `general_polish`: 1390 ludzkich tekstów 150+ słów z ŚMIGIELA
-  (Filmweb, podręczniki, Wikipedia). Druga połowa, 1391 tekstów, posłużyła do
-  ustalenia progu. AUC wobec odpowiedzi ChatGPT: 0,92. Próg 0,15 daje 2,1%
-  fałszywych alarmów i wykrywa 40% tekstów AI; 0,12 daje 6,2% i 62%.
-- **Pauza nie jest sygnałem.** W polszczyźnie to zwykła typografia, a w prozie
-  otwiera dialog. Ma ją 55–86% tekstów ludzkich i 14% odpowiedzi ChatGPT.
-  Wzorzec ją pomija (`ignored_families`), więc nie liczy się do wyniku ani do
-  zgodności zdań.
-- **Wyłączone reguły** zmieniają tekst ludzki równie często jak tekst modelu
-  albo częściej. W zmianach na 1000 słów:
-  - pauza: 6,3 w prozie wobec 0,1 u modelu;
-  - strona bierna na bezosobową: 1,4 u ludzi wobec 0,3 u modelu, bo ludzie
-    piszą w stronie biernej częściej niż asystent;
-  - dzielenie zdań;
-  - „w dużej mierze” → „w znacznym stopniu”;
-  - „polega na tym” → „oznacza to”.
-- **Zostają reguły**, które na odpowiedziach ChatGPT działają 3–10 razy
-  częściej niż na tekście ludzkim: „warto zauważyć, że”, powtarzane przejścia,
-  kancelaryzmy, „w celu + rzeczownik”, „właśnie”, pary tautologiczne.
-- **Poniżej 150 słów raport mówi, że wskaźnik nie jest wiarygodny.** Pod 50
-  słowami teksty ludzkie i generowane rozróżnia się na poziomie zgadywania
-  (AUC 0,48).
-- **Bez szkieletów, dopisywania sekcji i warstwy rytmu.** Rytm przesuwa
-  granice zdań, a dzielenie zdań zmieniało głównie tekst ludzki.
+Z datą doręczenia (`analyze(tekst, delivered=date(2026, 10, 1))`) każdy termin
+liczony od doręczenia lub otrzymania dostaje ostatni dzień na złożenie pisma
+(`deadline` przy odpowiedzi; `humanize_pl/replies/deadlines.py`):
 
-Czego ten tryb nie robi: nie wykrywa „tekstu z maszyny” w ogóle, tylko tiki
-asystenta. Na tekstach ŚMIGIELA, generowanych jako ciąg dalszy cudzego
-fragmentu, AUC wynosi 0,55. To miarka stylu, nie detektor autorstwa. Same
-reguły usuwają około 5% tików z odpowiedzi ChatGPT; resztę może poprawić
-tylko redakcja modelem (`--rewrite-backend hybrid`).
+- dnia doręczenia nie wlicza się; termin w tygodniach lub miesiącach kończy się
+  w dniu o tej samej nazwie lub dacie, a gdy takiej daty w miesiącu nie ma —
+  w jego ostatnim dniu (31 stycznia + miesiąc = 28 lub 29 lutego),
+- koniec przypadający na sobotę lub dzień ustawowo wolny od pracy przesuwa się
+  na następny dzień roboczy; przepis podaje pole `holiday_rule` procedury
+  w katalogu (art. 57 § 4 k.p.a., art. 12 § 5 o.p., art. 115 k.c. w zw.
+  z art. 165 § 1 k.p.c., art. 83 § 2 p.p.s.a., art. 123 § 3 k.p.k. i odesłania
+  do nich), a wybiera go kodeks, z którego pochodzi termin — skarga do WSA na
+  decyzję z k.p.a. liczy się według p.p.s.a.,
+- dni wolne według ustawy o dniach wolnych od pracy: święta stałe, drugi dzień
+  Wielkiej Nocy i Boże Ciało liczone od daty Wielkanocy, niedziele oraz od 2025 r.
+  24 grudnia (Dz.U. 2024 poz. 1965, w mocy od 1 lutego 2025 r.),
+- status: `w terminie`, `ostatni dzień` albo `po terminie`, z liczbą dni do
+  ostatniego dnia (`days_left`, ujemna po terminie) i z przesunięciem
+  (`moved_from`, `moved_because`); bez daty doręczenia — `brak daty doręczenia`,
+  a termin liczony od innego zdarzenia (ogłoszenia wyroku, ustania przyczyny
+  uchybienia) — `termin liczony od innego zdarzenia`, bez wyliczania,
+- gdy któryś termin minął, na początek listy trafia wniosek o przywrócenie terminu.
 
-W pomiarze z 22.09.2026 na 48 odpowiedziach ChatGPT i 24 tekstach ludzkich
-reguły wraz z Bielikiem zmniejszyły liczbę tików w odpowiedziach o 14%, ale
-zmieniły też 13 tekstów ludzkich. Po ograniczeniu zakresu redakcji modelu
-do trzech rodzin tików asystenta i dodaniu walidatorów próba z Qwenem 3.5 9B
-dała spadek o 9%; zmieniły się 4 teksty ludzkie, wszystkie przez reguły.
-Liczba wywołań modelu spadła ze 139 do 6, a czas z około 2,5 godziny do
-2 minut. Zmieniono jednocześnie model i zakres pracy, więc nie jest to
-porównanie samych modeli. Pozostało znane ograniczenie: zaakceptowana
-propozycja usunęła podmiot zdania. Te pomiary opisują ówczesne wersje;
-spadek liczby tików nie potwierdza zachowania znaczenia ani naturalności.
+Wyliczenie nie zastępuje sprawdzenia daty doręczenia (np. awizo i doręczenie
+zastępcze) ani pouczenia.
+
+Odpowiedź korzysta ze wzorów kategorii, do której należy: najczęstsze pisma
+w odpowiedzi mają wzory ogólne (odwołanie od decyzji, pismo do urzędu lub sądu,
+zażalenie, apelacja, skarga do WSA, odpowiedź na pozew, wniosek w toczącej się
+sprawie, odpowiedź na wezwanie do zapłaty) i szczególne (sprzeciw od nakazu zapłaty i od wyroku zaocznego, wnioski
+o przywrócenie i przedłużenie terminu oraz o uzasadnienie wyroku, skarga na
+czynność komornika, odwołanie od wypowiedzenia umowy o pracę, odwołanie od
+decyzji ZUS). Wzór ogólny nie nazywa konkretnego sądu ani organu.
+
+Terminy w katalogu sprawdza się w ISAP przy każdej zmianie pliku. Testy:
+`tests/test_replies.py` z fikcyjnymi pismami w `tests/fixtures/incoming_letters.yaml`,
+także od nadawców, których katalog nie wymienia z nazwy, oraz
+`tests/test_deadlines.py` (soboty, święta, koniec miesiąca, rok przestępny).
+
 
 ## Sygnały strukturalne
 
@@ -1115,21 +904,6 @@ Narzędzie ostrzega, gdy korpus AI liczy mniej niż 25 dokumentów — poniżej 
 progu ranking odzwierciedla kilka konkretnych plików, a nie styl modelu.
 
 ## Instalacja
-
-Powtarzalna instalacja z dokładnymi wersjami i hashami w `uv.lock`:
-
-```bash
-uv sync --locked --extra dev --extra ui --extra morfeusz
-uv run --no-sync humanize-pl doctor
-uv run --no-sync humanize-pl-release-check
-```
-
-CI sprawdza Python 3.10, 3.11 i 3.12 na Windows i Linux. Opcjonalne testy integracji
-Stanza wymagają lokalnych wag; bez pakietu/wag są oznaczone jako pominięte i nie
-pobierają ich w tle. `doctor` pokazuje lokalne zależności, renderer i konfigurację
-endpointu bez próby połączenia, pobierania modeli czy ujawniania sekretów.
-Obecność biblioteki nie oznacza dostępności jej wag. Instalacja przez pip poniżej
-pozostaje dostępna, lecz nie korzysta z blokady wersji.
 
 Minimalnie:
 
@@ -1305,14 +1079,6 @@ odświeżania zasobów Stanza/HuggingFace.
 
 ## Benchmark i bramki wydania
 
-Benchmark korzysta z tego samego `humanize()` co API, CLI i formularz. Sprawdza
-faktycznie zapisany TXT/DOCX, zgodność wyniku i ścieżki, bezpieczeństwo oraz
-obecność raportu PDF. JSON zachowuje ustawienia, operacje, aktywne modele
-i gotowość dokumentu. Manifest może zawierać `track: "legal"` lub `"general"`;
-podsumowanie rozdziela te ścieżki. Brakujące liczniki kandydatów mają `null`,
-nie fikcyjne zero. To kontrola regresji technicznych, nie ocena naturalności
-przez czytelnika ani odbiór prawny.
-
 Podstawowa bramka bezpieczeństwa bez modeli zewnętrznych:
 
 ```bash
@@ -1328,17 +1094,6 @@ humanize-pl-benchmark --engines basic --mode standard --allow-fallback --fail-on
 Komenda zapisuje artefakty pod `docs_tests/results/latest/` i kończy się kodem
 `1`, jeżeli którykolwiek dokument ma status inny niż `ok`.
 
-Osobny raport rozdzielający realne wyjście modeli i ręcznie napisane
-przykłady można odtworzyć poleceniem:
-
-```bash
-python tools/evaluate_engine.py
-```
-
-Raport trafia do `docs_tests/results/evaluation/engine_results.md`.
-Wyniki przebiegów i lokalne raporty są ignorowane przez Git; w repozytorium
-pozostają skrypty, dane testowe i profile potrzebne do ich odtworzenia.
-
 Pełniejsza, ręczna walidacja silników opcjonalnych wymaga lokalnie pobranych
 modeli:
 
@@ -1351,66 +1106,45 @@ make benchmark-optional
 `--require-models` oraz `--fail-on-status`, więc nadaje się jako lokalna
 checklista przed wydaniem, ale nie zakłada dostępu do sieci w trakcie testu.
 
+Benchmark sprawdza, czy każdy wynik jest bezpieczny. Pomiar jakości sprawdza,
+czy silnik nie pogorszył się w dwóch zadaniach: rozpoznawaniu dokumentu i jego
+struktury oraz redagowaniu tekstu AI przy oszczędzaniu tekstu pisanego przez
+ludzi:
+
+```bash
+humanize-pl-eval            # porównanie z docs_tests/eval_baseline.json
+humanize-pl-eval --rules    # dodatkowo zmiany na 1000 słów według reguł
+```
+
+Mierzy m.in. trafność kategorii na wzorach (także bez tytułu), odsetek
+orzeczeń SAOS błędnie uznanych za dokument z katalogu, blokady listy
+kontrolnej na wzorach własnej kategorii, to, czy lista kontrolna zauważa
+usuniętą sekcję (dziś w około 42% przypadków: ogólne zwroty, np. „dnia” w
+„ustawy z dnia”, utrzymują sekcję jako obecną), rozpoznawanie wzoru po
+usunięciu akapitów, stosunek liczby zmian w tekście AI do zmian w orzeczeniach oraz
+wyniki naruszające bezpieczeństwo. Każda bramkowana miara ma kierunek; ruch w
+złą stronę kończy się kodem `1`. Zamierzoną zmianę zapisuje się świadomie
+flagą `--update-baseline` (wymaga lokalnego korpusu orzeczeń
+`docs_tests/corpus/saos_holdout.jsonl`). Bez tego korpusu miary oparte na
+orzeczeniach są pomijane z ostrzeżeniem, a pozostałe nadal porównywane.
+
 Pełna lokalna kontrola przed wydaniem:
 
 ```bash
 humanize-pl-release-check
 ```
 
-Obejmuje testy, audyt reguł, lint, podstawowy benchmark i budowę wheel w trybie
-`--no-isolation`. Wymaga zależności `dev`, `ui` i `morfeusz` (jak w poleceniu
-`uv sync` powyżej). Wszystkie wyniki i pliki testowe trafiają do katalogu roboczego
-w repozytorium, który jest usuwany po zakończeniu, także przy błędzie.
+Obejmuje testy, lint, podstawowy benchmark, pomiar jakości i budowę wheel w trybie
+`--no-isolation`, czyli z zależnościami zainstalowanymi przez `.[dev,morfeusz]`
+(baza pomiaru jakości jest zmierzona z Morfeuszem2, bez niego pomiar odmawia porównania).
 Jeżeli w systemie jest `make`, równoważnym skrótem jest `make release-check`.
-
-### Ocena zaślepiona obu ścieżek
-
-`humanize_pl.evaluation` przygotowuje próbki A/B i pusty formularz ocen.
-Manifest JSON jest listą wpisów z polami `id`, `file` (TXT UTF-8, ścieżka względem
-manifestu), `track`, `split: "heldout"`, `genre` i `source: "human"` albo `"ai"`.
-Kontrola ludzka wymaga `approved_control: true`, próbka AI — nazwy `generator`.
-Potrzebne są co najmniej trzy gatunki, dwa generatory i zatwierdzone teksty
-ludzkie. Deklarację odłożenia korpusu od strojenia składa jego właściciel;
-program odrzuca duplikaty w pakiecie, ale nie potwierdza historii użycia danych.
-
-```bash
-python -m humanize_pl.evaluation prepare corpus/manifest.json outputs/ocena --track general --backend rules
-python -m humanize_pl.evaluation score outputs/ocena/key.json outputs/ocena/ratings.json
-```
-
-Recenzent otrzymuje tylko `blind.json` i `ratings.json`. `key.json` ujawnia
-warianty i pochodzenie próbek; należy trzymać go osobno do końca oceniania.
-Ocenia się preferencję A/B/tie, zachowanie treści, liczbę błędów językowych
-i zbędnych zmian. Ocena prawna wymaga oznaczenia recenzenta `qualification:
-"lawyer"`. Bramka wymaga kompletnego pokrycia, braku szkodliwych zmian,
-regresji językowych i zbędnej ingerencji w dobre teksty ludzkie. W ścieżce
-ogólnej wynik musi ponadto wygrywać preferencją; w prawnej remis jest dopuszczalny.
-Założenia te należy zatwierdzić przed odślepieniem.
-
-`technical.json` mierzy czas, zmiany i stan wykonania; koszt ma `null`, dopóki
-nie ma potwierdzonego rozliczenia dostawcy. Pakiet zapisuje odciski źródeł,
-kodu, ustawień i wariantów, a ocen z innego pakietu nie przyjmuje.
-`--backend hybrid` wymaga działającego modelu. Nie przeprowadzono jeszcze
-oceny zaślepionej na zatwierdzonym korpusie ani akceptacji przez prawnika.
-
-### Zakres formatów
-
-| Format | Obsługa |
-|---|---|
-| TXT / MD | Tekst UTF-8; znaczniki Markdown w ścieżce ogólnej są zachowywane. |
-| DOCX | Tekst i tabele; szczegółowe ograniczenia chronionych elementów opisano wyżej. Kontrola XML nie zastępuje wizualnego odbioru w Wordzie. |
-| XLSX | Wybrana kolumna; wynik i raporty dodawane do kopii skoroszytu. |
-| XLSM / XLS | Jawnie odrzucane; program nie obiecuje zachowania makr. |
-| PDF | Raport wyjściowy. Import dokumentów PDF i OCR nie są obsługiwane. |
 
 ## Ważne
 
-Ścieżka prawna jest zachowawczym edytorem formalnej polszczyzny. Ścieżka ogólna
-pozwala na szerszą redakcję akapitów przez model, pod warunkiem przejścia
-kontroli treści; bez aktywnego NLI odrzuca swobodne parafrazy. Zielone testy
-programu nie oznaczają akceptacji jakości każdej redakcji.
+Silnik nie jest generatywnym parafrazerem. To kontrolowany edytor formalnej polszczyzny: lepiej odrzucić zmianę niż wygenerować nienaturalne lub nieprecyzyjne zdanie.
 
 Walidatory blokują m.in. zmianę normatywności (`może`/`musi`/`powinien`),
-utratę stron, świadczeń, kwot, dat, cytatów i podstaw prawnych, zdania bez
-orzeczenia, osierocone zdania względne po bezokoliczniku, angielskie wstawki
-oraz wycieki placeholderów ochronnych.
+utratę stron, świadczeń, kwot, dat, cytatów i podstaw prawnych, zamianę ról
+stron i ich określeń (strona pozwana → powodowa, płatnik → pracodawca), zdania
+bez orzeczenia, osierocone zdania względne po bezokoliczniku, angielskie
+wstawki oraz wycieki placeholderów ochronnych.

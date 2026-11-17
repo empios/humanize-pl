@@ -1,0 +1,320 @@
+template: Umowa o przeniesienie praw autorskich.docx
+category: umowa_o_dzielo
+label_pl: Umowa o przeniesienie praw autorskich
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 1418, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: 'UMOWA O PRZENIESIENIE PRAW AUTORSKICH '
+- {p: 1, role: spacer}
+- p: 2
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: 'Zawarta dnia ………………………………… w ……………………………. pomiędzy:'
+  slots:
+  - {id: p2_1, span: [13, 26], type: date, context: Zawarta dnia ▢ w pomiędzy}
+  - {id: p2_2, span: [29, 41], type: place, context: Zawarta dnia w ▢ pomiędzy}
+- {p: 3, role: spacer}
+- p: 4
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: ……………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………
+  slots:
+  - {id: p4_1, span: [0, 212], type: text, context: ▢}
+- p: 5
+  role: body
+  layout: {align: justify, indent: {left: 720}, size: 10.0, italic: true}
+  text: (miejsce na dane autora dzieła tj. imię i nazwisko/nazwa przedsiębiorstwa, dokładny adres zamieszkania/siedziby, (opcjonalnie) wskazanie
+    osoby reprezentującej w przypadku przedsiębiorstwa, numer i seria dokumentu tożsamości/NIP, REGON, KRS etc.)
+- {p: 6, role: spacer}
+- p: 7
+  role: party_alias
+  layout: {align: justify, indent: {left: 360}, size: 10.0, spans: [{start: 18, end: 23, bold: true}]}
+  text: zwanym dalej jako Autor,
+  alias: Autor
+- {p: 8, role: spacer}
+- p: 9
+  role: party_connector
+  layout: {align: justify, indent: {left: 360}, size: 10.0}
+  text: a
+- {p: 10, role: spacer}
+- p: 11
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: ……………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………
+  slots:
+  - {id: miejsce_na_dane_osoby_podmiotu_nabywajacego_praw, span: [0, 212], type: text, hint: miejsce na dane osoby/podmiotu nabywającego prawa
+      majątkowe do dzieła}
+- p: 12
+  role: hint
+  layout: {align: justify, indent: {left: 720}, size: 10.0, italic: true}
+  text: (miejsce na dane osoby/podmiotu nabywającego prawa majątkowe do dzieła)
+  hint_for: 11
+  hint_kind: label
+- {p: 13, role: spacer}
+- p: 14
+  role: party_alias
+  layout: {align: justify, indent: {left: 360}, size: 10.0, spans: [{start: 18, end: 25, bold: true}]}
+  text: zwanym dalej jako Nabywca,
+  alias: Nabywca
+- {p: 15, role: spacer}
+- p: 16
+  role: party_alias
+  layout: {align: justify, indent: {left: 360}, size: 10.0, spans: [{start: 8, end: 16, bold: true}]}
+  text: zwanymi Stronami w dalszej części umowy.
+  alias: Stronami
+- {p: 17, role: spacer}
+- p: 18
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+  text: '§ 1 '
+- p: 19
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 191, end: 325, italic: true},
+      {start: 353, end: 422, italic: true}, {start: 434, end: 441, bold: true}]}
+  text: Autor oświadcza, iż w myśl przepisów ustawy z dnia 4 lutego 1994 r. o prawie autorskim i prawach pokrewnych jest posiadaczem autorskich
+    praw majątkowych do utworu, których twórcą jest ……………… (należy wskazać osobę/podmiot będących twórcą dzieła – jeżeli nie jest to osoba przenosząca
+    prawa majątkowe z tytułu niniejszej umowy). Utwór stanowi …………………………… (miejsce na określenie utworu będącego przedmiotem niniejszej umowy)
+    zwany dalej Utworem.
+  slots:
+  - {id: nalezy_wskazac_osobe_podmiot_bedacych_tworca_dzi, span: [184, 190], type: text, hint: należy wskazać osobę/podmiot będących twórcą dzieła
+      – jeżeli nie jest to osoba przenosząca prawa majątkowe z tytułu niniejszej umowy}
+  - {id: miejsce_na_okreslenie_utworu_bedacego_przedmiote, span: [341, 352], type: text, hint: miejsce na określenie utworu będącego przedmiotem
+      niniejszej umowy}
+  inline_hints:
+  - {span: [191, 325], text: należy wskazać osobę/podmiot będących twórcą dzieła – jeżeli nie jest to osoba przenosząca prawa majątkowe z tytułu
+      niniejszej umowy}
+  - {span: [353, 421], text: miejsce na określenie utworu będącego przedmiotem niniejszej umowy}
+  optional: true
+  condition: należy wskazać osobę/podmiot będących twórcą dzieła – jeżeli nie jest to osoba przenosząca prawa majątkowe z tytułu niniejszej umowy
+- p: 20
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Autor oświadcza, że Utwór został przez niego wykonany osobiście, nie stanowi opracowania cudzego dzieła '
+- p: 21
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Autor oświadcza, że przysługują mu prawa majątkowe do Utworu, a także, że przed zawarciem niniejszej umowy mógł rozporządzać prawami autorskimi
+    do Utworu.
+- p: 22
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: Autor oświadcza, że przysługujące jemu majątkowe prawa autorskie do Utworu nie zostały zajęte w rozumieniu przepisów o postępowaniu egzekucyjnym.
+- p: 23
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+  text: Autor oświadcza, że Utwór, do którego prawa są przenoszone niniejszą umową, nie jest obciążony żadnymi roszczeniami i prawami osoby trzeciej.
+- p: 24
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+  text: § 2
+- p: 25
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'Autor przenosi na Nabywcę autorskie prawa majątkowe bez ograniczeń terytorialnych ani czasowych na następujących polach eksploatacji: '
+- p: 26
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+  text: '………………………………………………………………………………………………………………………………
+
+    (należy wymienić wszystkie pola eksploatacji – np. wyłączne używanie i wykorzystanie dzieła we wszelkiej działalności promocyjnej, reklamowej
+    i informacyjnej prowadzonej przez Nabywcę i podmiotów przez niego wskazanych)'
+  slots:
+  - {id: nalezy_wymienic_wszystkie_pola_eksploatacji_np_w, span: [0, 48], type: text, hint: 'należy wymienić wszystkie pola eksploatacji – np.
+      wyłączne używanie i wykorzystanie dzieła we wszelkiej działalności promocyjnej, reklamowej i informacyjnej prowadzonej przez Nabywcę i podmiotów
+      przez niego wskazanych'}
+  inline_hints:
+  - {span: [49, 268], text: 'należy wymienić wszystkie pola eksploatacji – np. wyłączne używanie i wykorzystanie dzieła we wszelkiej działalności
+      promocyjnej, reklamowej i informacyjnej prowadzonej przez Nabywcę i podmiotów przez niego wskazanych'}
+- p: 27
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+  text: ………………………………………………………………………………………
+  slots:
+  - {id: p27_1, span: [0, 33], type: text, context: ▢}
+- p: 28
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
+  text: ………………………………………………………………………………………
+  slots:
+  - {id: p28_1, span: [0, 33], type: text, context: ▢}
+- p: 29
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: d), kind: lowerLetter, src: auto, level: 0}}
+  text: ………………………………………………………………………………………
+  slots:
+  - {id: p29_1, span: [0, 33], type: text, context: ▢}
+- p: 30
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Autor zobowiązuje do wydania Nabywcy wszystkich nośników, na których Utwór został utrwalony.
+- p: 31
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Od chwili zawarcia umowy Nabywca ma prawo do dalszej sprzedaży autorskich praw majątkowych do utworu w zakresie, w którym nabył je zawierając
+    niniejszą umowę.
+- p: 32
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: "Przeniesienie autorskich praw majątkowych dotyczy stanu Utworu, w jakim znajduje się ono \nw dniu zawarcia umowy przeniesienia majątkowych\
+    \ praw autorskich."
+- p: 33
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+  text: Po zawarciu niniejszej umowy Nabywca może ingerować w Utwór w sposób dowolny.
+- p: 34
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}}
+  text: Strony postanawiają, że skutek umowy w postaci przeniesienia praw autorskich majątkowych następuje z chwilą zawarcia niniejszej umowy.
+- {p: 35, role: spacer}
+- {p: 36, role: spacer}
+- p: 37
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+  text: § 3
+- p: 38
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: 'Z tytułu przeniesienia majątkowych praw autorskich do Utworu, Autorowi nie należy się wynagrodzenie, są one bowiem przenoszone nieodpłatnie/należne
+    jest wynagrodzenie w postaci:'
+- p: 39
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+  text: (należy wybrać prawidłowe, możliwe jest ustalenie obu rodzajów wynagrodzenia) jednorazowe wynagrodzenie w wysokości ………………… (wysokość
+    jednorazowego wynagrodzenia) płatne do dnia ……………………… (termin dokonania zapłaty wynagrodzenia).
+  slots:
+  - {id: wysokosc_jednorazowego_wynagrodzenia, span: [116, 123], type: amount, hint: wysokość jednorazowego wynagrodzenia}
+  - {id: termin_dokonania_zaplaty_wynagrodzenia, span: [178, 187], type: amount, hint: termin dokonania zapłaty wynagrodzenia}
+  inline_hints:
+  - {span: [124, 162], text: wysokość jednorazowego wynagrodzenia}
+  - {span: [188, 228], text: termin dokonania zapłaty wynagrodzenia}
+- p: 40
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+  text: Wynagrodzenie w wysokości ……………………… (wysokość wynagrodzenia) do każdego sprzedanego przez Nabywcę egzemplarza utworu, płatne na ten sam
+    rachunek bankowy, co jednorazowe wynagrodzenie (w przypadku gdy to nabywca ma pełne prawo do publikacji i rozprowadzania kolejnych egzemplarzy
+    utworu).
+  slots:
+  - {id: wysokosc_wynagrodzenia, span: [26, 35], type: amount, hint: wysokość wynagrodzenia}
+  inline_hints:
+  - {span: [36, 60], text: wysokość wynagrodzenia}
+- {p: 41, role: spacer}
+- p: 42
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+  text: § 4
+- p: 43
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: W trakcie obowiązywania umowy, a także po jej rozwiązaniu, Autor zobowiązany jest do zachowania w tajemnicy wszelkich Informacji Poufnych
+    dotyczących Nabywcy, których ujawnienie mogłoby narazić Nabywcę na szkodę, o których Autor dowie się w związku lub przy okazji świadczenia
+    przez niego usług.
+- p: 44
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Przez “Informacje Poufne” należy rozumieć:'
+- p: 45
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+  text: nieupublicznione informacje znane Autor, dotyczące Nabywcy oraz jego Klientów, partnerów, pracowników lub osób współpracujących, obejmujące
+    w szczególności kwestie finansowe, organizacyjne, techniczne, treść umów i inne;
+- p: 46
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+  text: sprawozdania, analizy, zestawienia, badania lub inne dokumenty przygotowane przez Nabywcę w imieniu Autora, które zawierają lub w inny
+    sposób odzwierciedlają informacje dotyczące Autora i jego klientów, jak również wszelkie kopie, wyciągi, spełniające dodatkowo warunki, o
+    których mowa w pkt 1) powyżej;
+- p: 47
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}, spans: [{start: 56, end: 64, italic: true}]}
+  text: wszelkie informacje dotyczące działalności Stron, w tym know–how o charakterze technicznym, metody pracy, metody zarządzania i obsługi
+    stworzone, nabyte, licencjonowane, lub w jakikolwiek sposób stosowane przez Autora, a także informacje techniczne, organizacyjne i finansowe
+    dotyczące działalności;
+- p: 48
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 4), kind: decimal, src: auto, level: 0}}
+  text: bez względu na ich formę (pisemną, ustną, wizualną) oraz bez względu na to czy zostały ujawnione przez Autora lub przez jego doradców,
+    pracowników, członków organów, kontrahentów, doradców prawnych, podmioty powiązane lub przez niego kontrolowane lub podmioty z nią związane.
+- p: 49
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: "Nabywca zobowiązuje się do zachowania w tajemnicy informacji, o których mowa w ust. 1 powyżej dot. Autora lub jego klientów bądź kontrahentów,\
+    \ tj. w szczególności wszelkich informacji \no charakterze technicznym, technologicznym, prawnym, handlowym lub organizacyjnym, jak również\
+    \ informacji odnoszących się do jej strategii, personelu, spraw finansowych lub przyszłych planów, perspektyw, lub innych informacji posiadających\
+    \ wartość gospodarczą stanowiącą tajemnice przedsiębiorstwa w rozumieniu przede wszystkim ustawy z dnia 16 kwietnia 1993 r. \no zwalczaniu\
+    \ nieuczciwej konkurencji."
+- p: 50
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: 'Zobowiązanie Nabywcy do zachowania w tajemnicy wszelkich informacji dotyczących Autora, nie dotyczy informacji, które:'
+- p: 51
+  role: item
+  layout: {align: justify, indent: {left: 1080}, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+  text: są lub będą jawne lub publicznie znane, lub
+- p: 52
+  role: item
+  layout: {align: justify, indent: {left: 1080}, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+  text: były znane stronie odbierającej przed ich udostępnieniem przez stronę ujawniającą, na co istnieje pisemne potwierdzenie, lub
+- p: 53
+  role: item
+  layout: {align: justify, indent: {left: 1080}, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}}
+  text: zostały przekazane Nabywcy przez osoby trzecie, lub
+- p: 54
+  role: item
+  layout: {align: justify, indent: {left: 1080}, size: 10.0, marker: {text: 4), kind: decimal, src: auto, level: 0}}
+  text: Autor przekazał je Nabywcy z możliwością dalszego ujawnienia.
+- p: 55
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+  text: W przypadku jakichkolwiek wątpliwości Autora, czy dana informacja może zostać udostępniona, zobowiązany jest do przeprowadzenia konsultacji
+    z Nabywcą i uzyskać pisemne oświadczenie.
+- p: 56
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}}
+  text: 'Strony zobowiązują się zachować w tajemnicy wszelkie dane dotyczące przerabiania i publikowania Utworu. '
+- {p: 57, role: spacer}
+- p: 58
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+  text: '§ 5 '
+- p: 59
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'W kwestiach nieuregulowanych niniejszą umową zastosowanie mają przepisy ustawy z dnia
+
+    4 lutego 1994 r. o prawie autorskim i prawach pokrewnych oraz ustawy z dnia 23 kwietnia 1964 r. - Kodeks cywilny. '
+- p: 60
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Wszelkie zmiany treści umowy i jej uzupełniania powinny być wprowadzone w formie pisemnej jako aneks do niniejszej umowy, pod rygorem
+    nieważności.
+- p: 61
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Wszelkie spory, których nie da się rozstrzygnąć w drodze wzajemnych negocjacji będą rozpatrywane przez sąd powszechny właściwy ze względu
+    na miejsce zamieszkania Nabywcy.
+- p: 62
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: Umowę sporządzono w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze stron.
+- p: 63
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+  text: Strony niniejszej umowy wyrażają zgodę na zawarcie jej na odległość.
+- {p: 64, role: spacer}
+- {p: 65, role: spacer}
+- p: 66
+  role: signature_line
+  layout: {align: justify, size: 10.0, tabs: 1}
+  text: "    …………………………………                                                    \t      ……………………………"
+  slots:
+  - {id: p66_1, span: [4, 17], type: signature, context: ▢}
+  - {id: p66_2, span: [76, 87], type: signature, context: ▢}
+- p: 67
+  role: body
+  layout: {align: justify, size: 10.0, bold: true, tabs: 8}
+  text: "                 Autor\t  \t\t\t\t\t\t\t  Nabywca "
+- {p: 68, role: spacer}
+- {p: 69, role: spacer}

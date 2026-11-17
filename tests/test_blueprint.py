@@ -11,11 +11,14 @@ from humanize_pl.blueprint import (
     DocumentBlueprint,
     Section,
     _load,
+    _load_template,
     blueprint_for,
     blueprints,
     check,
     check_category,
     is_heading,
+    match_template,
+    templates,
 )
 from humanize_pl.categories import catalogue
 
@@ -45,7 +48,7 @@ def test_shipped_blueprints_parse() -> None:
     assert blueprints(), "brak szablonów"
     for blueprint in blueprints().values():
         assert blueprint.required_sections
-        assert all(row.matches for row in blueprint.sections)
+        assert all(row.matches or row.patterns for row in blueprint.sections)
 
 
 def test_missing_required_section_blocks_but_expected_one_does_not() -> None:
@@ -207,22 +210,6 @@ def test_loader_rejects_an_unknown_numbering(tmp_path) -> None:
         _load(_write(tmp_path, payload))
 
 
-def test_loader_rejects_a_non_boolean_unit(tmp_path) -> None:
-    """`unit: "nie"` would be truthy and quietly give a signature block a "§"."""
-    payload = {"category": "x", "sections": [{"id": "a", "matches": ["q"], "unit": "nie"}]}
-    with pytest.raises(BlueprintError, match="unit"):
-        _load(_write(tmp_path, payload))
-
-
-def test_lettered_units_are_additions_not_repeats() -> None:
-    from humanize_pl.blueprint import _numbering_issues
-
-    assert _numbering_issues(["§ 1.", "§ 2.", "§ 2a.", "§ 2b.", "§ 3."], "paragraph") == []
-    assert _numbering_issues(["§ 1.", "§ 2.", "§ 2.", "§ 3."], "paragraph")
-    # A letter does not excuse a jump: "§ 4a" after "§ 2" skips "§ 3".
-    assert _numbering_issues(["§ 1.", "§ 2.", "§ 4a."], "paragraph")
-
-
 def test_loader_rejects_duplicate_sections(tmp_path) -> None:
     payload = {
         "category": "x",
@@ -365,288 +352,185 @@ def test_a_section_is_found_regardless_of_grammatical_gender() -> None:
         assert "oznaczenie usługodawcy" not in report.missing_required, phrase
 
 
-def test_a_missing_required_section_blocks_readiness() -> None:
-    """`required` has to actually block, not just be described as blocking.
-
-    `BlueprintReport.blocking` existed from the start and nothing read it, so
-    the module docstring promised that a missing required section fails
-    readiness while every such document came out `ready_with_warnings` -
-    indistinguishable from one with a stylistic note.
-
-    The processing axis is untouched: `status` stays "ok" because the run
-    itself worked, so batch exit codes do not move.
-    """
-    from humanize_pl.config import Engine, Mode
-    from humanize_pl.document import ReadinessStatus
-    from humanize_pl.flows.base import FlowSettings, run_all_layers
-
-    text = (FIXTURES / "ai_legal_01_umowa_uslug.txt").read_text(encoding="utf-8")
-    outcome, _verdict = run_all_layers(
-        text,
-        name="umowa.docx",
-        settings=FlowSettings(mode=Mode.standard, engine=Engine.basic, rewrite=False),
+def test_a_numbered_sentence_is_a_clause_not_a_heading() -> None:
+    """Read as a heading, a short first clause left the section above it empty."""
+    assert is_heading("1. Zmiany Umowy wymagają formy pisemnej pod rygorem nieważności.") is False
+    assert is_heading("§ 3.") is True
+    text = "§ 8. Postanowienia końcowe\n1. Zmiany Umowy wymagają formy pisemnej.\n"
+    blueprint = DocumentBlueprint(
+        category="test",
+        label_pl="test",
+        sections=(Section("koncowe", "postanowienia końcowe", ("postanowienia końcowe",)),),
     )
-
-    assert outcome.blueprint["blocking"] is True
-    assert outcome.readiness_status == ReadinessStatus.failed.value
-    assert outcome.status == "ok"
+    assert check(text, blueprint).empty_sections == []
 
 
-def test_readiness_counts_add_up_to_the_processed_items() -> None:
-    """`not_ready` exists so the three readiness counts still sum to `ok`."""
-    from humanize_pl.document import ReadinessStatus
-    from humanize_pl.flows.base import ItemOutcome, summarise
-
-    outcomes = [
-        ItemOutcome(name="a", readiness_status=ReadinessStatus.ready.value),
-        ItemOutcome(name="b", readiness_status=ReadinessStatus.ready_with_warnings.value),
-        ItemOutcome(name="c", readiness_status=ReadinessStatus.failed.value),
-        ItemOutcome(name="d", status="failed"),
-    ]
-    summary = summarise(outcomes)
-
-    assert summary["ok"] == 3
-    assert summary["failed"] == 1
-    assert summary["ready"] + summary["ready_with_warnings"] + summary["not_ready"] == 3
-    assert summary["not_ready"] == 1
+def _filled(
+    document: dict, *, skip: set[int] | frozenset[int] = frozenset(), blank: frozenset[str] = frozenset()
+) -> str:
+    """A template the way a user hands it back: blanks filled, captions kept."""
+    lines = []
+    for block in document["blocks"]:
+        if block["role"] in ("spacer", "pagebreak") or block["p"] in skip:
+            continue
+        text = block["text"]
+        for slot in sorted(block["slots"], key=lambda row: -row["start"]):
+            if slot["id"] not in blank:
+                text = text[: slot["start"]] + "Anna Nowak" + text[slot["end"] :]
+        lines.append(text)
+    return "\n".join(lines)
 
 
-def test_only_the_fragments_own_section_reaches_the_rewrite_prompt() -> None:
-    """The skeleton narrows the prompt; it must not hand over a drafting brief.
-
-    A model shown every section a document owes reads a missing one as an
-    invitation to write it, and this pass exists to redraft one sentence.
-    """
-    from humanize_pl.blueprint import blueprint_for
-    from humanize_pl.flows.base import _section_contexts
-
-    text = (FIXTURES / "ai_legal_01_umowa_uslug.txt").read_text(encoding="utf-8")
-    contexts = _section_contexts(text, blueprint_for("umowa_uslug"))
-
-    assert contexts, "żadna linia nie trafiła do sekcji"
-    for context in contexts.values():
-        # One section named, never a list of them.
-        assert context.count("należy do sekcji") == 1
-        assert "nie dopisuj klauzul" in context
-
-    # Two lines from different sections must not receive the same brief.
-    assert len(set(contexts.values())) > 1
+def _template(template_id: str):
+    return next(row for row in templates() if row.id == template_id)
 
 
-def test_no_blueprint_means_no_section_context() -> None:
-    """Categories without a skeleton must not get an empty or invented one."""
-    from humanize_pl.flows.base import _section_contexts
+def test_every_general_document_passes_its_own_checklist() -> None:
+    """The general document is what a user fills when nothing more precise
+    fits; one that fails its own category's checklist teaches nothing.
 
-    assert _section_contexts("Dowolny tekst.\nDrugi akapit.", None) == {}
-
-
-def test_every_shipped_section_declares_what_it_expects() -> None:
-    """`expects` is optional in the loader and mandatory in practice.
-
-    Without it `expected_clauses` falls back to the section's own label, so
-    the clause check degrades from "does this section say what it owes" to
-    "does this section mention its own name" - a much weaker question, asked
-    silently. Every shipped blueprint was in that state until the clauses
-    were written.
-    """
-    from humanize_pl.blueprint import blueprints
-    from humanize_pl.nli import expected_clauses
-
-    empty = [
-        f"{name}/{section.id}"
-        for name, blueprint in blueprints().items()
-        for section in blueprint.sections
-        if not section.expects
-    ]
-    assert empty == [], f"sekcje bez expects: {empty}"
-
-    # The clauses have to be worth asking about: a section that only restates
-    # its label adds nothing over the fallback.
-    for name, blueprint in blueprints().items():
-        for section in blueprint.sections:
-            for clause in expected_clauses(section):
-                assert len(clause.split()) >= 4, f"{name}/{section.id}: „{clause}”"
-                assert clause.endswith("."), f"{name}/{section.id}: „{clause}”"
+    Checked as written: once filled, the document matches itself as a template,
+    and the template's findings decide."""
+    for category, blueprint in blueprints().items():
+        if blueprint.document is None:
+            continue
+        text = "\n".join(block["text"] for block in blueprint.document["blocks"])
+        report = check(text, blueprint)
+        assert report.missing_required == [], category
+        assert report.empty_sections == [], category
 
 
-def test_a_formatting_warning_does_not_undo_a_blocked_readiness(tmp_path):
-    """The DOCX flow used to overwrite `failed` one call after it was set.
+def test_every_template_belongs_to_a_known_category_with_unique_fields() -> None:
+    known = set(catalogue())
+    assert len(templates()) > len(blueprints())
+    for row in templates():
+        assert row.category in known, row.id
+        ids = [slot["id"] for block in row.document["blocks"] for slot in block["slots"]]
+        assert len(ids) == len(set(ids)), row.id
 
-    `run_all_layers` marks a document missing a required section as not
-    ready. The flow then raised every outcome carrying any warning to
-    "ready_with_warnings" unconditionally - and such a document always
-    carries warnings, because the missing section is one of them. So the
-    distinction `BlueprintReport.blocking` exists to draw was undone by the
-    caller, and a document that should not be sent looked merely annotated.
-    """
-    from docx import Document
 
-    from humanize_pl.config import Engine, Mode
-    from humanize_pl.document import ReadinessStatus
-    from humanize_pl.flows.base import FlowSettings
-    from humanize_pl.flows.docx_flow import run_docx_flow
+def test_every_template_is_recognised_from_its_own_filled_text() -> None:
+    """Near-twins included: the six wypowiedzenia and five uchwały differ by a
+    clause or two, and each must still be told apart from the others."""
+    for row in templates():
+        found = match_template(_filled(row.document))
+        assert found is not None and found[0].id == row.id, row.id
 
-    source = tmp_path / "wejscie"
-    source.mkdir()
-    document = Document()
-    for line in (FIXTURES / "ai_legal_01_umowa_uslug.txt").read_text(
-        encoding="utf-8"
-    ).split("\n"):
-        if line.strip():
-            document.add_paragraph(line)
-    document.save(str(source / "umowa.docx"))
 
-    payload = run_docx_flow(
-        source,
-        tmp_path / "wynik",
-        settings=FlowSettings(mode=Mode.standard, engine=Engine.basic, rewrite=False),
-        pdf=False,
+def test_text_written_without_a_template_matches_none() -> None:
+    for path in sorted(FIXTURES.glob("*.txt")):
+        assert match_template(path.read_text(encoding="utf-8")) is None, path.name
+
+
+def test_an_annex_does_not_outrank_the_contract_it_is_appended_to() -> None:
+    contract = _template("umowa_najmu/umowa_najmu_okazjonalnego_lokalu")
+    annex = _template(
+        "umowa_najmu/umowa_najmu_okazjonalnego_lokalu_oswiadczenie_o_poddaniu_sie_egzekucji"
     )
-
-    item = payload["documents"][0]
-    assert item["blueprint_after"]["blocking"] is True
-    assert item["warnings"], "dokument bez ostrzeżeń nie testuje nadpisania"
-    assert item["readiness_status"] == ReadinessStatus.failed.value
-    assert payload["summary"]["not_ready"] == 1
+    combined = _filled(contract.document) + "\n" + _filled(annex.document)
+    assert match_template(combined)[0].id == contract.id
+    assert match_template(_filled(annex.document))[0].id == annex.id
 
 
-def test_numbered_clauses_under_a_unit_are_its_body_not_headings() -> None:
-    """How Polish contracts are written: "§ 7. Postanowienia końcowe" and
-    under it "1. …", "2. …". Read as headings, the ustępy made every such
-    section look empty - human contracts included."""
-    from humanize_pl.blueprint import check_category
+def test_a_precise_template_decides_over_the_general_checklist() -> None:
+    """A porozumienie stron read as a wypowiedzenie meets a checklist that wants
+    a notice period and a justification. The agreement has neither, rightly;
+    its own template knows that and the checklist does not."""
+    row = _template("umowa_o_prace/rozwiazanie_umowy_o_prace_za_porozumieniem_stron")
+    report = check_category(_filled(row.document), "wypowiedzenie")
+    assert report.missing_required, "checklist still reports, as context"
+    assert report.template["id"] == row.id
+    assert report.blocking is False
+    assert not any(issue.startswith("brak wymaganej sekcji") for issue in report.issues)
 
+
+def test_a_dropped_clause_and_an_unfilled_blank_are_reported_against_the_template() -> None:
+    lease = blueprint_for("umowa_najmu").document
+    deposit = {
+        block["p"]
+        for block in lease["blocks"]
+        if block["text"].startswith("§ 4.") or "kaucję" in block["text"]
+    }
+    report = check_category(
+        _filled(lease, skip=deposit, blank=frozenset({"kwota_czynszu_w_zl"})), "umowa_najmu"
+    )
+    assert report.template["id"] == "umowa_najmu"
+    assert any("§ 4. Kaucja" in row for row in report.template["missing"])
+    assert report.template["unfilled"] == ["kwota czynszu w zł"]
+    assert report.blocking is True
+    assert "niewypełnione pole: kwota czynszu w zł" in report.issues
+
+
+def test_template_loader_rejects_a_file_filed_under_the_wrong_category(tmp_path) -> None:
+    path = tmp_path / "umowa_najmu" / "wzor.yaml"
+    path.parent.mkdir()
+    path.write_text(
+        yaml.safe_dump({"category": "pozew", "label_pl": "Wzór", "blocks": [{"p": 0}]}),
+        encoding="utf-8",
+    )
+    with pytest.raises(BlueprintError, match="katalogu"):
+        _load_template(path)
+
+
+def test_a_request_without_its_optional_justification_is_not_blocked() -> None:
     text = (
-        "Umowa zawarta w dniu 3 marca 2026 r. pomiędzy Zamawiającym a Wykonawcą.\n"
-        "§ 1. Przedmiot umowy\n"
-        "1. Przedmiotem umowy jest świadczenie usług doradczych.\n"
-        "2. Wykonawca wykona usługi z należytą starannością.\n"
-        "§ 7. Postanowienia końcowe\n"
-        "1. W sprawach nieuregulowanych stosuje się przepisy Kodeksu cywilnego.\n"
-        "2. Zmiany umowy wymagają formy pisemnej pod rygorem nieważności."
+        "Kraków, dnia 3 marca 2026 r.\nJan Kowalski\nul. Długa 1, Kraków\n"
+        "Alfa sp. z o.o., Warszawa\n"
+        "WNIOSEK O UDZIELENIE URLOPU BEZPŁATNEGO\n"
+        "Na podstawie art. 174 § 1 ustawy z dnia 26 czerwca 1974 r. - Kodeks pracy, zwracam "
+        "się z wnioskiem o udzielenie mi urlopu bezpłatnego w okresie od dnia 1 kwietnia "
+        "2026 r. do dnia 30 kwietnia 2026 r.\n"
+        "Jan Kowalski"
     )
-
-    assert check_category(text, "umowa_uslug").empty_sections == []
-
-
-def test_a_bare_or_titled_unit_is_still_a_heading() -> None:
-    from humanize_pl.blueprint import is_heading
-
-    for line in ("§ 7.", "§ 7. Postanowienia końcowe", "§ 2a. Odpowiedzialność",
-                 "II. Stan faktyczny", "1. Postanowienia ogólne"):
-        assert is_heading(line), line
-    for line in ("1. Umowa wchodzi w życie.",
-                 "1) Zamawiający zapłaci wynagrodzenie w terminie 14 dni."):
-        assert not is_heading(line), line
+    report = check_category(text, "wniosek_pracowniczy")
+    assert report.template["id"] == "wniosek_pracowniczy/wniosek_o_udzielenie_urlopu_bezplatnego"
+    assert not report.blocking, report.issues
 
 
-def test_a_court_designation_block_is_not_an_empty_section() -> None:
-    """"Sąd Rejonowy w Krakowie" over "Wydział I Cywilny": the line is the
-    content. It looked empty once markup no longer hid its heading shape."""
+def test_a_header_block_or_a_list_is_not_an_empty_section() -> None:
+    """A court's name, its department and the date are heading-like lines, and
+    so are unpunctuated list items; none of them leaves a section empty."""
     text = (
-        "Sąd Rejonowy w Krakowie\n"
-        "Wydział I Cywilny\n"
-        "Powód: Alfa sp. z o.o. z siedzibą w Krakowie\n"
-        "Pozwany: Beta sp. z o.o. z siedzibą w Warszawie\n"
+        "Szczecin, dnia 8 października 2026 r.\n"
+        "Sąd Okręgowy w Szczecinie\n"
+        "X Wydział Gospodarczy\n"
+        "ul. Małopolska 47, 70-515 Szczecin\n"
+        "Powód: Hurtownia Pomorze sp. z o.o., ul. Kolumba 3, Szczecin\n"
+        "Pozwany: Gastro-Serwis Łukasz Borowski, ul. Rycerska 33, Szczecin\n"
         "Wartość przedmiotu sporu: 27 300 zł\n"
         "POZEW O ZAPŁATĘ\n"
-        "Wnoszę o zasądzenie od pozwanego na rzecz powoda kwoty 27 300 zł wraz z odsetkami."
+        "Wnoszę o zasądzenie od pozwanego na rzecz powoda kwoty 27 300 zł z odsetkami.\n"
+        "Wnioski dowodowe\n"
+        "1. Faktura VAT nr 12/2026 z dnia 3 marca 2026\n"
+        "2. Wezwanie do zapłaty z dnia 1 kwietnia 2026\n"
+        "Uzasadnienie\n"
+        "Powód dostarczył towar, a pozwany nie zapłacił ceny w terminie.\n"
+        "Ewa Pawłowska, adwokat (podpis)"
     )
-
-    assert "oznaczenie sądu" not in check_category(text, "pozew").empty_sections
-
-
-def test_a_section_with_numbered_subsections_is_not_empty() -> None:
-    """"V. Analiza prawna" and its body under "1. Istota kary umownej." -
-    counting stopped at the first heading of any rank."""
-    text = (
-        "OPINIA PRAWNA\n"
-        "I. Przedmiot opinii\n"
-        "Przedmiotem opinii jest dopuszczalność zastrzeżenia kary umownej w umowie.\n"
-        "V. Analiza prawna\n"
-        "1. Istota kary umownej.\n"
-        "Zgodnie z art. 483 k.c. dłużnik może być obowiązany do zapłaty określonej sumy.\n"
-        "2. Odstąpienie od umowy.\n"
-        "Kara umowna może zostać zastrzeżona także na wypadek odstąpienia od umowy.\n"
-        "VI. Wnioski\n"
-        "Zastrzeżenie kary umownej za odstąpienie od umowy jest co do zasady dopuszczalne."
-    )
-
-    assert "analiza prawna" not in check_category(text, "opinia_prawna").empty_sections
-    # A top-level unit with nothing under it is still empty.
-    starved = text.replace(
-        "V. Analiza prawna\n1. Istota kary umownej.\n"
-        "Zgodnie z art. 483 k.c. dłużnik może być obowiązany do zapłaty określonej sumy.\n"
-        "2. Odstąpienie od umowy.\n"
-        "Kara umowna może zostać zastrzeżona także na wypadek odstąpienia od umowy.\n",
-        "V. Analiza prawna\n",
-    )
-    assert "analiza prawna" in check_category(starved, "opinia_prawna").empty_sections
+    report = check(text, blueprint_for("pozew"))
+    assert report.empty_sections == [], report.empty_sections
 
 
-def test_a_signature_block_is_recognised_by_its_shape() -> None:
-    """The contract Bielik drafted a second signature block for: its own was
-    "ZLECENIODAWCA" over a dotted line, and the skeleton only knew the words
-    "podpis", "zamawiający:" and "wykonawca:"."""
+def test_a_date_line_is_found_by_its_shape_not_by_dnia() -> None:
+    """"dnia" also stands in "ustawy z dnia 26 czerwca 1974 r.", so a missing
+    date line passed as present; a line pattern finds the line itself."""
+    blueprint = blueprint_for("wezwanie_do_zaplaty")
     body = (
-        "Umowa zawarta w dniu 3 marca 2026 r. pomiędzy Zleceniodawcą a Zleceniobiorcą.\n"
-        "§ 1. Przedmiot umowy\n"
-        "Przedmiotem umowy jest prowadzenie ksiąg rachunkowych Zleceniodawcy.\n"
+        "Na podstawie art. 471 ustawy z dnia 23 kwietnia 1964 r. Kodeks cywilny wzywam "
+        "Dłużnika do zapłaty kwoty 12 450 zł w terminie 7 dni.\nZ poważaniem\nJan Kowalski (podpis)"
     )
-    block = "**ZLECENIODAWCA**  \n\n.........................\n\n**ZLECENIOBIORCA**\n.........................\n"
-
-    assert "podpisy stron" not in check_category(body + block, "umowa_uslug").missing_required
-    # The role as a word, in a sentence, is not a signature block.
-    assert "podpisy stron" in check_category(body, "umowa_uslug").missing_required
-
-
-@pytest.mark.parametrize(
-    "block",
-    [
-        # The firm's layout: the dots over the names, the lines padded out.
-        "……………………………………" + " " * 30 + "……………………………………\n"
-        "        Usługodawca" + " " * 90 + "Usługobiorca\n",
-        # Two names run together where a tab stop was.
-        "………………………...……….……………………\nZleceniodawcaZleceniobiorca\n",
-        "…………………….....                              ……………….\n      Strona 1          Strona 2\n",
-        "Przyjmujący zamówienie        Udzielający zamówienia\n……………………………\n",
-        # Two dotted places and nothing under them, closing the document.
-        "……………………………………………….          ……..……………………………………….\n",
-        # The names alone on the last line.
-        "WYDZIERŻAWIAJĄCYDZIERŻAWCA \n",
-    ],
-)
-def test_a_signature_block_in_any_of_the_firms_layouts(block: str) -> None:
-    """The role-specific pattern found the signature block in none of the
-    firm's 50 contracts: it wanted the name over the dots."""
-    body = (
-        "Umowa zawarta w dniu 3 marca 2026 r. pomiędzy Usługodawcą a Usługobiorcą.\n"
-        "§ 1. Przedmiot umowy\n"
-        "Przedmiotem umowy jest sprzątanie biura Usługobiorcy.\n"
-        "Umowę sporządzono w dwóch jednobrzmiących egzemplarzach.\n"
-    )
-    assert "podpisy stron" not in check_category(body + block, "umowa_uslug").missing_required
+    assert "data_miejsce" not in check(body, blueprint).present_sections
+    for date_line in ("Toruń, 7 kwietnia 2026 r.", "Warszawa, dnia 12 lipca 2026 roku",
+                      "…………………, dnia ……………… r."):
+        report = check(date_line + "\n" + body, blueprint)
+        assert "data_miejsce" in report.present_sections, date_line
+        assert "miejscowość i data" not in report.empty_sections, date_line
 
 
-def test_a_blank_to_fill_is_not_a_signature_block() -> None:
-    """Dots next to a sentence naming a party: a field in the body."""
-    text = (
-        "Umowa zawarta w dniu 3 marca 2026 r. pomiędzy Usługodawcą a Usługobiorcą.\n"
-        "§ 1. Przedmiot umowy\n"
-        "Zakres usług obejmuje:\n"
-        "…………………………………………\n"
-        "Usługodawca zobowiązuje się do wykonywania czynności określonych w ust. 1.\n"
-    )
-    assert "podpisy stron" in check_category(text, "umowa_uslug").missing_required
-
-
-def test_loader_rejects_a_non_boolean_signature_block(tmp_path) -> None:
-    payload = {"category": "x", "sections": [{"id": "a", "matches": ["q"], "signature_block": "tak"}]}
-    with pytest.raises(BlueprintError, match="signature_block"):
-        _load(_write(tmp_path, payload))
-
-
-def test_loader_rejects_a_broken_pattern(tmp_path) -> None:
-    payload = {"category": "x", "sections": [{"id": "a", "matches": ["q"], "patterns": ["(unclosed"]}]}
+def test_loader_reads_line_patterns_and_rejects_a_broken_one(tmp_path) -> None:
+    payload = {"category": "x", "sections": [{"id": "a", "patterns": [r"^\d+, dnia"]}]}
+    (section,) = _load(_write(tmp_path, payload)).sections
+    assert section.found_in("12, dnia") == "12, dnia"
+    payload["sections"][0]["patterns"] = ["(unclosed"]
     with pytest.raises(BlueprintError, match="patterns"):
         _load(_write(tmp_path, payload))

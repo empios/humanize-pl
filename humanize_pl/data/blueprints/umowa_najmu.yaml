@@ -1,0 +1,318 @@
+# Szkielet struktury: umowa najmu / dzierżawy.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: umowa_najmu
+label_pl: umowa najmu / dzierżawy
+# Kolejności sekcji nie sprawdzamy: realne wzory tej kategorii układają je różnie.
+check_order: false
+numbering: paragraph
+sections:
+- id: komparycja
+  label_pl: komparycja (strony)
+  severity: required
+  # Formuły zawarcia i oznaczenia stron, nie nazwy ról: „najemca” czy „zawarta”
+  # powtarzają się w całej umowie i utrzymywały usuniętą komparycję jako obecną.
+  matches: [zawarta w dniu, zawarta dnia, zawarta pomiędzy, zawarta między, zawarto umowę,
+    zwanym dalej, zwaną dalej, zwanymi dalej, zwany dalej, zwana dalej, zwanego dalej,
+    zwanej dalej, zwani dalej, z siedzibą w, zamieszkał, pesel, 'nip:', 'nip ', krs, legitymując,
+    oświadczam]
+- id: przedmiot
+  label_pl: przedmiot najmu / dzierżawy
+  severity: required
+  matches: [przedmiot najmu, oddaje, lokal, nieruchom, rzecz, miejsc, powierzchni, budki, pokoj, grunty,
+    dzierżaw, najmu, egzekucj, zastępcz]
+- id: czynsz
+  label_pl: czynsz / opłata
+  severity: expected
+  matches: [czynsz, opłata, wynagrodzenie, zł, odpłatn]
+- id: kaucja
+  label_pl: kaucja / zabezpieczenie
+  severity: expected
+  matches: [kaucja, zabezpieczenie, zwrócenie]
+- id: czas
+  label_pl: czas trwania
+  severity: expected
+  matches: [czas trwania, na czas, okres, od dnia, termin najmu, do dnia, zawarta na]
+- id: wypowiedzenie
+  label_pl: wypowiedzenie / rozwiązanie
+  severity: expected
+  matches: [wypowiedzenie, wypowiedzenia, rozwiązanie, rozwiązać, okres wypowiedzenia]
+- id: koncowe
+  label_pl: postanowienia końcowe
+  severity: expected
+  matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
+      formy]
+
+# Dokument ogólny napisany dla tej kategorii: wśród realnych wzorów nie było
+# ogólnego. Przy użyciu wypełnia się wyłącznie pola (`slots`).
+document:
+  label_pl: Umowa najmu lokalu mieszkalnego
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 1417, bottom: 1417, left: 1417, right: 1417}}
+  blocks:
+  - p: 0
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: UMOWA NAJMU LOKALU MIESZKALNEGO
+  - {p: 1, role: spacer}
+  - p: 2
+    role: body
+    layout: {align: justify, size: 11.0}
+    text: 'zawarta w dniu ………………… (data) w ………………… (miejscowość) pomiędzy:'
+    slots:
+    - {id: data, span: [15, 22], type: date, hint: data}
+    - {id: miejscowosc, span: [32, 39], type: place, hint: miejscowość}
+    inline_hints:
+    - {span: [23, 29], text: data}
+    - {span: [40, 53], text: miejscowość}
+  - p: 3
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: ………………………………………………………………………………………………
+    slots:
+    - {id: wynajmujacy, span: [0, 36], type: text, hint: 'imię i nazwisko lub firma, adres lub siedziba, PESEL lub NIP'}
+  - p: 4
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true}
+    text: (imię i nazwisko lub firma, adres lub siedziba, PESEL lub NIP)
+    hint_for: 3
+    hint_kind: label
+  - p: 5
+    role: party_alias
+    layout: {align: justify, size: 11.0}
+    text: zwanym dalej Wynajmującym,
+    alias: Wynajmującym
+  - p: 6
+    role: party_connector
+    layout: {align: justify, size: 11.0}
+    text: a
+  - p: 7
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: ………………………………………………………………………………………………
+    slots:
+    - {id: najemca, span: [0, 36], type: text, hint: 'imię i nazwisko lub firma, adres lub siedziba, PESEL lub NIP'}
+  - p: 8
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true}
+    text: (imię i nazwisko lub firma, adres lub siedziba, PESEL lub NIP)
+    hint_for: 7
+    hint_kind: label
+  - p: 9
+    role: party_alias
+    layout: {align: justify, size: 11.0}
+    text: zwanym dalej Najemcą,
+    alias: Najemcą
+  - p: 10
+    role: party_alias
+    layout: {align: justify, size: 11.0}
+    text: zwanymi dalej łącznie Stronami.
+    alias: Stronami
+  - {p: 11, role: spacer}
+  - p: 12
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 1., kind: paragraph, src: manual, level: 0}}
+    text: § 1. Przedmiot najmu
+  - p: 13
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Wynajmujący oświadcza, że przysługuje mu tytuł prawny uprawniający do oddania w najem lokalu mieszkalnego położonego w ………………………………
+      (adres lokalu), o powierzchni użytkowej ………… (powierzchnia w m²), zwanego dalej Lokalem.
+    slots:
+    - {id: adres_lokalu, span: [122, 134], type: address, hint: adres lokalu}
+    - {id: powierzchnia_lokalu, span: [175, 179], type: text, hint: powierzchnia w m²}
+    inline_hints:
+    - {span: [135, 149], text: adres lokalu}
+    - {span: [180, 199], text: powierzchnia w m²}
+  - p: 14
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '2.', kind: decimal, src: manual, level: 0}}
+    text: 2. Wynajmujący oddaje Najemcy Lokal do używania na cele mieszkaniowe, a Najemca zobowiązuje się płacić Wynajmującemu umówiony czynsz.
+  - p: 15
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '3.', kind: decimal, src: manual, level: 0}}
+    text: 3. Stan techniczny Lokalu oraz jego wyposażenie Strony opisują w protokole zdawczo-odbiorczym, stanowiącym Załącznik nr 1 do Umowy.
+  - {p: 16, role: spacer}
+  - p: 17
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 2., kind: paragraph, src: manual, level: 0}}
+    text: § 2. Czas trwania najmu
+  - p: 18
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Umowa zostaje zawarta na czas ………………… (oznaczony albo nieoznaczony), począwszy od dnia ………………… (data wydania Lokalu).
+    slots:
+    - {id: czas_najmu, span: [33, 40], type: text, hint: oznaczony albo nieoznaczony}
+    - {id: data_wydania_lokalu, span: [90, 97], type: date, hint: data wydania Lokalu}
+    inline_hints:
+    - {span: [41, 70], text: oznaczony albo nieoznaczony}
+    - {span: [98, 119], text: data wydania Lokalu}
+  - p: 19
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '2.', kind: decimal, src: manual, level: 0}}
+    text: 2. Jeżeli Umowa zostaje zawarta na czas oznaczony, najem kończy się z dniem ………………… (data zakończenia najmu).
+    slots:
+    - {id: data_zakonczenia_najmu, span: [76, 83], type: date, hint: data zakończenia najmu}
+    inline_hints:
+    - {span: [84, 108], text: data zakończenia najmu}
+  - {p: 20, role: spacer}
+  - p: 21
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 3., kind: paragraph, src: manual, level: 0}}
+    text: § 3. Czynsz i opłaty
+  - p: 22
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Najemca będzie płacił Wynajmującemu czynsz w wysokości ………………… (kwota czynszu w zł) miesięcznie.
+    slots:
+    - {id: kwota_czynszu_w_zl, span: [58, 65], type: amount, hint: kwota czynszu w zł}
+    inline_hints:
+    - {span: [66, 86], text: kwota czynszu w zł}
+  - p: 23
+    role: field
+    layout: {align: justify, size: 11.0}
+    text: 'słownie: ……………………………………………… złotych'
+    slots:
+    - {id: slownie, span: [9, 27], type: amount, label: słownie}
+  - p: 24
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '2.', kind: decimal, src: manual, level: 0}}
+    text: 2. Czynsz płatny jest z góry, do ………… (dzień miesiąca) dnia każdego miesiąca kalendarzowego, na rachunek bankowy Wynajmującego nr ………………………………
+      (numer rachunku).
+    slots:
+    - {id: dzien_miesiaca, span: [33, 37], type: date, hint: dzień miesiąca}
+    - {id: numer_rachunku, span: [130, 142], type: text, hint: numer rachunku}
+    inline_hints:
+    - {span: [38, 54], text: dzień miesiąca}
+    - {span: [143, 159], text: numer rachunku}
+  - p: 25
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '3.', kind: decimal, src: manual, level: 0}}
+    text: 3. Niezależnie od czynszu Najemca ponosi opłaty niezależne od Wynajmującego, w szczególności za energię elektryczną, gaz, wodę i odprowadzanie
+      ścieków, ogrzewanie oraz odbiór odpadów komunalnych, zgodnie ze wskazaniami urządzeń pomiarowych albo rachunkami dostawców.
+  - p: 26
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '4.', kind: decimal, src: manual, level: 0}}
+    text: 4. Wynajmujący może podwyższyć czynsz na zasadach określonych w ustawy z dnia 21 czerwca 2001 r. o ochronie praw lokatorów, mieszkaniowym
+      zasobie gminy i o zmianie Kodeksu cywilnego.
+  - {p: 27, role: spacer}
+  - p: 28
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 4., kind: paragraph, src: manual, level: 0}}
+    text: § 4. Kaucja
+  - p: 29
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. W dniu zawarcia Umowy Najemca wpłaca Wynajmującemu kaucję zabezpieczającą pokrycie należności z tytułu najmu w wysokości ………………… (kwota
+      kaucji w zł).
+    slots:
+    - {id: kwota_kaucji_w_zl, span: [124, 131], type: amount, hint: kwota kaucji w zł}
+    inline_hints:
+    - {span: [132, 151], text: kwota kaucji w zł}
+  - p: 30
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '2.', kind: decimal, src: manual, level: 0}}
+    text: 2. Kaucja podlega zwrotowi w ciągu miesiąca od dnia opróżnienia Lokalu, po potrąceniu należności Wynajmującego z tytułu najmu.
+  - {p: 31, role: spacer}
+  - p: 32
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 5., kind: paragraph, src: manual, level: 0}}
+    text: § 5. Prawa i obowiązki Stron
+  - p: 33
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Wynajmujący wydaje Lokal w stanie przydatnym do umówionego użytku i utrzymuje go w takim stanie przez czas trwania najmu.
+  - p: 34
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '2.', kind: decimal, src: manual, level: 0}}
+    text: 2. Najemca używa Lokalu zgodnie z jego przeznaczeniem, utrzymuje go w należytym stanie i ponosi drobne nakłady związane ze zwykłym używaniem
+      Lokalu.
+  - p: 35
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '3.', kind: decimal, src: manual, level: 0}}
+    text: 3. Najemca nie może bez zgody Wynajmującego oddać Lokalu ani jego części w podnajem lub do bezpłatnego używania osobom trzecim.
+  - p: 36
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '4.', kind: decimal, src: manual, level: 0}}
+    text: 4. Zmiany w Lokalu wymagają uprzedniej pisemnej zgody Wynajmującego.
+  - {p: 37, role: spacer}
+  - p: 38
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 6., kind: paragraph, src: manual, level: 0}}
+    text: § 6. Wypowiedzenie umowy
+  - p: 39
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Najemca może wypowiedzieć Umowę zawartą na czas nieoznaczony najpóźniej na trzy miesiące naprzód, na koniec miesiąca kalendarzowego.
+  - p: 40
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '2.', kind: decimal, src: manual, level: 0}}
+    text: 2. Wynajmujący może wypowiedzieć Umowę wyłącznie z przyczyn i z zachowaniem terminów określonych w ustawy z dnia 21 czerwca 2001 r. o
+      ochronie praw lokatorów, mieszkaniowym zasobie gminy i o zmianie Kodeksu cywilnego.
+  - p: 41
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '3.', kind: decimal, src: manual, level: 0}}
+    text: '3. Umowę zawartą na czas oznaczony Strony mogą wypowiedzieć z zachowaniem ………… (okres wypowiedzenia) okresu wypowiedzenia w przypadkach
+      wskazanych w Umowie: ……………………………… (przypadki uprawniające do wypowiedzenia); do wypowiedzenia przez Wynajmującego stosuje się ust. 2.'
+    slots:
+    - {id: okres_wypowiedzenia, span: [74, 78], type: text, hint: okres wypowiedzenia}
+    - {id: przypadki_uprawniajace_do_wypowiedzenia, span: [157, 169], type: date, hint: przypadki uprawniające do wypowiedzenia}
+    inline_hints:
+    - {span: [79, 100], text: okres wypowiedzenia}
+    - {span: [170, 211], text: przypadki uprawniające do wypowiedzenia}
+  - p: 42
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '4.', kind: decimal, src: manual, level: 0}}
+    text: 4. Wypowiedzenie wymaga formy pisemnej pod rygorem nieważności.
+  - {p: 43, role: spacer}
+  - p: 44
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 7., kind: paragraph, src: manual, level: 0}}
+    text: § 7. Zwrot Lokalu
+  - p: 45
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Po zakończeniu najmu Najemca zwraca Lokal w stanie niepogorszonym, z uwzględnieniem zużycia będącego następstwem prawidłowego używania,
+      co Strony potwierdzają protokołem zdawczo-odbiorczym.
+  - {p: 46, role: spacer}
+  - p: 47
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 8., kind: paragraph, src: manual, level: 0}}
+    text: § 8. Postanowienia końcowe
+  - p: 48
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Zmiany Umowy wymagają formy pisemnej pod rygorem nieważności.
+  - p: 49
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '2.', kind: decimal, src: manual, level: 0}}
+    text: 2. W sprawach nieuregulowanych Umową mają zastosowanie przepisy Kodeksu cywilnego oraz ustawy z dnia 21 czerwca 2001 r. o ochronie praw
+      lokatorów, mieszkaniowym zasobie gminy i o zmianie Kodeksu cywilnego.
+  - p: 50
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '3.', kind: decimal, src: manual, level: 0}}
+    text: 3. Umowę sporządzono w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze Stron.
+  - {p: 51, role: spacer}
+  - {p: 52, role: spacer}
+  - p: 53
+    role: signature_line
+    layout: {align: justify, size: 11.0, tabs: 5}
+    text: "……………………………………\t\t\t\t\t……………………………………"
+    slots:
+    - {id: podpis_wynajmujacego, span: [0, 14], type: signature, hint: podpis Wynajmującego}
+    - {id: podpis_najemcy, span: [19, 33], type: signature, hint: podpis Najemcy}
+  - p: 54
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true, tabs: 5}
+    text: "(podpis Wynajmującego)\t\t\t\t\t(podpis Najemcy)"
+    hint_for: 53
+    hint_kind: label
+  - {p: 55, role: spacer}
+  - p: 56
+    role: field_header
+    layout: {align: justify, size: 11.0}
+    text: 'Załączniki:'
+  - p: 57
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Protokół zdawczo-odbiorczy Lokalu.

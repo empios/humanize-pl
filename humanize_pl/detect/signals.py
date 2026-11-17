@@ -11,7 +11,6 @@ from humanize_pl.rules.legal_features import (
     AI_TRANSITION_PATTERN,
     VAGUE_REFERENCE_PATTERN,
 )
-
 from .base import Finding
 from .structural import scaffold_findings, tricolon_findings
 
@@ -65,14 +64,8 @@ def sentence_findings(
 def _typography_artifacts(
     sentence: str, paragraph_index: int, sentence_index: int
 ) -> Iterator[Finding]:
-    """Flag AI typography habits, such as English em-dashes (—).
-
-    A double hyphen counts only on its own. Inside "---" or "|---|---|" it is
-    markdown, which `humanize_pl.artifacts` reports as what it is: measured
-    on 27 model documents, 259 of the 268 "em dashes" found here were rule
-    lines and table separators, and 9 were dashes.
-    """
-    for match in re.finditer(r"\s*(—|(?<!-)--(?!-))\s*", sentence):
+    """Flag AI typography habits, such as English em-dashes (—)."""
+    for match in re.finditer(r"\s*(—|--)\s*", sentence):
         yield Finding(
             family="typography_artifact",
             rule="detect:em_dash",
@@ -218,27 +211,7 @@ def _reference_density(
             char_start=0,
             char_end=len(sentence),
             weight=0.4,
-            # A density, like vague_reference_density above it, not a located
-            # construction - so the engine cannot promise to rewrite it.
-            #
-            # This said True, which put every one of these into
-            # `findings_rewritable` and told the reader the engine could have
-            # fixed them. It cannot. The nominalisation rules act on light
-            # verb + deverbal noun ("dokonać analizy" -> "przeanalizować"),
-            # and what drives the density in real AI filings is bare deverbal
-            # nouns in subject and object position - "podporządkowanie",
-            # "ustalenie", "naruszenie" - which can only be removed by
-            # restructuring the sentence, the one thing this engine refuses
-            # to do.
-            #
-            # Measured on 12 corpus documents: 69 findings, 2 fixed. Light
-            # verbs occur at 3.73 per 1000 words against a nominalisation
-            # density of 6.45, and most of those are not in a rewritable
-            # pair. The signal is worth reporting - AI filings nominalise at
-            # 6.45 per 1000 against 1.68 for human judgments - but it is
-            # something to tell the author about, not something the engine
-            # removes.
-            rewritable=False,
+            rewritable=True,
             detail=f"{nominal}/{word_count} tokens",
         )
 

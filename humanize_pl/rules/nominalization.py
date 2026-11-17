@@ -8,10 +8,10 @@ import regex as re
 import yaml
 
 from humanize_pl.config import Mode
-from humanize_pl.nlp.morfeusz import MorfeuszAnalyzer, try_load_morfeusz
+from humanize_pl.nlp.morfeusz import MorfeuszAnalyzer, has_genitive_reading, try_load_morfeusz
 from humanize_pl.nlp.morphology import ger_to_infinitive
-
-from .base import Candidate
+from humanize_pl.rules.finite_verbs import has_finite_verb
+from .base import COORDINATION_RE, Candidate, dependents_follow
 
 _YAML = Path(__file__).parent / "nominalization.yaml"
 
@@ -167,10 +167,10 @@ def _nlp_candidates(
                 continue
 
             # A light-verb reduction deletes the complement noun. If that noun
-            # heads a genitive chain ("analizy dokumentów"), the dependents would
-            # be left dangling in the genitive case, producing ungrammatical
-            # Polish ("przeanalizować dokumentów"). Skip rather than emit it.
-            if _reduction_leaves_dangling_genitive(analysis, getattr(dep, "id", None)):
+            # has dependents ("analizy dokumentów", "analizę prawną"), they would
+            # be left dangling, producing ungrammatical Polish
+            # ("przeanalizować dokumentów"). Skip rather than emit it.
+            if _reduction_leaves_dependents(analysis, getattr(dep, "id", None)):
                 continue
 
             repl_form = _generate_matching_form(tok.text, entry.replacement, morfeusz)
@@ -223,33 +223,42 @@ def _has_relative_clause_after_removed_noun(sentence: str, noun_end: int) -> boo
     return bool(_RELATIVE_AFTER_NOUN_RE.match(sentence[noun_end:]))
 
 
-def _genitive_dependents(analysis, noun_id: int | None) -> list:
-    """Genitive-case noun dependents of a token (a łańcuch dopełniaczowy)."""
-    if analysis is None or noun_id is None:
-        return []
-    return [
-        t for t in analysis.tokens
-        if getattr(t, "head", None) == noun_id
-        and t.upos == "NOUN"
-        and "Case=Gen" in (t.feats or "")
-    ]
+def _reduction_leaves_dependents(analysis, noun_id: int | None) -> bool:
+    """True if the token *noun_id* has dependents other than punctuation.
 
-
-def _reduction_leaves_dangling_genitive(analysis, noun_id: int | None) -> bool:
-    """True if *noun_id* heads a genitive chain.
-
-    Reducing a light verb (``dokonać weryfikacji poprawności…`` →
-    ``zweryfikować poprawności…``) deletes the complement noun but would leave
-    its genitive-dependent chain behind in the genitive case — ungrammatical
-    Polish (the object of the new verb must be accusative).  Callers use this
-    to skip the reduction rather than emit case-mismatched output.
+    Reducing a light verb deletes the complement noun but would leave its
+    dependents behind: a genitive chain (``dokonać weryfikacji poprawności…`` →
+    ``zweryfikować poprawności…``), an adjective (``przeprowadzić analizę
+    prawną`` → ``przeanalizować prawną``) or a prepositional phrase
+    (``sprawować nadzór nad spółką`` → ``nadzorować nad spółką``). Callers use
+    this to skip the reduction rather than emit ungrammatical output.
     """
-    return bool(_genitive_dependents(analysis, noun_id))
+    if analysis is None or noun_id is None:
+        return False
+    return any(
+        t.upos != "PUNCT" for t in analysis.tokens if getattr(t, "head", None) == noun_id
+    )
 
 
 # ─── Ger auto-detection helpers ──────────────────────────────────────────────
 
 _W_CELU_RE = re.compile(r"\bw\s+celu\s+(\p{L}+)", re.IGNORECASE)
+# "w celu A i w celu B": the second purpose is coordinated with the first, and
+# "…A i, aby B" would break the pair.
+_ENDS_IN_CONJUNCTION = re.compile(r"\b(?:i|oraz|lub|albo|bądź|ani|a także)\s*$", re.IGNORECASE)
+
+
+def _object_left_unfilled(infinitive: str, tail: str, morfeusz: MorfeuszAnalyzer) -> bool:
+    """True if *infinitive* takes an accusative object that nothing supplies.
+
+    A verb with a passive participle is transitive ("przywłaszczyć",
+    "przywłaszczony"). The gerund had no object here, or it would have been a
+    genitive and the rule would not run, so "dokonała zaboru, aby przywłaszczyć
+    na szkodę K." would lack one. A reflexive "się" fills the slot.
+    """
+    if re.match(r"\s+się\b", tail, re.IGNORECASE):
+        return False
+    return any(form.tag.startswith("ppas") for form in morfeusz.generate(infinitive))
 
 
 def _ger_auto_entry(
@@ -268,54 +277,44 @@ def _ger_auto_entry(
     return _NlpEntry(infinitive, frozenset({"standard", "strong"}), 0.16)
 
 
-# What may follow the gerund for the rewrite to stay grammatical: nothing,
-# "się", or a preposition. Anything else is its object, in the genitive the
-# gerund governs, and an infinitive needs it in another case.
-_W_CELU_FREE_AFTER = frozenset(
-    {"się", "z", "ze", "w", "we", "na", "do", "dla", "przez", "od", "po", "o", "przy",
-     "między", "pomiędzy", "wobec", "u", "za", "nad", "pod", "przed"}
-)
-_NEXT_WORD_RE = re.compile(r"\s*(\p{L}+)")
-
-
 def _w_celu_ger_candidates(
     sentence: str, *, mode: Mode, morfeusz: MorfeuszAnalyzer
 ) -> list[Candidate]:
-    """Replace 'w celu GERUNDIVE' → 'aby INFINITIVE' where the grammar allows.
+    """Replace 'w celu GERUNDIVE' → ', aby INFINITIVE'.
 
-    'w celu dostosowania się do przepisów' → 'aby dostosować się do
-    przepisów'; 'w celu ustalenia, czy' → 'aby ustalić, czy'. Not when an
-    object follows: it used to leave it in the genitive - "aby zapewnić
-    sprawnego i skutecznego zarządzania", found on ChatGPT answers - and
-    the engine skips rather than emit a case mismatch (as the light-verb
-    reduction does, see `_reduction_leaves_dangling_genitive`).
+    Example: 'Strona składa wniosek w celu skorzystania z ulgi' → 'Strona składa
+    wniosek, aby skorzystać z ulgi'. "aby" opens a clause, so the main clause
+    must come first: a fronted "Aby ..." would need a closing comma. The
+    gerund's object is genitive ("w celu przeprowadzenia kontroli") and most
+    infinitives take another case ("przeprowadzić kontrolę"), so a gerund
+    followed by a possible genitive, an agent ("przez") or coordination is left
+    alone, and so is a transitive verb that would be left without an object.
     """
     if mode == Mode.conservative:
         return []
     candidates: list[Candidate] = []
     for m in _W_CELU_RE.finditer(sentence):
-        following = _NEXT_WORD_RE.match(sentence, m.end())
-        if following and following.group(1).casefold() not in _W_CELU_FREE_AFTER:
-            continue
-        ger_word = m.group(1)
-        infinitive = ger_to_infinitive(ger_word, morfeusz)
+        infinitive = ger_to_infinitive(m.group(1), morfeusz)
         if not infinitive:
             continue
-        phrase_start = m.start()
-        # Preserve capitalisation of original phrase start
-        if sentence[phrase_start].isupper():
-            replacement = "Aby " + infinitive
-        else:
-            replacement = "aby " + infinitive
-        before = sentence[:phrase_start].rstrip()
-        # "aby" opens a clause: mid-sentence it takes a comma, which
-        # "w celu" did not need.
-        if before and not before.endswith((",", "(", "—", "–", ":", ";")):
-            before += ","
-        result = (before + " " if before else "") + replacement + sentence[m.end():]
-        result = re.sub(r"  +", " ", result).strip()
-        if result == sentence:
+        lead, tail = sentence[: m.start()].rstrip(), sentence[m.end() :]
+        following = re.match(r"\s+(\p{L}+)", tail)
+        object_follows = following is not None and (
+            following.group(1).lower() == "przez"
+            or has_genitive_reading(morfeusz, following.group(1))
+        )
+        if (
+            not lead
+            or not (lead[-1].isalnum() or lead[-1] in ",)_")
+            or not has_finite_verb(lead)
+            or object_follows
+            or COORDINATION_RE.match(tail)
+            or _ENDS_IN_CONJUNCTION.search(lead)
+            or _object_left_unfilled(infinitive, tail, morfeusz)
+        ):
             continue
+        separator = " " if lead.endswith(",") else ", "
+        result = f"{lead}{separator}aby {infinitive}{tail}"
         candidates.append(
             Candidate(
                 result,
@@ -338,6 +337,14 @@ def _preserve_case(original: str, replacement: str) -> str:
     return replacement
 
 
+def _reduce(match: re.Match, replacement: str) -> str:
+    """The light-verb phrase reduced to *replacement*, unless the deleted noun's
+    dependents follow it ("dokonać zmiany umowy")."""
+    if dependents_follow(match.string[match.end() :]):
+        return match.group(0)
+    return _preserve_case(match.group(0), replacement)
+
+
 def _regex_candidates(sentence: str, *, mode: Mode) -> list[Candidate]:
     active = mode.value
     entries = [e for e in _load_regex_entries() if active in e.modes]
@@ -349,12 +356,10 @@ def _regex_candidates(sentence: str, *, mode: Mode) -> list[Candidate]:
     combined_risk = 0.0
 
     for entry in entries:
-        if not entry.pattern.search(combined):
-            continue
-        combined = entry.pattern.sub(
-            lambda m, r=entry.replacement: _preserve_case(m.group(0), r), combined
-        )
-        combined_risk = max(combined_risk, entry.risk)
+        reduced = entry.pattern.sub(lambda m, r=entry.replacement: _reduce(m, r), combined)
+        if reduced != combined:
+            combined = reduced
+            combined_risk = max(combined_risk, entry.risk)
 
     if combined != sentence:
         candidates.append(
@@ -370,12 +375,8 @@ def _regex_candidates(sentence: str, *, mode: Mode) -> list[Candidate]:
         )
 
     for entry in entries:
-        if not entry.pattern.search(sentence):
-            continue
         result = entry.pattern.sub(
-            lambda m, r=entry.replacement: _preserve_case(m.group(0), r),
-            sentence,
-            count=1,
+            lambda m, r=entry.replacement: _reduce(m, r), sentence, count=1
         )
         if result != sentence:
             candidates.append(

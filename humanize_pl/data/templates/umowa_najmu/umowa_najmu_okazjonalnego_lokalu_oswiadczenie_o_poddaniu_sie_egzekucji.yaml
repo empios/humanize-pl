@@ -1,0 +1,74 @@
+template: Umowa najmu okazjonalnego lokalu - oświadczenie o poddaniu się egzekucji.docx
+category: umowa_najmu
+label_pl: Umowa najmu okazjonalnego lokalu - oświadczenie o poddaniu się egzekucji
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 0, end: 14, bold: true}, {start: 15, end: 95, italic: true}]}
+  text: Załącznik nr … (należy wskazać właściwy nr załącznika, odpowiednio dla postanowień umowy najmu)
+  inline_hints:
+  - {span: [15, 95], text: 'należy wskazać właściwy nr załącznika, odpowiednio dla postanowień umowy najmu'}
+- {p: 1, role: spacer}
+- p: 2
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 0, end: 97, bold: true}, {start: 97, end: 153, italic: true}]}
+  text: '[Oświadczenie Najemcy o poddaniu się egzekucji i zobowiązaniu do opróżnienia i wydania lokalu] - (powinno być ono sporządzone w formie
+    aktu notarialnego)'
+- {p: 3, role: spacer}
+- {p: 4, role: spacer}
+- {p: 5, role: spacer}
+- p: 6
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: OŚWIADCZENIE NAJEMCY O PODDANIU SIĘ EGZEKUCJI
+- p: 7
+  role: body
+  layout: {align: center, size: 14.0, bold: true}
+  text: ORAZ ZOBOWIĄZANIU DO OPRÓŻNIENIA I WYDANIA LOKALU W ZWIĄZKU Z ZAWARTĄ UMOWĄ NAJMU OKAZJONALNEGO
+- {p: 8, role: spacer}
+- p: 9
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 10, end: 19, bold: true}, {start: 52,
+        end: 71, bold: true}, {start: 107, end: 228, bold: true}, {start: 316, end: 329, bold: true}, {start: 347, end: 393, bold: true}]}
+  text: Stawający [najemca] oświadcza, iż w dniu…………………………… [dzień/miesiąc/rok] pomiędzy nim, a ……………………………………………. [imię i nazwisko/firma, miejsce
+    zamieszkania/siedziba i adres; nr i seria dokumentu tożsamości; PESEL; NIP wynajmującego] została zawarta umowa najmu okazjonalnego lokalu
+    mieszkalnego położonego w ……………………... [miejscowość] przy ul. ………………… [ulica, numer domu, mieszkania, kod pocztowy].
+  slots:
+  - {id: dzien_miesiac_rok, span: [40, 51], type: date, hint: dzień/miesiąc/rok}
+  - {id: imie_i_nazwisko_firma_miejsce_zamieszkania_siedz, span: [88, 106], type: text, hint: 'imię i nazwisko/firma, miejsce zamieszkania/siedziba
+      i adres; nr i seria dokumentu tożsamości; PESEL; NIP wynajmującego'}
+  - {id: miejscowosc, span: [304, 315], type: place, hint: miejscowość}
+  - {id: ulica_numer_domu_mieszkania_kod_pocztowy, span: [339, 346], type: address, hint: 'ulica, numer domu, mieszkania, kod pocztowy'}
+  inline_hints:
+  - {span: [52, 71], text: dzień/miesiąc/rok}
+  - {span: [107, 228], text: 'imię i nazwisko/firma, miejsce zamieszkania/siedziba i adres; nr i seria dokumentu tożsamości; PESEL; NIP wynajmującego'}
+  - {span: [316, 329], text: miejscowość}
+  - {span: [347, 392], text: 'ulica, numer domu, mieszkania, kod pocztowy'}
+- p: 10
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 309, end: 322, bold: true}, {
+        start: 342, end: 387, bold: true}]}
+  text: Stawający oświadcza, iż na podstawie …………………. przedmiotowej umowy najmu okazjonalnego, zobowiązany jest opuścić, opróżnić oraz wydać Wynajmującemu
+    wskazany w umowie lokal mieszkalny w przypadku rozwiązania stosunku najmu, niezależnie od jego przyczyn, a także wyprowadzić się do lokalu
+    położonego w ……………………… [miejscowość] przy ul. ………………….. [ulica, numer domu, mieszkania, kod pocztowy] na co dysponuje pisemną zgodą właściciela
+    ww. lokalu.
+  slots:
+  - {id: p10_1, span: [37, 45], type: text, context: oświadcza iż na podstawie ▢ przedmiotowej umowy}
+  - {id: miejscowosc_2, span: [299, 308], type: place, hint: miejscowość}
+  - {id: ulica_numer_domu_mieszkania_kod_pocztowy_2, span: [332, 341], type: address, hint: 'ulica, numer domu, mieszkania, kod pocztowy'}
+  inline_hints:
+  - {span: [309, 322], text: miejscowość}
+  - {span: [342, 387], text: 'ulica, numer domu, mieszkania, kod pocztowy'}
+- p: 11
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Najemca oświadcza, iż  w związku z obowiązkiem dobrowolnego opuszczenia, opróżnienia oraz  wydania ww. lokalu mieszkalnego po rozwiązaniu
+    stosunku najmu, poddaje się egzekucji w myśl art. 777 § 1 pkt 4 ustawy z dnia 17 listopada 1964 r. - Kodeks postępowania cywilnego.
+- p: 12
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: Koszty sporządzenia niniejszego oświadczenia ponosi Stawający.
+- {p: 13, role: spacer}
+- {p: 14, role: spacer}

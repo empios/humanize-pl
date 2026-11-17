@@ -1,0 +1,157 @@
+category: pozew
+label_pl: Odwołanie od wypowiedzenia umowy o pracę
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 1417, bottom: 1417, left: 1417, right: 1417}}
+blocks:
+- p: 0
+  role: body
+  layout: {align: right, size: 11.0}
+  text: ………………… (miejscowość), dnia ………………… (data)
+  slots:
+  - {id: miejscowosc, span: [0, 7], type: place, hint: miejscowość}
+  - {id: data, span: [28, 35], type: date, hint: data}
+  inline_hints:
+  - {span: [8, 21], text: miejscowość}
+  - {span: [36, 42], text: data}
+- {p: 1, role: spacer}
+- p: 2
+  role: body
+  layout: {size: 11.0}
+  text: Sąd Rejonowy w ………………… (miejscowość)
+  slots:
+  - {id: miejscowosc_sadu, span: [15, 22], type: place, hint: miejscowość}
+  inline_hints:
+  - {span: [23, 36], text: miejscowość}
+- p: 3
+  role: body
+  layout: {size: 11.0}
+  text: Wydział Pracy i Ubezpieczeń Społecznych
+- {p: 4, role: spacer}
+- p: 5
+  role: field_header
+  layout: {align: justify, size: 11.0}
+  text: 'Powód:'
+- p: 6
+  role: blank_line
+  layout: {align: justify, size: 11.0}
+  text: ………………………………………………………………………………………………
+  slots:
+  - {id: powod, span: [0, 36], type: text, hint: 'imię i nazwisko pracownika, adres, PESEL', label: Powód}
+- p: 7
+  role: hint
+  layout: {align: justify, size: 8.0, italic: true}
+  text: (imię i nazwisko pracownika, adres, PESEL)
+  hint_for: 6
+  hint_kind: label
+- p: 8
+  role: field_header
+  layout: {align: justify, size: 11.0}
+  text: 'Pozwany:'
+- p: 9
+  role: blank_line
+  layout: {align: justify, size: 11.0}
+  text: ………………………………………………………………………………………………
+  slots:
+  - {id: pozwany, span: [0, 36], type: text, hint: nazwa pracodawcy i adres siedziby, label: Pozwany}
+- p: 10
+  role: hint
+  layout: {align: justify, size: 8.0, italic: true}
+  text: (nazwa pracodawcy i adres siedziby)
+  hint_for: 9
+  hint_kind: label
+- {p: 11, role: spacer}
+- p: 12
+  role: field
+  layout: {align: justify, size: 11.0}
+  text: 'Wartość przedmiotu sporu: ………………… zł'
+  slots:
+  - {id: wartosc_przedmiotu_sporu, span: [26, 33], type: amount, label: Wartość przedmiotu sporu}
+- {p: 13, role: spacer}
+- p: 14
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: ODWOŁANIE OD WYPOWIEDZENIA UMOWY O PRACĘ
+- {p: 15, role: spacer}
+- p: 16
+  role: body
+  layout: {align: justify, size: 11.0}
+  text: 'Wnoszę pozew i odwołuję się od wypowiedzenia umowy o pracę dokonanego przez pozwanego pismem z dnia ………………… (data pisma), doręczonym
+    mi dnia ………………… (data doręczenia), i wnoszę o:'
+  slots:
+  - {id: data_pisma, span: [100, 107], type: date, hint: data pisma}
+  - {id: data_doreczenia, span: [141, 148], type: date, hint: data doręczenia}
+  inline_hints:
+  - {span: [108, 120], text: data pisma}
+  - {span: [149, 166], text: data doręczenia}
+- p: 17
+  role: item
+  layout: {align: justify, size: 11.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+  text: ………………… (uznanie wypowiedzenia za bezskuteczne, przywrócenie do pracy albo zasądzenie odszkodowania);
+  slots:
+  - {id: zadanie, span: [0, 7], type: text, hint: 'uznanie wypowiedzenia za bezskuteczne, przywrócenie do pracy albo zasądzenie odszkodowania'}
+  inline_hints:
+  - {span: [8, 100], text: 'uznanie wypowiedzenia za bezskuteczne, przywrócenie do pracy albo zasądzenie odszkodowania'}
+- p: 18
+  role: item
+  layout: {align: justify, size: 11.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+  text: zasądzenie od pozwanego zwrotu kosztów postępowania.
+- {p: 19, role: spacer}
+- p: 20
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: Uzasadnienie
+- p: 21
+  role: blank_line
+  layout: {align: justify, size: 11.0}
+  text: ………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………
+  slots:
+  - {id: uzasadnienie, span: [0, 108], type: text, hint: dlaczego wypowiedzenie jest nieuzasadnione albo narusza przepisy}
+- p: 22
+  role: hint
+  layout: {align: justify, size: 8.0, italic: true}
+  text: (dlaczego wypowiedzenie jest nieuzasadnione albo narusza przepisy)
+  hint_for: 21
+  hint_kind: instruction
+- {p: 23, role: spacer}
+- p: 24
+  role: field_header
+  layout: {align: justify, size: 11.0}
+  text: 'Dowody:'
+- p: 25
+  role: item
+  layout: {align: justify, size: 11.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+  text: ………………… (umowa o pracę, wypowiedzenie i inne dowody).
+  slots:
+  - {id: dowody, span: [0, 7], type: text, hint: 'umowa o pracę, wypowiedzenie i inne dowody'}
+  inline_hints:
+  - {span: [8, 52], text: 'umowa o pracę, wypowiedzenie i inne dowody'}
+- {p: 26, role: spacer}
+- p: 27
+  role: blank_line
+  layout: {align: right, size: 11.0}
+  text: ………………………………
+  slots:
+  - {id: podpis, span: [0, 12], type: signature, hint: podpis}
+- p: 28
+  role: hint
+  layout: {align: right, size: 8.0, italic: true}
+  text: (podpis)
+  hint_for: 27
+  hint_kind: label
+- {p: 29, role: spacer}
+- p: 30
+  role: field_header
+  layout: {align: justify, size: 11.0, bold: true}
+  text: 'Załączniki:'
+- p: 31
+  role: item
+  layout: {align: justify, size: 11.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+  text: odpis pozwu;
+- p: 32
+  role: item
+  layout: {align: justify, size: 11.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+  text: ………………… (kopie umowy o pracę i wypowiedzenia).
+  slots:
+  - {id: zalaczniki, span: [0, 7], type: text, hint: kopie umowy o pracę i wypowiedzenia}
+  inline_hints:
+  - {span: [8, 45], text: kopie umowy o pracę i wypowiedzenia}

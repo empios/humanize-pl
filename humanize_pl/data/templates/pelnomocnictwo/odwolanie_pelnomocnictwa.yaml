@@ -1,0 +1,56 @@
+template: odwołanie pełnomocnictwa.docx
+category: pelnomocnictwo
+label_pl: Odwołanie pełnomocnictwa
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: body
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: …………………….., dnia ……………….
+  slots:
+  - {id: p0_1, span: [0, 10], type: text, context: ▢ dnia}
+  - {id: p0_2, span: [17, 24], type: date, context: dnia ▢}
+- {p: 1, role: spacer}
+- {p: 2, role: spacer}
+- p: 3
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: ODWOŁANIE PEŁNOMOCNICTWA
+- {p: 4, role: spacer}
+- p: 5
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: 'Ja, niżej podpisana …………… ………., prowadząca działalność gospodarczą pod firmą ………………………………. ………. , pod adresem ……………………………………, NIP: ……………….,
+    niniejszym:'
+  slots:
+  - {id: p5_1, span: [20, 30], type: text, context: Ja niżej podpisana ▢ prowadząca działalność}
+  - {id: p5_2, span: [77, 95], type: company, context: działalność gospodarczą pod firmą ▢ pod adresem}
+  - {id: p5_3, span: [110, 124], type: address, context: pod firmą pod adresem ▢ NIP niniejszym}
+  - {id: p5_4, span: [131, 138], type: id_number, context: firmą pod adresem NIP ▢ niniejszym}
+- p: 6
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: 'z dniem …………………….  roku odwołuję udzielone Panu/Pani ……………………………………., posługującemu/ej się numerem PESEL: ………………………………………… pełnomocnictwo
+    udzielone dnia ………………………………….. roku. '
+  slots:
+  - {id: p6_1, span: [8, 17], type: text, context: z dniem ▢ roku odwołuję}
+  - {id: p6_2, span: [53, 68], type: text, context: odwołuję udzielone Panu Pani ▢ posługującemu ej}
+  - {id: p6_3, span: [106, 122], type: pesel, context: ej się numerem PESEL ▢ pełnomocnictwo udzielone}
+  - {id: p6_4, span: [153, 168], type: date, context: PESEL pełnomocnictwo udzielone dnia ▢ roku.}
+  alternatives: 3
+- {p: 7, role: spacer}
+- p: 8
+  role: blank_line
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: ……………………………………….
+  slots:
+  - {id: podpis_klienta, span: [0, 16], type: signature, hint: podpis Klienta}
+- p: 9
+  role: hint
+  layout: {align: right, indent: {first: 708}, size: 10.0, italic: true}
+  text: (podpis Klienta)
+  hint_for: 8
+  hint_kind: label
+- {p: 10, role: spacer}
+- {p: 11, role: spacer}

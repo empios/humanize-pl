@@ -1,0 +1,238 @@
+template: Umowa o zakazie konkurencji do umowy o pracę.docx
+category: umowa_o_zakazie_konkurencji
+label_pl: Umowa o zakazie konkurencji do umowy o pracę
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: UMOWA O ZAKAZIE KONKURENCJI
+- {p: 1, role: spacer}
+- p: 2
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 49, end: 62, italic: true}]}
+  text: 'Zawarta w dniu …………………………… 2025 r. w …………………………… (miejscowość), '
+  slots:
+  - {id: p2_1, span: [15, 26], type: date, context: Zawarta w dniu ▢ 2025 r.}
+  - {id: miejscowosc, span: [37, 48], type: place, hint: miejscowość}
+  inline_hints:
+  - {span: [49, 62], text: miejscowość}
+- {p: 3, role: spacer}
+- p: 4
+  role: party_connector
+  layout: {align: justify, size: 10.0}
+  text: 'pomiędzy:'
+- {p: 5, role: spacer}
+- p: 6
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: '……………………………………………………………………..…………………………………………….…………………………………………………………………………………………………………………………………………………………………… '
+  slots:
+  - {id: imie_i_nazwisko_firma_miejsce_zamieszkania_siedz, span: [0, 108], type: text, hint: 'imię i nazwisko/firma; miejsce zamieszkania/siedziba;
+      nr i seria dokumentu tożsamości; PESEL, NIP, numer wpisu do CEIDG lub do KRS'}
+- p: 7
+  role: hint
+  layout: {align: justify, size: 10.0, italic: true}
+  text: (imię i nazwisko/firma; miejsce zamieszkania/siedziba; nr i seria dokumentu tożsamości; PESEL, NIP, numer wpisu do CEIDG lub do KRS)
+  hint_for: 6
+  hint_kind: instruction
+- {p: 8, role: spacer}
+- p: 9
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 13, end: 23, bold: true}]}
+  text: 'zwanym dalej Pracodawcą, '
+  alias: Pracodawcą
+- p: 10
+  role: party_connector
+  layout: {align: justify, size: 10.0}
+  text: 'a
+
+    '
+- p: 11
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: '……………………………………………………………………..…………………………………………….…………………………………………………………………………………………………………………………………………………………………… '
+  slots:
+  - {id: imie_i_nazwisko_firma_miejsce_zamieszkania_siedz_2, span: [0, 108], type: text, hint: 'imię i nazwisko/firma; miejsce zamieszkania/siedziba;
+      nr i seria dokumentu tożsamości; PESEL, NIP, numer wpisu do CEIDG lub do KRS'}
+- p: 12
+  role: hint
+  layout: {align: justify, size: 10.0, italic: true}
+  text: (imię i nazwisko/firma; miejsce zamieszkania/siedziba; nr i seria dokumentu tożsamości; PESEL, NIP, numer wpisu do CEIDG lub do KRS)
+  hint_for: 11
+  hint_kind: instruction
+- {p: 13, role: spacer}
+- p: 14
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 13, end: 25, bold: true}]}
+  text: 'zwanym dalej Pracownikiem, '
+  alias: Pracownikiem
+- {p: 15, role: spacer}
+- p: 16
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 22, end: 30, bold: true}]}
+  text: 'zwanymi dalej łącznie Stronami, '
+  alias: Stronami
+- {p: 17, role: spacer}
+- p: 18
+  role: field_header
+  layout: {align: justify, size: 10.0}
+  text: 'o następującej treści:'
+- {p: 19, role: spacer}
+- p: 20
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+  text: § 1
+- {p: 21, role: spacer}
+- p: 22
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 56, end: 66, bold: true}]}
+  text: 'Za działalność konkurencyjną w stosunku do działalności Pracodawcy uznaje się:'
+- p: 23
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+  text: ………………………………………………………………………………………………………………………………..;
+  slots:
+  - {id: p23_1, span: [0, 50], type: content, context: ▢}
+- p: 24
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+  text: ………………………………………………………………………………………………………………………………..;
+  slots:
+  - {id: p24_1, span: [0, 50], type: content, context: ▢}
+- p: 25
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
+  text: ……………………………………………………………………………………………………………………………….. .
+  slots:
+  - {id: opisanie_dzialalnosci_konkurencyjnej_moze_polega, span: [0, 50], type: content, hint: opisanie działalności konkurencyjnej może polegać
+      w szczególności na wskazaniu prac jakich Pracownik nie może wykonywać w związku z zawartą umową o pracę}
+- p: 26
+  role: hint
+  layout: {align: justify, indent: {left: 360}, size: 10.0, italic: true}
+  text: (opisanie działalności konkurencyjnej może polegać w szczególności na wskazaniu prac jakich Pracownik nie może wykonywać w związku z zawartą
+    umową o pracę)
+  hint_for: 25
+  hint_kind: instruction
+- {p: 27, role: spacer}
+- p: 28
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+  text: § 2
+- {p: 29, role: spacer}
+- p: 30
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 109, end: 118, bold: true}]}
+  text: 'W okresie trwania stosunku prawnego między Stronami  zawartego na podstawie umowy o pracę z dnia …………………………… Pracownik powstrzyma się
+    od działań konkurencyjnych, a w szczególności nie będzie:'
+  slots:
+  - {id: p30_1, span: [97, 108], type: date, context: o pracę z dnia ▢ Pracownik powstrzyma}
+- p: 31
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}, spans: [{start: 143, end: 153, bold: true}]}
+  text: prowadził na własny rachunek pośrednio lub bezpośrednio działalności o charakterze konkurencyjnym w stosunku do działalności prowadzonej
+    przez Pracodawcę;
+- p: 32
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}, spans: [{start: 190, end: 200, bold: true}]}
+  text: świadczył pracy w stosunku pracy lub usług na podstawie umowy o dzieło, zlecenia lub innej podobnej umowy na rzecz podmiotu prowadzącego
+    działalność konkurencyjną w stosunku do działalności Pracodawcy;
+- p: 33
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}, spans: [{start: 135, end: 145, bold: true}]}
+  text: obejmował lub nabywał udziałów lub akcji w spółkach prawa handlowego prowadzących działalność konkurencyjną w stosunku do działalności
+    Pracodawcy;
+- p: 34
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: d), kind: lowerLetter, src: auto, level: 0}, spans: [{start: 162, end: 172, bold: true}]}
+  text: zajmował stanowisk we władzach zarządczych, nadzorczych lub kontrolnych spółek prawa handlowego prowadzących działalność konkurencyjną
+    w stosunku do działalności Pracodawcy.
+- {p: 35, role: spacer}
+- p: 36
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+  text: § 3
+- {p: 37, role: spacer}
+- p: 38
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 9, bold: true}, {start: 114,
+        end: 149, italic: true}]}
+  text: Pracownik zobowiązuje się powstrzymać od działań konkurencyjnych opisanych w § 2 umowy również przez okres ……………… (należy wskazać ilość
+    miesięcy/lat) po ustaniu stosunku pracy.
+  slots:
+  - {id: nalezy_wskazac_ilosc_miesiecy_lat, span: [107, 113], type: text, hint: należy wskazać ilość miesięcy/lat}
+  inline_hints:
+  - {span: [114, 149], text: należy wskazać ilość miesięcy/lat}
+- p: 39
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 74, end: 83, bold: true}, {start: 128,
+        end: 238, italic: true}, {start: 238, end: 248, bold: true}, {start: 248, end: 301, italic: true}, {start: 301, end: 311, bold: true},
+      {start: 311, end: 592, italic: true}]}
+  text: Za powstrzymanie się od działań konkurencyjnych po ustaniu stosunku pracy Pracownik otrzyma odszkodowanie w wysokości ……………… zł (przepisy
+    prawa pracy umożliwiają ustanowienie zakazu konkurencji również na okres po ustaniu stosunku pracy, Pracodawca powinien jednak określić wysokość
+    odszkodowania dla pracownika za powstrzymywanie się od działalności konkurencyjnej, może nastąpić to przykładowo w formie kwoty wypłacanej
+    za cały okres trwania okresu zakazu konkurencji, odszkodowanie nie może być jednak niższe niż 25% kwoty wynagrodzenia pomnożonego przez ilość
+    miesięcy trwającego zakazu).
+  slots:
+  - {id: p39_1, span: [118, 124], type: amount, context: otrzyma odszkodowanie w wysokości ▢ zł}
+- {p: 40, role: spacer}
+- p: 41
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+  text: § 4
+- {p: 42, role: spacer}
+- p: 43
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 26, end: 36, bold: true}, {start: 119,
+        end: 129, bold: true}]}
+  text: Za każde naruszenie przez Pracownika postanowień niniejszej umowy w zakresie podejmowania działalności konkurencyjnej, Pracodawca może
+    dochodzić od niego naprawienia poniesionej szkody na zasadach określonych w art. 114–122 ustawy z dnia 26 czerwca 1974 r. – Kodeks pracy.
+- p: 44
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 66, end: 76, bold: true}, {start: 99,
+        end: 109, bold: true}, {start: 273, end: 283, bold: true}]}
+  text: Niezależnie od odpowiedzialności materialnej określonej w ust. 1, Pracodawca może zastosować wobec Pracownika naruszającego postanowienia
+    umowy, odpowiedzialność porządkową, a w uzasadnionych przypadkach wypowiedzieć umowę o pracę lub rozwiązać ją bez wypowiedzenia z winy Pracownika.
+- {p: 45, role: spacer}
+- p: 46
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+  text: § 5
+- {p: 47, role: spacer}
+- p: 48
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Wszelkie zmiany niniejszej umowy wymagają zachowania formy pisemnej pod rygorem nieważności.
+- p: 49
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Umowa została sporządzona w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze stron. '
+- p: 50
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: W sprawach nieuregulowanych niniejszą umową będą miały zastosowanie przepisy ustawy z dnia 26 czerwca 1974 r. – Kodeks pracy oraz ustawy
+    z dnia 23 kwietnia 1964 r. - Kodeks cywilny.
+- p: 51
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 132, end: 185, italic: true}]}
+  text: 'Wszelkie spory, jakie mogą wyniknąć w związku z niniejszą umową będą rozpatrywane przez sąd powszechny właściwy ze względu na …………… (miejsce
+    zamieszkania/siedzibę Pracodawcy/Pracownika). '
+  slots:
+  - {id: miejsce_zamieszkania_siedzibe_pracodawcy_pracown, span: [126, 131], type: text, hint: miejsce zamieszkania/siedzibę Pracodawcy/Pracownika}
+  inline_hints:
+  - {span: [132, 185], text: miejsce zamieszkania/siedzibę Pracodawcy/Pracownika}
+- {p: 52, role: spacer}
+- {p: 53, role: spacer}
+- {p: 54, role: spacer}
+- p: 55
+  role: body
+  layout: {align: justify, size: 10.0, bold: true, tabs: 9}
+  text: "Pracodawca\t\t\t\t\t\t\t\t\tPracownik"
+- p: 56
+  role: signature_line
+  layout: {align: justify, size: 10.0, tabs: 8}
+  text: "………………………...\t\t\t\t\t\t\t\t……….……………………"
+  slots:
+  - {id: p56_1, span: [0, 12], type: signature, context: ▢}
+  - {id: p56_2, span: [20, 32], type: signature, context: ▢}

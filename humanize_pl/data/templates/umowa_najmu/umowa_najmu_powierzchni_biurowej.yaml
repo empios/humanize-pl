@@ -1,0 +1,256 @@
+template: umowa najmu powierzchni biurowej.docx
+category: umowa_najmu
+label_pl: Umowa najmu powierzchni biurowej
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: UMOWA NAJMU POWIERZCHNI BIUROWEJ
+- {p: 1, role: spacer}
+- p: 2
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 42, end: 48, italic: true}, {start: 82, end: 96, italic: true}]}
+  text: 'Zawarta dnia ............................ (data) w ………........................... (miejscowość) '
+  slots:
+  - {id: data, span: [13, 41], type: date, hint: data}
+  - {id: miejscowosc, span: [51, 81], type: place, hint: miejscowość}
+  inline_hints:
+  - {span: [42, 48], text: data}
+  - {span: [82, 95], text: miejscowość}
+- {p: 3, role: spacer}
+- p: 4
+  role: party_connector
+  layout: {align: justify, size: 10.0}
+  text: 'pomiędzy:'
+- {p: 5, role: spacer}
+- p: 6
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: '..........................................................................................................................................................................................................................................................................................................'
+  slots:
+  - {id: oznaczenie_wynajmujacego, span: [0, 298], type: text, hint: oznaczenie Wynajmującego}
+- p: 7
+  role: hint
+  layout: {align: center, size: 10.0, italic: true}
+  text: (oznaczenie Wynajmującego)
+  hint_for: 6
+  hint_kind: label
+- p: 8
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 13, end: 26, bold: true}]}
+  text: zwanym dalej Wynajmującym,
+  alias: Wynajmującym
+- {p: 9, role: spacer}
+- p: 10
+  role: party_connector
+  layout: {align: justify, size: 10.0}
+  text: a
+- {p: 11, role: spacer}
+- p: 12
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: '..........................................................................................................................................................................................................................................................................................................'
+  slots:
+  - {id: oznaczenie_najemcy, span: [0, 298], type: text, hint: oznaczenie Najemcy}
+- p: 13
+  role: hint
+  layout: {align: center, size: 10.0, italic: true}
+  text: (oznaczenie Najemcy)
+  hint_for: 12
+  hint_kind: label
+- p: 14
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 13, end: 21, bold: true}]}
+  text: zwanym dalej Najemcą,
+  alias: Najemcą
+- {p: 15, role: spacer}
+- p: 16
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 22, end: 31, bold: true}]}
+  text: zwanymi dalej łącznie Stronami.
+  alias: Stronami
+- {p: 17, role: spacer}
+- p: 18
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+  text: § 1
+- p: 19
+  role: party_alias
+  layout: {align: justify, indent: {right: -6}, size: 10.0, spans: [{start: 120, end: 139, bold: true}]}
+  text: Wynajmujący oświadcza, że posiada prawo dysponowania lokalem biurowym położonym w ………… przy ul. …………………… (zwanego dalej „Przedmiot najmu”).
+  slots:
+  - {id: p19_1, span: [82, 86], type: place, context: lokalem biurowym położonym w ▢ przy ul.}
+  - {id: zwanego_dalej_przedmiot_najmu, span: [96, 104], type: address, hint: zwanego dalej „Przedmiot najmu”}
+  inline_hints:
+  - {span: [105, 138], text: zwanego dalej „Przedmiot najmu”}
+  alias: Przedmiot
+- {p: 20, role: spacer}
+- p: 21
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+  text: § 2
+- p: 22
+  role: body
+  layout: {align: justify, indent: {right: -6}, size: 10.0}
+  text: Wynajmujący oddaje Najemcy do używania i pobierania pożytków część Przedmiotu najmu – powierzchnię w pomieszczeniu lokalu przy ul. …………………
+    w ………………… .
+  slots:
+  - {id: p22_1, span: [131, 138], type: address, context: pomieszczeniu lokalu przy ul. ▢ w}
+  - {id: p22_2, span: [141, 148], type: place, context: lokalu przy ul. w ▢}
+- {p: 23, role: spacer}
+- p: 24
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+  text: § 3
+- p: 25
+  role: body
+  layout: {align: justify, indent: {right: -6}, size: 10.0, spans: [{start: 37, end: 41, bold: true}]}
+  text: Powierzchnia Przedmiotu najmu wynosi … m2 (……… metrów kwadratowych).
+  slots:
+  - {id: p25_1, span: [43, 46], type: text, context: Przedmiotu najmu wynosi m2 ▢ metrów kwadratowych}
+- {p: 26, role: spacer}
+- p: 27
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+  text: § 4
+- p: 28
+  role: body
+  layout: {align: justify, indent: {right: -6}, size: 10.0}
+  text: "Wynajmujący oddaje Najemcy powierzchnię do użytku na zasadach określonych \nw niniejszej Umowie. Najemca ma prawo prowadzenia w lokalu\
+    \ działalności gospodarczej (w tym wskazania go jako siedziby). Wszelkie zmiany sposobu użytkowania powierzchni wymagają pisemnej zgody Wynajmującego."
+- {p: 29, role: spacer}
+- p: 30
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+  text: § 5
+- p: 31
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'Czynsz najmu wynosi za jeden miesiąc …… zł (słownie: ……………. złotych) za każdy metr kwadratowy wynajmowanej ogrzewanej powierzchni, o
+    której mowa w § 3, tj. ……… zł (słownie: …………… złotych) miesięcznie/rocznie.'
+  slots:
+  - {id: p31_1, span: [37, 39], type: text, context: wynosi za jeden miesiąc ▢ zł za}
+  - {id: p31_2, span: [53, 59], type: amount, context: jeden miesiąc zł słownie ▢ złotych za}
+  - {id: p31_3, span: [156, 159], type: text, context: w § 3 tj. ▢ zł miesięcznie}
+  - {id: p31_4, span: [173, 178], type: amount, context: 3 tj. zł słownie ▢ złotych miesięcznie}
+- p: 32
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: "Do wartości określonej w ust. 1 niniejszego paragrafu będzie doliczony podatek VAT \nw obowiązującej wysokości."
+- p: 33
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 75, end: 97, italic: true}]}
+  text: 'Najemca płacić będzie Wynajmującemu czynsz najmu w wysokości ………………………….. (należy wpisać stawkę) (słownie: …………………. złotych) miesięcznie.'
+  slots:
+  - {id: nalezy_wpisac_stawke, span: [61, 73], type: amount, hint: należy wpisać stawkę}
+  - {id: p33_2, span: [107, 115], type: amount, context: najmu w wysokości słownie ▢ złotych miesięcznie.}
+  inline_hints:
+  - {span: [74, 96], text: należy wpisać stawkę}
+- p: 34
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 134, end: 150, italic: true}]}
+  text: Czynsz płatny będzie w terminie do 14 dni od daty wystawienia faktury, na rachunek bankowy Wynajmującego o numerze ……………………………….………..
+    (numer rachunku).
+  slots:
+  - {id: numer_rachunku, span: [115, 133], type: text, hint: numer rachunku}
+  inline_hints:
+  - {span: [134, 150], text: numer rachunku}
+- p: 35
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+  text: Za dzień zapłaty należy uznać datę zaksięgowania środków na rachunku bankowym Wynajmującego.
+- p: 36
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}}
+  text: '[opcjonalnie] Czynsz najmu będzie płatny z góry do 31 stycznia danego roku kalendarzowego za dany rok, przelewem na rachunek Wynajmującego,
+    nie wcześniej jednak niż 5 dni po dostarczeniu faktury Najemcy.'
+- {p: 37, role: spacer}
+- p: 38
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 6, kind: paragraph, src: manual, level: 0}}
+  text: § 6
+- p: 39
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: Jeżeli najemca dopuszcza się zwłoki z zapłatą czynszu, co najmniej za dwa pełne okresy płatności, Wynajmujący może wypowiedzieć umowę
+    najmu bez zachowania terminów wypowiedzenia.
+- {p: 40, role: spacer}
+- p: 41
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 7, kind: paragraph, src: manual, level: 0}}
+  text: § 7
+- p: 42
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Umowę zawiera się na czas określony od …………………. do ……………………/czas nieokreślony, począwszy od dnia …………………… .
+  slots:
+  - {id: p42_1, span: [39, 47], type: date, context: na czas określony od ▢ do czas}
+  - {id: p42_2, span: [51, 59], type: date, context: czas określony od do ▢ czas nieokreślony}
+  - {id: p42_3, span: [97, 105], type: date, context: nieokreślony począwszy od dnia ▢}
+- p: 43
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Każdej ze stron przysługuje prawo wypowiedzenia niniejszej Umowy z zachowaniem jednomiesięcznego okresu wypowiedzenia.
+- {p: 44, role: spacer}
+- p: 45
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 8, kind: paragraph, src: manual, level: 0}}
+  text: § 8
+- p: 46
+  role: body
+  layout: {align: justify, indent: {right: -6}, size: 10.0}
+  text: Stanowiąca przedmiot najmu powierzchnia zostanie udostępniona Najemcy w dniu …………………. .
+  slots:
+  - {id: p46_1, span: [77, 85], type: date, context: udostępniona Najemcy w dniu ▢}
+- {p: 47, role: spacer}
+- p: 48
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 9, kind: paragraph, src: manual, level: 0}}
+  text: § 9
+- p: 49
+  role: body
+  layout: {align: justify, indent: {right: -6}, size: 10.0}
+  text: Wszelkie zmiany Umowy mogą być dokonane jedynie w formie pisemnej pod rygorem nieważności.
+- {p: 50, role: spacer}
+- p: 51
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 10, kind: paragraph, src: manual, level: 0}}
+  text: § 10
+- p: 52
+  role: body
+  layout: {align: justify, indent: {right: -6}, size: 10.0}
+  text: 'W sprawach nieuregulowanych postanowieniami niniejszej Umowy będą miały zastosowanie odpowiednie przepisy Kodeksu cywilnego. '
+- {p: 53, role: spacer}
+- p: 54
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 11, kind: paragraph, src: manual, level: 0}}
+  text: § 11
+- p: 55
+  role: body
+  layout: {align: justify, indent: {right: -6}, size: 10.0}
+  text: Ewentualne spory, jakie mogą wyniknąć na tle stosowania niniejszej umowy zostaną rozstrzygnięte przez Sąd powszechny właściwy dla siedziby
+    Wynajmującego.
+- {p: 56, role: spacer}
+- p: 57
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 12, kind: paragraph, src: manual, level: 0}}
+  text: § 12
+- p: 58
+  role: body
+  layout: {align: justify, indent: {right: -6}, size: 10.0}
+  text: 'Umowa została sporządzona w dwóch jednobrzmiących egzemplarz po jednej dla każdej ze stron. '
+- {p: 59, role: spacer}
+- p: 60
+  role: signature_line
+  layout: {align: justify, indent: {right: -6}, size: 10.0, tabs: 7}
+  text: "…………………………\t\t\t\t\t\t\t     …………………….……"
+  slots:
+  - {id: p60_1, span: [0, 10], type: signature, context: ▢}
+  - {id: p60_2, span: [22, 33], type: signature, context: ▢}
+- p: 61
+  role: body
+  layout: {align: justify, indent: {right: -6}, size: 10.0, bold: true, tabs: 8}
+  text: " WYNAJMUJĄCY\t\t\t\t\t\t\t\tNAJEMCA"
+- {p: 62, role: spacer}

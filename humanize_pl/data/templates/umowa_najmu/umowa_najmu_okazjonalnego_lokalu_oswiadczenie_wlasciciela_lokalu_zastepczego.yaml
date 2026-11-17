@@ -1,0 +1,79 @@
+template: Umowa najmu okazjonalnego lokalu - oświadczenie właściciela lokalu zastępczego.docx
+category: umowa_najmu
+label_pl: Umowa najmu okazjonalnego lokalu - oświadczenie właściciela lokalu zastępczego
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 0, end: 14, bold: true}, {start: 15, end: 95, italic: true}]}
+  text: Załącznik nr … (należy wskazać właściwy nr załącznika, odpowiednio dla postanowień umowy najmu)
+  inline_hints:
+  - {span: [15, 95], text: 'należy wskazać właściwy nr załącznika, odpowiednio dla postanowień umowy najmu'}
+  optional: true
+  condition: "oświadczenie właściciela lokalu, do którego Najemca będzie mógł przenieść się \nw przypadku wykonania egzekucji obowiązku opróżnienia\
+    \ lokalu"
+- {p: 1, role: spacer}
+- p: 2
+  role: hint
+  layout: {align: justify, size: 10.0, bold: true}
+  text: "[oświadczenie właściciela lokalu, do którego Najemca będzie mógł przenieść się \nw przypadku wykonania egzekucji obowiązku opróżnienia\
+    \ lokalu]"
+  hint_for: 0
+  hint_kind: instruction
+- {p: 3, role: spacer}
+- {p: 4, role: spacer}
+- {p: 5, role: spacer}
+- p: 6
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: 'OŚWIADCZENIE O WYRAŻENIU ZGODY '
+- p: 7
+  role: body
+  layout: {align: center, size: 14.0, bold: true}
+  text: 'NA ZAMIESZKANIE NAJEMCY W LOKALU '
+- p: 8
+  role: body
+  layout: {align: center, size: 14.0, bold: true}
+  text: W PRZYPADKU USTANIA STOSUNKU NAJMU
+- {p: 9, role: spacer}
+- p: 10
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 70, end: 84, bold: true}, {start: 91, end: 149, bold: true}, {start: 263, end: 278, bold: true},
+      {start: 308, end: 328, bold: true}, {start: 393, end: 407, bold: true}, {start: 438, end: 482, bold: true}]}
+  text: 'Niniejszym jako właściciel/współwłaściciel lokalu położonego w …………………[miejscowość] przy ul……………………………..[ulica, numer domu, mieszkania,
+    kod pocztowy], oświadczam, iż w razie ustania stosunku najmu wynikającego z umowy najmu okazjonalnego zawartej pomiędzy ……………. [dane najemcy]
+    (dalej jako Najemca) a ……………..[dane wynajmującego], dotyczącego najmu lokalu mieszkalnego położonego w …………………………… [miejscowość] przy ul.
+    ………................. [ulica, numer domu, mieszkania, kod pocztowy], wyrażam zgodę na przeniesienie oraz zamieszkanie Najemcy oraz  osób z
+    nim zamieszkujących w należącym do mnie lokalu, wskazanym w niniejszym oświadczeniu. '
+  slots:
+  - {id: miejscowosc, span: [63, 70], type: place, hint: miejscowość}
+  - {id: ulica_numer_domu_mieszkania_kod_pocztowy, span: [91, 104], type: text, hint: 'ulica, numer domu, mieszkania, kod pocztowy'}
+  - {id: dane_najemcy, span: [256, 262], type: text, hint: dane najemcy}
+  - {id: dane_wynajmujacego, span: [301, 308], type: text, hint: dane wynajmującego}
+  - {id: miejscowosc_2, span: [381, 392], type: place, hint: miejscowość}
+  - {id: ulica_numer_domu_mieszkania_kod_pocztowy_2, span: [416, 436], type: address, hint: 'ulica, numer domu, mieszkania, kod pocztowy'}
+  inline_hints:
+  - {span: [70, 83], text: miejscowość}
+  - {span: [104, 149], text: 'ulica, numer domu, mieszkania, kod pocztowy'}
+  - {span: [263, 277], text: dane najemcy}
+  - {span: [308, 328], text: dane wynajmującego}
+  - {span: [393, 406], text: miejscowość}
+  - {span: [437, 482], text: 'ulica, numer domu, mieszkania, kod pocztowy'}
+- {p: 11, role: spacer}
+- {p: 12, role: spacer}
+- {p: 13, role: spacer}
+- p: 14
+  role: blank_line
+  layout: {align: center, indent: {left: 4248}, size: 10.0}
+  text: '................................................'
+  slots:
+  - {id: podpis_osoby_skladajacej_oswiadczenie, span: [0, 48], type: signature, hint: podpis osoby składającej oświadczenie}
+- p: 15
+  role: hint
+  layout: {size: 10.0, bold: true}
+  text: '                                                                                [podpis osoby składającej oświadczenie]'
+  hint_for: 14
+  hint_kind: label
+- {p: 16, role: spacer}
+- {p: 17, role: spacer}

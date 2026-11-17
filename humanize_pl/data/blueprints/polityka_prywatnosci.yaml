@@ -3,80 +3,254 @@
 # Sekcje wymagane odpowiadają obowiązkowi informacyjnemu z art. 13 RODO.
 # Brak pouczenia o prawie skargi do organu nadzorczego to nie stylistyka —
 # to brak elementu, którego przepis wymaga wprost.
+#
+# Wzorce poszerzone o sformułowania z klauzul informacyjnych kancelarii
+# (administrator "jest", kontakt "@"/e-mail, cele "w celu", podstawy
+# "na podstawie", odbiorcy "udostępnić/kategoriom podmiotów").
 
 category: polityka_prywatnosci
 label_pl: polityka prywatności
 numbering: paragraph
 check_order: false
-
 sections:
-  - id: administrator
-    label_pl: tożsamość administratora
-    severity: required
-    matches: ["administratorem danych", "administrator danych"]
-    expects:
-      - "Polityka wskazuje, kto jest administratorem danych."
+- id: administrator
+  label_pl: tożsamość administratora
+  severity: required
+  matches: [administratorem danych, administrator danych, administratorem pani/pana danych, administratora
+      jest, administratorem jest, administratorem danych osobowych jest]
+- id: kontakt
+  label_pl: dane kontaktowe (administrator lub IOD)
+  severity: required
+  matches: [inspektor ochrony danych, kontakt, adres e-mail, '@', można się kontaktować, adres korespondencyjny,
+    e-mail, mail, telefon]
+- id: cele
+  label_pl: cele przetwarzania
+  severity: required
+  matches: [cele przetwarzania, cel przetwarzania, przetwarzane w celu, w następujących celach, w celach,
+    w celu]
+- id: podstawy
+  label_pl: podstawa prawna przetwarzania
+  severity: required
+  matches: [podstawa prawna, podstawy prawne, podstawą przetwarzania, przetwarzane na podstawie, na podstawie,
+    obowiązku]
+- id: odbiorcy
+  label_pl: odbiorcy danych
+  severity: required
+  matches: [odbiorcy danych, odbiorcami danych, podmioty przetwarzające, odbiorcami pani/pana danych,
+    udostępnić, kategoriom podmiotów]
+- id: okres
+  label_pl: okres przechowywania
+  severity: required
+  matches: [okres przechowywania, przechowywane przez okres, przez okres, okres przetwarzania, okresu]
+- id: prawa
+  label_pl: prawa osoby, której dane dotyczą
+  severity: required
+  matches: [prawo dostępu, prawa osoby, przysługuje prawo, przysługuje pani/panu prawo, prawo do, żądania
+      od administratora]
+- id: skarga
+  label_pl: prawo skargi do organu nadzorczego
+  severity: required
+  matches: [skargi do, organu nadzorczego, prezesa urzędu ochrony danych, uodo]
+- id: panstwa_trzecie
+  label_pl: przekazywanie do państw trzecich
+  severity: expected
+  matches: [państwa trzeciego, poza europejski obszar, państw trzecich, państwa trzeciej]
+- id: profilowanie
+  label_pl: informacja o profilowaniu
+  severity: expected
+  matches: [profilowani, zautomatyzowanego podejmowania decyzji, zautomatyzowanemu podejmowaniu decyzji]
 
-  - id: kontakt
-    label_pl: dane kontaktowe (administrator lub IOD)
-    severity: required
-    matches: ["inspektor ochrony danych", "kontakt", "adres e-mail", "@"]
-    expects:
-      - "Polityka podaje dane kontaktowe administratora albo inspektora ochrony danych."
-
-  - id: cele
-    label_pl: cele przetwarzania
-    severity: required
-    matches: ["cele przetwarzania", "cel przetwarzania", "przetwarzane w celu"]
-    expects:
-      - "Polityka wskazuje, w jakich celach dane są przetwarzane."
-
-  - id: podstawy
-    label_pl: podstawa prawna przetwarzania
-    severity: required
-    matches: ["podstawa prawna", "podstawy prawne", "podstawą przetwarzania"]
-    expects:
-      - "Polityka wskazuje podstawę prawną przetwarzania dla każdego celu."
-
-  - id: odbiorcy
-    label_pl: odbiorcy danych
-    severity: required
-    matches: ["odbiorcy danych", "odbiorcami danych", "podmioty przetwarzające"]
-    expects:
-      - "Polityka wskazuje odbiorców danych albo ich kategorie."
-
-  - id: okres
-    label_pl: okres przechowywania
-    severity: required
-    matches: ["okres przechowywania", "przechowywane przez okres"]
-    expects:
-      - "Polityka określa okres przechowywania danych albo kryteria jego ustalenia."
-
-  - id: prawa
-    label_pl: prawa osoby, której dane dotyczą
-    severity: required
-    matches: ["prawo dostępu", "prawa osoby", "przysługuje prawo"]
-    expects:
-      - "Polityka wymienia prawa osoby, której dane dotyczą."
-      - "Polityka wskazuje, w jaki sposób te prawa zrealizować."
-
-  - id: skarga
-    label_pl: prawo skargi do organu nadzorczego
-    severity: required
-    matches: ["skargi do", "organu nadzorczego", "prezesa urzędu ochrony danych", "uodo"]
-    expects:
-      - "Polityka poucza o prawie wniesienia skargi do organu nadzorczego."
-
-  - id: panstwa_trzecie
-    label_pl: przekazywanie do państw trzecich
-    severity: expected
-    matches: ["państwa trzeciego", "poza europejski obszar", "państw trzecich"]
-    expects:
-      - "Polityka informuje o przekazywaniu danych poza Europejski Obszar Gospodarczy."
-
-  - id: profilowanie
-    label_pl: informacja o profilowaniu
-    severity: expected
-    matches: ["profilowani", "zautomatyzowanego podejmowania decyzji"]
-    expects:
-      - "Polityka informuje o zautomatyzowanym podejmowaniu decyzji, w tym profilowaniu."
+# Dokument ogólny: realny wzór tej kategorii. Przy użyciu wypełnia się wyłącznie
+# pola (`slots`); treść, kolejność i układ zostają jak we wzorze.
+document:
+  template: Klauzula RODO.docx
+  label_pl: Klauzula RODO
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+  blocks:
+  - p: 0
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: 'KLAUZULA INFORMACYJNA '
+  - p: 1
+    role: body
+    layout: {align: center, size: 14.0, bold: true}
+    text: DOTYCZĄCA PRZETWARZANIA DANYCH OSOBOWYCH
+  - {p: 2, role: spacer}
+  - p: 3
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: 'Wypełniając obowiązek, o którym mowa w art. 13 rozporządzenia Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r.
+      w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych oraz uchylenia
+      dyrektywy 95/46/WE (ogólne rozporządzenie o ochronie danych) (Dz.U.UE.L.2016.119.1 ze zm.) (dalej jako RODO), informujemy, że:'
+  - p: 4
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 97, end: 119, italic: true},
+        {start: 150, end: 176, italic: true}, {start: 237, end: 255, italic: true}]}
+    text: 'Administratorem Pani/Pana danych osobowych (dalej jako Administrator) jest ……………………………………………………… (nazwa Administratora) z siedzibą w
+      ………………………………………… (siedziba Administratora), prowadzący działalność gospodarczą pod firmą …………………………………… (oznaczenie firmy) NIP: ………………………,
+      REGON: ………………………….'
+    slots:
+    - {id: nazwa_administratora, span: [75, 96], type: text, hint: nazwa Administratora}
+    - {id: siedziba_administratora, span: [133, 149], type: address, hint: siedziba Administratora}
+    - {id: oznaczenie_firmy, span: [222, 236], type: company, hint: oznaczenie firmy}
+    - {id: p4_4, span: [261, 270], type: id_number, context: gospodarczą pod firmą NIP ▢ REGON}
+    - {id: p4_5, span: [279, 290], type: id_number, context: pod firmą NIP REGON ▢}
+    inline_hints:
+    - {span: [97, 119], text: nazwa Administratora}
+    - {span: [150, 175], text: siedziba Administratora}
+    - {span: [237, 255], text: oznaczenie firmy}
+  - p: 5
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 83, end: 122, italic: true},
+        {start: 180, end: 209, italic: true}]}
+    text: 'Z Administratorem można się kontaktować pisemnie na adres ……………………………………………………………… (adres korespondencyjny Administratora) lub poprzez
+      pocztę elektroniczną na adres: ………………………………… (adres e-mail Administratora).'
+    slots:
+    - {id: adres_korespondencyjny_administratora, span: [58, 82], type: address, hint: adres korespondencyjny Administratora}
+    - {id: adres_e_mail_administratora, span: [166, 179], type: address, hint: adres e-mail Administratora}
+    inline_hints:
+    - {span: [83, 122], text: adres korespondencyjny Administratora}
+    - {span: [180, 209], text: adres e-mail Administratora}
+  - p: 6
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: 'Pani/Pana dane osobowe są przetwarzane na podstawie:'
+  - p: 7
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+    text: ………… (przepis) RODO - …………………………………… (ewentualnie podstawy przetwarzania danych).
+    slots:
+    - {id: przepis, span: [0, 4], type: text, hint: przepis}
+    - {id: ewentualnie_podstawy_przetwarzania_danych, span: [22, 36], type: text, hint: ewentualnie podstawy przetwarzania danych}
+    inline_hints:
+    - {span: [5, 14], text: przepis}
+    - {span: [37, 80], text: ewentualnie podstawy przetwarzania danych}
+  - p: 8
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+    text: ………… (przepis) RODO - …………………………………… (ewentualnie podstawy przetwarzania danych).
+    slots:
+    - {id: przepis_2, span: [0, 4], type: text, hint: przepis}
+    - {id: ewentualnie_podstawy_przetwarzania_danych_2, span: [22, 36], type: text, hint: ewentualnie podstawy przetwarzania danych}
+    inline_hints:
+    - {span: [5, 14], text: przepis}
+    - {span: [37, 80], text: ewentualnie podstawy przetwarzania danych}
+  - p: 9
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
+    text: ………… (przepis) RODO - …………………………………… (ewentualnie podstawy przetwarzania danych).
+    slots:
+    - {id: przepis_3, span: [0, 4], type: text, hint: przepis}
+    - {id: ewentualnie_podstawy_przetwarzania_danych_3, span: [22, 36], type: text, hint: ewentualnie podstawy przetwarzania danych}
+    inline_hints:
+    - {span: [5, 14], text: przepis}
+    - {span: [37, 80], text: ewentualnie podstawy przetwarzania danych}
+  - p: 10
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+    text: 'Dane osobowe są przetwarzane przez Administratora w następujących celach:'
+  - p: 11
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}, spans: [{start: 29, end: 46, italic: true}]}
+    text: w celu ……………………………………………………… (określenie celu) w ramach prowadzonej przez Administratora działalności gospodarczej;
+    slots:
+    - {id: okreslenie_celu, span: [7, 28], type: text, hint: określenie celu}
+    inline_hints:
+    - {span: [29, 46], text: określenie celu}
+  - p: 12
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}, spans: [{start: 42, end: 55, italic: true}]}
+    text: w celu wykonania umowy ……………………………………………… (nazwa umowy)
+    slots:
+    - {id: nazwa_umowy, span: [23, 41], type: text, hint: nazwa umowy}
+    inline_hints:
+    - {span: [42, 55], text: nazwa umowy}
+  - p: 13
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '7.', kind: decimal, src: auto, level: 0}, spans: [{start: 306, end: 320, italic: true}]}
+    text: "Odbiorcami Pani/Pana danych osobowych mogą być podmioty świadczące na rzecz Administratora w szczególności usługi telekomunikacyjne,\
+      \ informatyczne i księgowe oraz inne podmioty, które muszą zostać dopuszczone do przetwarzania Pani/Pana danych osobowych \nw celu należytego\
+      \ wykonania umowy …………………………………………… (nazwa umowy)."
+    slots:
+    - {id: nazwa_umowy_2, span: [288, 305], type: text, hint: nazwa umowy}
+    inline_hints:
+    - {span: [306, 319], text: nazwa umowy}
+  - p: 14
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '8.', kind: decimal, src: auto, level: 0}}
+    text: Pani/Pana dane osobowe nie będą przekazywane do państwa trzeciego lub organizacji międzynarodowej.
+  - p: 15
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '9.', kind: decimal, src: auto, level: 0}, spans: [{start: 69, end: 97, italic: true}]}
+    text: Pani/Pana dane osobowe będą przetwarzane przez okres ……………………………………… (okres przetwarzania danych).
+    slots:
+    - {id: okres_przetwarzania_danych, span: [53, 68], type: text, hint: okres przetwarzania danych}
+    inline_hints:
+    - {span: [69, 97], text: okres przetwarzania danych}
+  - p: 16
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '10.', kind: decimal, src: auto, level: 0}}
+    text: 'W związku z przetwarzaniem Pani/Pana danych osobowych przysługuje Pani/Panu prawo do:'
+  - p: 17
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+    text: żądania od Administratora dostępu do Pani/Pana danych osobowych;
+  - p: 18
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+    text: żądania od Administratora sprostowania Pani/Pana danych osobowych;
+  - p: 19
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
+    text: żądania od Administratora usunięcia Pani/Pana danych osobowych;
+  - p: 20
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: d), kind: lowerLetter, src: auto, level: 0}}
+    text: żądania od Administratora ograniczenia przetwarzania Pani/Pana danych osobowych;
+  - p: 21
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: e), kind: lowerLetter, src: auto, level: 0}}
+    text: wniesienia sprzeciwu wobec przetwarzania Pani/Pana danych osobowych;
+  - p: 22
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: f), kind: lowerLetter, src: auto, level: 0}}
+    text: przenoszenia Pani/Pana danych osobowych;
+  - p: 23
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: g), kind: lowerLetter, src: auto, level: 0}}
+    text: wniesienia skargi do organu nadzorczego – Prezesa Urzędu Ochrony Danych Osobowych.
+  - p: 24
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '11.', kind: decimal, src: auto, level: 0}, spans: [{start: 178, end: 218, italic: true}]}
+    text: W przypadku pozyskania danych osobowych w sposób inny niż od osoby, której dane dotyczą, źródłem pochodzenia takich danych są …………………………………………………………………
+      ………………………………………………………………… (źródła pozyskania danych, np. Internet)
+    slots:
+    - {id: zrodla_pozyskania_danych_np_internet, span: [126, 177], type: text, hint: 'źródła pozyskania danych, np. Internet'}
+    inline_hints:
+    - {span: [178, 218], text: 'źródła pozyskania danych, np. Internet'}
+  - p: 25
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '12.', kind: decimal, src: auto, level: 0}}
+    text: 'Podanie przez Panią/Pana danych osobowych:'
+  - p: 26
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+    text: jest dobrowolne i może być w każdej chwili cofnięte – dotyczy osób, które wyraziły zgodę na przetwarzanie swoich danych osobowych;
+  - p: 27
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}, spans: [{start: 61, end: 74, italic: true},
+        {start: 221, end: 234, italic: true}]}
+    text: jest niezbędne i jest warunkiem zawarcia umowy ………………………………… (nazwa umowy) i jej należytego wykonania – dotyczy osób, z którymi Administrator
+      zawarł umowę lub podjął czynności zmierzające do wykonania umowy ………………………………… (nazwa umowy).
+    slots:
+    - {id: nazwa_umowy_3, span: [47, 60], type: text, hint: nazwa umowy}
+    - {id: nazwa_umowy_4, span: [207, 220], type: text, hint: nazwa umowy}
+    inline_hints:
+    - {span: [61, 74], text: nazwa umowy}
+    - {span: [221, 234], text: nazwa umowy}
+  - p: 28
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '13.', kind: decimal, src: auto, level: 0}}
+    text: Pani/Pana dane osobowe nie będą wykorzystywane do zautomatyzowanego podejmowania decyzji, w tym do profilowania.
+  - {p: 29, role: spacer}

@@ -1,0 +1,171 @@
+# Szkielet struktury: wniosek procesowy (pismo w toczącej się sprawie albo
+# wniosek wszczynający, np. o uchylenie mandatu karnego).
+#
+# Wnioski kadrowe (urlop, świadectwo pracy) nie są kierowane do sądu i nie mają
+# tej struktury: mają własną kategorię, wniosek_pracowniczy.
+
+category: wniosek_procesowy
+label_pl: wniosek procesowy
+check_order: false
+sections:
+- id: data
+  label_pl: miejscowość i data
+  severity: required
+  # Linia „miejscowość, data” albo jej podpis we wzorze. Same „dnia” i „r.”
+  # trafiały też w „ustawy z dnia 26 czerwca 1974 r.”, więc usunięta data
+  # uchodziła za obecną.
+  patterns:
+  - '^(?=.{0,90}$)[\p{L}…. ()\t\-]{1,60},\s*(?:dnia\s+)?(?:\d{1,2}\b|…|\.{2,})'
+  - '\(miejscowość\W+(?:i\s+)?data'
+  - 'zawart\w*\s+(?:w\s+dniu|dnia)\b'
+- id: sad
+  label_pl: oznaczenie sądu
+  severity: required
+  matches: [sąd, wydział]
+- id: strony
+  label_pl: oznaczenie stron lub wnioskodawcy
+  severity: required
+  matches: [powód, pozwan, wnioskodawc, uczestnik, obwinion, oskarżon, dane klienta, imię i nazwisko, 'imię, nazwisko']
+- id: sygnatura
+  label_pl: sygnatura akt
+  severity: expected
+  matches: [sygn]
+- id: wniosek
+  label_pl: treść wniosku
+  severity: required
+  matches: [wnoszę, składam wniosek, wnioskiem o, wnioskuję, wniosek o]
+- id: uzasadnienie
+  label_pl: uzasadnienie
+  severity: expected
+  matches: [uzasadnienie, motywuję, uzasadniając]
+- id: podpis
+  label_pl: podpis wnioskodawcy
+  severity: required
+  matches: [podpis]
+  # „Z poważaniem” zamyka pismo, nie tytułuje sekcji: pod nim jest tylko
+  # odręczny podpis. Wzorzec, w przeciwieństwie do `matches`, nie każe
+  # szukać pod nim treści.
+  patterns: ['z poważaniem']
+- id: zalaczniki
+  label_pl: załączniki
+  severity: expected
+  matches: [załącznik, odpis]
+
+# Dokument ogólny: wniosek w toczącej się sprawie, z treścią wniosku jako polem,
+# więc pasuje do każdego wniosku do sądu albo organu. Wnioski o konkretne
+# czynności (przywrócenie i przedłużenie terminu, uzasadnienie wyroku, zmiana
+# terminu przesłuchania) są wzorami szczególnymi w data/templates/wniosek_procesowy/.
+# Przy użyciu wypełnia się wyłącznie pola (`slots`); treść, kolejność i układ
+# zostają jak we wzorze.
+document:
+  label_pl: Wniosek w toczącej się sprawie
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 1417, bottom: 1417, left: 1417, right: 1417}}
+  blocks:
+  - p: 0
+    role: body
+    layout: {align: right, size: 11.0}
+    text: '………………… (miejscowość), dnia ………………… (data)'
+    slots:
+    - {id: miejscowosc, span: [0, 7], type: place, hint: miejscowość}
+    - {id: data, span: [28, 35], type: date, hint: data}
+    inline_hints:
+    - {span: [8, 21], text: miejscowość}
+    - {span: [36, 42], text: data}
+  - {p: 1, role: spacer}
+  - p: 2
+    role: field_header
+    layout: {align: justify, size: 11.0}
+    text: 'Do:'
+  - p: 3
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: '………………………………………………………………………………………………'
+    slots:
+    - {id: sad, span: [0, 36], type: text, hint: 'sąd albo organ prowadzący sprawę, wydział', label: Do}
+  - p: 4
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true}
+    text: '(sąd albo organ prowadzący sprawę, wydział)'
+    hint_for: 3
+    hint_kind: label
+  - p: 5
+    role: field
+    layout: {align: justify, size: 11.0}
+    text: 'Sygn. akt: …………………'
+    slots:
+    - {id: sygnatura, span: [11, 18], type: text, label: Sygn. akt}
+  - {p: 6, role: spacer}
+  - p: 7
+    role: field_header
+    layout: {align: justify, size: 11.0}
+    text: 'Wnioskodawca:'
+  - p: 8
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: '………………………………………………………………………………………………'
+    slots:
+    - {id: wnioskodawca, span: [0, 36], type: text, hint: 'imię i nazwisko lub nazwa, adres, rola w sprawie', label: Wnioskodawca}
+  - p: 9
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true}
+    text: '(imię i nazwisko lub nazwa, adres, rola w sprawie)'
+    hint_for: 8
+    hint_kind: label
+  - {p: 10, role: spacer}
+  - p: 11
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: WNIOSEK
+  - {p: 12, role: spacer}
+  - p: 13
+    role: body
+    layout: {align: justify, size: 11.0}
+    text: Składam wniosek w sprawie o sygnaturze podanej wyżej i wnoszę o ………………… (treść wniosku).
+    slots:
+    - {id: tresc_wniosku, span: [64, 71], type: text, hint: treść wniosku}
+    inline_hints:
+    - {span: [72, 87], text: treść wniosku}
+  - {p: 14, role: spacer}
+  - p: 15
+    role: body
+    layout: {align: center, size: 12.0, bold: true}
+    text: Uzasadnienie
+  - p: 16
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: '………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………'
+    slots:
+    - {id: uzasadnienie, span: [0, 108], type: text, hint: 'okoliczności, które przemawiają za wnioskiem'}
+  - p: 17
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true}
+    text: '(okoliczności, które przemawiają za wnioskiem)'
+    hint_for: 16
+    hint_kind: instruction
+  - {p: 18, role: spacer}
+  - p: 19
+    role: blank_line
+    layout: {align: right, size: 11.0}
+    text: '………………………………'
+    slots:
+    - {id: podpis, span: [0, 12], type: signature, hint: podpis}
+  - p: 20
+    role: hint
+    layout: {align: right, size: 8.0, italic: true}
+    text: '(podpis)'
+    hint_for: 19
+    hint_kind: label
+  - {p: 21, role: spacer}
+  - p: 22
+    role: field_header
+    layout: {align: justify, size: 11.0, bold: true}
+    text: 'Załączniki:'
+  - p: 23
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: '………………… (odpisy wniosku i inne załączniki).'
+    slots:
+    - {id: zalaczniki, span: [0, 7], type: text, hint: odpisy wniosku i inne załączniki}
+    inline_hints:
+    - {span: [8, 42], text: odpisy wniosku i inne załączniki}

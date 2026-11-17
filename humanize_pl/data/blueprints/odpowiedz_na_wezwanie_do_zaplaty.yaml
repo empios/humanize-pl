@@ -1,0 +1,200 @@
+# Szkielet struktury: odpowiedź dłużnika na wezwanie do zapłaty.
+#
+# Odpowiedź kwestionuje roszczenie i nie może go uznawać: uznanie długu
+# przerywa bieg przedawnienia (art. 123 § 1 pkt 2 k.c.), więc wzór mówi
+# tylko, czego dłużnik nie uznaje i dlaczego.
+
+category: odpowiedz_na_wezwanie_do_zaplaty
+label_pl: odpowiedź na wezwanie do zapłaty
+check_order: false
+sections:
+- id: data_miejsce
+  label_pl: miejscowość i data
+  severity: required
+  # Linia „miejscowość, data” albo jej podpis we wzorze.
+  patterns:
+  - '^(?=.{0,90}$)[\p{L}…. ()\t\-]{1,60},\s*(?:dnia\s+)?(?:\d{1,2}\b|…|\.{2,})'
+  - '\(miejscowość\W+(?:i\s+)?data'
+- id: odniesienie
+  label_pl: odniesienie do wezwania
+  severity: required
+  matches: [w odpowiedzi na wezwanie]
+- id: stanowisko
+  label_pl: stanowisko wobec roszczenia
+  severity: required
+  matches: [nie uznaję, kwestionuję]
+- id: uzasadnienie
+  label_pl: uzasadnienie
+  severity: expected
+  matches: [uzasadnienie]
+- id: zadanie
+  label_pl: żądanie
+  severity: expected
+  matches: [wnoszę o]
+- id: podpis
+  label_pl: podpis
+  severity: required
+  matches: [podpis]
+  # „Z poważaniem” zamyka pismo, nie tytułuje sekcji: pod nim jest tylko
+  # odręczny podpis. Wzorzec, w przeciwieństwie do `matches`, nie każe
+  # szukać pod nim treści.
+  patterns: ['z poważaniem']
+
+# Dokument ogólny: wzór do wypełnienia, bez nazwy konkretnego wierzyciela.
+# Przy użyciu wypełnia się wyłącznie pola (`slots`); treść, kolejność i układ
+# zostają jak we wzorze.
+document:
+  label_pl: Odpowiedź na wezwanie do zapłaty
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 1417, bottom: 1417, left: 1417, right: 1417}}
+  blocks:
+  - p: 0
+    role: body
+    layout: {align: right, size: 11.0}
+    text: '………………… (miejscowość), dnia ………………… (data)'
+    slots:
+    - {id: miejscowosc, span: [0, 7], type: place, hint: miejscowość}
+    - {id: data, span: [28, 35], type: date, hint: data}
+    inline_hints:
+    - {span: [8, 21], text: miejscowość}
+    - {span: [36, 42], text: data}
+  - {p: 1, role: spacer}
+  - p: 2
+    role: field_header
+    layout: {align: justify, size: 11.0}
+    text: 'Nadawca:'
+  - p: 3
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: '………………………………………………………………………………………………'
+    slots:
+    - {id: nadawca, span: [0, 36], type: text, hint: 'imię i nazwisko lub nazwa, adres', label: Nadawca}
+  - p: 4
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true}
+    text: '(imię i nazwisko lub nazwa, adres)'
+    hint_for: 3
+    hint_kind: label
+  - {p: 5, role: spacer}
+  - p: 6
+    role: field_header
+    layout: {align: justify, size: 11.0}
+    text: 'Adresat:'
+  - p: 7
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: '………………………………………………………………………………………………'
+    slots:
+    - {id: wierzyciel, span: [0, 36], type: text, hint: 'wierzyciel albo jego pełnomocnik, adres', label: Adresat}
+  - p: 8
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true}
+    text: '(wierzyciel albo jego pełnomocnik, adres)'
+    hint_for: 7
+    hint_kind: label
+  - {p: 9, role: spacer}
+  - p: 10
+    role: field
+    layout: {align: justify, size: 11.0}
+    text: 'Znak wezwania: …………………'
+    slots:
+    - {id: znak_wezwania, span: [15, 22], type: text, label: Znak wezwania}
+  - {p: 11, role: spacer}
+  - p: 12
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: ODPOWIEDŹ NA WEZWANIE DO ZAPŁATY
+  - {p: 13, role: spacer}
+  - p: 14
+    role: body
+    layout: {align: justify, size: 11.0}
+    text: 'W odpowiedzi na wezwanie do zapłaty z dnia ………………… (data wezwania), doręczone mi dnia ………………… (data doręczenia), dotyczące kwoty ………………… (kwota z wezwania):'
+    slots:
+    - {id: data_wezwania, span: [43, 50], type: date, hint: data wezwania}
+    - {id: data_doreczenia, span: [86, 93], type: date, hint: data doręczenia}
+    - {id: kwota, span: [129, 136], type: amount, hint: kwota z wezwania}
+    inline_hints:
+    - {span: [51, 66], text: data wezwania}
+    - {span: [94, 111], text: data doręczenia}
+    - {span: [137, 155], text: kwota z wezwania}
+  - p: 15
+    role: body
+    layout: {align: justify, size: 11.0}
+    text: Oświadczam, że nie uznaję roszczenia ………………… (w całości albo w części, ze wskazaniem zakresu).
+    slots:
+    - {id: zakres, span: [37, 44], type: text, hint: 'w całości albo w części, ze wskazaniem zakresu'}
+    inline_hints:
+    - {span: [45, 93], text: 'w całości albo w części, ze wskazaniem zakresu'}
+  - {p: 16, role: spacer}
+  - p: 17
+    role: field_header
+    layout: {align: justify, size: 11.0}
+    text: 'Stanowisko uzasadniam tym, że:'
+  - p: 18
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: '………………… (zapłata, brak podstawy, błędna wysokość albo przedawnienie roszczenia).'
+    slots:
+    - {id: zarzuty, span: [0, 7], type: text, hint: 'zapłata, brak podstawy, błędna wysokość albo przedawnienie roszczenia'}
+    inline_hints:
+    - {span: [8, 79], text: 'zapłata, brak podstawy, błędna wysokość albo przedawnienie roszczenia'}
+  - {p: 19, role: spacer}
+  - p: 20
+    role: field_header
+    layout: {align: justify, size: 11.0}
+    text: 'Wobec tego wnoszę o:'
+  - p: 21
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: '………………… (odstąpienie od dochodzenia roszczenia albo jego korektę).'
+    slots:
+    - {id: zadanie, span: [0, 7], type: text, hint: odstąpienie od dochodzenia roszczenia albo jego korektę}
+    inline_hints:
+    - {span: [8, 65], text: odstąpienie od dochodzenia roszczenia albo jego korektę}
+  - {p: 22, role: spacer}
+  - p: 23
+    role: body
+    layout: {align: center, size: 12.0, bold: true}
+    text: Uzasadnienie
+  - p: 24
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: '………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………'
+    slots:
+    - {id: uzasadnienie, span: [0, 108], type: text, hint: 'okoliczności faktyczne i dowody, które potwierdzają stanowisko'}
+  - p: 25
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true}
+    text: '(okoliczności faktyczne i dowody, które potwierdzają stanowisko)'
+    hint_for: 24
+    hint_kind: instruction
+  - {p: 26, role: spacer}
+  - p: 27
+    role: body
+    layout: {align: right, size: 11.0}
+    text: Z poważaniem
+  - p: 28
+    role: blank_line
+    layout: {align: right, size: 11.0}
+    text: '………………………………'
+    slots:
+    - {id: podpis, span: [0, 12], type: signature, hint: podpis}
+  - p: 29
+    role: hint
+    layout: {align: right, size: 8.0, italic: true}
+    text: '(podpis)'
+    hint_for: 28
+    hint_kind: label
+  - {p: 30, role: spacer}
+  - p: 31
+    role: field_header
+    layout: {align: justify, size: 11.0, bold: true}
+    text: 'Załączniki:'
+  - p: 32
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: '………………… (dokumenty potwierdzające stanowisko).'
+    slots:
+    - {id: zalaczniki, span: [0, 7], type: text, hint: dokumenty potwierdzające stanowisko}
+    inline_hints:
+    - {span: [8, 45], text: dokumenty potwierdzające stanowisko}

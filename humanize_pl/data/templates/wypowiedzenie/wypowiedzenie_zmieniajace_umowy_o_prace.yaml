@@ -1,0 +1,202 @@
+template: Wypowiedzenie zmieniające umowy o pracę.docx
+category: wypowiedzenie
+label_pl: Wypowiedzenie zmieniające umowy o pracę
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: body
+  layout: {align: right, indent: {first: 708}, size: 10.0, spans: [{start: 9, end: 22, italic: true}, {start: 37, end: 43, italic: true}]}
+  text: …………………… (miejscowość), dnia …………….. (data)
+  slots:
+  - {id: miejscowosc, span: [0, 8], type: place, hint: miejscowość}
+  - {id: data, span: [29, 36], type: date, hint: data}
+  inline_hints:
+  - {span: [9, 22], text: miejscowość}
+  - {span: [37, 43], text: data}
+- {p: 1, role: spacer}
+- p: 2
+  role: blank_line
+  layout: {size: 10.0}
+  text: '………………………………………
+
+    ………………………………………
+
+    ………………………………………'
+  slots:
+  - {id: dane_pracodawcy_imie_i_nazwisko_adres_lub_okresl, span: [0, 15], type: text, hint: 'dane Pracodawcy, imię i nazwisko, adres lub określenie
+      firmy, adresu siedziby, NIP-u'}
+  - {id: dane_pracodawcy_imie_i_nazwisko_adres_lub_okresl_2, span: [16, 31], type: text, hint: 'dane Pracodawcy, imię i nazwisko, adres lub określenie
+      firmy, adresu siedziby, NIP-u'}
+  - {id: dane_pracodawcy_imie_i_nazwisko_adres_lub_okresl_3, span: [32, 47], type: text, hint: 'dane Pracodawcy, imię i nazwisko, adres lub określenie
+      firmy, adresu siedziby, NIP-u'}
+- p: 3
+  role: hint
+  layout: {size: 10.0, italic: true}
+  text: (dane Pracodawcy, imię i nazwisko, adres lub 
+  hint_for: 2
+  hint_kind: instruction
+- p: 4
+  role: hint
+  layout: {size: 10.0, italic: true}
+  text: określenie firmy, adresu siedziby, NIP-u)
+  hint_for: 2
+  hint_kind: instruction
+- {p: 5, role: spacer}
+- p: 6
+  role: blank_line
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: '.......................................................'
+  slots:
+  - {id: p6_1, span: [0, 55], type: text, context: ▢}
+- p: 7
+  role: blank_line
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: '.......................................................'
+  slots:
+  - {id: p7_1, span: [0, 55], type: text, context: ▢}
+- p: 8
+  role: blank_line
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: '.......................................................'
+  slots:
+  - {id: dane_pracownika_imie_i_nazwisko_adres, span: [0, 55], type: address, hint: 'dane Pracownika, imię i nazwisko, adres'}
+- p: 9
+  role: hint
+  layout: {indent: {left: 4820}, size: 10.0, italic: true}
+  text: (dane Pracownika, imię i nazwisko, adres)
+  hint_for: 8
+  hint_kind: label
+- {p: 10, role: spacer}
+- p: 11
+  role: body
+  layout: {align: center, size: 14.0, bold: true}
+  text: Wypowiedzenie zmieniające umowę o pracę
+- {p: 12, role: spacer}
+- p: 13
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 70, end: 93, italic: true}, {start: 157, end: 198, italic: true}]}
+  text: 'Niniejszym, działając w imieniu własnym/Pracodawcy - …………………………………….. (oznaczenie pracodawcy), wypowiadam Pani/Panu umowę o pracę zawartą
+    w dniu …………………………… (data zawarcia zmienianej umowy o pracę) w części dotyczącej: ……………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………….'
+  slots:
+  - {id: w_tym_miejscu_nalezy_wskazac_warunki_umowy_o_pra, span: [53, 69], type: text, hint: 'w tym miejscu należy wskazać warunki umowy o pracę
+      podlegające wypowiedzeniu, np. stanowisko pracy, miejsce pracy, wynagrodzenie zasadnicze – informacje należy uzupełnić o dane z pierwotnej
+      umowy o pracę'}
+  - {id: w_tym_miejscu_nalezy_wskazac_warunki_umowy_o_pra_2, span: [145, 156], type: date, hint: 'w tym miejscu należy wskazać warunki umowy o
+      pracę podlegające wypowiedzeniu, np. stanowisko pracy, miejsce pracy, wynagrodzenie zasadnicze – informacje należy uzupełnić o dane z pierwotnej
+      umowy o pracę'}
+  - {id: w_tym_miejscu_nalezy_wskazac_warunki_umowy_o_pra_3, span: [219, 385], type: text, hint: 'w tym miejscu należy wskazać warunki umowy o
+      pracę podlegające wypowiedzeniu, np. stanowisko pracy, miejsce pracy, wynagrodzenie zasadnicze – informacje należy uzupełnić o dane z pierwotnej
+      umowy o pracę'}
+  inline_hints:
+  - {span: [70, 93], text: oznaczenie pracodawcy}
+  - {span: [157, 197], text: data zawarcia zmienianej umowy o pracę}
+  alternatives: 3
+- p: 14
+  role: hint
+  layout: {align: justify, size: 10.0, italic: true}
+  text: (w tym miejscu należy wskazać warunki umowy o pracę podlegające wypowiedzeniu, np. stanowisko pracy, miejsce pracy, wynagrodzenie zasadnicze
+    – informacje należy uzupełnić o dane z pierwotnej umowy o pracę)
+  hint_for: 13
+  hint_kind: instruction
+- p: 15
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 28, end: 97, italic: true}, {start: 137, end: 144, italic: true}]}
+  text: z zachowaniem ………………………………… (długość okresu wypowiedzenia wynikająca z umowy/okresu zatrudnienia), który upłynie w dniu ……………………………………….
+    (data).
+  slots:
+  - {id: dlugosc_okresu_wypowiedzenia_wynikajaca_z_umowy, span: [14, 27], type: text, hint: długość okresu wypowiedzenia wynikająca z umowy/okresu
+      zatrudnienia}
+  - {id: data_2, span: [120, 136], type: date, hint: data}
+  inline_hints:
+  - {span: [28, 97], text: długość okresu wypowiedzenia wynikająca z umowy/okresu zatrudnienia}
+  - {span: [137, 143], text: data}
+- p: 16
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: Przyczyną wypowiedzenia dotychczasowych warunków umowy o pracę jest ……………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………….
+  slots:
+  - {id: w_tym_miejscu_nalezy_wskazac_przyczyny_wypowiedz, span: [68, 234], type: text, hint: w tym miejscu należy wskazać przyczyny wypowiedzenia
+      dotychczasowych warunków umowy o pracę}
+- p: 17
+  role: hint
+  layout: {align: justify, size: 10.0, italic: true}
+  text: (w tym miejscu należy wskazać przyczyny wypowiedzenia dotychczasowych warunków umowy o pracę)
+  hint_for: 16
+  hint_kind: instruction
+- {p: 18, role: spacer}
+- p: 19
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 56, end: 114, italic: true}]}
+  text: 'Po upływie okresu wypowiedzenia, tj. od dnia ………………………. (dzień następujący po ostatnim dniu okresu wypowiedzenia) proponuję następujące
+    warunki umowy o pracę: ……………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………….'
+  slots:
+  - {id: w_tym_miejscu_nalezy_wskazac_proponowane_warunki, span: [45, 55], type: date, hint: 'w tym miejscu należy wskazać proponowane warunki
+      umowy o pracę podlegające zmianie, np. stanowisko pracy, miejsce pracy, wynagrodzenie zasadnicze – informacje należy uzupełnić o dane z
+      nowej umowy'}
+  - {id: w_tym_miejscu_nalezy_wskazac_proponowane_warunki_2, span: [159, 325], type: text, hint: 'w tym miejscu należy wskazać proponowane warunki
+      umowy o pracę podlegające zmianie, np. stanowisko pracy, miejsce pracy, wynagrodzenie zasadnicze – informacje należy uzupełnić o dane z
+      nowej umowy'}
+  inline_hints:
+  - {span: [56, 113], text: dzień następujący po ostatnim dniu okresu wypowiedzenia}
+- p: 20
+  role: hint
+  layout: {align: justify, size: 10.0, italic: true}
+  text: (w tym miejscu należy wskazać proponowane warunki umowy o pracę podlegające zmianie, np. stanowisko pracy, miejsce pracy, wynagrodzenie
+    zasadnicze – informacje należy uzupełnić o dane z nowej umowy)
+  hint_for: 19
+  hint_kind: instruction
+- {p: 21, role: spacer}
+- p: 22
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: 'Pozostałe warunki umowy o pracę nie ulegają zmianie. '
+- {p: 23, role: spacer}
+- p: 24
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 89, end: 95, italic: true}]}
+  text: Jeżeli Pani/Pan przed upływem połowy okresu wypowiedzenia, tj. do dnia  …………………………………….. (data), nie złoży oświadczenia o odmowie przyjęcia
+    nowych warunków umowy o pracę, będzie to równoznaczne z wyrażeniem zgody na proponowaną zmianę warunków umowy.
+  slots:
+  - {id: data_3, span: [72, 88], type: date, hint: data}
+  inline_hints:
+  - {span: [89, 95], text: data}
+- p: 25
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 172, end: 178, italic: true}]}
+  text: W razie odmowy przyjęcia przez Panią/Pana zaproponowanych warunków umowy o pracę, umowa rozwiąże się wraz z upływem okresu wypowiedzenia,
+    tj. z dniem ……………………………………………………. (data)
+  slots:
+  - {id: data_4, span: [150, 171], type: date, hint: data}
+  inline_hints:
+  - {span: [172, 178], text: data}
+- {p: 26, role: spacer}
+- p: 27
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 178, end: 191, italic: true}, {start: 205, end: 221, italic: true}, {start: 247, end: 259,
+        italic: true}]}
+  text: 'Jednocześnie informuje, iż w terminie 21 dni od dnia doręczenia niniejszego pisma przysługuje Pani/Panu prawo do wniesienia odwołania
+    do Sądu Pracy – Sądu Rejonowego w ……………………… (miejscowość) Wydział ………… (numer wydziału), ul. ………………………………………………… (adres sądu). '
+  slots:
+  - {id: miejscowosc_2, span: [168, 177], type: place, hint: miejscowość}
+  - {id: numer_wydzialu, span: [200, 204], type: text, hint: numer wydziału}
+  - {id: adres_sadu, span: [227, 246], type: address, hint: adres sądu}
+  inline_hints:
+  - {span: [178, 191], text: miejscowość}
+  - {span: [205, 221], text: numer wydziału}
+  - {span: [247, 259], text: adres sądu}
+- {p: 28, role: spacer}
+- p: 29
+  role: blank_line
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: …………………………………………
+  slots:
+  - {id: podpis_pracodawcy, span: [0, 16], type: signature, hint: podpis Pracodawcy}
+- p: 30
+  role: hint
+  layout: {align: right, indent: {first: 708}, size: 10.0, italic: true}
+  text: (podpis Pracodawcy)
+  hint_for: 29
+  hint_kind: label
+- {p: 31, role: spacer}
+- {p: 32, role: spacer}

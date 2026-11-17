@@ -1,0 +1,231 @@
+# Szkielet struktury: umowa darowizny.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: darowizna
+label_pl: umowa darowizny
+numbering: paragraph
+sections:
+- id: komparycja
+  label_pl: komparycja
+  severity: required
+  # Formuły zawarcia i oznaczenia stron, nie nazwy ról: „najemca” czy „zawarta”
+  # powtarzają się w całej umowie i utrzymywały usuniętą komparycję jako obecną.
+  matches: [zawarta w dniu, zawarta dnia, zawarta pomiędzy, zawarta między, zawarto umowę,
+    zwanym dalej, zwaną dalej, zwanymi dalej, zwany dalej, zwana dalej, zwanego dalej,
+    zwanej dalej, zwani dalej, z siedzibą w, zamieszkał, pesel, 'nip:', 'nip ', krs, legitymując]
+- id: przedmiot
+  label_pl: przedmiot darowizny
+  severity: required
+  matches: [przedmiot, darowizny, rzecz, własność, wartość]
+- id: oświadczenie
+  label_pl: oświadczenie o własności
+  severity: required
+  matches: [oświadcza, jest właściciel, wolna jest od praw]
+- id: przyjecie
+  label_pl: przekazanie i przyjęcie
+  severity: required
+  matches: [przekazuje, przyjmuje, wydanie, darowiznę]
+- id: postanowienia_koncowe
+  label_pl: postanowienia końcowe
+  severity: required
+  matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
+      formy pisemnej, wymagają zachowania formy pisemnej]
+
+# Dokument ogólny: realny wzór tej kategorii. Przy użyciu wypełnia się wyłącznie
+# pola (`slots`); treść, kolejność i układ zostają jak we wzorze.
+document:
+  template: Umowa darowizny.docx
+  label_pl: Umowa darowizny
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+  blocks:
+  - p: 0
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: Umowa darowizny
+  - {p: 1, role: spacer}
+  - p: 2
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: Zawarta w dniu ………………….………. w …………………………………………………
+    slots:
+    - {id: p2_1, span: [15, 27], type: date, context: Zawarta w dniu ▢ w}
+    - {id: p2_2, span: [30, 49], type: place, context: Zawarta w dniu w ▢}
+  - {p: 3, role: spacer}
+  - p: 4
+    role: field_header
+    layout: {align: justify, size: 10.0}
+    text: 'Pomiędzy [podać dane darczyńcy]:'
+  - p: 5
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: '…………………………………………….., zamieszkałym w …………………., przy ulicy ………………..............................., legitymującym się dowodem osobistym ……………………………………………,    '
+    slots:
+    - {id: p5_1, span: [0, 19], type: text, context: ▢ zamieszkałym w}
+    - {id: p5_2, span: [36, 44], type: place, context: zamieszkałym w ▢ przy ulicy}
+    - {id: p5_3, span: [57, 94], type: text, context: zamieszkałym w przy ulicy ▢ legitymującym się}
+    - {id: p5_4, span: [132, 149], type: text, context: legitymującym się dowodem osobistym ▢}
+  - {p: 6, role: spacer}
+  - p: 7
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 30, end: 39, bold: true}]}
+    text: zwanym w dalszej części umowy DARCZYŃCĄ,
+    alias: DARCZYŃCĄ
+  - {p: 8, role: spacer}
+  - p: 9
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: a [podać dane obdarowanego]
+  - {p: 10, role: spacer}
+  - p: 11
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: '………………………………………………., zamieszkałym w………………………, przy ulicy ………………………................, legitymującym się dowodem osobistym …………………………………………, '
+    slots:
+    - {id: p11_1, span: [0, 19], type: text, context: ▢ zamieszkałym w}
+    - {id: p11_2, span: [35, 44], type: place, context: zamieszkałym w ▢ przy ulicy}
+    - {id: p11_3, span: [57, 82], type: text, context: zamieszkałym w przy ulicy ▢ legitymującym się}
+    - {id: p11_4, span: [120, 136], type: text, context: legitymującym się dowodem osobistym ▢}
+  - {p: 12, role: spacer}
+  - p: 13
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 30, end: 41, bold: true}]}
+    text: zwanym w dalszej części umowy OBDAROWANYM.
+    alias: OBDAROWANYM
+  - {p: 14, role: spacer}
+  - p: 15
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+    text: § 1
+  - {p: 16, role: spacer}
+  - p: 17
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 42, end: 121, italic: true}]}
+    text: Darczyńca oświadcza, iż jest właścicielem (należy wskazać szczegółowo informację o rzeczy będącej przedmiotem darowizny) o wartości……………….………zł
+      (słownie ……………………………………).
+    slots:
+    - {id: p17_1, span: [131, 141], type: text, context: jest właścicielem o wartości ▢ zł}
+    - {id: p17_2, span: [153, 167], type: amount, context: o wartości zł słownie ▢}
+  - p: 18
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: "Darczyńca oświadcza, że opisana w pkt. 1 rzecz wolna jest od praw osób trzecich, \nże nie toczy się żadne postępowanie, którego byłaby\
+      \ przedmiotem, a także, że rzecz ta nie stanowi przedmiotu zabezpieczenia."
+  - {p: 19, role: spacer}
+  - p: 20
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+    text: § 2
+  - {p: 21, role: spacer}
+  - p: 22
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: "Darczyńca oświadcza, że przekazuje na rzecz Obdarowanej własność wymienionej \nw § 1 rzeczy, a Obdarowany oświadcza, że niniejszą darowiznę\
+      \ przyjmuje."
+  - p: 23
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 154, end: 211, italic: true}]}
+    text: Wydanie przedmiotu darowizny następuje w momencie podpisania niniejszej umowy/już nastąpiło/nastąpi w dniu ..............................................
+      (wskazać dzień wydania rzeczy będącej przedmiotem umowy).
+    slots:
+    - {id: wskazac_dzien_wydania_rzeczy_bedacej_przedmiotem, span: [107, 153], type: date, hint: wskazać dzień wydania rzeczy będącej przedmiotem
+        umowy}
+    inline_hints:
+    - {span: [154, 210], text: wskazać dzień wydania rzeczy będącej przedmiotem umowy}
+  - {p: 24, role: spacer}
+  - p: 25
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+    text: § 3
+  - {p: 26, role: spacer}
+  - p: 27
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: Darczyńca oświadcza, iż jest to pierwsza darowizna, którą czyni na rzecz Obdarowanego. (opcjonalne – jeżeli wskazana informacja nie jest
+      prawdziwa, postanowienie należy usunąć)
+  - {p: 28, role: spacer}
+  - p: 29
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+    text: § 4
+  - {p: 30, role: spacer}
+  - p: 31
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: Strony ustalają, iż wszelkie koszty związane z zawarciem i wykonaniem niniejszej umowy obciążą ..........................................................
+      .
+    slots:
+    - {id: oznaczenie_strony_ktora_poniesie_koszty, span: [95, 153], type: text, hint: 'oznaczenie strony, która poniesie koszty'}
+  - p: 32
+    role: hint
+    layout: {align: justify, size: 10.0}
+    text: (oznaczenie strony, która poniesie koszty)
+    hint_for: 31
+    hint_kind: label
+  - {p: 33, role: spacer}
+  - p: 34
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+    text: § 5
+  - {p: 35, role: spacer}
+  - p: 36
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: Wszelkie zmiany niniejszej umowy wymagają zachowania formy pisemnej pod rygorem nieważności.
+  - {p: 37, role: spacer}
+  - p: 38
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 6, kind: paragraph, src: manual, level: 0}}
+    text: § 6
+  - {p: 39, role: spacer}
+  - p: 40
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: 'Umowa została sporządzona w …… jednobrzmiących egzemplarzach, po …….. dla każdej ze stron. '
+    slots:
+    - {id: p40_1, span: [28, 30], type: place, context: Umowa została sporządzona w ▢ jednobrzmiących egzemplarzach}
+    - {id: p40_2, span: [65, 69], type: text, context: w jednobrzmiących egzemplarzach po ▢ dla każdej}
+  - {p: 41, role: spacer}
+  - p: 42
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 7, kind: paragraph, src: manual, level: 0}}
+    text: § 7
+  - {p: 43, role: spacer}
+  - p: 44
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: W sprawach nieuregulowanych niniejszą umową będą miały zastosowanie przepisy ustawy z dnia 23 kwietnia 1964 r. Kodeks cywilny oraz innych
+      właściwych ustaw.
+  - {p: 45, role: spacer}
+  - p: 46
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 8, kind: paragraph, src: manual, level: 0}}
+    text: § 8
+  - {p: 47, role: spacer}
+  - p: 48
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 173, end: 291, italic: true}]}
+    text: Wszelkie spory, których nie da się rozstrzygnąć w drodze wzajemnych negocjacji, będą rozpoznawane przez sąd powszechny właściwy ze względu
+      na miejsce zamieszkania ……………………… (można wskazać zarówno sąd właściwy dla miejsca zamieszkania darczyńcy jak i obdarowanego, według ustaleń
+      stron umowy)
+    slots:
+    - {id: mozna_wskazac_zarowno_sad_wlasciwy_dla_miejsca_z, span: [163, 172], type: address, hint: 'można wskazać zarówno sąd właściwy dla miejsca
+        zamieszkania darczyńcy jak i obdarowanego, według ustaleń stron umowy'}
+    inline_hints:
+    - {span: [173, 291], text: 'można wskazać zarówno sąd właściwy dla miejsca zamieszkania darczyńcy jak i obdarowanego, według ustaleń stron umowy'}
+  - {p: 49, role: spacer}
+  - {p: 50, role: spacer}
+  - p: 51
+    role: body
+    layout: {align: justify, indent: {left: 142}, size: 10.0, bold: true, tabs: 1}
+    text: "DARCZYŃCA\tOBDAROWANY"
+  - {p: 52, role: spacer}
+  - p: 53
+    role: signature_line
+    layout: {align: justify, size: 10.0, tabs: 7}
+    text: ".................................\t\t\t\t\t\t\t         ................................."
+    slots:
+    - {id: p53_1, span: [0, 33], type: signature, context: ▢}
+    - {id: p53_2, span: [49, 82], type: signature, context: ▢}
+  - {p: 54, role: spacer}
+  - {p: 55, role: spacer}

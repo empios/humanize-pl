@@ -1,0 +1,257 @@
+template: Umowa o podnoszenie kwalifikacji zawodowych.docx
+category: umowa_o_prace
+label_pl: Umowa o podnoszenie kwalifikacji zawodowych
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: 'UMOWA O PODNOSZENIE KWALIFIKACJI ZAWODOWYCH
+
+    '
+- p: 1
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 42, end: 55, italic: true}, {start: 103, end: 126, italic: true}, {start: 407, end: 417,
+        bold: true}]}
+  text: 'W dniu ....................... r. w …………. (miejscowość) , pomiędzy: .................................. (oznaczenie pracodawcy) z siedzibą
+    w .............................................., wpisaną do rejestru przedsiębiorców prowadzonego przez .....................................
+    pod numerem KRS ........................., reprezentowaną przez ..............................................., zwaną dalej „Pracodawcą”,'
+  slots:
+  - {id: p1_1, span: [7, 30], type: date, context: W dniu ▢ r. w}
+  - {id: miejscowosc, span: [36, 41], type: place, hint: miejscowość}
+  - {id: oznaczenie_pracodawcy, span: [68, 102], type: text, hint: oznaczenie pracodawcy}
+  - {id: p1_4, span: [140, 186], type: place, context: pomiędzy z siedzibą w ▢ wpisaną do}
+  - {id: p1_5, span: [243, 280], type: person, context: rejestru przedsiębiorców prowadzonego przez ▢ pod numerem}
+  - {id: p1_6, span: [297, 322], type: id_number, context: przez pod numerem KRS ▢ reprezentowaną przez}
+  - {id: p1_7, span: [345, 392], type: person, context: numerem KRS reprezentowaną przez ▢ zwaną dalej}
+  inline_hints:
+  - {span: [42, 55], text: miejscowość}
+  - {span: [103, 126], text: oznaczenie pracodawcy}
+  alias: Pracodawcą
+- {p: 2, role: spacer}
+- p: 3
+  role: party_connector
+  layout: {align: justify, size: 10.0}
+  text: a
+- p: 4
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 51, end: 80, italic: true}, {start: 134, end: 155, italic: true}, {start: 278, end: 290,
+        bold: true}]}
+  text: ".................................................. (imię i nazwisko pracownika), zamieszkały w ......................................\
+    \ (miejscowość i adres), \nlegitymujący się dowodem osobistym Nr ..............................., posiadający nr PESEL: …………………….... zwanym\
+    \ dalej „Pracownikiem”, "
+  slots:
+  - {id: imie_i_nazwisko_pracownika, span: [0, 50], type: person, hint: imię i nazwisko pracownika}
+  - {id: miejscowosc_i_adres, span: [95, 133], type: address, hint: miejscowość i adres}
+  - {id: p4_3, span: [196, 227], type: text, context: się dowodem osobistym Nr ▢ posiadający nr}
+  - {id: p4_4, span: [251, 263], type: pesel, context: Nr posiadający nr PESEL ▢ zwanym dalej}
+  inline_hints:
+  - {span: [51, 79], text: imię i nazwisko pracownika}
+  - {span: [134, 155], text: miejscowość i adres}
+  alias: Pracownikiem
+- {p: 5, role: spacer}
+- p: 6
+  role: field_header
+  layout: {align: justify, size: 10.0}
+  text: 'została zawarta umowa o następującej treści:'
+- {p: 7, role: spacer}
+- p: 8
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+  text: § 1
+- p: 9
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Pracownik zobowiązuje się do podnoszenia swoich kwalifikacji zawodowych, za zgodą Pracodawcy.
+- p: 10
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 269, end: 486, italic: true}]}
+  text: W tym celu Pracownik od dnia ........................... r. rozpocznie naukę w ramach studiów podyplomowych na uczelni ......................................
+    na Wydziale ..........................................., na kierunku ......................................... (przykładowo podwyższanie kwalifikacji
+    może odbywać się w ramach podjętych studiów na uczelni wyższej, niemniej podwyższanie kwalifikacji pracowniczych może odbywać się poprzez
+    np. odbycie kilkumiesięcznego szkolenia)
+  slots:
+  - {id: p10_1, span: [29, 56], type: date, context: celu Pracownik od dnia ▢ r. rozpocznie}
+  - {id: p10_2, span: [119, 157], type: text, context: studiów podyplomowych na uczelni ▢ na Wydziale}
+  - {id: p10_3, span: [170, 213], type: text, context: na uczelni na Wydziale ▢ na kierunku}
+  - {id: przykladowo_podwyzszanie_kwalifikacji_moze_odbyw, span: [227, 268], type: text, hint: 'przykładowo podwyższanie kwalifikacji może odbywać
+      się w ramach podjętych studiów na uczelni wyższej, niemniej podwyższanie kwalifikacji pracowniczych może odbywać się poprzez np. odbycie
+      kilkumiesięcznego szkolenia'}
+  inline_hints:
+  - {span: [269, 486], text: 'przykładowo podwyższanie kwalifikacji może odbywać się w ramach podjętych studiów na uczelni wyższej, niemniej podwyższanie
+      kwalifikacji pracowniczych może odbywać się poprzez np. odbycie kilkumiesięcznego szkolenia'}
+- p: 11
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 78, end: 119, italic: true}]}
+  text: Kształcenie będzie odbywało się w systemie .................................. (np. zaocznym, weekendowym, wieczorowym).
+  slots:
+  - {id: np_zaocznym_weekendowym_wieczorowym, span: [43, 77], type: text, hint: 'np. zaocznym, weekendowym, wieczorowym'}
+  inline_hints:
+  - {span: [78, 118], text: 'np. zaocznym, weekendowym, wieczorowym'}
+- p: 12
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: 'Pracownik zobowiązuje się do:'
+- p: 13
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+  text: (należy wskazać zakres obowiązków pracownika w związku z zawartą umową np. regularne uczęszczanie na zajęcia dydaktyczne) …………………………………
+  slots:
+  - {id: p13_1, span: [122, 135], type: content, context: ▢}
+- p: 14
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+  text: ……………………………………………………
+  slots:
+  - {id: p14_1, span: [0, 20], type: content, context: ▢}
+- p: 15
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
+  text: ……………………………………………………
+  slots:
+  - {id: p15_1, span: [0, 20], type: content, context: ▢}
+- {p: 16, role: spacer}
+- p: 17
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+  text: § 2
+- p: 18
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'Pracodawca zobowiązuje się do udzielenia Pracownikowi następujących świadczeń:'
+- p: 19
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}, spans: [{start: 32, end: 156, italic: true}]}
+  text: 'urlopu szkoleniowego w wymiarze (minimalnie pracownikowi przysługiwać może 21 dni urlopu szkoleniowego, niemniej pracodawca może przyznać
+    więcej dni urlopu) dni na przystąpienie do egzaminów(u): potwierdzającego kwalifikacje zawodowe, na przygotowanie pracy dyplomowej i przystąpienie
+    do egzaminu dyplomowego/6 dni na przystąpienie do egzaminu eksternistycznego/6 dni na przystąpienie do egzaminu maturalnego/6 dni na przystąpienie
+    do egzaminu potwierdzającego kwalifikacje zawodowe w zawodzie lub egzaminu zawodowego,'
+- p: 20
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+  text: zwolnienia z całości/z części dnia pracy, na czas umożliwiający punktualne przybycie na obowiązkowe zajęcia oraz na czas ich trwania,
+- p: 21
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
+  text: za czas urlopu szkoleniowego (o którym mowa w pkt a) oraz za czas zwolnienia z całości/części dnia pracy (o którym mowa w pkt b) pracownik
+    zachowuje prawo do wynagrodzenia za pracę,
+- p: 22
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: d), kind: lowerLetter, src: auto, level: 0}}
+  text: urlopu szkoleniowego (o którym mowa w pkt a) Pracodawca udziela w dni, które są dla Pracownika dniami pracy, zgodnie z obowiązującym go
+    rozkładem czasu pracy.
+- p: 23
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 13, italic: true}]}
+  text: '(opcjonalnie) Ponadto Pracodawca przyznaje Pracownikowi następujące świadczenia dodatkowe:'
+- p: 24
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+  text: zwrot kosztów przejazdu do .................................. na zajęcia w szkole według zasad jak przy podróżach służbowych na terenie
+    kraju,
+  slots:
+  - {id: p24_1, span: [27, 61], type: date, context: zwrot kosztów przejazdu do ▢ na zajęcia}
+- p: 25
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+  text: zwrot kosztów zakwaterowania według zasad obowiązujących przy podróżach służbowych na terenie kraju,
+- p: 26
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
+  text: zwrot kosztów wyżywienia (diet) według zasad obowiązujących przy podróżach służbowych na obszarze kraju,
+- p: 27
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: d), kind: lowerLetter, src: auto, level: 0}}
+  text: zwrot kosztów zakupu podręczników lub innych materiałów szkoleniowych,
+- p: 28
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: e), kind: lowerLetter, src: auto, level: 0}, spans: [{start: 75, end: 111, italic: true}]}
+  text: 'zwrot kosztów opłaty (czesnego), za naukę pobieraną przez szkołę w całości (w przypadku uczęszczania na studia), w wysokości do ............................. zł
+    (słownie: ………………………………….……………. złotych)'
+  slots:
+  - {id: p28_1, span: [128, 157], type: date, context: całości w wysokości do ▢ zł}
+  - {id: p28_2, span: [171, 191], type: amount, context: wysokości do zł słownie ▢ złotych}
+- {p: 29, role: spacer}
+- p: 30
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+  text: § 3
+- p: 31
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 125, end: 158, italic: true}]}
+  text: Pracownik zobowiązuje się do przepracowania u Pracodawcy okresu ................ (nie więcej niż 3 lata) po ukończeniu nauki (np. zdaniu
+    egzaminu dyplomowego) pod rygorem zwrotu kosztów świadczeń otrzymanych od Pracodawcy.
+  slots:
+  - {id: nie_wiecej_niz_3_lata, span: [64, 80], type: text, hint: nie więcej niż 3 lata}
+  inline_hints:
+  - {span: [81, 104], text: nie więcej niż 3 lata}
+- p: 32
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Pracodawca ma prawo żądać zwrotu poniesionych kosztów w razie:'
+- p: 33
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+  text: niepodjęcia nauki lub jej przerwania przez Pracownika z nieuzasadnionych przyczyn,
+- p: 34
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+  text: rozwiązania stosunku pracy przez Pracodawcę bez wypowiedzenia z winy Pracownika, w trakcie podnoszenia kwalifikacji zawodowych lub w okresie
+    wskazanym w punkcie 1 po jego ukończeniu,
+- p: 35
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}, spans: [{start: 93, end: 94, vert: superscript}]}
+  text: rozwiązania umowy o pracę przez Pracownika bez wypowiedzenia na podstawie art. 55 lub art. 943 ustawy z dnia 26 czerwca 1974 r. – Kodeks
+    pracy, mimo braku przyczyn określonych w tych przepisach.
+- p: 36
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Pracodawcy przysługuje roszczenie o zwrot poniesionych kosztów wynikających z niniejszej umowy, pomniejszonych proporcjonalnie do okresu
+    przepracowanego przez Pracownika po ukończeniu nauki lub do okresu zatrudnienia w czasie podnoszenia kwalifikacji.
+- {p: 37, role: spacer}
+- p: 38
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+  text: § 4
+- p: 39
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Niniejsza umowa wchodzi w życie z chwilą podjęcia nauki przez Pracownika.
+- p: 40
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 155, end: 169, italic: true}]}
+  text: Umowa traci ważność w razie nierozpoczęcia przez Pracownika podnoszenia kwalifikacji zawodowych z przyczyn leżących po stronie Pracodawcy
+    lub organizatora (przykładowo) studiów podyplomowych.
+- p: 41
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Wszelkie zmiany niniejszej umowy wymagają formy pisemnej pod rygorem nieważności.
+- p: 42
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: W sprawach nieuregulowanych niniejszą umową mają zastosowanie przepisy ustawy Kodeks pracy i ustawy z dnia 23 kwietnia 1964 r. – Kodeks
+    cywilny.
+- p: 43
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+  text: Wszelkie spory powstałe na tle niniejszej umowy rozstrzygane będą przez sąd właściwy ze względu na siedziby Pracodawcy.
+- p: 44
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}}
+  text: Umowę sporządzono w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze Stron.
+- {p: 45, role: spacer}
+- {p: 46, role: spacer}
+- p: 47
+  role: signature_line
+  layout: {align: justify, size: 10.0, tabs: 2}
+  text: "...................................................\t\t..................................................."
+  slots:
+  - {id: p47_1, span: [0, 51], type: signature, context: ▢}
+  - {id: p47_2, span: [53, 104], type: signature, context: ▢}
+- p: 48
+  role: body
+  layout: {align: justify, size: 10.0, bold: true, tabs: 4}
+  text: "\tPracodawca\t\t\t     Pracownik"
+- {p: 49, role: spacer}
+- {p: 50, role: spacer}

@@ -1,0 +1,309 @@
+template: umowa o świadczenie usług sprzątania.docx
+category: umowa_uslug
+label_pl: Umowa o świadczenie usług sprzątania
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: UMOWA O ŚWIADCZENIE USŁUG SPRZĄTANIA
+- {p: 1, role: spacer}
+- p: 2
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 23, end: 29, italic: true}, {start: 40, end: 53, italic: true}]}
+  text: 'Zawarta w dniu ………………… (data) w ………………… (miejscowość), '
+  slots:
+  - {id: data, span: [15, 22], type: date, hint: data}
+  - {id: miejscowosc, span: [32, 39], type: place, hint: miejscowość}
+  inline_hints:
+  - {span: [23, 29], text: data}
+  - {span: [40, 53], text: miejscowość}
+- {p: 3, role: spacer}
+- p: 4
+  role: party_connector
+  layout: {align: justify, size: 10.0}
+  text: 'pomiędzy:'
+- {p: 5, role: spacer}
+- p: 6
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ……………………………………………………………………………………………………………
+  slots:
+  - {id: p6_1, span: [0, 41], type: text, context: ▢}
+- p: 7
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ……………………………………………………………………………………………………………
+  slots:
+  - {id: p7_1, span: [0, 41], type: text, context: ▢}
+- p: 8
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ……………………………………………………………………………………………………………
+  slots:
+  - {id: p8_1, span: [0, 41], type: text, context: ▢}
+- {p: 9, role: spacer}
+- p: 10
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 30, end: 43, bold: true}]}
+  text: 'zwanym w dalszej części umowy Zleceniodawcą, '
+  alias: Zleceniodawcą
+- {p: 11, role: spacer}
+- p: 12
+  role: party_connector
+  layout: {align: justify, size: 10.0}
+  text: a
+- {p: 13, role: spacer}
+- p: 14
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ……………………………………………………………………………………………………………
+  slots:
+  - {id: p14_1, span: [0, 41], type: text, context: ▢}
+- p: 15
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ……………………………………………………………………………………………………………
+  slots:
+  - {id: p15_1, span: [0, 41], type: text, context: ▢}
+- p: 16
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ……………………………………………………………………………………………………………
+  slots:
+  - {id: p16_1, span: [0, 41], type: text, context: ▢}
+- {p: 17, role: spacer}
+- p: 18
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 29, end: 43, bold: true}]}
+  text: zwaną w dalszej części umowy Zleceniobiorcą,
+  alias: Zleceniobiorcą
+- p: 19
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 22, end: 30, bold: true}]}
+  text: zwanymi dalej łącznie Stronami.
+  alias: Stronami
+- {p: 20, role: spacer}
+- p: 21
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+  text: § 1
+- p: 22
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 111, end: 125, bold: true}]}
+  text: Przedmiotem umowy jest świadczenie usług sprzątania nieruchomości położonej przy ul. …………………………… (zwanej dalej Nieruchomością) przez Zleceniobiorcę
+    na rzecz Zleceniodawcy.
+  slots:
+  - {id: zwanej_dalej_nieruchomoscia, span: [85, 96], type: address, hint: zwanej dalej Nieruchomością}
+  inline_hints:
+  - {span: [97, 126], text: zwanej dalej Nieruchomością}
+  alias: Nieruchomością
+- {p: 23, role: spacer}
+- p: 24
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+  text: § 2
+- p: 25
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'W ramach usługi sprzątania Zleceniobiorca jest zobowiązany do:'
+- p: 26
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+  text: sprzątania w ……………………………….. (należy wskazać, czy sprzątanie ma obejmować całą nieruchomość, czy też poszczególne jej pomieszczenia z konkretnym
+    ich wymienieniem),
+  slots:
+  - {id: nalezy_wskazac_czy_sprzatanie_ma_obejmowac_cala, span: [13, 27], type: place, hint: 'należy wskazać, czy sprzątanie ma obejmować całą
+      nieruchomość, czy też poszczególne jej pomieszczenia z konkretnym ich wymienieniem'}
+  inline_hints:
+  - {span: [28, 161], text: 'należy wskazać, czy sprzątanie ma obejmować całą nieruchomość, czy też poszczególne jej pomieszczenia z konkretnym
+      ich wymienieniem'}
+- p: 27
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+  text: '………………………………………………………… (miejsce na inne zobowiązania stron). '
+  slots:
+  - {id: miejsce_na_inne_zobowiazania_stron, span: [0, 22], type: place, hint: miejsce na inne zobowiązania stron}
+  inline_hints:
+  - {span: [23, 59], text: miejsce na inne zobowiązania stron}
+- p: 28
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 83, end: 96, italic: true}]}
+  text: Powyższe zadania Zleceniobiorca będzie wykonywał osobiście lub przez osobę trzecią (opcjonalnie), którą wskazał, z zastrzeżeniem § 9.
+    Zleceniobiorca ponosi pełną odpowiedzialność za czynności wykonywane przez osoby trzecie, którym powierzył wykonanie poszczególnych czynności
+    na rzecz Zleceniodawcy, w tym za ewentualne kradzieże przedmiotów znajdujących się na terenie Nieruchomości.
+- p: 29
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: "Zleceniobiorca będzie wykonywał usługę sprzątania przy wykorzystaniu własnych narzędzi \ni środków czystości."
+- {p: 30, role: spacer}
+- p: 31
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+  text: § 3
+- p: 32
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'Zleceniodawca ma obowiązek:'
+- p: 33
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+  text: udostępnić Zleceniobiorcy Nieruchomość, w celu wykonywania usług sprzątania,
+- p: 34
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}, spans: [{start: 17, end: 46, italic: true}]}
+  text: ………………………………………. (inne zobowiązania Klientki).
+  slots:
+  - {id: inne_zobowiazania_klientki, span: [0, 16], type: text, hint: inne zobowiązania Klientki}
+  inline_hints:
+  - {span: [17, 45], text: inne zobowiązania Klientki}
+- p: 35
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Zleceniodawca zobowiązuje się płacić w ustalonym terminie wynagrodzenie Zleceniobiorcy.
+- {p: 36, role: spacer}
+- p: 37
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+  text: § 4
+- p: 38
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Za wykonanie przedmiotu umowy Zleceniodawca zapłaci Zleceniobiorcy wynagrodzenie w kwocie …………………….zł brutto miesięcznie. / [opcjonalnie]
+    Zleceniodawca zobowiązuje się za wykonanie/wykonywanie czynności wskazanych w § 2, zapłacić Zleceniobiorcy wynagrodzenie w kwocie ……………...
+    (słownie:……………………………… ……………………….. ) złotych brutto za każdą przepracowaną godzinę przez Zleceniobiorcę.
+  slots:
+  - {id: p38_1, span: [90, 99], type: text, context: Zleceniobiorcy wynagrodzenie w kwocie ▢ zł brutto}
+  - {id: p38_2, span: [268, 276], type: text, context: Zleceniobiorcy wynagrodzenie w kwocie ▢ złotych brutto}
+  - {id: p38_3, span: [286, 310], type: amount, context: wynagrodzenie w kwocie słownie ▢ złotych brutto}
+  alternatives: 3
+- p: 39
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: "Wynagrodzenie za usługę Zleceniobiorca będzie otrzymywał przelewem na konto bankowe \no numerze …………………………………….. w terminie do ……… dnia\
+    \ miesiąca kolejnego."
+  slots:
+  - {id: p39_1, span: [95, 111], type: text, context: konto bankowe o numerze ▢ w terminie}
+  - {id: p39_2, span: [126, 129], type: date, context: numerze w terminie do ▢ dnia miesiąca}
+- p: 40
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: 'Zapłata jest uważana za dokonaną z chwilą obciążenia rachunku bankowego Zleceniodawcy. '
+- {p: 41, role: spacer}
+- p: 42
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+  text: § 5
+- p: 43
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: Niniejsza umowa zawarta jest na czas nieoznaczony od dnia ……………… / czas oznaczony od dnia …… do dnia ……… .
+  slots:
+  - {id: p43_1, span: [58, 64], type: date, context: czas nieoznaczony od dnia ▢ czas oznaczony}
+  - {id: p43_2, span: [90, 92], type: date, context: czas oznaczony od dnia ▢ do dnia}
+  - {id: p43_3, span: [101, 104], type: date, context: od dnia do dnia ▢}
+- {p: 44, role: spacer}
+- p: 45
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 6, kind: paragraph, src: manual, level: 0}}
+  text: § 6
+- p: 46
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Strony zgodnie oświadczają, że ich wolą nie jest nawiązanie stosunku pracy.
+- p: 47
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Zleceniobiorca zobowiązuje się wykonywać powierzone czynności z należytą starannością. '
+- {p: 48, role: spacer}
+- p: 49
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 7, kind: paragraph, src: manual, level: 0}}
+  text: § 7
+- p: 50
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: 'W razie niemożności dokonania określonej czynności Zleceniobiorca obowiązany jest niezwłocznie powiadomić o tym Zleceniodawcę. '
+- {p: 51, role: spacer}
+- p: 52
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 8, kind: paragraph, src: manual, level: 0}}
+  text: § 8
+- p: 53
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'Zleceniobiorca odpowiada za szkody wyrządzone Zleceniodawcy, chyba że szkoda powstała wskutek okoliczności, za które Zleceniobiorca odpowiedzialności
+    nie ponosi. '
+- p: 54
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Ponadto, Zleceniobiorca odpowiada za szkody wyrządzone osobom trzecim wskutek wadliwego wykonania usługi sprzątania. '
+- p: 55
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: 'W razie gdyby osoba trzecia, która poniosła szkodę wskutek wadliwego wykonania usługi sprzątania, dochodziła naprawienia szkody z tego
+    tytułu od Zleceniodawcy, Zleceniobiorca zobowiązuje się do zapłacenia Zleceniodawcy kwoty odpowiadającej odszkodowaniu, które Zleceniodawca
+    wypłaci osobie trzeciej. '
+- {p: 56, role: spacer}
+- p: 57
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 9, kind: paragraph, src: manual, level: 0}}
+  text: § 9
+- p: 58
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: 'Zleceniobiorca nie może powierzyć wykonania czynności objętych zleceniem osobom trzecim bez uprzedniej pisemnej zgody Zleceniodawcy. '
+- {p: 59, role: spacer}
+- p: 60
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 10, kind: paragraph, src: manual, level: 0}}
+  text: § 10
+- p: 61
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: Każda ze stron może rozwiązać umowę w drodze pisemnego wypowiedzenia z zachowaniem …………………… okresu wypowiedzenia ze skutkiem na koniec
+    miesiąca kalendarzowego.
+  slots:
+  - {id: p61_1, span: [83, 91], type: text, context: pisemnego wypowiedzenia z zachowaniem ▢ okresu wypowiedzenia}
+- {p: 62, role: spacer}
+- p: 63
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 11, kind: paragraph, src: manual, level: 0}}
+  text: § 11
+- p: 64
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Wszelkie zmiany oraz wypowiedzenie niniejszej umowy wymagają zachowania formy pisemnej pod rygorem nieważności.
+- p: 65
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Umowa została sporządzona w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze stron. '
+- p: 66
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: W sprawach nieuregulowanych niniejszą umową będą miały zastosowanie przepisy ustawy z dnia 23 kwietnia 1964 r. - Kodeks cywilny.
+- p: 67
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: Wszelkie spory, jakie mogą wyniknąć w związku z niniejszą umową będą rozpatrywane przez sąd powszechny właściwy ze względu na miejsce
+    zamieszkania Zleceniodawcy.
+- {p: 68, role: spacer}
+- {p: 69, role: spacer}
+- {p: 70, role: spacer}
+- {p: 71, role: spacer}
+- p: 72
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ………………………                                                                                                 ….…………………..
+  slots:
+  - {id: p72_1, span: [0, 9], type: signature, context: ▢}
+  - {id: p72_2, span: [106, 117], type: signature, context: ▢}
+- p: 73
+  role: body
+  layout: {align: justify, size: 10.0, bold: true}
+  text: 'Zleceniodawca                                                                                                        Zleceniobiorca '
+- {p: 74, role: spacer}
+- {p: 75, role: spacer}
+- {p: 76, role: spacer}
+- {p: 77, role: spacer}

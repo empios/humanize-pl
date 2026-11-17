@@ -1,0 +1,320 @@
+template: pozew o ochrone dóbr osobistych.docx
+category: pozew
+label_pl: Pozew o ochronę dóbr osobistych
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: body
+  layout: {align: right, indent: {first: 708}, size: 10.0, spans: [{start: 8, end: 21, italic: true}, {start: 35, end: 41, italic: true}]}
+  text: ………………… (miejscowość), dnia ……………… (data)
+  slots:
+  - {id: miejscowosc, span: [0, 7], type: place, hint: miejscowość}
+  - {id: data, span: [28, 34], type: date, hint: data}
+  inline_hints:
+  - {span: [8, 21], text: miejscowość}
+  - {span: [35, 41], text: data}
+- {p: 1, role: spacer}
+- {p: 2, role: spacer}
+- p: 3
+  role: body
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: Sąd ……………….
+  slots:
+  - {id: p3_1, span: [4, 11], type: text, context: Sąd ▢}
+- p: 4
+  role: body
+  layout: {indent: {left: 4820}, size: 10.0, spans: [{start: 13, end: 26, italic: true}]}
+  text: w ………………………… (miejscowość)
+  slots:
+  - {id: miejscowosc_2, span: [2, 12], type: place, hint: miejscowość}
+  inline_hints:
+  - {span: [13, 26], text: miejscowość}
+- p: 5
+  role: body
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: Wydział ………………………….
+  slots:
+  - {id: p5_1, span: [8, 19], type: text, context: Wydział ▢}
+- {p: 6, role: spacer}
+- p: 7
+  role: body
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: Powód
+- p: 8
+  role: blank_line
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: …………………………..………
+  slots:
+  - {id: p8_1, span: [0, 15], type: text, context: ▢}
+- p: 9
+  role: blank_line
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: …………………………………..
+  slots:
+  - {id: p9_1, span: [0, 15], type: text, context: ▢}
+- p: 10
+  role: blank_line
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: …………………………………..
+  slots:
+  - {id: imie_nazwisko_pesel_dokladny_adres, span: [0, 15], type: pesel, hint: 'Imię, nazwisko, PESEL, dokładny adres'}
+- p: 11
+  role: hint
+  layout: {indent: {left: 4820}, size: 10.0, italic: true}
+  text: (Imię, nazwisko, PESEL, dokładny adres)
+  hint_for: 10
+  hint_kind: label
+- {p: 12, role: spacer}
+- p: 13
+  role: field_header
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: 'Pozwany: '
+- p: 14
+  role: blank_line
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: …………………………………..
+  slots:
+  - {id: pozwany, span: [0, 15], type: text, label: Pozwany}
+- p: 15
+  role: blank_line
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: …………………………………..
+  slots:
+  - {id: pozwany_2, span: [0, 15], type: text, label: Pozwany}
+- p: 16
+  role: blank_line
+  layout: {indent: {left: 4820}, size: 10.0, tabs: 1}
+  text: "…………………………………..\t"
+  slots:
+  - {id: pozwany_3, span: [0, 15], type: text, hint: 'Imię, nazwisko, PESEL/NIP, dokładny adres', label: Pozwany}
+- p: 17
+  role: hint
+  layout: {indent: {left: 4820}, size: 10.0, italic: true}
+  text: (Imię, nazwisko, PESEL/NIP, dokładny adres)
+  hint_for: 16
+  hint_kind: label
+- {p: 18, role: spacer}
+- {p: 19, role: spacer}
+- p: 20
+  role: field
+  layout: {size: 10.0, spans: [{start: 0, end: 24, bold: true}]}
+  text: 'Wartość przedmiotu sporu: …………………. '
+  slots:
+  - {id: wartosc_przedmiotu_sporu, span: [26, 34], type: text, hint: dochodzona należność główna równa wysokości żądanego zadośćuczynienia, label: Wartość
+      przedmiotu sporu}
+- p: 21
+  role: hint
+  layout: {size: 10.0, italic: true}
+  text: (dochodzona należność główna równa wysokości żądanego zadośćuczynienia)
+  hint_for: 20
+  hint_kind: label
+- {p: 22, role: spacer}
+- {p: 23, role: spacer}
+- p: 24
+  role: body
+  layout: {align: center, size: 14.0, bold: true}
+  text: POZEW
+- p: 25
+  role: body
+  layout: {align: center, size: 14.0, bold: true}
+  text: o ochronę dóbr osobistych
+- {p: 26, role: spacer}
+- p: 27
+  role: field_header
+  layout: {align: justify, size: 10.0}
+  text: 'W imieniu własnym wnoszę o:'
+- {p: 28, role: spacer}
+- p: 29
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 139, end: 212, italic: true}]}
+  text: 'Nakazanie Pozwanemu złożenia oświadczenia/przeprosin o treści: „…………………………………………………………………………………….…………………………………………………” w formie …………………………
+    (np. poprzez złożenie oświadczenia z przeprosinami w podmiocie leczniczym.);'
+  slots:
+  - {id: nakazanie_pozwanemu_zlozenia_oswiadczenia_przepr, span: [64, 116], type: text, label: Nakazanie Pozwanemu złożenia oświadczenia/przeprosin
+      o treści}
+  - {id: nakazanie_pozwanemu_zlozenia_oswiadczenia_przepr_2, span: [127, 137], type: text, hint: np. poprzez złożenie oświadczenia z przeprosinami
+      w podmiocie leczniczym., label: Nakazanie Pozwanemu złożenia oświadczenia/przeprosin o treści}
+  inline_hints:
+  - {span: [138, 213], text: np. poprzez złożenie oświadczenia z przeprosinami w podmiocie leczniczym.}
+- p: 30
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Zasądzenie od Pozwanego na rzecz Powoda zadośćuczynienia za naruszenie dobra osobistego w wysokości…………………………………............................
+    zł (słownie………………….. zł) wraz
+
+    z ustawowymi odsetkami od dnia wniesienia pozwu do dnia zapłaty;'
+  slots:
+  - {id: p30_1, span: [99, 140], type: amount, context: dobra osobistego w wysokości ▢ zł wraz}
+  - {id: p30_2, span: [152, 161], type: amount, context: w wysokości zł słownie ▢ zł wraz}
+- p: 31
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 57, end: 117, italic: true},
+      {start: 137, end: 200, italic: true}]}
+  text: Dopuszczenie dowodu z zeznań świadków w osobach …………………. (należy wskazać dane osobowe świadka i miejsce zamieszkania) na okoliczność ………
+    (należy wskazać okoliczności, na które świadek będzie zeznawał);
+  slots:
+  - {id: nalezy_wskazac_dane_osobowe_swiadka_i_miejsce_za, span: [48, 56], type: text, hint: należy wskazać dane osobowe świadka i miejsce zamieszkania}
+  - {id: nalezy_wskazac_okolicznosci_na_ktore_swiadek_bed, span: [133, 136], type: text, hint: 'należy wskazać okoliczności, na które świadek
+      będzie zeznawał'}
+  inline_hints:
+  - {span: [57, 117], text: należy wskazać dane osobowe świadka i miejsce zamieszkania}
+  - {span: [137, 200], text: 'należy wskazać okoliczności, na które świadek będzie zeznawał'}
+- p: 32
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 112, end: 179, italic: true}]}
+  text: 'Dopuszczenie dowodu z przesłuchania stron i przesłuchanie strony powodowej/strony pozwanej na okoliczność …………. (należy wskazać okoliczności,
+    na które powód/pozwany będą zeznawać), '
+  slots:
+  - {id: nalezy_wskazac_okolicznosci_na_ktore_powod_pozwa, span: [106, 111], type: text, hint: 'należy wskazać okoliczności, na które powód/pozwany
+      będą zeznawać'}
+  inline_hints:
+  - {span: [112, 179], text: 'należy wskazać okoliczności, na które powód/pozwany będą zeznawać'}
+- p: 33
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+  text: Rozpoznanie sprawy także pod nieobecność powoda,
+- p: 34
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}}
+  text: Wydanie wyroku zaocznego w przypadku zaistnienia przesłanek przewidzianych w art. 339 Kodeksu postępowania cywilnego;
+- p: 35
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '7.', kind: decimal, src: auto, level: 0}}
+  text: Zasądzenie od Pozwanego na rzecz Powodów kosztów procesu według norm przepisanych.
+- {p: 36, role: spacer}
+- p: 37
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 232, end: 320, italic: true}]}
+  text: 'Jednocześnie informuję, że Pozwany podjął próbę mediacji lub innego pozasądowego sposobu rozwiązania sporu. Niemniej pozwany, pomimo
+    otrzymania przez Niego wezwania do zaprzestania dokonywania naruszeń dóbr osobistych z dnia ……………… (tutaj należy wskazać datę przesłania przedsądowego
+    wezwania wystosowanego do Pozwanego), nie zaprzestał powyższego. '
+  slots:
+  - {id: tutaj_nalezy_wskazac_date_przeslania_przedsadowe, span: [225, 231], type: date, hint: tutaj należy wskazać datę przesłania przedsądowego
+      wezwania wystosowanego do Pozwanego}
+  inline_hints:
+  - {span: [232, 320], text: tutaj należy wskazać datę przesłania przedsądowego wezwania wystosowanego do Pozwanego}
+- {p: 38, role: spacer}
+- p: 39
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: UZASADNIENIE
+- {p: 40, role: spacer}
+- p: 41
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ………………………………………………………………………………………………………………………………………………….
+  slots:
+  - {id: p41_1, span: [0, 56], type: text, context: ▢}
+- p: 42
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ………………………………………………………………………………………………………………………………………………….
+  slots:
+  - {id: p42_1, span: [0, 56], type: text, context: ▢}
+- p: 43
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ………………………………………………………………………………………………………………………………………………….
+  slots:
+  - {id: p43_1, span: [0, 56], type: text, context: ▢}
+- p: 44
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ………………………………………………………………………………………………………………………………………………….
+  slots:
+  - {id: p44_1, span: [0, 56], type: text, context: ▢}
+- p: 45
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ………………………………………………………………………………………………………………………………………………….
+  slots:
+  - {id: p45_1, span: [0, 56], type: text, context: ▢}
+- p: 46
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ………………………………………………………………………………………………………………………………………………….
+  slots:
+  - {id: p46_1, span: [0, 56], type: text, context: ▢}
+- p: 47
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ………………………………………………………………………………………………………………………………………………….
+  slots:
+  - {id: p47_1, span: [0, 56], type: text, context: ▢}
+- p: 48
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ………………………………………………………………………………………………………………………………………………….
+  slots:
+  - {id: p48_1, span: [0, 56], type: text, context: ▢}
+- p: 49
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ………………………………………………………………………………………………………………………………………………….
+  slots:
+  - {id: w_tym_miejscu_nalezy_w_sposob_obszerny_wskazac_i, span: [0, 56], type: text, hint: "w tym miejscu należy w sposób obszerny wskazać i\
+      \ opisać wszelkie okoliczności faktyczne sprawy \ni w szczególności powołać wszystkie dowody, takie jak dokumenty czy zeznania świadków.\
+      \ Pamiętać należy, iż wytaczając powództwo powód winien w pełni uzasadnić zgłoszone przez siebie roszczenie zarówno co do jego istoty, ale\
+      \ także w zakresie kwoty, której zasądzenia się domaga od pozwanego. Wszelkie dowody w postaci dokumentów, jakie będą dołączane do pozwu,\
+      \ mogą być kopiami, jednak powód musi pamiętać, iż na żądanie sądu bądź drugiej strony zobowiązany będzie do okazania oryginału przedłożonych\
+      \ uprzednio dokumentów. Pozew składany do właściwego sądu w dwóch egzemplarzach; do każdego egzemplarza należy załączyć załączniki."}
+- p: 50
+  role: hint
+  layout: {align: justify, size: 10.0, italic: true}
+  text: "(w tym miejscu należy w sposób obszerny wskazać i opisać wszelkie okoliczności faktyczne sprawy \ni w szczególności powołać wszystkie\
+    \ dowody, takie jak dokumenty czy zeznania świadków. Pamiętać należy, iż wytaczając powództwo powód winien w pełni uzasadnić zgłoszone przez\
+    \ siebie roszczenie zarówno co do jego istoty, ale także w zakresie kwoty, której zasądzenia się domaga od pozwanego. Wszelkie dowody w postaci\
+    \ dokumentów, jakie będą dołączane do pozwu, mogą być kopiami, jednak powód musi pamiętać, iż na żądanie sądu bądź drugiej strony zobowiązany\
+    \ będzie do okazania oryginału przedłożonych uprzednio dokumentów. Pozew składany do właściwego sądu w dwóch egzemplarzach; do każdego egzemplarza\
+    \ należy załączyć załączniki.)"
+  hint_for: 49
+  hint_kind: instruction
+- {p: 51, role: spacer}
+- p: 52
+  role: blank_line
+  layout: {align: right, indent: {first: 708}, size: 10.0, tabs: 9}
+  text: "\t\t\t\t\t\t\t\t\t ……………...........……….….….."
+  slots:
+  - {id: wlasnoreczny_podpis_powoda, span: [10, 35], type: signature, hint: własnoręczny podpis powoda}
+- p: 53
+  role: hint
+  layout: {align: right, indent: {first: 708}, size: 10.0, italic: true, tabs: 8}
+  text: "\t\t\t\t\t\t\t\t         (własnoręczny podpis powoda)"
+  hint_for: 52
+  hint_kind: label
+- {p: 54, role: spacer}
+- {p: 55, role: spacer}
+- p: 56
+  role: field_header
+  layout: {align: justify, size: 10.0, bold: true}
+  text: 'Załączniki:'
+- p: 57
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: odpis pozwu wraz z załącznikami (pozew wraz z załącznikami składa się w tylu egzemplarzach ilu jest pozwanych plus jeden egzemplarz dla
+    Sądu);
+- p: 58
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: dowód ………………….. ;
+  slots:
+  - {id: p58_1, span: [6, 15], type: text, context: dowód ▢}
+- p: 59
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: dowód ………………….. ;
+  slots:
+  - {id: p59_1, span: [6, 15], type: text, context: dowód ▢}
+- p: 60
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: dowód podjęcia próby ugodowego załatwienia sprawy (np. wystosowanie do pozwanego pisemnego wezwania do zaprzestania dokonywania naruszeń);
+- p: 61
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+  text: dowód uiszczenia opłaty sądowej od pozwu (od pozwu o ochronę dóbr osobistych należy uiścić opłatę stałą w wysokości 600 złotych).
+- {p: 62, role: spacer}
+- {p: 63, role: spacer}
+- {p: 64, role: spacer}
+- {p: 65, role: spacer}

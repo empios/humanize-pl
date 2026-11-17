@@ -1,0 +1,284 @@
+# Szkielet struktury: umowa o dzieło.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: umowa_o_dzielo
+label_pl: umowa o dzieło
+# Kolejności sekcji nie sprawdzamy: realne wzory tej kategorii układają je różnie.
+check_order: false
+numbering: paragraph
+sections:
+- id: komparycja
+  label_pl: komparycja (zamawiający, wykonawca)
+  severity: required
+  # Formuły zawarcia i oznaczenia stron, nie nazwy ról: „najemca” czy „zawarta”
+  # powtarzają się w całej umowie i utrzymywały usuniętą komparycję jako obecną.
+  matches: [zawarta w dniu, zawarta dnia, zawarta pomiędzy, zawarta między, zawarto umowę,
+    zwanym dalej, zwaną dalej, zwanymi dalej, zwany dalej, zwana dalej, zwanego dalej,
+    zwanej dalej, zwani dalej, z siedzibą w, zamieszkał, pesel, 'nip:', 'nip ', krs, legitymując]
+- id: dzieło
+  label_pl: opis dzieła
+  severity: required
+  matches: [dzieło, opis dzieła, wykonanie dzieła, przedmiot]
+- id: termin
+  label_pl: termin wykonania
+  severity: required
+  matches: [termin, okres, do dnia, od dnia]
+- id: wynagrodzenie
+  label_pl: wynagrodzenie
+  severity: required
+  matches: [wynagrodzenie, cena, kwota]
+- id: odbiór
+  label_pl: odbiór dzieła
+  severity: expected
+  matches: [odbiór, odbioru, przyjęcie dzieła]
+- id: prawa_autorskie
+  label_pl: prawa autorskie
+  severity: expected
+  matches: [prawa autorskie, przeniesienie praw, własność intelektualn]
+- id: postanowienia_koncowe
+  label_pl: postanowienia końcowe
+  severity: required
+  matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
+      formy pisemnej, wymagają zachowania formy pisemnej]
+
+# Dokument ogólny: realny wzór tej kategorii. Przy użyciu wypełnia się wyłącznie
+# pola (`slots`); treść, kolejność i układ zostają jak we wzorze.
+document:
+  template: Umowa o dzieło.docx
+  label_pl: Umowa o dzieło
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+  blocks:
+  - p: 0
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: 'UMOWA O DZIEŁO '
+  - {p: 1, role: spacer}
+  - p: 2
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: 'Zawarta dnia ………………………………… w ……………………………. pomiędzy:'
+    slots:
+    - {id: p2_1, span: [13, 26], type: date, context: Zawarta dnia ▢ w pomiędzy}
+    - {id: p2_2, span: [29, 41], type: place, context: Zawarta dnia w ▢ pomiędzy}
+  - {p: 3, role: spacer}
+  - p: 4
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 14, end: 43, italic: true}, {start: 135, end: 163, italic: true}, {start: 337, end: 379,
+          italic: true}, {start: 407, end: 416, bold: true}]}
+    text: ………………………………… (imię i nazwisko Wykonawcy), PESEL ..................., zamieszkałym w ..................., przy ul. ...................
+      (adres miejsca zamieszkania), legitymującym się dowodem osobistym seria i numer ............................................... wydanym przez
+      ........................................................... (nazwa organu, który wydał dowód osobisty), zwanym dalej zwanym dalej Wykonawcą,
+    slots:
+    - {id: imie_i_nazwisko_wykonawcy, span: [0, 13], type: person, hint: imię i nazwisko Wykonawcy}
+    - {id: p4_2, span: [49, 68], type: pesel, context: PESEL ▢ zamieszkałym w}
+    - {id: p4_3, span: [85, 104], type: place, context: PESEL zamieszkałym w ▢ przy ul.}
+    - {id: adres_miejsca_zamieszkania, span: [115, 134], type: address, hint: adres miejsca zamieszkania}
+    - {id: p4_5, span: [215, 262], type: text, context: osobistym seria i numer ▢ wydanym przez}
+    - {id: nazwa_organu_ktory_wydal_dowod_osobisty, span: [277, 336], type: person, hint: 'nazwa organu, który wydał dowód osobisty'}
+    inline_hints:
+    - {span: [14, 41], text: imię i nazwisko Wykonawcy}
+    - {span: [135, 163], text: adres miejsca zamieszkania}
+    - {span: [337, 379], text: 'nazwa organu, który wydał dowód osobisty'}
+    alias: Wykonawcą
+  - {p: 5, role: spacer}
+  - p: 6
+    role: party_connector
+    layout: {align: justify, size: 10.0}
+    text: a
+  - {p: 7, role: spacer}
+  - p: 8
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 14, end: 45, italic: true}, {start: 139, end: 167, italic: true}, {start: 341, end: 383,
+          italic: true}, {start: 411, end: 423, bold: true}]}
+    text: '………………………………… (imię i nazwisko Zamawiającego), PESEL ..................., zamieszkałym w ..................., przy ul. ...................
+      (adres miejsca zamieszkania), legitymującym się dowodem osobistym seria i numer ............................................... wydanym przez
+      ........................................................... (nazwa organu, który wydał dowód osobisty), zwanym dalej zwanym dalej Zamawiającym, '
+    slots:
+    - {id: imie_i_nazwisko_zamawiajacego, span: [0, 13], type: person, hint: imię i nazwisko Zamawiającego}
+    - {id: p8_2, span: [53, 72], type: pesel, context: PESEL ▢ zamieszkałym w}
+    - {id: p8_3, span: [89, 108], type: place, context: PESEL zamieszkałym w ▢ przy ul.}
+    - {id: adres_miejsca_zamieszkania_2, span: [119, 138], type: address, hint: adres miejsca zamieszkania}
+    - {id: p8_5, span: [219, 266], type: text, context: osobistym seria i numer ▢ wydanym przez}
+    - {id: nazwa_organu_ktory_wydal_dowod_osobisty_2, span: [281, 340], type: person, hint: 'nazwa organu, który wydał dowód osobisty'}
+    inline_hints:
+    - {span: [14, 45], text: imię i nazwisko Zamawiającego}
+    - {span: [139, 167], text: adres miejsca zamieszkania}
+    - {span: [341, 383], text: 'nazwa organu, który wydał dowód osobisty'}
+    alias: Zamawiającym
+  - {p: 9, role: spacer}
+  - p: 10
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 14, end: 22, bold: true}]}
+    text: zwanymi dalej Stronami.
+    alias: Stronami
+  - {p: 11, role: spacer}
+  - p: 12
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: §1, kind: paragraph, src: manual, level: 0}}
+    text: §1
+  - {p: 13, role: spacer}
+  - p: 14
+    role: body
+    layout: {align: justify, indent: {left: -30}, size: 10.0}
+    text: 'Zamawiający powierza wykonanie, a Wykonawca zobowiązuje się wykonać dzieło polegające na '
+  - p: 15
+    role: blank_line
+    layout: {align: center, size: 10.0}
+    text: …………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: p15_1, span: [0, 55], type: text, context: ▢}
+  - p: 16
+    role: blank_line
+    layout: {align: center, size: 10.0}
+    text: …………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: p16_1, span: [0, 55], type: text, context: ▢}
+  - p: 17
+    role: blank_line
+    layout: {align: center, size: 10.0}
+    text: …………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: p17_1, span: [0, 55], type: text, context: ▢}
+  - p: 18
+    role: blank_line
+    layout: {align: center, size: 10.0}
+    text: …………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: nalezy_dokladnie_opisac_jakie_dzielo_ma_wykonac, span: [0, 55], type: content, hint: 'należy dokładnie opisać, jakie dzieło ma wykonać Wykonawca'}
+  - p: 19
+    role: hint
+    layout: {align: center, size: 10.0, italic: true}
+    text: (należy dokładnie opisać, jakie dzieło ma wykonać Wykonawca)
+    hint_for: 18
+    hint_kind: instruction
+  - {p: 20, role: spacer}
+  - p: 21
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+    text: '§ 2 '
+  - {p: 22, role: spacer}
+  - p: 23
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 95, end: 116, italic: true}]}
+    text: Ostateczny termin odbioru dzieła strony ustaliły na dzień ................................. r. (data odbioru dzieła).
+    slots:
+    - {id: p23_1, span: [58, 91], type: date, context: strony ustaliły na dzień ▢ r.}
+  - p: 24
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 43, end: 179, italic: true}]}
+    text: Odbiór dzieła nastąpi poprzez ……………………………… (należy określić sposób odbioru dzieła, np. przesłanie go na adres e-mail Zamawiającego, dostarczenie
+      dzieła do siedziby Zamawiającego).
+    slots:
+    - {id: nalezy_okreslic_sposob_odbioru_dziela_np_przesla, span: [30, 42], type: person, hint: 'należy określić sposób odbioru dzieła, np. przesłanie
+        go na adres e-mail Zamawiającego, dostarczenie dzieła do siedziby Zamawiającego'}
+    inline_hints:
+    - {span: [43, 178], text: 'należy określić sposób odbioru dzieła, np. przesłanie go na adres e-mail Zamawiającego, dostarczenie dzieła do siedziby
+        Zamawiającego'}
+  - p: 25
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: Zamawiający zobowiązuje się do współdziałania z Przyjmującym zamówienie, w szczególności do przekazania informacji niezbędnych do prawidłowego
+      sporządzenia dzieła.
+  - p: 26
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+    text: Wykonawca nie może powierzyć wykonania dzieła innej osobie bez zgody Zamawiającego wyrażonej na piśmie pod rygorem nieważności.
+  - {p: 27, role: spacer}
+  - p: 28
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+    text: § 3
+  - {p: 29, role: spacer}
+  - p: 30
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 93, end: 117, italic: true}]}
+    text: 'Wykonawcy przysługuje wynagrodzenie za wykonanie dzieła w wysokości...................... zł (wysokość wynagrodzenia) (słownie: ...................................................................
+      złotych). '
+    slots:
+    - {id: p30_1, span: [67, 89], type: amount, context: wykonanie dzieła w wysokości ▢ zł}
+    - {id: p30_2, span: [128, 195], type: amount, context: w wysokości zł słownie ▢ złotych}
+  - p: 31
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 167, end: 194, italic: true},
+        {start: 251, end: 265, italic: true}]}
+    text: Wynagrodzenie zostanie przekazane w formie przelewu środków pieniężnych na numer rachunku bankowego Wykonawcy nr .....................................................
+      (numer rachunku bankowego) prowadzony w banku ..................................... (nazwa banku).
+    slots:
+    - {id: numer_rachunku_bankowego, span: [113, 166], type: text, hint: numer rachunku bankowego}
+    - {id: nazwa_banku, span: [213, 250], type: text, hint: nazwa banku}
+    inline_hints:
+    - {span: [167, 193], text: numer rachunku bankowego}
+    - {span: [251, 264], text: nazwa banku}
+  - p: 32
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 21, end: 54, italic: true}, {
+          start: 114, end: 128, italic: true}, {start: 143, end: 154, italic: true}]}
+    text: Rachunek/Faktura VAT (należy wybrać odpowiednią opcję) zostanie dostarczony na adres e-mail Zamawiającego ………………… (adres e-mail) w ciągu
+      … dni (ilość dni) roboczych od dnia otrzymania przez Wykonawcę całkowitej zapłaty wynagrodzenia, o którym mowa w ust. 1 powyżej.
+    slots:
+    - {id: adres_e_mail, span: [106, 113], type: address, hint: adres e-mail}
+    inline_hints:
+    - {span: [114, 128], text: adres e-mail}
+  - {p: 33, role: spacer}
+  - p: 34
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+    text: § 4
+  - {p: 35, role: spacer}
+  - p: 36
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 205, end: 220, italic: true}]}
+    text: 'W przypadku niewywiązania się Wykonawcy z niniejszej umowy, w szczególności niedochowania terminu, o którym mowa w § 2 ust. 1, Wykonawca
+      zobowiązany będzie do zapłacenia kary umownej w wysokości ……………… zł (wysokość kary) (słownie: ……………………………………………. złotych) za każdy dzień opóźnienia.'
+    slots:
+    - {id: p36_1, span: [195, 201], type: amount, context: kary umownej w wysokości ▢ zł za}
+    - {id: p36_2, span: [231, 249], type: amount, context: w wysokości zł słownie ▢ złotych za}
+  - p: 37
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: 'Wykonawca odpowiada za wady dzieła na zasadach określonych w art. 638 § 1 ustawy z dnia
+
+      23 kwietnia 1964 r. - Kodeks cywilny.'
+  - {p: 38, role: spacer}
+  - p: 39
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+    text: § 5
+  - {p: 40, role: spacer}
+  - p: 41
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: 'W kwestiach nieuregulowanych niniejszą umową zastosowanie mają przepisy ustawy z dnia
+
+      23 kwietnia 1964 r. - Kodeks cywilny.'
+  - p: 42
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Wszelkie zmiany treści umowy i jej uzupełniania powinny być wprowadzone w formie pisemnej jako aneks do niniejszej umowy, pod rygorem
+      nieważności.
+  - p: 43
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: W przypadku sporów wynikających z treści niniejszej umowy, właściwy będzie sąd dla miejsca zamieszkania Zamawiającego.
+  - p: 44
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+    text: Umowę sporządzono w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze stron.
+  - {p: 45, role: spacer}
+  - {p: 46, role: spacer}
+  - {p: 47, role: spacer}
+  - {p: 48, role: spacer}
+  - p: 49
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: '      …………………………………                                                          …………………………………… '
+    slots:
+    - {id: p49_1, span: [6, 19], type: signature, context: ▢}
+    - {id: p49_2, span: [77, 91], type: signature, context: ▢}
+  - p: 50
+    role: body
+    layout: {align: justify, size: 10.0, bold: true}
+    text: '             Zamawiający                                                                                Wykonawca'
+  - {p: 51, role: spacer}
+  - {p: 52, role: spacer}

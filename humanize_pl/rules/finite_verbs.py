@@ -215,6 +215,36 @@ _REFLEXIVE_PRESENT_SUFFIXES = ("a", "i", "y", "e", "ą")
 
 _WORD_RE = re.compile(r"\p{L}+")
 
+# "Umowa to dokument", "Pentan-1-ol (C5H11OH) to organiczny związek": the
+# copula "to" between two noun phrases is the predicate. Morfeusz tags it
+# "pred", but it tags the pronoun in "wszystko to w ramach umowy" - a
+# fragment - the same way, so context decides: not the sentence's first word,
+# not after a conjunction, preposition or pronoun, and a noun or adjective
+# right after. Without it, 208 of 1 500 human paragraphs failed the
+# finite-verb check on sentences like these.
+_COPULA_BLOCKERS = frozenset(
+    {
+        "i", "a", "ale", "lecz", "że", "bo", "czy", "jak", "gdy", "gdyż", "jeśli",
+        "jeżeli", "to", "co", "wszystko", "tylko", "też", "także", "właśnie", "oto",
+        "więc", "zatem", "w", "we", "na", "do", "za", "po", "od", "o", "z", "ze",
+        "dla", "przez", "przy", "pod", "nad", "przed",
+    }
+)
+_NOMINAL_HEADS = frozenset({"subst", "depr", "adj", "num", "ger"})
+_TOKEN_RE = re.compile(r"[\p{L}\p{N}][\p{L}\p{N}-]*")
+
+
+def _has_copula(text: str, morfeusz) -> bool:
+    tokens = _TOKEN_RE.findall(text)
+    for index in range(1, len(tokens) - 1):
+        # Lower case only: "To" opens a sentence as a pronoun.
+        if tokens[index] != "to" or tokens[index - 1].lower() in _COPULA_BLOCKERS:
+            continue
+        following = morfeusz.analyses(tokens[index + 1])
+        if any(analysis.tag.split(":")[0] in _NOMINAL_HEADS for analysis in following):
+            return True
+    return False
+
 
 def has_finite_verb(text: str) -> bool:
     """True when `text` contains a finite predicate.
@@ -228,7 +258,7 @@ def has_finite_verb(text: str) -> bool:
 
     morfeusz = try_load_morfeusz()
     if morfeusz is not None:
-        return any(_is_finite_form(word) for word in words)
+        return any(_is_finite_form(word) for word in words) or _has_copula(text, morfeusz)
 
     return _heuristic_has_finite_verb(words)
 

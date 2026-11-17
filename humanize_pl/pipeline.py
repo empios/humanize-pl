@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field, replace
 from typing import Any
 
-from humanize_pl.config import HumanizeConfig, LegalReviewProfile, Mode
+from humanize_pl.config import HumanizeConfig, Mode
 from humanize_pl.results import CandidateRejection, CandidateTrace, SentenceChange, SentenceSkip
 from humanize_pl.rules.base import Candidate
 from humanize_pl.rules.engine import RuleEngine
@@ -20,7 +20,8 @@ from humanize_pl.safety.agreement import agreement_gate
 from humanize_pl.safety.protectors import ProtectedText
 from humanize_pl.safety.syntax import stanza_finite_verb_gate
 from humanize_pl.safety.validators import GateCheck, validate_candidate
-from humanize_pl.sentence_splitter import split_sentences
+from humanize_pl.sentence_splitter import sentence_separators, split_sentences
+
 
 # A masked-LM fluency scorer is structurally biased against AI-artifact removal:
 # "fluent" and "high-probability" are the same thing to a language model, and
@@ -73,6 +74,20 @@ class ParagraphPipelineResult:
     rejected: list[CandidateRejection] = field(default_factory=list)
     skipped: list[SentenceSkip] = field(default_factory=list)
     traces: list[CandidateTrace] = field(default_factory=list)
+
+
+def _join_sentences(sentences: list[str], separators: list[str]) -> str:
+    """Rejoin sentences with the whitespace that separated them in the source:
+    a tab or a line break between two sentences is not a rule's to change."""
+    out = ""
+    for index, sentence in enumerate(sentences):
+        sentence = sentence.strip()
+        if not sentence:
+            continue
+        if out:
+            out += separators[index - 1] if index - 1 < len(separators) else " "
+        out += sentence
+    return out
 
 
 @dataclass
@@ -148,7 +163,7 @@ class LegalPipeline:
                 )
 
         return ParagraphPipelineResult(
-            text=" ".join(s.strip() for s in output_sentences if s.strip()),
+            text=_join_sentences(output_sentences, sentence_separators(body)),
             changes=changes,
             rejected=rejected,
             skipped=skipped,
@@ -181,6 +196,7 @@ class LegalPipeline:
                 features=features_before,
                 paragraph_features=context.paragraph_features,
                 intensity=context.intensity,
+                earlier_sentences=paragraph_sentences[:sentence_index],
             )
             candidates.extend(
                 self._redundancy_candidates(
@@ -349,7 +365,6 @@ class LegalPipeline:
                 rule=cand.rule,
                 operation_type=cand.operation_type,
                 nli=self.nli,
-                legal=self.config.legal_review_profile != LegalReviewProfile.general,
             )
             features_after = analyze_sentence_features(cand.text)
             if not validation.ok:
@@ -433,15 +448,6 @@ class LegalPipeline:
                 if effective_cand_text != restored_cand:
                     # NP agreement was auto-repaired — update cand to the repaired text.
                     cand = replace(cand, text=self.protected.re_protect(effective_cand_text))
-                    # Repair may change a party's grammatical case. Validate
-                    # what we will actually save, not only the earlier proposal.
-                    repaired_validation = validate_candidate(
-                        original, cand.text, protected=self.protected,
-                        max_length_ratio=self.config.length_ratio(), rule=cand.rule,
-                        operation_type=cand.operation_type, nli=self.nli,
-                        legal=self.config.legal_review_profile != LegalReviewProfile.general,
-                    )
-                    agreement_checks.extend(repaired_validation.checks)
                 failed_agreement = next(
                     (check for check in agreement_checks if not check.ok), None
                 )

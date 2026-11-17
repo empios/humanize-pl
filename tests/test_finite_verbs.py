@@ -83,3 +83,21 @@ def test_heuristic_fallback_still_rejects_nominal_fragment() -> None:
 
 def test_heuristic_fallback_uses_reflexive_cue() -> None:
     assert _heuristic_has_finite_verb(["ciężar", "dowodu", "rozkłada", "się"])
+
+
+def test_copula_to_between_noun_phrases_is_a_predicate():
+    """208 of 1 500 human paragraphs failed the finite-verb check on "X to Y"."""
+    from humanize_pl.rules.finite_verbs import has_finite_verb
+
+    for sentence in (
+        "Pentan-1-ol (C5H11OH) to organiczny związek chemiczny z grupy alkoholi.",
+        "Umowa to dokument podpisany przez obie strony.",
+    ):
+        assert has_finite_verb(sentence), sentence
+    # The pronoun "to" in a fragment, or opening a sentence, is no predicate
+    for fragment in (
+        "Wszystko to w ramach umowy z dnia 5 maja.",
+        "Z tego powodu i na to rozwiązanie strony.",
+        "Cena adekwatna do świadczonych usług.",
+    ):
+        assert not has_finite_verb(fragment), fragment

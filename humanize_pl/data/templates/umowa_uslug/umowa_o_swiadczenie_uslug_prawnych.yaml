@@ -1,0 +1,261 @@
+template: Umowa o świadczenie usług prawnych.docx
+category: umowa_uslug
+label_pl: Umowa o świadczenie usług prawnych
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: UMOWA O ŚWIADCZENIE USŁUG PRAWNYCH
+- {p: 1, role: spacer}
+- {p: 2, role: spacer}
+- p: 3
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: 'zawarta dnia ……………. roku w …………………., pomiędzy:'
+  slots:
+  - {id: p3_1, span: [13, 19], type: date, context: zawarta dnia ▢ roku w}
+  - {id: p3_2, span: [27, 35], type: place, context: zawarta dnia roku w ▢ pomiędzy}
+- {p: 4, role: spacer}
+- {p: 5, role: spacer}
+- p: 6
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ………………………………..
+  slots:
+  - {id: p6_1, span: [0, 14], type: text, context: ▢}
+- p: 7
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ………………………………..
+  slots:
+  - {id: p7_1, span: [0, 14], type: text, context: ▢}
+- p: 8
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ………………………………..
+  slots:
+  - {id: p8_1, span: [0, 14], type: text, context: ▢}
+- p: 9
+  role: party_alias
+  layout: {align: justify, size: 10.0, italic: true}
+  text: zwanym dalej „Zleceniodawcą”,
+  alias: Zleceniodawcą
+- {p: 10, role: spacer}
+- p: 11
+  role: party_connector
+  layout: {align: justify, size: 10.0}
+  text: a
+- {p: 12, role: spacer}
+- p: 13
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: …………………………………
+  slots:
+  - {id: p13_1, span: [0, 13], type: text, context: ▢}
+- p: 14
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: …………………………………
+  slots:
+  - {id: p14_1, span: [0, 13], type: text, context: ▢}
+- p: 15
+  role: blank_line
+  layout: {align: justify, size: 10.0, tabs: 2}
+  text: "…………………………………\t\t"
+  slots:
+  - {id: p15_1, span: [0, 13], type: text, context: ▢}
+- p: 16
+  role: party_alias
+  layout: {align: justify, size: 10.0, italic: true}
+  text: zwanym/zwaną dalej „Kancelarią”
+  alias: Kancelarią
+- p: 17
+  role: item
+  layout: {align: justify, size: 10.0, italic: true, marker: {text: '-', kind: bullet, src: manual, level: 2}}
+  text: ' - łącznie zwanymi dalej jako „Strony”'
+- {p: 18, role: spacer}
+- {p: 19, role: spacer}
+- p: 20
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+  text: '§ 1 '
+- p: 21
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: 'Przedmiot umowy '
+- p: 22
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: Przedmiotem niniejszej umowy jest reprezentacja Zleceniodawcy przez Kancelarię w sprawie ………………………………………………………………………………………………………………………………………………
+    .
+  slots:
+  - {id: p22_1, span: [89, 143], type: text, context: przez Kancelarię w sprawie ▢}
+- {p: 23, role: spacer}
+- p: 24
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+  text: § 2
+- p: 25
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: Czas trwania umowy
+- p: 26
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: 'Umowa zostaje zawarta na czas nieokreślony/wykonania usługi prawnej/trwania czynności związanych z niniejszą sprawą. '
+- {p: 27, role: spacer}
+- p: 28
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+  text: § 3
+- p: 29
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: Wynagrodzenie
+- p: 30
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Kancelarii przysługuje wynagrodzenie za wykonanie czynności określonej w § 1 niniejszej umowy;
+- p: 31
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Wysokość wynagrodzenia określa się w kwocie ………... zł, płatnego w terminie ….. dni od wykonania czynności stanowiących przedmiot umowy.
+  slots:
+  - {id: p31_1, span: [44, 50], type: text, context: określa się w kwocie ▢ zł płatnego}
+  - {id: p31_2, span: [75, 78], type: text, context: zł płatnego w terminie ▢ dni od}
+- p: 32
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Wynagrodzenie będzie płatne przelewem bankowym na rachunek bankowy Kancelarii - …………………………………………………………………..
+  slots:
+  - {id: p32_1, span: [80, 107], type: text, context: na rachunek bankowy Kancelarii ▢}
+- p: 33
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: Zleceniobiorcy przysługuje zwrot wydatków poniesionych na realizację niniejszego zlecenia, w szczególności zwrot kosztów pobytu i przejazdu
+    osób świadczących pomoc prawną (zwrot kosztów zakwaterowania według rachunków oraz zwrot kosztów przejazdu liczonych według cen za przejazd
+    samochodem prywatnym do celów służbowych). Koszty i opłaty sądowe, egzekucyjne oraz koszty administracyjne związane z wykonywaniem przedmiotu
+    Umowy ponosi Zleceniodawca.
+- p: 34
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+  text: 'Wynagrodzenie i zwrot wydatków zostanie powiększony o podatek od towarów i usług w należnej stawce. '
+- p: 35
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}}
+  text: 'Zapłata należnego Zleceniobiorcy wynagrodzenia nastąpi na podstawie faktur VAT wystawianych przez Zleceniobiorcę, na jego rachunek bankowy
+    wskazany w fakturze VAT. '
+- {p: 36, role: spacer}
+- p: 37
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+  text: § 4
+- p: 38
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: 'Obowiązki Stron '
+- p: 39
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'Kancelaria zobowiązuje się do świadczenia usług prawnych zgodnie ze swoją najlepszą wiedzą oraz zgodnie z obowiązującymi przepisami prawa
+    polskiego, a także z zachowaniem należytej staranności wynikającej z zawodowego charakteru prowadzonej działalności, jak również w oparciu
+    o dane udostępnione i wytyczne udzielone przez Zleceniodawcę. '
+- p: 40
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Kancelaria zapewnia, że posiada odpowiednie uprawnienia, umiejętności i kwalifikacje niezbędne do należytego wykonania umowy, w tym do
+    samodzielnego definiowania czynności, które muszą być podjęte w celu zapewnienia prawidłowego wykonania umowy. '
+- p: 41
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Udzielenie pisemnego umocowania jest warunkiem przystąpienia Kancelarii do wykonywania Umowy.
+- p: 42
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: Kancelaria może żądać dodatkowego pełnomocnictwa do dokonania czynności, których konieczność wykonania ujawniła się lub których wykonanie
+    stało się celowe w trakcie prowadzenia sprawy Zleceniodawcy. O konieczności lub zasadności udzielenia takiego pełnomocnictwa oraz konsekwencjach
+    prawnych jego nieudzielenia Kancelaria poinformuje Zleceniodawcę.
+- p: 43
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+  text: Nieudzielenie pełnomocnictwa, o którym mowa w ust. 4 na żądanie Kancelarii zwalnia ją od reprezentowania Zleceniodawcy w zakresie, jakim
+    pełnomocnictwo udzielone zgodnie z ust. 3 okazało się niewystarczające.
+- p: 44
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}}
+  text: Kancelaria może udzielać pełnomocnictw substytucyjnych lub upoważniać do zastępstwa aplikantów w przypadku wystąpienia kolizji obowiązków
+    zawodowych, według własnego wyboru co do osoby mającej działać za Kancelarię i pod warunkiem powierzenia takiego zastępstwa osobie posiadającej
+    wymagane prawem uprawnienia zawodowe.
+- p: 45
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '7.', kind: decimal, src: auto, level: 0}}
+  text: Zleceniodawca zobowiązuje się do udostępnienia Zleceniobiorcy wszelkich dokumentów i informacji niezbędnych do należytego wykonania Umowy.
+- p: 46
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '8.', kind: decimal, src: auto, level: 0}}
+  text: Zleceniodawca zobowiązuje się do współpracy z Kancelarią, w celu realizacji przedmiotu umowy.
+- p: 47
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '9.', kind: decimal, src: auto, level: 0}}
+  text: Zleceniodawca zobowiązuje się do zapłaty wynagrodzenia określonego w § 3 niniejszej umowy, z zachowaniem wskazanego terminu.
+- {p: 48, role: spacer}
+- p: 49
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+  text: § 5
+- p: 50
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: Wypowiedzenie
+- p: 51
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: 'Każda ze Stron może wypowiedzieć niniejszą umowę w każdym czasie. Wypowiedzenie powinno nastąpić wyłącznie z ważnych powodów, bez narażania
+    drugiej Strony na poniesienie niewymiernych strat. '
+- {p: 52, role: spacer}
+- p: 53
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 6, kind: paragraph, src: manual, level: 0}}
+  text: § 6
+- p: 54
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: Postanowienia końcowe
+- p: 55
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Wszelkie zmiany i uzupełnienia niniejszej Umowy wymagają formy pisemnej, pod rygorem nieważności.
+- p: 56
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'W sprawach nieuregulowanych niniejszą umową, zastosowanie mają przepisy Kodeksu cywilnego. '
+- p: 57
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Wszelkie spory wynikłe na tle wykonywania postanowień niniejszej Umowy będą rozpatrywane przez sąd powszechny właściwy ze względu na miejsce
+    zamieszkania Zleceniodawcy.
+- p: 58
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: Umowa została sporządzona w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze Stron.
+- {p: 59, role: spacer}
+- {p: 60, role: spacer}
+- p: 61
+  role: signature_line
+  layout: {align: justify, size: 10.0, tabs: 2}
+  text: "……………………………………………….          \t\t……..………………………………………."
+  slots:
+  - {id: podpis_klienta, span: [0, 19], type: signature, hint: podpis Klienta}
+  - {id: podpis_kancelarii, span: [31, 51], type: signature, hint: podpis Kancelarii}
+- p: 62
+  role: hint
+  layout: {align: justify, size: 10.0, bold: true, tabs: 6}
+  text: "  \t (podpis Klienta)\t\t\t\t\t(podpis Kancelarii)"
+  hint_for: 61
+  hint_kind: label
+- {p: 63, role: spacer}
+- {p: 64, role: spacer}
+- {p: 65, role: spacer}
+- {p: 66, role: spacer}

@@ -1,0 +1,302 @@
+# Szkielet struktury: umowa o zachowaniu poufności.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: umowa_nda
+label_pl: umowa o zachowaniu poufności
+# Kolejności sekcji nie sprawdzamy: realne wzory tej kategorii układają je różnie.
+check_order: false
+numbering: paragraph
+sections:
+- id: komparycja
+  label_pl: komparycja (strony)
+  severity: required
+  # Formuły zawarcia i oznaczenia stron, nie nazwy ról: „najemca” czy „zawarta”
+  # powtarzają się w całej umowie i utrzymywały usuniętą komparycję jako obecną.
+  matches: [zawarta w dniu, zawarta dnia, zawarta pomiędzy, zawarta między, zawarto umowę,
+    zwanym dalej, zwaną dalej, zwanymi dalej, zwany dalej, zwana dalej, zwanego dalej,
+    zwanej dalej, zwani dalej, z siedzibą w, zamieszkał, pesel, 'nip:', 'nip ', krs, legitymując]
+- id: zakres
+  label_pl: zakres (poufności / praw)
+  severity: required
+  matches: [informacje poufne, poufnoś, tajemnic, w tajemnicy, prawa autorskie, wizerunek, licencj, przeniesienie
+      praw]
+- id: obowiazki
+  label_pl: obowiązki stron
+  severity: required
+  matches: [zobowiąz, obowiązek, nie może ujawnia, nie ujawnia, ma prawo, przysługuje, powstrzyma się]
+- id: czas
+  label_pl: okres obowiązywania
+  severity: required
+  matches: [okres, czas trwania, obowiązuje, po rozwiązaniu, czas, w okresie]
+- id: wynagrodzenie
+  label_pl: wynagrodzenie / opłata
+  severity: expected
+  matches: [wynagrodzenie, opłata, zwrot kosztów, kwota, licencj, kara umowna]
+- id: postanowienia_koncowe
+  label_pl: postanowienia końcowe
+  severity: required
+  matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
+      formy pisemnej, wymagają zachowania formy pisemnej]
+
+# Dokument ogólny: realny wzór tej kategorii. Przy użyciu wypełnia się wyłącznie
+# pola (`slots`); treść, kolejność i układ zostają jak we wzorze.
+document:
+  template: Umowa o zachowaniu poufności (NDA).docx
+  label_pl: Umowa o zachowaniu poufności (NDA)
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+  blocks:
+  - p: 0
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: UMOWA O ZACHOWANIU POUFNOŚCI
+  - {p: 1, role: spacer}
+  - p: 2
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 23, end: 29, italic: true}, {start: 42, end: 55, italic: true}]}
+    text: 'zawarta w dniu …………….. (data) w ……………………… (miejscowość) pomiędzy:'
+    slots:
+    - {id: data, span: [15, 22], type: date, hint: data}
+    - {id: miejscowosc, span: [32, 41], type: place, hint: miejscowość}
+    inline_hints:
+    - {span: [23, 29], text: data}
+    - {span: [42, 55], text: miejscowość}
+  - {p: 3, role: spacer}
+  - p: 4
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: ………………………………………………………………………………………………………
+    slots:
+    - {id: p4_1, span: [0, 39], type: text, context: ▢}
+  - p: 5
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: ………………………………………………………………………………………………………
+    slots:
+    - {id: p5_1, span: [0, 39], type: text, context: ▢}
+  - p: 6
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: ………………………………………………………………………………………………………
+    slots:
+    - {id: oznaczenie_strony_zobowiazujacej_do_zachowania_p, span: [0, 39], type: text, hint: 'oznaczenie strony zobowiązującej do zachowania poufności,
+        imię, nazwisko, adres lub firma działalności, adres siedziby, NIP lub oznaczenie spółki, adres siedziby, NIP, KRS, imię i nazwisko osoby
+        reprezentującej'}
+  - p: 7
+    role: hint
+    layout: {align: justify, size: 10.0, italic: true}
+    text: (oznaczenie strony zobowiązującej do zachowania poufności, imię, nazwisko, adres lub firma działalności, adres siedziby, NIP lub oznaczenie
+      spółki, adres siedziby, NIP, KRS, imię i nazwisko osoby reprezentującej)
+    hint_for: 6
+    hint_kind: instruction
+  - {p: 8, role: spacer}
+  - p: 9
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 30, end: 36, bold: true}, {start: 37, end: 38, bold: true}, {start: 39, end: 119, italic: true}]}
+    text: 'zwanym w dalszej części umowy Strona A (określenie strony powinno być dostosowane do realnych stron umowy, np. Spółka) '
+    alias: Strona A
+  - {p: 10, role: spacer}
+  - p: 11
+    role: party_connector
+    layout: {align: justify, size: 10.0}
+    text: a
+  - {p: 12, role: spacer}
+  - p: 13
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: ………………………………………………………………………………………………………
+    slots:
+    - {id: p13_1, span: [0, 39], type: text, context: ▢}
+  - p: 14
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: ………………………………………………………………………………………………………
+    slots:
+    - {id: p14_1, span: [0, 39], type: text, context: ▢}
+  - p: 15
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: ………………………………………………………………………………………………………
+    slots:
+    - {id: oznaczenie_strony_zobowiazanej_do_zachowania_pou, span: [0, 39], type: text, hint: 'oznaczenie strony zobowiązanej do zachowania poufności,
+        imię, nazwisko, adres, PESEL'}
+  - p: 16
+    role: hint
+    layout: {align: justify, size: 10.0, italic: true}
+    text: (oznaczenie strony zobowiązanej do zachowania poufności, imię, nazwisko, adres, PESEL)
+    hint_for: 15
+    hint_kind: instruction
+  - {p: 17, role: spacer}
+  - p: 18
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 30, end: 38, bold: true}, {start: 38, end: 123, italic: true}]}
+    text: 'zwanym w dalszej części umowy Strona B (określenie strony powinno być dostosowane do realnych stron umowy, np. Kontrahent) '
+    alias: Strona B
+  - {p: 19, role: spacer}
+  - p: 20
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 24, end: 32, bold: true}]}
+    text: 'dalej łącznie zwanymi: „Stronami”,'
+  - {p: 21, role: spacer}
+  - p: 22
+    role: field_header
+    layout: {align: justify, size: 10.0}
+    text: 'o następującej treści:'
+  - {p: 23, role: spacer}
+  - p: 24
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+    text: § 1
+  - p: 25
+    role: field_header
+    layout: {align: justify, size: 10.0}
+    text: 'Strony zgodnie oświadczają, że:'
+  - p: 26
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 8, bold: true}]}
+    text: "Strona A posiada, gromadzi, przetwarza oraz wykorzystuje w swej działalności, w tym prowadzonej działalności gospodarczej informacje,\
+      \ co do których podejmuje działania \nw kierunku ich nieujawniania osobom trzecim, chronione na podstawie przepisów prawa, jak również, co\
+      \ do których obowiązana jest zachować je w tajemnicy w związku z umowami, oświadczeniami i innymi stosunkami prawnymi, których jest stroną;"
+  - p: 27
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+    text: "widzą potrzebę uregulowania kwestii ochrony informacji poufnych w celu zachowania ich \nw tajemnicy przez wszystkie strony umowy i w\
+      \ związku z tym zawierają niniejszą umowę."
+  - {p: 28, role: spacer}
+  - p: 29
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+    text: § 2
+  - p: 30
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 25, end: 33, bold: true}, {start: 152,
+          end: 264, italic: true}]}
+    text: Na mocy niniejszej umowy Strona B zobowiązuje zachować w tajemnicy wszelkie informacje poufne, o których dowiedział się w związku …………………………………………………….
+      (należy sprecyzować czynności wykonywane przez Stronę B, w związku z którymi powzięte zostały informację poufne)
+    slots:
+    - {id: nalezy_sprecyzowac_czynnosci_wykonywane_przez_st, span: [130, 151], type: content, hint: 'należy sprecyzować czynności wykonywane przez
+        Stronę B, w związku z którymi powzięte zostały informację poufne'}
+    inline_hints:
+    - {span: [152, 264], text: 'należy sprecyzować czynności wykonywane przez Stronę B, w związku z którymi powzięte zostały informację poufne'}
+  - p: 31
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: 'Za informacje poufne traktowane będą w szczególności nieujawnione do wiadomości publicznej:'
+  - p: 32
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 34, end: 93, italic: true}]}
+    text: ……………………………………………………………………………………… (należy wymienić informację, które będą uznawane za poufne)
+    slots:
+    - {id: nalezy_wymienic_informacje_ktore_beda_uznawane_z, span: [0, 33], type: content, hint: 'należy wymienić informację, które będą uznawane za
+        poufne'}
+    inline_hints:
+    - {span: [34, 93], text: 'należy wymienić informację, które będą uznawane za poufne'}
+  - p: 33
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 44, end: 52, bold: true}, {start: 111,
+          end: 189, italic: true}]}
+    text: 'Za naruszenie tajemnicy lub poufności przez Stronę B uważać się będzie w szczególności ……………………………………………………... (wskazanie czynności uznawanych
+      za naruszenie obowiązku zachowania poufności) '
+    slots:
+    - {id: wskazanie_czynnosci_uznawanych_za_naruszenie_obo, span: [87, 110], type: content, hint: wskazanie czynności uznawanych za naruszenie obowiązku
+        zachowania poufności}
+    inline_hints:
+    - {span: [111, 188], text: wskazanie czynności uznawanych za naruszenie obowiązku zachowania poufności}
+  - p: 34
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}, spans: [{start: 45, end: 53, bold: true}]}
+    text: Dla uniknięcia wątpliwości informacje poufne Strony A stanowią wszelkie informacje poufne, wymienione w ust. 2, bez względu na sposób
+      ich utrwalenia, a w tym w szczególności utrwalone na dokumentach, nośnikach elektronicznych i innych nośnikach pozwalających na ich zapis
+      lub upublicznienie.
+  - p: 35
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}, spans: [{start: 100, end: 193, italic: true}]}
+    text: 'Obowiązek zachowania poufności nie dotyczy tych informacji, które: …………………………………………………………………………………. (należy wymienić informację, które
+      nie zostaną uznane za poufne, np. ujawnienie z mocy prawa)'
+    slots:
+    - {id: obowiazek_zachowania_poufnosci_nie_dotyczy_tych, span: [67, 99], type: text, hint: 'należy wymienić informację, które nie zostaną uznane
+        za poufne, np. ujawnienie z mocy prawa', label: 'Obowiązek zachowania poufności nie dotyczy tych informacji, które'}
+    inline_hints:
+    - {span: [100, 193], text: 'należy wymienić informację, które nie zostaną uznane za poufne, np. ujawnienie z mocy prawa'}
+  - {p: 36, role: spacer}
+  - p: 37
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+    text: § 3
+  - p: 38
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 42, end: 50, bold: true}, {start: 77,
+          end: 112, italic: true}]}
+    text: Obowiązek zachowania poufności obowiązuje Stronę B w okresie ………………………………….. (wskazać okres obowiązywania umowy)
+    slots:
+    - {id: wskazac_okres_obowiazywania_umowy, span: [61, 76], type: text, hint: wskazać okres obowiązywania umowy}
+    inline_hints:
+    - {span: [77, 112], text: wskazać okres obowiązywania umowy}
+  - p: 39
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 29, end: 37, bold: true}, {start: 103,
+          end: 112, bold: true}, {start: 188, end: 216, italic: true}]}
+    text: "W przypadku naruszenia przez Stronę B obowiązku zachowania tajemnicy określonego \nw niniejszej umowie, Stronie A należy się kara umowna\
+      \ w wysokości ……………………. zł (słownie: ………………. złotych) (wskazać kwotę kary umownej) za każde naruszenie. "
+    slots:
+    - {id: p39_1, span: [148, 157], type: amount, context: kara umowna w wysokości ▢ zł za}
+    - {id: p39_2, span: [171, 178], type: amount, context: w wysokości zł słownie ▢ złotych za}
+  - p: 40
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 8, bold: true}]}
+    text: Strona A zastrzega sobie możliwość dochodzenia odszkodowania przewyższającego wysokość kary umownej.
+  - {p: 41, role: spacer}
+  - p: 42
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+    text: § 4
+  - p: 43
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 0, end: 8, bold: true}]}
+    text: 'Strona B oświadcza, że znana jest mu treść niżej wymienionych przepisów w zakresie ochrony informacji:'
+  - p: 44
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: ustawy z dnia 16 kwietnia 1993 r. o zwalczaniu nieuczciwej konkurencji;
+  - p: 45
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+    text: 'ustawy z dnia 06 czerwca 1997 r. - Kodeks karny '
+  - {p: 46, role: spacer}
+  - p: 47
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+    text: § 5
+  - p: 48
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: "W sprawach nieuregulowanych niniejszą umową będą miały zastosowanie przepisy ustawy \nz dnia 23 kwietnia 1964 r. - Kodeks cywilny oraz\
+      \ inne powszechnie obowiązujące przepisy prawa."
+  - p: 49
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Wszelkie zmiany i uzupełnienia niniejszej umowy wymagają zachowania formy pisemnej pod rygorem nieważności.
+  - p: 50
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 132, end: 141, bold: true}]}
+    text: Wszelkie spory wynikające z realizacji niniejszej umowy rozstrzygać będzie Sąd właściwy miejscowo dla siedziby/miejsca zamieszkania Strony
+      A.
+  - p: 51
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 88, end: 93, bold: true}]}
+    text: Umowa została sporządzona w dwóch jednobrzmiących egzemplarzach po jednym dla każdej ze Stron.
+  - {p: 52, role: spacer}
+  - {p: 53, role: spacer}
+  - p: 54
+    role: signature_line
+    layout: {align: justify, size: 10.0, tabs: 5}
+    text: "……………………………………\t\t\t\t   \t……………………………………….."
+    slots:
+    - {id: p54_1, span: [0, 14], type: signature, context: ▢}
+    - {id: p54_2, span: [22, 39], type: signature, context: ▢}
+  - p: 55
+    role: body
+    layout: {align: justify, size: 10.0, tabs: 8}
+    text: "          \t  Strona A\t\t\t\t\t    \t\t        Strona B"
+  - {p: 56, role: spacer}
+  - {p: 57, role: spacer}

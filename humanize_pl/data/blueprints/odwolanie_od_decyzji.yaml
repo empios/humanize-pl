@@ -1,0 +1,225 @@
+# Szkielet struktury: odwołanie od decyzji.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: odwolanie_od_decyzji
+label_pl: odwołanie od decyzji
+check_order: false
+sections:
+- id: data_miejsce
+  label_pl: miejscowość i data
+  severity: required
+  # Linia „miejscowość, data” albo jej podpis we wzorze. Same „dnia” i „r.”
+  # trafiały też w „ustawy z dnia 26 czerwca 1974 r.”, więc usunięta data
+  # uchodziła za obecną.
+  patterns:
+  - '^(?=.{0,90}$)[\p{L}…. ()\t\-]{1,60},\s*(?:dnia\s+)?(?:\d{1,2}\b|…|\.{2,})'
+  - '\(miejscowość\W+(?:i\s+)?data'
+  - 'zawart\w*\s+(?:w\s+dniu|dnia)\b'
+- id: adresat
+  label_pl: oznaczenie organu
+  severity: required
+  matches: [organ, sąd, urząd, prezys, dyrektor, naczelnik, zakład ubezpieczeń, ubezpieczyciel]
+- id: wnoszący
+  label_pl: oznaczenie wnoszącego
+  severity: required
+  matches: [dane, imię i nazwisko, adres, zam., ubezpieczon]
+- id: decyzja
+  label_pl: oznaczenie zaskarżonej decyzji
+  severity: required
+  matches: [decyzji, decyzję, postanowienie, od decyzji]
+- id: zadanie
+  label_pl: żądanie
+  severity: required
+  matches: [wnoszę o, odwołuję, zaskarżam, uchylenie, zmianę, odwołanie]
+- id: uzasadnienie
+  label_pl: uzasadnienie
+  severity: required
+  matches: [uzasadnienie, uzasadnieniem, powody, w związku z, powo]
+- id: podpis
+  label_pl: podpis
+  severity: required
+  matches: [podpis]
+  # „Z poważaniem” zamyka pismo, nie tytułuje sekcji: pod nim jest tylko
+  # odręczny podpis. Wzorzec, w przeciwieństwie do `matches`, nie każe
+  # szukać pod nim treści.
+  patterns: ['z poważaniem']
+
+# Dokument ogólny: odwołanie do organu odwoławczego, bez nazwy konkretnego organu,
+# więc pasuje do decyzji każdego organu. Wzór dla decyzji ZUS jest wzorem
+# szczególnym w data/templates/odwolanie_od_decyzji/. Przy użyciu wypełnia się
+# wyłącznie pola (`slots`); treść, kolejność i układ zostają jak we wzorze.
+document:
+  label_pl: Odwołanie od decyzji
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 1417, bottom: 1417, left: 1417, right: 1417}}
+  blocks:
+  - p: 0
+    role: body
+    layout: {align: right, size: 11.0}
+    text: '………………… (miejscowość), dnia ………………… (data)'
+    slots:
+    - {id: miejscowosc, span: [0, 7], type: place, hint: miejscowość}
+    - {id: data, span: [28, 35], type: date, hint: data}
+    inline_hints:
+    - {span: [8, 21], text: miejscowość}
+    - {span: [36, 42], text: data}
+  - {p: 1, role: spacer}
+  - p: 2
+    role: field_header
+    layout: {align: justify, size: 11.0}
+    text: 'Odwołujący się:'
+  - p: 3
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: '………………………………………………………………………………………………'
+    slots:
+    - {id: odwolujacy, span: [0, 36], type: text, hint: 'imię i nazwisko lub nazwa, adres, PESEL lub NIP', label: Odwołujący się}
+  - p: 4
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true}
+    text: '(imię i nazwisko lub nazwa, adres, PESEL lub NIP)'
+    hint_for: 3
+    hint_kind: label
+  - {p: 5, role: spacer}
+  - p: 6
+    role: field_header
+    layout: {align: justify, size: 11.0}
+    text: 'Organ odwoławczy:'
+  - p: 7
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: '………………………………………………………………………………………………'
+    slots:
+    - {id: organ_odwolawczy, span: [0, 36], type: text, hint: nazwa i siedziba organu odwoławczego, label: Organ odwoławczy}
+  - p: 8
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true}
+    text: '(nazwa i siedziba organu odwoławczego)'
+    hint_for: 7
+    hint_kind: label
+  - p: 9
+    role: field_header
+    layout: {align: justify, size: 11.0}
+    text: 'Za pośrednictwem:'
+  - p: 10
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: '………………………………………………………………………………………………'
+    slots:
+    - {id: organ_pierwszej_instancji, span: [0, 36], type: text, hint: 'nazwa i siedziba organu, który wydał decyzję', label: Za pośrednictwem}
+  - p: 11
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true}
+    text: '(nazwa i siedziba organu, który wydał decyzję)'
+    hint_for: 10
+    hint_kind: label
+  - {p: 12, role: spacer}
+  - p: 13
+    role: field
+    layout: {align: justify, size: 11.0}
+    text: 'Znak sprawy: …………………'
+    slots:
+    - {id: znak_sprawy, span: [13, 20], type: text, label: Znak sprawy}
+  - {p: 14, role: spacer}
+  - p: 15
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: ODWOŁANIE OD DECYZJI
+  - {p: 16, role: spacer}
+  - p: 17
+    role: body
+    layout: {align: justify, size: 11.0}
+    text: Na podstawie ………………… (podstawa prawna odwołania) wnoszę odwołanie od decyzji ………………… (organ, który wydał decyzję) z dnia ………………… (data decyzji) nr ………………… (numer decyzji).
+    slots:
+    - {id: podstawa_prawna_odwolania, span: [13, 20], type: text, hint: podstawa prawna odwołania}
+    - {id: organ_wydajacy_decyzje, span: [77, 84], type: text, hint: 'organ, który wydał decyzję'}
+    - {id: data_decyzji, span: [121, 128], type: date, hint: data decyzji}
+    - {id: numer_decyzji, span: [147, 154], type: text, hint: numer decyzji}
+    inline_hints:
+    - {span: [21, 48], text: podstawa prawna odwołania}
+    - {span: [85, 113], text: 'organ, który wydał decyzję'}
+    - {span: [129, 143], text: data decyzji}
+    - {span: [155, 170], text: numer decyzji}
+  - p: 18
+    role: body
+    layout: {align: justify, size: 11.0}
+    text: Decyzja została mi doręczona dnia ………………… (data doręczenia). Zaskarżam ją ………………… (w całości albo w części).
+    slots:
+    - {id: data_doreczenia, span: [34, 41], type: date, hint: data doręczenia}
+    - {id: zakres_zaskarzenia, span: [74, 81], type: text, hint: w całości albo w części}
+    inline_hints:
+    - {span: [42, 59], text: data doręczenia}
+    - {span: [82, 107], text: w całości albo w części}
+  - {p: 19, role: spacer}
+  - p: 20
+    role: field_header
+    layout: {align: justify, size: 11.0}
+    text: 'Wnoszę o:'
+  - p: 21
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: '………………… (uchylenie albo zmianę decyzji, albo przekazanie sprawy do ponownego rozpatrzenia).'
+    slots:
+    - {id: zadanie, span: [0, 7], type: text, hint: 'uchylenie albo zmianę decyzji, albo przekazanie sprawy do ponownego rozpatrzenia'}
+    inline_hints:
+    - {span: [8, 90], text: 'uchylenie albo zmianę decyzji, albo przekazanie sprawy do ponownego rozpatrzenia'}
+  - {p: 22, role: spacer}
+  - p: 23
+    role: field_header
+    layout: {align: justify, size: 11.0}
+    text: 'Zaskarżonej decyzji zarzucam:'
+  - p: 24
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: '………………… (naruszone przepisy i błędne ustalenia faktyczne).'
+    slots:
+    - {id: zarzuty, span: [0, 7], type: text, hint: naruszone przepisy i błędne ustalenia faktyczne}
+    inline_hints:
+    - {span: [8, 57], text: naruszone przepisy i błędne ustalenia faktyczne}
+  - {p: 25, role: spacer}
+  - p: 26
+    role: body
+    layout: {align: center, size: 12.0, bold: true}
+    text: Uzasadnienie
+  - p: 27
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: '………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………'
+    slots:
+    - {id: uzasadnienie, span: [0, 108], type: text, hint: 'okoliczności faktyczne sprawy, argumenty i dowody'}
+  - p: 28
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true}
+    text: '(okoliczności faktyczne sprawy, argumenty i dowody)'
+    hint_for: 27
+    hint_kind: instruction
+  - {p: 29, role: spacer}
+  - p: 30
+    role: blank_line
+    layout: {align: right, size: 11.0}
+    text: '………………………………'
+    slots:
+    - {id: podpis, span: [0, 12], type: signature, hint: podpis}
+  - p: 31
+    role: hint
+    layout: {align: right, size: 8.0, italic: true}
+    text: '(podpis)'
+    hint_for: 30
+    hint_kind: label
+  - {p: 32, role: spacer}
+  - p: 33
+    role: field_header
+    layout: {align: justify, size: 11.0, bold: true}
+    text: 'Załączniki:'
+  - p: 34
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: odpis zaskarżonej decyzji;
+  - p: 35
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+    text: '………………… (inne załączniki, np. dowody).'
+    slots:
+    - {id: zalaczniki, span: [0, 7], type: text, hint: 'inne załączniki, np. dowody'}
+    inline_hints:
+    - {span: [8, 37], text: 'inne załączniki, np. dowody'}

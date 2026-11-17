@@ -1,0 +1,224 @@
+# Szkielet struktury: zażalenie na postanowienie (sąd albo organ).
+#
+# W postępowaniu cywilnym zażalenie spełnia wymogi pisma procesowego i apelacji
+# (art. 394 § 3 k.p.c.); w administracyjnym wnosi się je za pośrednictwem organu,
+# który wydał postanowienie (art. 141 k.p.a., art. 236 o.p.). Wzór obejmuje oba tryby.
+
+category: zazalenie
+label_pl: zażalenie
+check_order: false
+sections:
+- id: data_miejsce
+  label_pl: miejscowość i data
+  severity: required
+  # Linia „miejscowość, data” albo jej podpis we wzorze.
+  patterns:
+  - '^(?=.{0,90}$)[\p{L}…. ()\t\-]{1,60},\s*(?:dnia\s+)?(?:\d{1,2}\b|…|\.{2,})'
+  - '\(miejscowość\W+(?:i\s+)?data'
+- id: adresat
+  label_pl: oznaczenie adresata
+  severity: required
+  matches: ['do:', za pośrednictwem]
+- id: wnoszacy
+  label_pl: oznaczenie wnoszącego zażalenie
+  severity: required
+  matches: [wnoszący zażalenie, imię i nazwisko]
+- id: sygnatura
+  label_pl: sygnatura lub znak sprawy
+  severity: expected
+  matches: [sygnatura, znak sprawy]
+- id: postanowienie
+  label_pl: oznaczenie zaskarżonego postanowienia
+  severity: required
+  matches: [zażalenie na postanowienie, zaskarżam postanowienie]
+- id: zarzuty
+  label_pl: zarzuty
+  severity: required
+  matches: [zarzucam]
+- id: wnioski
+  label_pl: wnioski
+  severity: required
+  matches: ['wnoszę o:']
+- id: uzasadnienie
+  label_pl: uzasadnienie
+  severity: required
+  matches: [uzasadnienie]
+- id: podpis
+  label_pl: podpis
+  severity: required
+  matches: [podpis]
+
+# Dokument ogólny: wzór do wypełnienia, bez nazwy konkretnego sądu ani organu.
+# Przy użyciu wypełnia się wyłącznie pola (`slots`); treść, kolejność i układ
+# zostają jak we wzorze.
+document:
+  label_pl: Zażalenie na postanowienie
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 1417, bottom: 1417, left: 1417, right: 1417}}
+  blocks:
+  - p: 0
+    role: body
+    layout: {align: right, size: 11.0}
+    text: '………………… (miejscowość), dnia ………………… (data)'
+    slots:
+    - {id: miejscowosc, span: [0, 7], type: place, hint: miejscowość}
+    - {id: data, span: [28, 35], type: date, hint: data}
+    inline_hints:
+    - {span: [8, 21], text: miejscowość}
+    - {span: [36, 42], text: data}
+  - {p: 1, role: spacer}
+  - p: 2
+    role: field_header
+    layout: {align: justify, size: 11.0}
+    text: 'Do:'
+  - p: 3
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: '………………………………………………………………………………………………'
+    slots:
+    - {id: adresat, span: [0, 36], type: text, hint: 'sąd albo organ, który rozpozna zażalenie', label: Do}
+  - p: 4
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true}
+    text: '(sąd albo organ, który rozpozna zażalenie)'
+    hint_for: 3
+    hint_kind: label
+  - p: 5
+    role: field_header
+    layout: {align: justify, size: 11.0}
+    text: 'Za pośrednictwem:'
+  - p: 6
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: '………………………………………………………………………………………………'
+    slots:
+    - {id: wydajacy, span: [0, 36], type: text, hint: 'sąd albo organ, który wydał postanowienie', label: Za pośrednictwem}
+  - p: 7
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true}
+    text: '(sąd albo organ, który wydał postanowienie)'
+    hint_for: 6
+    hint_kind: label
+  - {p: 8, role: spacer}
+  - p: 9
+    role: field
+    layout: {align: justify, size: 11.0}
+    text: 'Sygnatura lub znak sprawy: …………………'
+    slots:
+    - {id: sygnatura, span: [27, 34], type: text, label: Sygnatura lub znak sprawy}
+  - {p: 10, role: spacer}
+  - p: 11
+    role: field_header
+    layout: {align: justify, size: 11.0}
+    text: 'Wnoszący zażalenie:'
+  - p: 12
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: '………………………………………………………………………………………………'
+    slots:
+    - {id: wnoszacy, span: [0, 36], type: text, hint: 'imię i nazwisko lub nazwa, adres, PESEL lub NIP', label: Wnoszący zażalenie}
+  - p: 13
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true}
+    text: '(imię i nazwisko lub nazwa, adres, PESEL lub NIP)'
+    hint_for: 12
+    hint_kind: label
+  - {p: 14, role: spacer}
+  - p: 15
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: ZAŻALENIE
+  - {p: 16, role: spacer}
+  - p: 17
+    role: body
+    layout: {align: justify, size: 11.0}
+    text: Wnoszę zażalenie na postanowienie z dnia ………………… (data postanowienia).
+    slots:
+    - {id: data_postanowienia, span: [41, 48], type: date, hint: data postanowienia}
+    inline_hints:
+    - {span: [49, 69], text: data postanowienia}
+  - p: 18
+    role: body
+    layout: {align: justify, size: 11.0}
+    text: 'Postanowienie wydał ………………… (sąd albo organ). Przedmiot postanowienia: ………………… (przedmiot sprawy); postanowienie doręczono mi dnia ………………… (data doręczenia).'
+    slots:
+    - {id: organ_postanowienia, span: [20, 27], type: text, hint: sąd albo organ}
+    - {id: przedmiot_postanowienia, span: [71, 78], type: text, hint: przedmiot sprawy}
+    - {id: data_doreczenia, span: [131, 138], type: date, hint: data doręczenia}
+    inline_hints:
+    - {span: [28, 44], text: sąd albo organ}
+    - {span: [79, 97], text: przedmiot sprawy}
+    - {span: [139, 156], text: data doręczenia}
+  - {p: 19, role: spacer}
+  - p: 20
+    role: field_header
+    layout: {align: justify, size: 11.0}
+    text: 'Zaskarżonemu postanowieniu zarzucam:'
+  - p: 21
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: '………………… (naruszone przepisy albo błędne ustalenia).'
+    slots:
+    - {id: zarzuty, span: [0, 7], type: text, hint: naruszone przepisy albo błędne ustalenia}
+    inline_hints:
+    - {span: [8, 50], text: naruszone przepisy albo błędne ustalenia}
+  - {p: 22, role: spacer}
+  - p: 23
+    role: field_header
+    layout: {align: justify, size: 11.0}
+    text: 'Wnoszę o:'
+  - p: 24
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: '………………… (zmianę albo uchylenie zaskarżonego postanowienia).'
+    slots:
+    - {id: wnioski, span: [0, 7], type: text, hint: zmianę albo uchylenie zaskarżonego postanowienia}
+    inline_hints:
+    - {span: [8, 58], text: zmianę albo uchylenie zaskarżonego postanowienia}
+  - {p: 25, role: spacer}
+  - p: 26
+    role: body
+    layout: {align: center, size: 12.0, bold: true}
+    text: Uzasadnienie
+  - p: 27
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: '………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………'
+    slots:
+    - {id: uzasadnienie, span: [0, 108], type: text, hint: 'okoliczności i argumenty, które przemawiają za zmianą albo uchyleniem postanowienia'}
+  - p: 28
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true}
+    text: '(okoliczności i argumenty, które przemawiają za zmianą albo uchyleniem postanowienia)'
+    hint_for: 27
+    hint_kind: instruction
+  - {p: 29, role: spacer}
+  - p: 30
+    role: blank_line
+    layout: {align: right, size: 11.0}
+    text: '………………………………'
+    slots:
+    - {id: podpis, span: [0, 12], type: signature, hint: podpis}
+  - p: 31
+    role: hint
+    layout: {align: right, size: 8.0, italic: true}
+    text: '(podpis)'
+    hint_for: 30
+    hint_kind: label
+  - {p: 32, role: spacer}
+  - p: 33
+    role: field_header
+    layout: {align: justify, size: 11.0, bold: true}
+    text: 'Załączniki:'
+  - p: 34
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: odpis zaskarżonego postanowienia;
+  - p: 35
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+    text: '………………… (odpisy zażalenia i inne załączniki).'
+    slots:
+    - {id: zalaczniki, span: [0, 7], type: text, hint: odpisy zażalenia i inne załączniki}
+    inline_hints:
+    - {span: [8, 44], text: odpisy zażalenia i inne załączniki}

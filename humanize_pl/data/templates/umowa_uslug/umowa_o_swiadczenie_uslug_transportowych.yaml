@@ -1,0 +1,389 @@
+template: umowa o świadczenie usług transportowych.docx
+category: umowa_uslug
+label_pl: Umowa o świadczenie usług transportowych
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: title
+  layout: {align: center, size: 11.0, bold: true}
+  text: '     UMOWA'
+- p: 1
+  role: body
+  layout: {align: center, size: 11.0, bold: true}
+  text: o świadczenie usług transportowych
+- {p: 2, role: spacer}
+- p: 3
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 18, end: 31, italic: true}]}
+  text: 'zawarta w ………………. (miejscowość) w dniu ……………………….. roku, pomiędzy:'
+  slots:
+  - {id: miejscowosc, span: [10, 17], type: place, hint: miejscowość}
+  - {id: p3_2, span: [39, 50], type: date, context: zawarta w w dniu ▢ roku pomiędzy}
+  inline_hints:
+  - {span: [18, 31], text: miejscowość}
+- {p: 4, role: spacer}
+- p: 5
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ………………………………………………………………………………………………..
+  slots:
+  - {id: p5_1, span: [0, 38], type: text, context: ▢}
+- p: 6
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ………………………………………………………………………………………………..
+  slots:
+  - {id: p6_1, span: [0, 38], type: text, context: ▢}
+- p: 7
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ………………………………………………………………………………………………..
+  slots:
+  - {id: oznaczenie_firmy_klienta, span: [0, 38], type: company, hint: oznaczenie firmy Klienta}
+- p: 8
+  role: hint
+  layout: {align: justify, size: 10.0, italic: true}
+  text: (oznaczenie firmy Klienta)
+  hint_for: 7
+  hint_kind: label
+- {p: 9, role: spacer}
+- p: 10
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 30, end: 53, bold: true}]}
+  text: 'zwanym w dalszej części umowy Udzielającym zamówienia, '
+  alias: Udzielającym
+- {p: 11, role: spacer}
+- p: 12
+  role: party_connector
+  layout: {align: justify, size: 10.0}
+  text: a
+- {p: 13, role: spacer}
+- p: 14
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: '………………………………………. prowadzącym jednoosobową działalność gospodarczą ……………………..
+
+    z siedzibą w ……………………, NIP …………………………., REGON …………………………………… '
+  slots:
+  - {id: p14_1, span: [0, 16], type: text, context: ▢ prowadzącym jednoosobową}
+  - {id: p14_2, span: [66, 76], type: text, context: prowadzącym jednoosobową działalność gospodarczą ▢ z siedzibą}
+  - {id: p14_3, span: [90, 98], type: place, context: gospodarczą z siedzibą w ▢ NIP REGON}
+  - {id: p14_4, span: [104, 115], type: id_number, context: z siedzibą w NIP ▢ REGON}
+  - {id: p14_5, span: [123, 137], type: id_number, context: siedzibą w NIP REGON ▢}
+- {p: 15, role: spacer}
+- p: 16
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 30, end: 53, bold: true}]}
+  text: zwanym w dalszej części umowy Przyjmującym zamówienie,
+  alias: Przyjmującym
+- {p: 17, role: spacer}
+- p: 18
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 16, end: 24, bold: true}]}
+  text: zwanymi łącznie Stronami,
+  alias: Stronami
+- {p: 19, role: spacer}
+- p: 20
+  role: field_header
+  layout: {align: justify, size: 10.0}
+  text: 'o następującej treści:'
+- {p: 21, role: spacer}
+- p: 22
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 1., kind: paragraph, src: manual, level: 0}}
+  text: § 1.
+- {p: 23, role: spacer}
+- p: 24
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}, {start: 35,
+        end: 57, bold: true}, {start: 182, end: 206, bold: true}]}
+  text: Udzielający zamówienia powierza, a Przyjmujący zamówienie przyjmuje do wykonania usługi transportowe w zakresie dostarczania oraz odbioru
+    towaru w czasie i miejscu wyznaczonym przez Udzielającego zamówienia.
+- p: 25
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Miejscem świadczenia usług objętych przedmiotem niniejszej umowy jest terytorium Rzeczpospolitej Polskiej.
+- p: 26
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Zakres usług wykonywanych w ramach umowy określony został w załączniku nr 1 do niniejszej umowy — stanowiącym jej integralną część.
+- p: 27
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}, {start: 132,
+        end: 155, bold: true}]}
+  text: "Przyjmujący zamówienie zobowiązuje się do zapewnienia wykonywania usług zgodnie \nz harmonogramem, w terminach ustalonych wspólnie z\
+    \ Udzielającym zamówienia."
+- p: 28
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}, {start: 56,
+        end: 80, bold: true}, {start: 322, end: 344, bold: true}, {start: 438, end: 462, bold: true}]}
+  text: "Udzielający zamówienia zobowiązuje się do powiadamiania Przyjmującego zamówienie o zapotrzebowaniu na świadczenie konkretnej usługi transportu\
+    \ z co najmniej z 24-godzinnym wyprzedzeniem. W uzasadnionych przypadkach powiadomienie takie może zostać dokonane \nw terminie krótszym,\
+    \ aniżeli wskazany powyżej. W takim przypadku Przyjmujący zamówienie dołoży wszelkich starań aby spełnić świadczenie przy użyciu pojazdów\
+    \ spełniających wymagania Udzielającego zamówienia."
+- p: 29
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}, {start: 31,
+        end: 55, bold: true}]}
+  text: Udzielający zamówienia zapewni Przyjmującemu zamówienie pojazdy do wykonania umowy wraz z niezbędnymi dokumentami i jednocześnie zobowiązuje
+    się, że pojazdy te będą spełniały wszelkie wymogi techniczne i prawne.
+- {p: 30, role: spacer}
+- p: 31
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 2., kind: paragraph, src: manual, level: 0}}
+  text: § 2.
+- {p: 32, role: spacer}
+- p: 33
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 45, end: 67, bold: true}]}
+  text: Usługi transportowe będące przedmiotem umowy Przyjmujący zamówienie zobowiązuje się wykonać w szczególności zgodnie z zasadami przyjętymi
+    w zakresie czynności wykonywanych przez zawodowego kierowcę.
+- p: 34
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}, {start: 147,
+        end: 171, bold: true}]}
+  text: Przyjmujący zamówienie zobowiązuje się zapoznać ze wszystkimi regulaminami, zarządzeniami oraz innymi aktami wewnętrznymi przedstawionymi
+    mu przez Udzielającego zamówienie związanymi z wykonywaniem niniejszej umowy oraz stosować się do ich zapisów.
+- p: 35
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}]}
+  text: 'Przyjmujący zamówienie zapewni na swój koszt odpowiednią ilość podstawowej odzieży oraz obuwie robocze wymagane do świadczenia usług
+    wskazanych w § 1. '
+- {p: 36, role: spacer}
+- p: 37
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 3., kind: paragraph, src: manual, level: 0}}
+  text: § 3.
+- {p: 38, role: spacer}
+- p: 39
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}, {start: 36,
+        end: 61, bold: true}]}
+  text: Przyjmujący zamówienie ponosi wobec Udzielającego zamówienia odpowiedzialność za udzielanie lub zaniechanie wykonywania przez siebie usług
+    w pełnej wysokości.
+- p: 40
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}, {start: 121,
+        end: 145, bold: true}]}
+  text: Przyjmujący zamówienie ponosi odpowiedzialność materialną za szkody powstałe z jego winy w sprzęcie będącym w posiadaniu Udzielającego
+    zamówienia.
+- p: 41
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}, {start: 101,
+        end: 125, bold: true}]}
+  text: Przyjmujący zamówienie obowiązany jest do niezwłocznego zgłoszenia właściwym komórkom organizacyjnym Udzielającego zamówienie wszelkich
+    stwierdzonych uszkodzeń sprzętu, a w szczególności pojazdów — przed przystąpieniem do ich użytkowania oraz awarii, które wystąpiły w trakcie
+    użytkowania.
+- {p: 42, role: spacer}
+- p: 43
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 4., kind: paragraph, src: manual, level: 0}}
+  text: § 4.
+- {p: 44, role: spacer}
+- p: 45
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}]}
+  text: Przyjmujący zamówienie zobowiązuje się do wykonywania przedmiotu niniejszej umowy osobiście, z zastrzeżeniem postanowień poniższych.
+- p: 46
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 74, end: 96, bold: true}, {start: 148,
+        end: 172, bold: true}]}
+  text: W razie wystąpienia potrzeby ustanowienia zastępstwa, przez osobę trzecią Przyjmujący zamówienie zobowiązany jest o tym fakcie powiadomić
+    na piśmie Udzielającego zamówienia z co najmniej 7-dniowym wyprzedzeniem z jednoczesnym wskazaniem osoby zastępującej.
+- p: 47
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 118, end: 142, bold: true}, {
+        start: 144, end: 166, bold: true}, {start: 290, end: 314, bold: true}]}
+  text: W razie wystąpienia potrzeby ustanowienia zastępstwa przez osobę trzecią, która była niemożliwa do przewidzenia przez Przyjmującego zamówienie,
+    Przyjmujący zamówienie zobowiązany jest o tym fakcie powiadomić możliwie jak najszybciej telefonicznie lub mailowo lub o ile to możliwe na
+    piśmie Udzielającego zamówienia z jednoczesnym wskazaniem osoby zastępującej.
+- p: 48
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 199, end: 223, bold: true}]}
+  text: Osoba zastępująca powinna posiadać wszystkie niezbędne kwalifikacje wymagane do wykonywania usług transportowych objętych przedmiotem
+    niniejszej umowy, nie mniejsze od kwalifikacji posiadanych przez Przyjmującego zamówienie.
+- p: 49
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}]}
+  text: "Przyjmujący zamówienie odpowiada za wszelkie roszczenia związane z działaniami \ni zaniechaniami osoby zastępującej jak za działania\
+    \ własne."
+- p: 50
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}, {start: 149,
+        end: 173, bold: true}, {start: 213, end: 237, bold: true}]}
+  text: Przyjmujący zamówienie wykonuje wynikające z niniejszej umowy zobowiązania w sposób samodzielny, bez bezpośredniego nadzoru i kierownictwa
+    ze strony Udzielającego zamówienia, z zastrzeżeniem uprawnień kontrolnych Udzielającego Zamówienie.
+- {p: 51, role: spacer}
+- p: 52
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 5., kind: paragraph, src: manual, level: 0}}
+  text: § 5.
+- {p: 53, role: spacer}
+- p: 54
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}]}
+  text: 'Przyjmujący zamówienie za wykonane usługi objęte niniejszą umową otrzyma wynagrodzenie w wysokości:'
+- p: 55
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+  text: ………..
+  slots:
+  - {id: p55_1, span: [0, 5], type: text, context: ▢}
+- p: 56
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+  text: ………..
+  slots:
+  - {id: p56_1, span: [0, 5], type: text, context: ▢}
+- p: 57
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
+  text: ………..
+  slots:
+  - {id: p57_1, span: [0, 5], type: text, context: ▢}
+- p: 58
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Strony ustalają miesiąc kalendarzowy jako okres rozliczeniowy.
+- p: 59
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 184, end: 208, bold: true}, {
+        start: 215, end: 239, bold: true}]}
+  text: Wynagrodzenie obliczone na podstawie ust. 1, wypłacane będzie comiesięcznie, w terminie do 10 dnia miesiąca następującego po zakończonym
+    miesiącu rozliczeniowym, na podstawie złożonej Udzielającemu zamówienia przez Przyjmującego zamówienie prawidłowo wystawionego rachunku za
+    wykonane usługi, najpóźniej do 5 dnia miesiąca następującego po miesiącu rozliczeniowym.
+- p: 60
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 57, end: 82, bold: true}]}
+  text: Należność wypłacana będzie przelewem na rachunek bankowy Przyjmującego zamówienie wskazany w fakturze/rachunku.
+- p: 61
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}, spans: [{start: 57, end: 82, bold: true}]}
+  text: Dniem płatności jest dzień obciążenia rachunku bankowego Udzielającego  zamówienie.
+- {p: 62, role: spacer}
+- p: 63
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 6., kind: paragraph, src: manual, level: 0}}
+  text: § 6.
+- {p: 64, role: spacer}
+- p: 65
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 0, end: 22, bold: true}, {start: 34, end: 58, bold: true}]}
+  text: 'Przyjmujący zamówienie przedstawi Udzielającemu zamówienie na jego żądanie wszelkie informacje związane z:'
+- p: 66
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+  text: wykonanymi na podstawie niniejszej umowy usługami,
+- p: 67
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}, spans: [{start: 24, end: 48, bold: true}]}
+  text: 'gospodarowaniem mieniem Udzielającego Zamówienie, w tym pojazdem użyczonym
+
+    w celu realizacji niniejszej umowy.'
+- {p: 68, role: spacer}
+- p: 69
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 7., kind: paragraph, src: manual, level: 0}}
+  text: § 7.
+- {p: 70, role: spacer}
+- p: 71
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Umowa jest zawarta na czas nieokreślony i wchodzi w życie w dniu …………… / określony i obowiązuje od ………………………… r. do ………..……………… r.
+  slots:
+  - {id: p71_1, span: [65, 70], type: date, context: w życie w dniu ▢ określony i}
+  - {id: p71_2, span: [99, 109], type: date, context: określony i obowiązuje od ▢ r. do}
+  - {id: p71_3, span: [116, 127], type: date, context: obowiązuje od r. do ▢ r.}
+- p: 72
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Strony mogą określić aneksem w formie pisemnej dodatkowe zasady wykonywania umowy.
+- {p: 73, role: spacer}
+- p: 74
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 8., kind: paragraph, src: manual, level: 0}}
+  text: § 8.
+- {p: 75, role: spacer}
+- p: 76
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 7, bold: true}]}
+  text: Strony mogą rozwiązać umowę z zachowaniem jednomiesięcznego okresu wypowiedzenia ze skutkiem na koniec miesiąca kalendarzowego.
+- p: 77
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 26, end: 48, bold: true}, {start: 89,
+        end: 113, bold: true}]}
+  text: "W razie rozwiązania umowy Przyjmujący zamówienie zobowiązany jest niezwłocznie przekazać Udzielającemu zamówienie wszelkie dokumenty\
+    \ jakie zebrał lub otrzymał \nw trakcie trwania umowy w związku z jej wykonaniem."
+- {p: 78, role: spacer}
+- p: 79
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 9., kind: paragraph, src: manual, level: 0}}
+  text: § 9.
+- {p: 80, role: spacer}
+- p: 81
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 59, end: 81, bold: true}, {start: 158, end: 182, bold: true}, {start: 320, end: 342, bold: true}]}
+  text: W trakcie obowiązywania umowy, a także po jej rozwiązaniu, Przyjmujący zamówienie zobowiązany jest do zachowania w tajemnicy wszelkich
+    informacji dotyczących Udzielającego Zamówienie, jego organizacji, działalności handlowej, finansów, transakcji, tajemnic handlowych, służbowych
+    oraz wszelkich innych danych, o których Przyjmujący zamówienie dowiedział się w związku z wykonywaną pracą.
+- p: 82
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 10., kind: paragraph, src: manual, level: 0}}
+  text: § 10.
+- {p: 83, role: spacer}
+- p: 84
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Strony zgodnie oświadczają, że ich wolą nie jest nawiązanie stosunku pracy.
+- p: 85
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}]}
+  text: Przyjmujący zamówienie zobowiązuje się wykonywać powierzone czynności z należytą starannością.
+- p: 86
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Zmiany umowy oraz jej rozwiązanie wymagają formy pisemnej pod rygorem nieważności.
+- p: 87
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 137, end: 161, bold: true}]}
+  text: Ewentualne spory mogące wyniknąć przy realizacji umowy, rozstrzygane będą przez właściwy miejscowo sąd powszechny ze względu na siedzibę
+    Udzielającego zamówienie.
+- p: 88
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+  text: W sprawach nieuregulowanych niniejszą umową mają zastosowanie przepisy ustawy z dnia 23 kwietnia 1964 r. – Kodeks cywilny oraz ustawy
+    z dnia 6 września 2001 r. o transporcie drogowym i innych przepisów powszechnie obowiązujących.
+- p: 89
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}}
+  text: Umowę sporządzono w 2 (dwóch) jednobrzmiących egzemplarzach, po 1 (jednym) egzemplarzu dla każdej ze Stron.
+- {p: 90, role: spacer}
+- {p: 91, role: spacer}
+- {p: 92, role: spacer}
+- p: 93
+  role: signature_line
+  layout: {align: justify, size: 10.0, tabs: 2}
+  text: "                ……………………………………….\t\t                                  ……………………………………."
+  slots:
+  - {id: p93_1, span: [16, 32], type: signature, context: ▢}
+  - {id: p93_2, span: [68, 83], type: signature, context: ▢}
+- p: 94
+  role: body
+  layout: {align: justify, size: 10.0, bold: true, tabs: 5}
+  text: "                Przyjmujący zamówienie\t\t\t\t\tUdzielający zamówienia"
+- {p: 95, role: spacer}
+- p: 96
+  role: field_header
+  layout: {align: justify, size: 10.0, bold: true}
+  text: 'Załączniki:'
+- p: 97
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Zakres czynności wykonywanych w ramach umowy.
+- p: 98
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Uwierzytelniona kopia prawa jazdy Przyjmującego zamówienie.
+- {p: 99, role: spacer}
+- {p: 100, role: spacer}

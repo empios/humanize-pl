@@ -11,60 +11,169 @@ sections:
   - id: data_miejsce
     label_pl: miejscowość i data
     severity: required
-    unit: false
-    matches: ["dnia", " r."]
-    expects:
-      - "Wezwanie wskazuje miejscowość i datę sporządzenia."
+    # Linia „miejscowość, data” albo jej podpis we wzorze. Same „dnia” i „r.”
+    # trafiały też w „ustawy z dnia 26 czerwca 1974 r.”, więc usunięta data
+    # uchodziła za obecną.
+    patterns:
+    - '^(?=.{0,90}$)[\p{L}…. ()\t\-]{1,60},\s*(?:dnia\s+)?(?:\d{1,2}\b|…|\.{2,})'
+    - '\(miejscowość\W+(?:i\s+)?data'
+    - 'zawart\w*\s+(?:w\s+dniu|dnia)\b'
 
   - id: strony
     label_pl: oznaczenie wierzyciela i dłużnika
     severity: required
-    unit: false
     matches: ["wierzyciel", "dłużnik"]
-    expects:
-      - "Wezwanie oznacza wierzyciela w sposób pozwalający go zidentyfikować."
-      - "Wezwanie oznacza dłużnika w sposób pozwalający go zidentyfikować."
 
   - id: kwota
     label_pl: kwota wraz z odsetkami
     severity: required
     matches: ["kwoty", "kwotę", "odsetkami"]
-    expects:
-      - "Wezwanie podaje kwotę główną należności."
-      - "Wezwanie wskazuje odsetki albo sposób ich naliczenia."
 
   - id: podstawa
     label_pl: tytuł zobowiązania
     severity: required
     matches: ["wynika z", "faktur", "z tytułu", "umowy"]
-    expects:
-      - "Wezwanie wskazuje, z czego wynika zobowiązanie — umowy, faktury lub innego tytułu."
 
   - id: termin
     label_pl: termin zapłaty
     severity: required
     matches: ["w terminie", "termin zapłaty", "termin płatności"]
-    expects:
-      - "Wezwanie wyznacza termin, w którym należność ma zostać zapłacona."
 
   - id: rachunek
     label_pl: numer rachunku bankowego
     severity: required
     matches: ["rachunek bankowy", "numer rachunku", "na rachunek", "iban"]
-    expects:
-      - "Wezwanie podaje numer rachunku bankowego do zapłaty."
 
   - id: rygor
     label_pl: rygor skierowania sprawy na drogę sądową
     severity: required
     matches: ["na drogę sądową", "postępowania sądowego", "pod rygorem"]
-    expects:
-      - "Wezwanie uprzedza, co nastąpi po bezskutecznym upływie terminu."
 
   - id: podpis
     label_pl: podpis wzywającego
     severity: required
-    unit: false
-    matches: ["podpis", "pełnomocnik", "z poważaniem"]
-    expects:
-      - "Wezwanie przewiduje podpis osoby wzywającej."
+    matches: ["podpis", "pełnomocnik"]
+    # „Z poważaniem” zamyka pismo, nie tytułuje sekcji: pod nim jest tylko
+    # odręczny podpis. Wzorzec, w przeciwieństwie do `matches`, nie każe
+    # szukać pod nim treści.
+    patterns: ["z poważaniem"]
+
+# Dokument ogólny napisany dla tej kategorii: wśród realnych wzorów nie było
+# ogólnego. Przy użyciu wypełnia się wyłącznie pola (`slots`).
+document:
+  label_pl: Przedsądowe wezwanie do zapłaty
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 1417, bottom: 1417, left: 1417, right: 1417}}
+  blocks:
+  - p: 0
+    role: body
+    layout: {align: right, size: 11.0}
+    text: ………………………… (miejscowość), dnia ………………… (data)
+    slots:
+    - {id: miejscowosc, span: [0, 10], type: place, hint: miejscowość}
+    - {id: data, span: [31, 38], type: date, hint: data}
+    inline_hints:
+    - {span: [11, 24], text: miejscowość}
+    - {span: [39, 45], text: data}
+  - {p: 1, role: spacer}
+  - p: 2
+    role: field_header
+    layout: {align: justify, size: 11.0}
+    text: 'Wierzyciel:'
+  - p: 3
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: ………………………………………………………………………………………………
+    slots:
+    - {id: wierzyciel, span: [0, 36], type: text, hint: 'imię i nazwisko lub firma, adres lub siedziba', label: Wierzyciel}
+  - p: 4
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true}
+    text: (imię i nazwisko lub firma, adres lub siedziba)
+    hint_for: 3
+    hint_kind: label
+  - {p: 5, role: spacer}
+  - p: 6
+    role: field_header
+    layout: {align: justify, size: 11.0}
+    text: 'Dłużnik:'
+  - p: 7
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: ………………………………………………………………………………………………
+    slots:
+    - {id: dluznik, span: [0, 36], type: text, hint: 'imię i nazwisko lub firma, adres lub siedziba', label: Dłużnik}
+  - p: 8
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true}
+    text: (imię i nazwisko lub firma, adres lub siedziba)
+    hint_for: 7
+    hint_kind: label
+  - {p: 9, role: spacer}
+  - p: 10
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: PRZEDSĄDOWE WEZWANIE DO ZAPŁATY
+  - {p: 11, role: spacer}
+  - p: 12
+    role: body
+    layout: {align: justify, size: 11.0}
+    text: Działając w imieniu Wierzyciela, wzywam Dłużnika do zapłaty kwoty ………………… (kwota należności w zł) wraz z odsetkami ………………………… (rodzaj
+      odsetek ustawowych) liczonymi od dnia ………………… (data wymagalności) do dnia zapłaty.
+    slots:
+    - {id: kwota_naleznosci_w_zl, span: [66, 73], type: amount, hint: kwota należności w zł}
+    - {id: rodzaj_odsetek_ustawowych, span: [115, 125], type: text, hint: rodzaj odsetek ustawowych}
+    - {id: data_wymagalnosci, span: [172, 179], type: date, hint: data wymagalności}
+    inline_hints:
+    - {span: [74, 97], text: kwota należności w zł}
+    - {span: [126, 153], text: rodzaj odsetek ustawowych}
+    - {span: [180, 199], text: data wymagalności}
+  - p: 13
+    role: field
+    layout: {align: justify, size: 11.0}
+    text: 'słownie: ……………………………………………… złotych'
+    slots:
+    - {id: slownie, span: [9, 27], type: amount, label: słownie}
+  - p: 14
+    role: body
+    layout: {align: justify, size: 11.0}
+    text: Należność wynika z ……………………………………… (tytuł zobowiązania), której termin płatności upłynął w dniu ………………… (termin płatności).
+    slots:
+    - {id: tytul_zobowiazania, span: [19, 34], type: text, hint: tytuł zobowiązania}
+    - {id: termin_platnosci, span: [96, 103], type: date, hint: termin płatności}
+    inline_hints:
+    - {span: [35, 55], text: tytuł zobowiązania}
+    - {span: [104, 122], text: termin płatności}
+  - p: 15
+    role: body
+    layout: {align: justify, size: 11.0}
+    text: Wskazaną kwotę należy zapłacić w terminie ………… (liczba dni) dni od dnia doręczenia niniejszego wezwania na rachunek bankowy Wierzyciela
+      nr ……………………………… (numer rachunku).
+    slots:
+    - {id: liczba_dni, span: [42, 46], type: text, hint: liczba dni}
+    - {id: numer_rachunku, span: [139, 151], type: text, hint: numer rachunku}
+    inline_hints:
+    - {span: [47, 59], text: liczba dni}
+    - {span: [152, 168], text: numer rachunku}
+  - p: 16
+    role: body
+    layout: {align: justify, size: 11.0}
+    text: W przypadku bezskutecznego upływu wyznaczonego terminu sprawa zostanie skierowana na drogę postępowania sądowego, co narazi Dłużnika na
+      dodatkowe koszty, w szczególności koszty procesu i postępowania egzekucyjnego.
+  - {p: 17, role: spacer}
+  - p: 18
+    role: body
+    layout: {align: right, size: 11.0}
+    text: Z poważaniem
+  - p: 19
+    role: blank_line
+    layout: {align: right, size: 11.0}
+    text: ………………………………………
+    slots:
+    - {id: podpis, span: [0, 15], type: signature, hint: podpis Wierzyciela lub pełnomocnika}
+  - p: 20
+    role: hint
+    layout: {align: right, size: 8.0, italic: true}
+    text: (podpis Wierzyciela lub pełnomocnika)
+    hint_for: 19
+    hint_kind: label

@@ -1,0 +1,121 @@
+template: Uchwała spółki w sprawie pokrycia straty.docx
+category: uchwala_spolki
+label_pl: Uchwała spółki w sprawie pokrycia straty
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: body
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: ……………………………, dnia …………………… r.
+  slots:
+  - {id: miejscowosc_i_data, span: [0, 11], type: place_date, hint: miejscowość i data}
+  - {id: miejscowosc_i_data_2, span: [18, 26], type: place_date, hint: miejscowość i data}
+- p: 1
+  role: hint
+  layout: {align: right, indent: {first: 708}, size: 10.0, italic: true}
+  text: (miejscowość i data)
+  hint_for: 0
+  hint_kind: label
+- {p: 2, role: spacer}
+- p: 3
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: UCHWAŁA nr …………………
+  slots:
+  - {id: p3_1, span: [11, 18], type: text, context: UCHWAŁA nr ▢}
+- p: 4
+  role: body
+  layout: {align: center, size: 14.0, bold: true}
+  text: z dnia ………………………
+  slots:
+  - {id: p4_1, span: [7, 16], type: date, context: z dnia ▢}
+- p: 5
+  role: body
+  layout: {align: center, size: 14.0, bold: true}
+  text: 'Wspólników Spółki ……………………………… '
+  slots:
+  - {id: nalezy_wskazac_nazwe_spolki_oraz_jej_forme_prawn, span: [18, 30], type: text, hint: należy wskazać nazwę spółki oraz jej formę prawną
+      np. z ograniczoną odpowiedzialnością}
+- p: 6
+  role: hint
+  layout: {align: justify, size: 10.0}
+  text: (należy wskazać nazwę spółki oraz jej formę prawną np. z ograniczoną odpowiedzialnością)
+  hint_for: 5
+  hint_kind: instruction
+- {p: 7, role: spacer}
+- p: 8
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+  text: § 1
+- p: 9
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 77, end: 97, italic: true}]}
+  text: 'Zgromadzenie wspólników postanawia, iż strata spółki za rok obrotowy ………………. (należy wskazać rok) zostanie pokryta w następujący sposób:'
+  slots:
+  - {id: nalezy_wskazac_rok, span: [69, 76], type: text, hint: należy wskazać rok}
+  inline_hints:
+  - {span: [77, 97], text: należy wskazać rok}
+- p: 10
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: ……………………………………………………………………………………………………………………………………
+  slots:
+  - {id: p10_1, span: [0, 50], type: text, context: ▢}
+- p: 11
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: ……………………………………………………………………………………………………………………………………
+  slots:
+  - {id: p11_1, span: [0, 50], type: text, context: ▢}
+- p: 12
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: ……………………………………………………………………………………………………………………………………
+  slots:
+  - {id: nalezy_okreslic_w_jaki_sposob_zostanie_pokryta_s, span: [0, 50], type: text, hint: należy określić w jaki sposób zostanie pokryta strata}
+- p: 13
+  role: hint
+  layout: {align: justify, indent: {first: 708}, size: 10.0, italic: true}
+  text: (należy określić w jaki sposób zostanie pokryta strata)
+  hint_for: 12
+  hint_kind: instruction
+- {p: 14, role: spacer}
+- p: 15
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+  text: § 2
+- p: 16
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: Uchwała wchodzi w życie z dniem jej podjęcia.
+- {p: 17, role: spacer}
+- {p: 18, role: spacer}
+- p: 19
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: Uchwała została podjęta w głosowaniu jawnym/tajnym jednogłośnie/za uchwałą oddano ……… głosów za, ……… głosów przeciw.
+  slots:
+  - {id: p19_1, span: [82, 85], type: text, context: jednogłośnie za uchwałą oddano ▢ głosów za}
+  - {id: p19_2, span: [97, 100], type: text, context: uchwałą oddano głosów za ▢ głosów przeciw.}
+- {p: 20, role: spacer}
+- {p: 21, role: spacer}
+- p: 22
+  role: field_header
+  layout: {align: right, size: 10.0, bold: true}
+  text: 'Podpisy wspólników:'
+- {p: 23, role: spacer}
+- p: 24
+  role: blank_line
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: ……………………………………………
+  slots:
+  - {id: podpisy_wspolnikow, span: [0, 17], type: signature, label: Podpisy wspólników}
+- p: 25
+  role: blank_line
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: ……………………………………………
+  slots:
+  - {id: podpisy_wspolnikow_2, span: [0, 17], type: signature, label: Podpisy wspólników}
+- {p: 26, role: spacer}
+- {p: 27, role: spacer}

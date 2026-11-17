@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-
 import regex as re
 
+from humanize_pl.nlp.morfeusz import try_load_morfeusz
 from humanize_pl.rules.finite_verbs import has_finite_verb
+
 
 AI_TRANSITION_PATTERN = re.compile(
     r"\b(?:ponadto|co więcej|dodatkowo|w tym kontekście|warto\s+(?:wskazać|zauważyć|podkreślić)|"
@@ -21,8 +22,8 @@ LEGAL_REFERENCE_PATTERN = re.compile(
     re.IGNORECASE,
 )
 MONEY_DATE_PATTERN = re.compile(
-    r"\b\d{1,2}[./-]\d{1,2}[./-]\d{2,4}\b|\b\d{4}\s*r\.\b|"
-    r"\b\d+(?:[,.]\d+)?\s*(?:zł|PLN|EUR|USD|%)\b",
+    r"\b\d{1,2}[./-]\d{1,2}[./-]\d{2,4}\b|\b\d{4}\s*r\.|"
+    r"\b\d+(?:[,.]\d+)?\s*(?:%|(?:zł|PLN|EUR|USD)\b)",
     re.IGNORECASE,
 )
 LEGAL_ANCHOR_PATTERN = re.compile(
@@ -122,7 +123,18 @@ def normativity_signature(text: str) -> dict[str, int]:
 
 
 def legal_anchor_terms(text: str) -> set[str]:
-    return {_legal_stem(match.group(0).lower()) for match in LEGAL_ANCHOR_PATTERN.finditer(text)}
+    return {_anchor_key(match.group(0).lower()) for match in LEGAL_ANCHOR_PATTERN.finditer(text)}
+
+
+def _anchor_key(word: str) -> str:
+    """The noun's lemma, so "umowa", "umowę" and "umowie" are one anchor; the
+    suffix stem when Morfeusz is unavailable or knows no noun reading."""
+    morfeusz = try_load_morfeusz()
+    if morfeusz is not None:
+        lemmas = {a.lemma.lower() for a in morfeusz.analyses(word) if a.tag.startswith(("subst", "ger"))}
+        if lemmas:
+            return min(lemmas)
+    return _legal_stem(word)
 
 
 def legal_anchor_retention(original: str, candidate: str) -> float:

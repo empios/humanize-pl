@@ -4,19 +4,13 @@ from dataclasses import replace
 
 import regex as re
 
+from .reference import ReferenceProfile
 from humanize_pl.sentence_splitter import split_sentences
-
 from .base import DocumentDiagnosis, FamilySummary, Finding, ParagraphDiagnosis
 from .calibration import calibrate
-from .lexical import connective_density, mtld
-from .reference import ReferenceProfile
 from .signals import WORD_RE, repeated_opening_findings, sentence_findings
-from .structural import (
-    paragraph_shape_cv,
-    sentence_length_burstiness,
-    sentence_length_cv,
-    sentence_length_entropy,
-)
+from .lexical import connective_density, fog_pl, mtld
+from .structural import paragraph_shape_cv, sentence_length_burstiness, sentence_length_entropy
 
 # Weighted findings per 1000 words at which `ai_signal_score` saturates to 1.0.
 # Provisional engineering default — replace with a value fitted against a human
@@ -29,7 +23,6 @@ def detect_document(
     *,
     profile: ReferenceProfile | None = None,
     calibrate_against_default: bool = True,
-    ignore_families: frozenset[str] = frozenset(),
 ) -> DocumentDiagnosis:
     """Locate AI-style signals in `text`.
 
@@ -42,11 +35,6 @@ def detect_document(
     writing. Without one, only the raw density score is available.
     """
     paragraphs = [part for part in re.split(r"\n+", text) if part.strip()]
-    # A profile's own list travels with it; the explicit one is for building
-    # a profile, which has none yet.
-    ignored = frozenset(ignore_families) | (
-        frozenset(profile.ignored_families) if profile is not None else frozenset()
-    )
 
     findings: list[Finding] = []
     indexed_sentences: list[tuple[int, int, str]] = []
@@ -63,13 +51,11 @@ def detect_document(
             indexed_sentences.append((paragraph_index, sentence_index, sentence))
             paragraph_words += len(WORD_RE.findall(sentence))
             paragraph_findings.extend(
-                finding
-                for finding in sentence_findings(
+                sentence_findings(
                     sentence,
                     paragraph_index=paragraph_index,
                     sentence_index=sentence_index,
                 )
-                if finding.family not in ignored
             )
 
         findings.extend(paragraph_findings)
@@ -85,11 +71,7 @@ def detect_document(
             )
         )
 
-    findings.extend(
-        finding
-        for finding in repeated_opening_findings(indexed_sentences)
-        if finding.family not in ignored
-    )
+    findings.extend(repeated_opening_findings(indexed_sentences))
     findings.sort(key=lambda f: (f.paragraph_index, f.sentence_index, f.char_start))
 
     diagnosis = DocumentDiagnosis(
@@ -150,23 +132,29 @@ def _metrics(
     reference profile — several point the opposite way to the English-language
     literature for this genre pair.
     """
-    lengths = [len(WORD_RE.findall(sentence)) for _, _, sentence in indexed_sentences]
-    lengths = [length for length in lengths if length]
+    sentence_words = [WORD_RE.findall(sentence) for _, _, sentence in indexed_sentences]
+    sentence_words = [words for words in sentence_words if words]
+    lengths = [len(words) for words in sentence_words]
     if not lengths:
         return {}
 
     mean_length = sum(lengths) / len(lengths)
+    variance = sum((length - mean_length) ** 2 for length in lengths) / len(lengths)
     openings = [
         " ".join(sentence.lower().split()[:2]) for _, _, sentence in indexed_sentences
     ]
+
     return {
         "mean_sentence_words": round(mean_length, 4),
-        "sentence_length_cv": sentence_length_cv(lengths),
+        "sentence_length_cv": round(variance**0.5 / mean_length, 4) if mean_length else 0.0,
         "sentence_burstiness": sentence_length_burstiness(lengths),
         "sentence_entropy": sentence_length_entropy(lengths),
         "opening_diversity": round(len(set(openings)) / len(openings), 4),
         "type_token_ratio": mtld(text),
         "connective_density": connective_density(text),
         "paragraph_shape_cv": paragraph_shape_cv(sentences_per_paragraph),
+        # Readability, not a signal of how the text was written: calibration
+        # gives it no weight.
+        "fog_pl": fog_pl(sentence_words),
         "words": float(word_count),
     }

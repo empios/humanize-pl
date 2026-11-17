@@ -1,17 +1,38 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+from contextlib import contextmanager
+from functools import lru_cache
 import math
 import os
 import threading
-from contextlib import contextmanager
-from dataclasses import dataclass
-from functools import lru_cache
 
 import numpy as np
+import regex as re
+
+from humanize_pl.sentence_splitter import split_sentences
+
 
 DEFAULT_SEMANTIC_MODEL = "sdadas/st-polish-paraphrase-from-distilroberta"
 DEFAULT_FLUENCY_MODEL = "allegro/herbert-base-cased"
-DEFAULT_NLI_MODEL = "MoritzLaurer/mDeBERTa-v3-base-mnli-xnli"
+# Trained on NLI data in 26 languages, Polish among them; the former default
+# (mDeBERTa-v3-base-mnli-xnli) saw none. On 318 Polish pairs, kept rewrites
+# against changed modals, negations, numbers and swapped parties, it separates
+# the two better (two-way entailment AUC 0.971 against 0.948) and its
+# contradiction verdict catches more of every kind.
+DEFAULT_NLI_MODEL = "MoritzLaurer/mDeBERTa-v3-base-xnli-multilingual-nli-2mil7"
+# A rewrite must also entail its source and be entailed by it at least this
+# much. A changed modality rarely reads as an outright contradiction: on 124
+# kept rewrites and 194 changed ones, the contradiction verdict alone caught 17
+# of 60 changed modals; with this floor 40, for 3 rejected good rewrites in
+# 124 instead of 1.
+MIN_MUTUAL_ENTAILMENT = 0.2
+# The model reads a pair of up to 512 tokens; past that the end of a long
+# paragraph and its rewrite goes unread. On 20 long rewrites (518-713 tokens)
+# a sentence invented at the end was caught in 4; split into aligned parts
+# that each fit, in 19, for 17 good rewrites accepted instead of 19.
+MAX_PAIR_TOKENS = 512
+_WORD_RE = re.compile(r"\w{4,}")
 
 @dataclass(frozen=True)
 class TransformerValidationResult:
@@ -22,37 +43,136 @@ class TransformerValidationResult:
     nli_model: str | None = None
 
 
+# The hosted model's fragments are validated on several threads at once, and
+# the NLI pipeline (cached, so shared) runs on the GPU: two concurrent calls
+# crashed the process in Metal ("A command encoder is already encoding to
+# this command buffer"). One inference at a time.
+_NLI_LOCK = threading.Lock()
+
+
 class NLIValidator:
-    """One-way entailment; callers must check both directions for equivalence."""
+    """NLI cross-encoder used to prevent hallucinations (contradictions)."""
 
     def __init__(self, model_name: str | None = None, *, offline: bool = False) -> None:
         self.model_name = model_name or DEFAULT_NLI_MODEL
         self.offline = offline
         self._pipeline = _get_nli_pipeline(self.model_name, offline)
-        self._lock = threading.Lock()
 
     def check_entailment(self, premise: str, hypothesis: str) -> bool:
-        """Neutral, unknown, low-confidence and failed checks are not entailment.
-
-        Never truncate: ignoring the tail could conceal a lost condition.
-        Oversized inputs fail closed through the common meaning gate.
-        """
-        with self._lock:
-            result = self._pipeline(
-                {"text": premise, "text_pair": hypothesis}, truncation=False
-            )
-        if isinstance(result, list) and len(result) == 1:
-            result = result[0]
-        if not isinstance(result, dict):
-            return False
-        label = str(result.get("label", "")).casefold()
-        score = result.get("score")
-        return (
-            label == "entailment"
-            and isinstance(score, (int, float))
-            and math.isfinite(score)
-            and 0.80 <= score <= 1.0
+        """True if the hypothesis keeps the premise's meaning: the model does not
+        call it a contradiction, and each entails the other at least
+        MIN_MUTUAL_ENTAILMENT. Only the span that changed is judged (see
+        _changed_span); a pair too long for the model is checked in aligned
+        parts, every one of which must hold."""
+        changed = _changed_span(premise, hypothesis)
+        if changed is None:
+            return True
+        premise, hypothesis = changed
+        return all(
+            self._mutual(part_premise, part_hypothesis)
+            for part_premise, part_hypothesis in self._parts(premise, hypothesis)
         )
+
+    def _mutual(self, premise: str, hypothesis: str) -> bool:
+        forward = self._scores(premise, hypothesis)
+        if max(forward, key=forward.get) == "contradiction":
+            return False
+        backward = self._scores(hypothesis, premise)
+        return min(forward["entailment"], backward["entailment"]) >= MIN_MUTUAL_ENTAILMENT
+
+    def _fits(self, premise: str, hypothesis: str) -> bool:
+        tokenizer = getattr(self._pipeline, "tokenizer", None)
+        if tokenizer is None:
+            return True
+        return len(tokenizer(premise, hypothesis)["input_ids"]) <= MAX_PAIR_TOKENS
+
+    def _parts(self, premise: str, hypothesis: str) -> list[tuple[str, str]]:
+        """The pair itself when it fits; otherwise the premise cut into the
+        fewest runs of sentences that fit, and the hypothesis cut where its
+        words best follow each run - a rewrite merges and splits sentences, so
+        cutting both at the same sentence count misaligns them. The whole pair
+        again when no cut fits."""
+        if self._fits(premise, hypothesis):
+            return [(premise, hypothesis)]
+        source, rewrite = split_sentences(premise), split_sentences(hypothesis)
+        for count in range(2, len(source) + 1):
+            size = -(-len(source) // count)
+            runs = [source[index : index + size] for index in range(0, len(source), size)]
+            cuts = _aligned_cuts(runs, rewrite)
+            if cuts is None:
+                continue
+            bounds = [0, *cuts, len(rewrite)]
+            parts = [
+                (" ".join(run), " ".join(rewrite[bounds[index] : bounds[index + 1]]))
+                for index, run in enumerate(runs)
+            ]
+            if all(rewrite_part and self._fits(source_part, rewrite_part) for source_part, rewrite_part in parts):
+                return parts
+        return [(premise, hypothesis)]
+
+    def _scores(self, premise: str, hypothesis: str) -> dict[str, float]:
+        """Label -> probability; the labels are entailment, neutral, contradiction."""
+        with _NLI_LOCK:
+            rows = self._pipeline({"text": premise, "text_pair": hypothesis}, top_k=None)
+        return {row["label"].lower(): row["score"] for row in rows}
+
+
+def _changed_span(premise: str, hypothesis: str) -> tuple[str, str] | None:
+    """The sentences that differ, without those both texts open and close with
+    unchanged. Read whole, a long paragraph dense with numbers was "neutral"
+    to the model even against itself (entailment 0.09 and 0.14 on two legal
+    paragraphs): of 32 rewrites it rejected, 4 were the source or the source
+    minus "Uprzejmie informuję, że". None when nothing differs; the whole pair
+    when one side has nothing left, since a sentence only added or dropped is
+    judged against the rest."""
+    source, rewrite = split_sentences(premise), split_sentences(hypothesis)
+    shorter = min(len(source), len(rewrite))
+    head = 0
+    while head < shorter and _same(source[head], rewrite[head]):
+        head += 1
+    if head == len(source) == len(rewrite):
+        return None
+    tail = 0
+    while tail < shorter - head and _same(source[-1 - tail], rewrite[-1 - tail]):
+        tail += 1
+    changed_source = source[head : len(source) - tail]
+    changed_rewrite = rewrite[head : len(rewrite) - tail]
+    if not changed_source or not changed_rewrite:
+        return premise, hypothesis
+    return " ".join(changed_source), " ".join(changed_rewrite)
+
+
+def _same(left: str, right: str) -> bool:
+    return left.split() == right.split()
+
+
+def _words(sentences: list[str]) -> set[str]:
+    return {word.casefold() for sentence in sentences for word in _WORD_RE.findall(sentence)}
+
+
+def _overlap(left: list[str], right: list[str]) -> float:
+    a, b = _words(left), _words(right)
+    return len(a & b) / max(1, len(a | b))
+
+
+def _aligned_cuts(runs: list[list[str]], rewrite: list[str]) -> list[int] | None:
+    """Where to cut the rewrite after each run but the last: at each boundary,
+    the sentence position whose two sides share the most words with the source
+    on either side of it. None when the rewrite has too few sentences."""
+    cuts: list[int] = []
+    start = 0
+    for index in range(len(runs) - 1):
+        left = [sentence for run in runs[: index + 1] for sentence in run]
+        right = [sentence for run in runs[index + 1 :] for sentence in run]
+        positions = range(start + 1, len(rewrite))
+        if not positions:
+            return None
+        start = max(
+            positions,
+            key=lambda cut: _overlap(left, rewrite[:cut]) + _overlap(right, rewrite[cut:]),
+        )
+        cuts.append(start)
+    return cuts
 
 
 class EmbeddingSimilarityValidator:

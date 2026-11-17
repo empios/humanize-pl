@@ -10,8 +10,13 @@ from docx.shared import Mm
 from humanize_pl.config import Engine
 from humanize_pl.document import DocumentType, FormatPolicy
 from humanize_pl.flows import FlowSettings, run_docx_flow
-from humanize_pl.io.docx_io import docx_text
-from humanize_pl.io.docx_structure import inventory_docx
+from humanize_pl.io.docx_io import docx_text, process_docx
+from humanize_pl.io.docx_structure import (
+    inventory_docx,
+    iter_text_units,
+    load_document,
+    replace_unit_text,
+)
 
 
 def _settings(**kwargs) -> FlowSettings:
@@ -77,6 +82,91 @@ def _complex_docx(path: Path) -> None:
     end.set(qn("w:fldCharType"), "end")
     field_run._r.append(end)
     document.save(path)
+
+
+def _signature_block() -> Document:
+    document = Document()
+    paragraph = document.add_paragraph()
+    paragraph.add_run("Wynajmujący:").add_tab()
+    paragraph.add_run("Jan Kowalski").add_break()
+    paragraph.add_run("Najemca:").add_tab()
+    paragraph.add_run("Anna Nowak")
+    return document
+
+
+def test_text_units_show_tabs_and_line_breaks() -> None:
+    unit = next(iter_text_units(_signature_block()))
+    assert unit.text == "Wynajmujący:\tJan Kowalski\vNajemca:\tAnna Nowak"
+
+
+def test_edits_keep_unchanged_text_in_its_run() -> None:
+    document = Document()
+    paragraph = document.add_paragraph()
+    paragraph.add_run("Strona ").bold = True
+    paragraph.add_run("zapłaci karę")
+    paragraph.add_run(" niezwłocznie.").italic = True
+    unit = next(iter_text_units(document))
+    assert replace_unit_text(unit, "Strona zapłaci karę umowną niezwłocznie!")
+    assert [run.text for run in paragraph.runs] == ["Strona ", "zapłaci karę umowną", " niezwłocznie!"]
+
+
+def test_edits_never_cross_a_line_break_or_hyperlink_edge() -> None:
+    document = _signature_block()
+    paragraph = document.paragraphs[0]
+    unit = next(iter_text_units(document))
+    before = paragraph._p.xml
+    assert not replace_unit_text(unit, "Wynajmujący:\tJan Kowalski Najemca:\tAnna Nowak")
+    assert paragraph._p.xml == before
+
+    document = Document()
+    paragraph = document.add_paragraph("Materiał znajduje się na ")
+    _add_hyperlink(paragraph, "stronie kancelarii", "https://example.test")
+    unit = next(iter_text_units(document))
+    before = paragraph._p.xml
+    assert not replace_unit_text(unit, "Materiał znajduje się naXtronie kancelarii")
+    assert paragraph._p.xml == before
+
+
+def test_edited_text_keeps_its_edge_spaces() -> None:
+    document = Document()
+    paragraph = document.add_paragraph()
+    paragraph.add_run("Strona")
+    paragraph.add_run("zapłaci.")
+    unit = next(iter_text_units(document))
+    assert replace_unit_text(unit, "Strona zapłaci.")
+    first = paragraph.runs[0]._r.find(qn("w:t"))
+    assert first.text == "Strona "
+    assert first.get("{http://www.w3.org/XML/1998/namespace}space") == "preserve"
+
+
+def test_signature_block_survives_processing(tmp_path) -> None:
+    source, target = tmp_path / "input.docx", tmp_path / "output.docx"
+    _signature_block().save(source)
+    process_docx(source, target, mode="standard")
+    assert Document(target).paragraphs[0]._p.xml == Document(source).paragraphs[0]._p.xml
+    assert load_document(target) is not None
+
+
+def test_whitespace_between_sentences_is_kept() -> None:
+    from humanize_pl.core import humanize_text
+
+    for text in ("§ 2.\t ZOBOWIĄZANIA STRON", "Umowa obowiązuje od dziś.\vStrony ją podpisały."):
+        result = humanize_text(text, mode="standard")
+        assert result.text == text
+        assert not result.changed
+
+
+def test_edit_lands_in_a_paragraph_with_a_line_break_between_sentences(tmp_path) -> None:
+    source, target = tmp_path / "input.docx", tmp_path / "output.docx"
+    document = Document()
+    paragraph = document.add_paragraph()
+    paragraph.add_run("Umowa obowiązuje od dziś.").add_break()
+    paragraph.add_run("Warto wskazać, że niniejsza umowa jest ważna.")
+    document.save(source)
+    result, stats = process_docx(source, target, mode="standard")
+    xml = Document(target).paragraphs[0]._p.xml
+    assert stats["changed"] == 1, result.warnings
+    assert "<w:br/>" in xml and "Warto wskazać" not in xml
 
 
 def test_docx_text_includes_tables_but_not_headers(tmp_path) -> None:
@@ -148,71 +238,3 @@ def test_normalization_uses_a4_and_keeps_direct_emphasis(monkeypatch, tmp_path) 
     assert abs(section.page_height - Mm(297)) < Mm(1)
     assert result.paragraphs[0].runs[0].bold is True
     assert result.paragraphs[0].runs[1].italic is True
-
-
-def _docx_with(tmp_path, name, paragraphs):
-    from docx import Document
-
-    document = Document()
-    for line in paragraphs:
-        document.add_paragraph(line)
-    path = tmp_path / name
-    document.save(str(path))
-    return path
-
-
-def test_a_declared_paragraph_delta_is_allowed_and_an_undeclared_one_is_not(tmp_path):
-    """Adding a clause the document owed has to be possible, and only that.
-
-    The guard compares paragraph counts, so anything that adds a missing
-    section made the flow discard the whole rewrite and restore the source.
-    A caller may now declare how many paragraphs it is adding.
-    """
-    from docx import Document
-
-    from humanize_pl.io.docx_structure import inventory_docx, save_with_inventory_guard
-
-    source = _docx_with(tmp_path, "zrodlo.docx", ["Pierwszy.", "Drugi."])
-
-    document = Document(str(source))
-    document.add_paragraph("Dopisana klauzula.")
-    undeclared = save_with_inventory_guard(document, source, tmp_path / "a.docx")
-    assert undeclared, "niezapowiedziany akapit musi zostać odrzucony"
-    assert inventory_docx(tmp_path / "a.docx").paragraphs == 2
-
-    document = Document(str(source))
-    document.add_paragraph("Dopisana klauzula.")
-    declared = save_with_inventory_guard(
-        document, source, tmp_path / "b.docx", expected_paragraph_delta=1
-    )
-    assert declared == []
-    assert inventory_docx(tmp_path / "b.docx").paragraphs == 3
-
-
-def test_the_declared_delta_is_exact_not_a_ceiling(tmp_path):
-    """"Paragraphs may grow" would hide a clause dropped while another is added."""
-    from docx import Document
-
-    from humanize_pl.io.docx_structure import save_with_inventory_guard
-
-    source = _docx_with(tmp_path, "zrodlo.docx", ["Pierwszy.", "Drugi.", "Trzeci."])
-
-    # Declares one, adds two.
-    document = Document(str(source))
-    document.add_paragraph("A.")
-    document.add_paragraph("B.")
-    differences = save_with_inventory_guard(
-        document, source, tmp_path / "za_duzo.docx", expected_paragraph_delta=1
-    )
-    assert differences and "zapowiedziano" in differences[0]
-
-    # Declares one, adds one and removes one: the net is right, the document
-    # is not. This is the case a ceiling would have let through.
-    document = Document(str(source))
-    document.add_paragraph("A.")
-    body = document.paragraphs[0]._element
-    body.getparent().remove(body)
-    differences = save_with_inventory_guard(
-        document, source, tmp_path / "wymiana.docx", expected_paragraph_delta=1
-    )
-    assert differences

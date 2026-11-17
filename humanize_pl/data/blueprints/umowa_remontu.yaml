@@ -1,0 +1,338 @@
+# Szkielet struktury: umowa o wykonanie prac remontowych.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: umowa_remontu
+label_pl: umowa o wykonanie prac remontowych
+# Kolejności sekcji nie sprawdzamy: realne wzory tej kategorii układają je różnie.
+check_order: false
+numbering: paragraph
+sections:
+- id: komparycja
+  label_pl: komparycja
+  severity: required
+  # Formuły zawarcia i oznaczenia stron, nie nazwy ról: „najemca” czy „zawarta”
+  # powtarzają się w całej umowie i utrzymywały usuniętą komparycję jako obecną.
+  matches: [zawarta w dniu, zawarta dnia, zawarta pomiędzy, zawarta między, zawarto umowę,
+    zwanym dalej, zwaną dalej, zwanymi dalej, zwany dalej, zwana dalej, zwanego dalej,
+    zwanej dalej, zwani dalej, z siedzibą w, zamieszkał, pesel, 'nip:', 'nip ', krs, legitymując]
+- id: przedmiot
+  label_pl: przedmiot (zakres remontu)
+  severity: required
+  matches: [remont, zleca, przyjmuje do wykonania, zakres]
+- id: termin
+  label_pl: termin wykonania
+  severity: required
+  matches: [okres od, do dnia, termin, w okresie]
+- id: wynagrodzenie
+  label_pl: wynagrodzenie
+  severity: required
+  matches: [wynagrodzenie, cena, kwota, zapłat]
+- id: materiały
+  label_pl: materiały
+  severity: expected
+  matches: [materiał, z własnych, dostarcz]
+- id: postanowienia_koncowe
+  label_pl: postanowienia końcowe
+  severity: required
+  matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
+      formy pisemnej, wymagają zachowania formy pisemnej]
+
+# Dokument ogólny: realny wzór tej kategorii. Przy użyciu wypełnia się wyłącznie
+# pola (`slots`); treść, kolejność i układ zostają jak we wzorze.
+document:
+  template: Umowa wykonanie prac remontowych.docx
+  label_pl: Umowa o wykonanie prac remontowych
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+  blocks:
+  - p: 0
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: UMOWA O WYKONANIE PRAC REMONTOWYCH
+  - {p: 1, role: spacer}
+  - p: 2
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 29, end: 35, italic: true}, {start: 56, end: 69, italic: true}]}
+    text: 'Zawarta dnia  .............. (data) w ................. (miejscowość) między: '
+    slots:
+    - {id: data, span: [14, 28], type: date, hint: data}
+    - {id: miejscowosc, span: [38, 55], type: place, hint: miejscowość}
+    inline_hints:
+    - {span: [29, 35], text: data}
+    - {span: [56, 69], text: miejscowość}
+  - {p: 3, role: spacer}
+  - p: 4
+    role: party_alias
+    layout: {align: justify, size: 10.0}
+    text: '……………………………………………… zwany dalej Zamawiającym, '
+    slots:
+    - {id: imie_i_nazwisko_firma_miejsce_zamieszkania_siedz, span: [0, 18], type: text, hint: imię i nazwisko/firma; miejsce zamieszkania/siedziba
+        i adres}
+    alias: Zamawiającym
+  - p: 5
+    role: hint
+    layout: {align: justify, size: 10.0}
+    text: '[imię i nazwisko/firma; miejsce zamieszkania/siedziba i adres]'
+    hint_for: 4
+    hint_kind: label
+  - {p: 6, role: spacer}
+  - p: 7
+    role: party_connector
+    layout: {align: justify, size: 10.0}
+    text: a
+  - {p: 8, role: spacer}
+  - p: 9
+    role: party_alias
+    layout: {align: justify, size: 10.0}
+    text: '……………………………………………… zwanym dalej Wykonawcą, '
+    slots:
+    - {id: imie_i_nazwisko_firma_miejsce_zamieszkania_siedz_2, span: [0, 18], type: text, hint: imię i nazwisko/firma; miejsce zamieszkania/siedziba  i
+        adres}
+    alias: Wykonawcą
+  - p: 10
+    role: hint
+    layout: {align: justify, size: 10.0}
+    text: '[imię i nazwisko/firma; miejsce zamieszkania/siedziba  i adres]'
+    hint_for: 9
+    hint_kind: label
+  - p: 11
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 24, end: 32, bold: true}]}
+    text: 'dalej łącznie zwanymi: „Stronami”,'
+  - {p: 12, role: spacer}
+  - p: 13
+    role: field_header
+    layout: {align: justify, size: 10.0}
+    text: 'o następującej treści:'
+  - p: 14
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+    text: § 1
+  - p: 15
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 113, end: 128, italic: true}]}
+    text: Zamawiający zleca, a Wykonawca przyjmuje do wykonania remont budynku znajdującego się przy ul. ................. (adres budynku)
+    slots:
+    - {id: adres_budynku, span: [95, 112], type: address, hint: adres budynku}
+    inline_hints:
+    - {span: [113, 128], text: adres budynku}
+  - p: 16
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Zakres remontu określony jest w projekcie, który stanowi Załącznik nr 1 do umowy oraz jej integralną część.
+  - {p: 17, role: spacer}
+  - p: 18
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+    text: § 2
+  - p: 19
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: Przyjęte do wykonania prace Wykonawca zobowiązuje się wykonać w okresie od dnia ............ do dnia ................. .
+    slots:
+    - {id: p19_1, span: [80, 92], type: date, context: w okresie od dnia ▢ do dnia}
+    - {id: p19_2, span: [101, 118], type: date, context: od dnia do dnia ▢}
+  - p: 20
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+    text: § 3
+  - p: 21
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: "Wykonawca zobowiązuje się do wykonania prac będących przedmiotem umowy zgodnie \nz Projektem stanowiącym Załącznik nr 1 do niniejszej\
+      \ umowy, aktualnym poziomem wiedzy technicznej i należytą starannością, z własnych materiałów."
+  - p: 22
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Zamawiający odpowiada solidarnie z Wykonawcą za zapłatę wynagrodzenia należnego podwykonawcy z tytułu wykonanych przez niego robót budowlanych,
+      których szczegółowy przedmiot został zgłoszony Zamawiającemu przez Wykonawcę lub podwykonawcę przed przystąpieniem do wykonywania tych robót,
+      chyba że w ciągu trzydziestu dni od dnia doręczenia Zamawiającemu zgłoszenia Zamawiający złożył podwykonawcy i Wykonawcy sprzeciw wobec wykonywania
+      tych robót przez podwykonawcę.
+  - p: 23
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: Zgłoszenie, o którym mowa w ust. 2, nie jest wymagane, jeżeli Zamawiający i Wykonawca określili w umowie szczegółowy przedmiot robót budowlanych
+      wykonywanych przez oznaczonego podwykonawcę.
+  - p: 24
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+    text: Zlecenie wykonania części robót Podwykonawcom nie zmienia odpowiedzialności Wykonawcy wobec Zamawiającego za wykonanie tej części robót.
+      Wykonawca jest odpowiedzialny za działania, uchybienia i zaniedbania Podwykonawców i ich pracowników w takim samym stopniu, jakby to były
+      działania, uchybienia lub zaniedbania jego własnych pracowników.
+  - p: 25
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+    text: Zamawiający nie odpowiada za bezpieczeństwo pracowników Wykonawcy i nie ponosi odpowiedzialności odszkodowawczej za ewentualne wypadki
+      przy wykonywaniu prac, o których mowa w § 1 niniejszej umowy.
+  - p: 26
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}}
+    text: Zamawiający nie odpowiada za ewentualne zniszczenia sprzętu Wykonawcy potrzebnego do wykonania dzieła, o którym mowa w § 1 niniejszej
+      umowy, w związku z wykonywaniem tegoż dzieła.
+  - {p: 27, role: spacer}
+  - p: 28
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+    text: § 4
+  - p: 29
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: 'Zamawiający zobowiązuje się do udostępnienia Wykonawcy w okresie obowiązywania umowy:'
+  - p: 30
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+    text: źródła poboru energii elektrycznej i wody,
+  - p: 31
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+    text: zamykanego pomieszczenia z przeznaczeniem na składowanie narzędzi i drobnych materiałów.
+  - {p: 32, role: spacer}
+  - p: 33
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+    text: § 5
+  - p: 34
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: "Odbiór przedmiotu umowy nastąpi na podstawie protokołu odbioru robót, sporządzonego \nz udziałem przedstawicieli Zamawiającego i Wykonawcy."
+  - p: 35
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: O terminie odbioru Wykonawca zobowiązany jest powiadomić Zamawiającego co najmniej na .......... dni robocze przed planowanym terminem
+      odbioru robót.
+    slots:
+    - {id: p35_1, span: [86, 96], type: text, context: Zamawiającego co najmniej na ▢ dni robocze}
+  - {p: 36, role: spacer}
+  - p: 37
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 6, kind: paragraph, src: manual, level: 0}}
+    text: § 6
+  - p: 38
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Wykonawca udziela .....-letniej gwarancji dobrej jakości wykonanych robót. Okres gwarancji rozpoczyna się od protokolarnego odbioru przedmiotu
+      umowy.
+    slots:
+    - {id: p38_1, span: [18, 23], type: text, context: Wykonawca udziela ▢ letniej gwarancji}
+  - p: 39
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: 'W przypadku wystąpienia w okresie rękojmi i gwarancji wad w przedmiocie umowy Zamawiający niezwłocznie powiadomi o tym Wykonawcę, a ten
+      zobowiązuje się 
+
+      w terminie uzgodnionym z Zamawiającym do ich bezwzględnego i bezpłatnego usunięcia.'
+  - {p: 40, role: spacer}
+  - p: 41
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 7, kind: paragraph, src: manual, level: 0}}
+    text: § 7
+  - p: 42
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: 'Wynagrodzenie ryczałtowe za wykonanie przedmiotu umowy opisanego w § 1 strony ustalają zgodnie z przyjętym przez Zamawiającego, w kwocie
+      ..................... złotych, powiększonej o należny podatek od towarów i usług VAT w wysokości obowiązującej w dniu wystawienia faktury,
+      razem w kwocie .......................... (słownie: ..............................) złotych.'
+    slots:
+    - {id: p42_1, span: [137, 158], type: text, context: przez Zamawiającego w kwocie ▢ złotych powiększonej}
+    - {id: p42_2, span: [291, 317], type: text, context: faktury razem w kwocie ▢ złotych.}
+    - {id: p42_3, span: [328, 358], type: amount, context: razem w kwocie słownie ▢ złotych.}
+  - p: 43
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Płatność za wykonanie przedmiotu umowy nastąpi na podstawie faktury VAT wystawionej przez Wykonawcę w terminie 3 dni od daty odbioru przedmiotu
+      umowy.
+  - p: 44
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: "Przelew wynagrodzenia nastąpi na rachunek bankowy Wykonawcy podany na fakturze, \nw terminie 14 dni od daty otrzymania faktury."
+  - {p: 45, role: spacer}
+  - p: 46
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 8, kind: paragraph, src: manual, level: 0}}
+    text: § 8
+  - p: 47
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Wykonawca zapłaci Zamawiającemu karę umowną w wysokości .............. zł za każdy dzień zwłoki w oddaniu przedmiotu umowy, jednak nie
+      więcej niż wartość wynagrodzenia, o której mowa w § 7 ust. 1.
+    slots:
+    - {id: p47_1, span: [56, 70], type: amount, context: karę umowną w wysokości ▢ zł za}
+  - p: 48
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: 'Wykonawca zapłaci Zamawiającemu karę umowną w wysokości .............. zł za odstąpienie od umowy przez którąkolwiek ze Stron z przyczyn
+      leżących po stronie Wykonawcy. '
+    slots:
+    - {id: p48_1, span: [56, 70], type: amount, context: karę umowną w wysokości ▢ zł za}
+  - p: 49
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: 'Zapłata kary, o której mowa w ust. 1 następuje poprzez potrącenie kwoty należnego wynagrodzenia Wykonawcy z karą umowną. '
+  - {p: 50, role: spacer}
+  - p: 51
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 9, kind: paragraph, src: manual, level: 0}}
+    text: § 9
+  - p: 52
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: W sprawach nieuregulowanych umową mają zastosowanie przepisy ustawy Kodeks cywilny (t.j. Dz.U.2024.1061 ze zm.).
+  - p: 53
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Jakiekolwiek zmiany lub uzupełnienia umowy wymagają formy pisemnej pod rygorem nieważności.
+  - {p: 54, role: spacer}
+  - p: 55
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 10, kind: paragraph, src: manual, level: 0}}
+    text: § 10
+  - p: 56
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: 'Wszelkie spory mogące wystąpić w związku z niniejszą umową rozstrzyga sąd właściwy miejscowo dla siedziby Zamawiającego.  '
+  - {p: 57, role: spacer}
+  - {p: 58, role: spacer}
+  - p: 59
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 11., kind: paragraph, src: manual, level: 0}}
+    text: § 11.
+  - p: 60
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: Umowę sporządzono w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze stron.
+  - {p: 61, role: spacer}
+  - {p: 62, role: spacer}
+  - p: 63
+    role: signature_line
+    layout: {align: justify, size: 10.0, tabs: 2}
+    text: "..........................................................\t\t          ...................................................................."
+    slots:
+    - {id: p63_1, span: [0, 58], type: signature, context: ▢}
+    - {id: p63_2, span: [70, 138], type: signature, context: ▢}
+  - p: 64
+    role: body
+    layout: {align: justify, size: 10.0, italic: true}
+    text: 'podpis Wykonawcy                                                              podpis Zamawiającego   '
+  - {p: 65, role: spacer}
+  - {p: 66, role: spacer}
+  - {p: 67, role: spacer}
+  - p: 68
+    role: field_header
+    layout: {align: justify, size: 10.0, bold: true}
+    text: 'Załączniki:'
+  - p: 69
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: 'Projekt prac remontowych. '
+  - p: 70
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 25, end: 43, italic: true}]}
+    text: '........................ (ewentualnie inne)'
+    slots:
+    - {id: ewentualnie_inne, span: [0, 24], type: text, hint: ewentualnie inne}
+    inline_hints:
+    - {span: [25, 43], text: ewentualnie inne}
+  - {p: 71, role: spacer}
+  - {p: 72, role: spacer}
+  - {p: 73, role: spacer}
+  - {p: 74, role: spacer}

@@ -1,0 +1,137 @@
+template: Wypowiedzenie umowy o pracę bez zachowania okresu wypowiedzenia z winy pracownika przez pracodawcę.docx
+category: wypowiedzenie
+label_pl: Wypowiedzenie umowy o pracę bez zachowania okresu wypowiedzenia z winy pracownika przez pracodawcę
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: body
+  layout: {align: right, indent: {first: 708}, size: 10.0, spans: [{start: 9, end: 22, italic: true}, {start: 37, end: 43, italic: true}]}
+  text: …………………… (miejscowość), dnia …………….. (data)
+  slots:
+  - {id: miejscowosc, span: [0, 8], type: place, hint: miejscowość}
+  - {id: data, span: [29, 36], type: date, hint: data}
+  inline_hints:
+  - {span: [9, 22], text: miejscowość}
+  - {span: [37, 43], text: data}
+- {p: 1, role: spacer}
+- p: 2
+  role: blank_line
+  layout: {size: 10.0}
+  text: '………………………………………
+
+    ………………………………………
+
+    ………………………………………'
+  slots:
+  - {id: dane_pracodawcy_imie_i_nazwisko_adres_lub_okresl, span: [0, 15], type: text, hint: 'dane Pracodawcy, imię i nazwisko, adres lub określenie
+      firmy, adresu siedziby, NIP-u'}
+  - {id: dane_pracodawcy_imie_i_nazwisko_adres_lub_okresl_2, span: [16, 31], type: text, hint: 'dane Pracodawcy, imię i nazwisko, adres lub określenie
+      firmy, adresu siedziby, NIP-u'}
+  - {id: dane_pracodawcy_imie_i_nazwisko_adres_lub_okresl_3, span: [32, 47], type: text, hint: 'dane Pracodawcy, imię i nazwisko, adres lub określenie
+      firmy, adresu siedziby, NIP-u'}
+- p: 3
+  role: hint
+  layout: {size: 10.0, italic: true}
+  text: (dane Pracodawcy, imię i nazwisko, adres lub 
+  hint_for: 2
+  hint_kind: instruction
+- p: 4
+  role: hint
+  layout: {size: 10.0, italic: true}
+  text: określenie firmy, adresu siedziby, NIP-u)
+  hint_for: 2
+  hint_kind: instruction
+- {p: 5, role: spacer}
+- {p: 6, role: spacer}
+- {p: 7, role: spacer}
+- p: 8
+  role: blank_line
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: '.......................................................'
+  slots:
+  - {id: p8_1, span: [0, 55], type: text, context: ▢}
+- p: 9
+  role: blank_line
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: '.......................................................'
+  slots:
+  - {id: p9_1, span: [0, 55], type: text, context: ▢}
+- p: 10
+  role: blank_line
+  layout: {indent: {left: 4820}, size: 10.0}
+  text: '.......................................................'
+  slots:
+  - {id: dane_pracownika_imie_i_nazwisko_adres, span: [0, 55], type: address, hint: 'dane Pracownika, imię i nazwisko, adres'}
+- p: 11
+  role: hint
+  layout: {indent: {left: 4820}, size: 10.0, italic: true}
+  text: (dane Pracownika, imię i nazwisko, adres)
+  hint_for: 10
+  hint_kind: label
+- {p: 12, role: spacer}
+- p: 13
+  role: body
+  layout: {align: center, size: 14.0, bold: true}
+  text: Oświadczenie o rozwiązaniu umowy o pracę bez zachowania okresu wypowiedzenia
+- {p: 14, role: spacer}
+- {p: 15, role: spacer}
+- p: 16
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 74, end: 97, italic: true}, {start: 247, end: 268, italic: true}, {start: 280, end: 309,
+        italic: true}]}
+  text: Niniejszym, działając w imieniu własnym/Pracodawcy – …………………………………………………… (oznaczenie Pracodawcy), na podstawie art. 30 § 1 pkt 3 w zw.
+    z art. 52 § 1 ustawy z dnia 26 czerwca 1974 r. - Kodeks pracy, rozwiązuje umowę o pracę zawartą dnia ……………………… (data zawarcia umowy) w ……………………
+    (miejscowość zawarcia umowy) bez zachowania okresu wypowiedzenia.
+  slots:
+  - {id: oznaczenie_pracodawcy, span: [53, 73], type: text, hint: oznaczenie Pracodawcy}
+  - {id: data_zawarcia_umowy, span: [237, 246], type: date, hint: data zawarcia umowy}
+  - {id: miejscowosc_zawarcia_umowy, span: [271, 279], type: place, hint: miejscowość zawarcia umowy}
+  inline_hints:
+  - {span: [74, 97], text: oznaczenie Pracodawcy}
+  - {span: [247, 268], text: data zawarcia umowy}
+  - {span: [280, 308], text: miejscowość zawarcia umowy}
+- {p: 17, role: spacer}
+- p: 18
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 115, end: 174, italic: true}]}
+  text: Przyczyną uzasadniającą wypowiedzenie umowy o pracę bez zachowania okresu wypowiedzenia jest ……………………………………………………… (opis przyczyny uzasadniającej
+    rozwiązanie stosunku pracy).
+  slots:
+  - {id: opis_przyczyny_uzasadniajacej_rozwiazanie_stosun, span: [93, 114], type: text, hint: opis przyczyny uzasadniającej rozwiązanie stosunku
+      pracy}
+  inline_hints:
+  - {span: [115, 173], text: opis przyczyny uzasadniającej rozwiązanie stosunku pracy}
+- {p: 19, role: spacer}
+- p: 20
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 178, end: 191, italic: true}, {start: 205, end: 221, italic: true}, {start: 247, end: 259,
+        italic: true}]}
+  text: 'Jednocześnie informuje, iż w terminie 21 dni od dnia doręczenia niniejszego pisma przysługuje Pani/Panu prawo do wniesienia odwołania
+    do Sądu Pracy – Sądu Rejonowego w ……………………… (miejscowość) Wydział ………… (numer wydziału), ul. ………………………………………………… (adres sądu). '
+  slots:
+  - {id: miejscowosc_2, span: [168, 177], type: place, hint: miejscowość}
+  - {id: numer_wydzialu, span: [200, 204], type: text, hint: numer wydziału}
+  - {id: adres_sadu, span: [227, 246], type: address, hint: adres sądu}
+  inline_hints:
+  - {span: [178, 191], text: miejscowość}
+  - {span: [205, 221], text: numer wydziału}
+  - {span: [247, 259], text: adres sądu}
+- {p: 21, role: spacer}
+- {p: 22, role: spacer}
+- p: 23
+  role: body
+  layout: {align: right, indent: {first: 708}, size: 10.0, spans: [{start: 25, end: 44, italic: true}]}
+  text: '
+
+    Z poważaniem
+
+    …………………………
+
+    (podpis Pracodawcy)'
+  slots:
+  - {id: podpis_pracodawcy, span: [14, 24], type: signature, hint: podpis Pracodawcy}
+  inline_hints:
+  - {span: [25, 44], text: podpis Pracodawcy}
+- {p: 24, role: spacer}
+- {p: 25, role: spacer}

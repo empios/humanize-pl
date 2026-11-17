@@ -1,17 +1,14 @@
 import pytest
 
-from humanize_pl.config import Mode
+pytest.importorskip("stanza", reason="Stanza jest opcjonalnym dodatkiem [nlp]")
+
+from humanize_pl.config import Mode  # noqa: E402
 from humanize_pl.nlp.stanza_engine import StanzaEngine
 from humanize_pl.rules.genitive_chains import genitive_chain_candidates
 
-
 @pytest.fixture(scope="module")
 def engine():
-    pytest.importorskip("stanza", reason="Test integracyjny wymaga opcjonalnego Stanza.")
-    try:
-        return StanzaEngine(offline=True)
-    except (OSError, RuntimeError) as exc:
-        pytest.skip(f"Brak lokalnych wag Stanza: {type(exc).__name__}")
+    return StanzaEngine()
 
 def test_genitive_chains_are_simplified(engine):
     sentence = "W związku z tym powód wskazał cel zapewnienia możliwości realizacji projektu."

@@ -38,18 +38,13 @@ def ascii_skeleton(name: str) -> str:
     "wspolpracy (b2b)" (po odzyskaniu) lub "wsp  pracy (b2b)" (gdyby
     odzyskanie nie poszło) - w obu przypadkach reguła "wspolpracy (b2b)"
     nie trafi, więc reguły piszemy na pewnych, krótkich rdzeniach.
-
-    Zamiana polskich liter idzie PRZED odrzuceniem znaków spoza ASCII: „ł”
-    nie rozkłada się w NFKD, więc odrzucone najpierw znikało - „usług” dawało
-    „usug” i 21 ze 100 dokumentów (umowy usług, pełnomocnictwa, uchwały
-    spółki) wpadało do „inne”.
     """
-    decomposed = unicodedata.normalize("NFKD", name.translate(_POLISH_MAP))
+    decomposed = unicodedata.normalize("NFKD", name)
     kept = "".join(
         c for c in decomposed
         if (not unicodedata.combining(c)) and (0x20 <= ord(c) < 0x7f)
     )
-    return kept.casefold()
+    return kept.translate(_POLISH_MAP).casefold()
 
 
 def recover_title(name: str) -> str:
@@ -108,7 +103,7 @@ def _rules() -> list[tuple[str, str, callable]]:
         ("wypowiedzenie_umowy_o_prace", "wypowiedzenie umowy o pracę",
          has("wypowiedzenie umowy o prace")),
         ("rozwiązanie_umowy_o_prace", "rozwiązanie umowy o pracę",
-         has("rozwiazanie umowy o prace")),
+         has("rozwiązanie umowy o prace")),
         ("wypowiedzenie_umowy_zlecenia", "wypowiedzenie umowy zlecenia",
          has("wypowiedzenie umowy zlecenie")),
         # --- umowa o pracę (the contract itself, not a termination) ---
@@ -139,7 +134,7 @@ def _rules() -> list[tuple[str, str, callable]]:
          has("pozew")),
         # --- odwołania ---
         ("odwołanie_od_decyzji", "odwołanie od decyzji",
-         has("odwolanie od decyzji")),
+         has("odwołanie od decyzji", "odwolanie od decyzji")),
         ("odwołanie_pełnomocnictwa", "odwołanie pełnomocnictwa",
          has("odwolanie pelnomocnictwa")),
         # --- pełnomocnictwa ---
@@ -150,7 +145,7 @@ def _rules() -> list[tuple[str, str, callable]]:
          has("regulamin")),
         # --- umowa o dzieło ---
         ("umowa_o_dzieło", "umowa o dzieło",
-         has("o dzielo")),
+         has("o dzelo")),
         # --- umowa o świadczenie usług ---
         ("umowa_usług", "umowa o świadczenie usług",
          has("o swiadczenie uslug")),
@@ -265,27 +260,11 @@ def partition(directory: str | Path) -> dict[str, list[str]]:
     return result
 
 
-def main(argv: list[str] | None = None) -> int:
-    # Was two positional defaults pointing at one developer's Documents
-    # folder, so the tool ran for exactly one person and wrote outside the
-    # repository for everyone else.
-    import argparse
-
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("source", type=Path, help="Folder z plikami .docx")
-    parser.add_argument(
-        "--output",
-        "-o",
-        type=Path,
-        default=None,
-        help="Plik JSON z podziałem (domyślnie corpus_partition.json obok źródła)",
-    )
-    args = parser.parse_args(argv)
-
-    if not args.source.is_dir():
-        parser.error(f"Nie ma takiego folderu: {args.source}")
-    src = args.source
-    out = args.output or args.source.with_name("corpus_partition.json")
+def main() -> None:
+    import sys
+    if len(sys.argv) != 3:
+        raise SystemExit("użycie: python tools/partition_corpus.py <katalog_szablonów> <wynik.json>")
+    src, out = sys.argv[1], sys.argv[2]
     result = partition(src)
     total = sum(len(v) for v in result.values())
     with open(out, "w", encoding="utf-8") as f:
@@ -297,8 +276,7 @@ def main(argv: list[str] | None = None) -> int:
         print("\nUNMATCHED (review these):")
         for name in result["inne"]:
             print(f"  {name}")
-    return 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    main()

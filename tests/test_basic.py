@@ -19,8 +19,8 @@ def test_passive():
 
 def test_passive_morfeusz_extended():
     """Morfeusz oracle handles participles not in the hardcoded fast-path table."""
-    from humanize_pl.config import Mode
     from humanize_pl.rules.passive_voice import passive_candidates
+    from humanize_pl.config import Mode
 
     cases = [
         # Feminine noun: nom → acc via Morfeusz
@@ -47,21 +47,35 @@ def test_passive_accusative_morfeusz():
     assert accusative_form_for_noun("raport") == "raport"
     assert accusative_form_for_noun("badanie") == "badanie"
     assert accusative_form_for_noun("wyrok") == "wyrok"
+    # Masc personal: acc == gen, tagged "gen.acc"
+    assert accusative_form_for_noun("prezes") == "prezesa"
 
 
 def test_passive_np_adj_agreement():
     """passive_candidates inflects the full NP (adj+noun and noun+adj) to accusative."""
-    from humanize_pl.config import Mode
     from humanize_pl.rules.passive_voice import passive_candidates
+    from humanize_pl.config import Mode
 
     cases = [
         # prenominal adj + feminine noun
-        ("Zostało podpisane ważna umowa.", "Podpisano ważną umowę."),
+        ("Została podpisana ważna umowa.", "Podpisano ważną umowę."),
         # postnominal adj after feminine noun (key legal pattern: "decyzja administracyjna")
         ("Została zatwierdzona decyzja administracyjna.", "Zatwierdzono decyzję administracyjną."),
         # prenominal adj + noun + postnominal adj (full NP)
         ("Została przygotowana obszerna analiza finansowa.", "Przygotowano obszerną analizę finansową."),
         ("Została przygotowana ważna ustawa budżetowa.", "Przygotowano ważną ustawę budżetową."),
+        # masculine personal: acc == gen for both noun and adj
+        ("Został powołany nowy prezes zarządu.", "Powołano nowego prezesa zarządu."),
+        # Morfeusz reads "umowa" and "nowa" as nouns and adjectives
+        ("Została zawarta umowa następującej treści.", "Zawarto umowę następującej treści."),
+        ("Została zawarta nowa umowa handlowa.", "Zawarto nową umowę handlową."),
+        # Subject before the verb that reads the same in the accusative
+        ("Raport został sporządzony zgodnie z umową.", "Raport sporządzono zgodnie z umową."),
+        ("Towar odebrano, co zostało potwierdzone protokołem.",
+         "Towar odebrano, co potwierdzono protokołem."),
+        # Final punctuation is kept as it was, never added
+        ("Została zawarta umowa najmu:", "Zawarto umowę najmu:"),
+        ("(miejscowość, gdzie została podpisana umowa)", "(miejscowość, gdzie podpisano umowę)"),
         # neuter: nom == acc for both noun and adj — must stay unchanged
         ("Zostało wydane orzeczenie administracyjne.", "Wydano orzeczenie administracyjne."),
         ("Zostało wdrożone nowe rozwiązanie techniczne.", "Wdrożono nowe rozwiązanie techniczne."),
@@ -70,6 +84,41 @@ def test_passive_np_adj_agreement():
         cands = passive_candidates(sentence, mode=Mode.standard)
         assert cands, f"No candidate for: {sentence}"
         assert cands[0].text == expected, f"Got: {cands[0].text!r}"
+
+
+def test_passive_needs_an_agreeing_subject_after_the_participle(monkeypatch):
+    """With the subject before the verb, conversion would leave it nominative
+    ("Umowa sporządzono"), so no candidate is offered."""
+    from humanize_pl.rules import passive_voice
+    from humanize_pl.config import Mode
+
+    for sentence in [
+        "Umowa została sporządzona w dwóch jednobrzmiących egzemplarzach.",
+        "Fundacja została ustanowiona przez fundatora aktem notarialnym.",
+        "Uchwała została podjęta jednogłośnie.",
+        # "poza" also reads as a noun ("pose"); the preposition reading wins
+        "Ta umowa została zawarta poza lokalem przedsiębiorstwa.",
+        # Coordination: "umowa użyczenia" would stay nominative
+        "Została zawarta umowa najmu i umowa użyczenia.",
+        "Raport został sporządzony i przekazany zarządowi.",
+        # An impersonal form takes no agent
+        "Została podpisana umowa przez obie strony.",
+        # Masculine personal subject before the verb: "prezesa" would be needed
+        "Prezes został powołany uchwałą zarządu.",
+        # Under negation the object takes the genitive: "nie wykonano prac"
+        "Podczas naprawy nie zostały wykonane prace ujęte w kosztorysie.",
+        # The modifier after the comma would stay nominative: "umowę, nazwana"
+        "W dniu 1 kwietnia została zawarta kolejna umowa, nazwana umową o dzieło.",
+        # "powód" is a reason (accusative "powód") or a plaintiff ("powoda")
+        "Po zakończeniu budowy powód został przeniesiony na inną budowę.",
+    ]:
+        assert passive_voice.passive_candidates(sentence, mode=Mode.standard) == [], sentence
+
+    # Without Morfeusz the subject cannot be checked or inflected
+    monkeypatch.setattr(passive_voice, "try_load_morfeusz", lambda: None)
+    assert passive_voice.passive_candidates(
+        "Została przeprowadzona analiza danych.", mode=Mode.standard
+    ) == []
 
 
 def test_passive_accusative_adj_morfeusz():
@@ -94,19 +143,21 @@ def test_protected_article():
 
 
 def test_nominalization_dokonac():
-    from humanize_pl.config import Mode
     from humanize_pl.rules.nominalization import nominalization_candidates
+    from humanize_pl.config import Mode
 
     cases = [
         # perfective infinitive
-        ("Należy dokonać analizy dokumentów.", "przeanalizować", Mode.standard),
+        ("Należy niezwłocznie dokonać analizy.", "przeanalizować", Mode.standard),
         ("Należy dokonać wyboru spośród kandydatów.", "wybrać", Mode.standard),
         # impersonal past
-        ("Dokonano ustalenia stanu faktycznego.", "ustalono", Mode.standard),
+        ("Dokonano ustalenia w toku postępowania.", "ustalono", Mode.standard),
         ("Dokonano zmiany w umowie.", "zmieniono", Mode.standard),
         # imperfective infinitive
-        ("Organ może dokonywać analizy akt.", "analizować", Mode.standard),
+        ("Organ może dokonywać analizy w każdym czasie.", "analizować", Mode.standard),
     ]
+    # The deleted noun's genitive would stay behind: "przeanalizować dokumentów"
+    assert not nominalization_candidates("Należy dokonać analizy dokumentów.", mode=Mode.standard)
     for sentence, expected_frag, mode in cases:
         cands = nominalization_candidates(sentence, mode=mode)
         assert cands, f"No candidate for: {sentence!r}"
@@ -116,15 +167,17 @@ def test_nominalization_dokonac():
 
 
 def test_nominalization_przeprowadzic():
-    from humanize_pl.config import Mode
     from humanize_pl.rules.nominalization import nominalization_candidates
+    from humanize_pl.config import Mode
 
     cases = [
-        ("Należy przeprowadzić analizę ryzyka.", "przeanalizować", Mode.standard),
-        ("Przeprowadzono kontrolę dokumentów.", "skontrolowano", Mode.standard),
-        ("Należy przeprowadzić badanie sprawy.", "zbadać", Mode.standard),
-        ("Organ może przeprowadzać ocenę ofert.", "oceniać", Mode.standard),
+        ("Należy przeprowadzić analizę w terminie 7 dni.", "przeanalizować", Mode.standard),
+        ("Przeprowadzono kontrolę w siedzibie spółki.", "skontrolowano", Mode.standard),
+        ("Należy przeprowadzić badanie.", "zbadać", Mode.standard),
+        ("Organ może przeprowadzać ocenę corocznie.", "oceniać", Mode.standard),
     ]
+    # The deleted noun's genitive would stay behind: "skontrolowano dokumentów"
+    assert not nominalization_candidates("Przeprowadzono kontrolę dokumentów.", mode=Mode.standard)
     for sentence, expected_frag, mode in cases:
         cands = nominalization_candidates(sentence, mode=mode)
         assert cands, f"No candidate for: {sentence!r}"
@@ -135,8 +188,8 @@ def test_nominalization_przeprowadzic():
 
 def test_nominalization_no_conservative():
     """Nominalization rules are inactive in conservative mode."""
-    from humanize_pl.config import Mode
     from humanize_pl.rules.nominalization import nominalization_candidates
+    from humanize_pl.config import Mode
 
     cands = nominalization_candidates("Organ dokonał analizy dokumentów.", mode=Mode.conservative)
     assert cands == []
@@ -144,8 +197,8 @@ def test_nominalization_no_conservative():
 
 def test_nominalization_nlp_path():
     """NLP path handles all conjugated forms via Stanza dep-parse + Morfeusz generate."""
-    from humanize_pl.config import Mode
     from humanize_pl.rules.nominalization import nominalization_candidates
+    from humanize_pl.config import Mode
 
     class _T:
         def __init__(self, **kw):
@@ -200,8 +253,8 @@ def test_lix_score():
 
 
 def test_ger_to_infinitive():
-    from humanize_pl.nlp.morfeusz import try_load_morfeusz
     from humanize_pl.nlp.morphology import ger_to_infinitive
+    from humanize_pl.nlp.morfeusz import try_load_morfeusz
 
     m = try_load_morfeusz()
     assert ger_to_infinitive("analizowania", m) == "analizować"
@@ -212,22 +265,34 @@ def test_ger_to_infinitive():
 
 
 def test_w_celu_ger_candidates():
-    from humanize_pl.config import Mode
+    """'w celu GER' → ', aby INF' only where the result is correct Polish."""
     from humanize_pl.rules.nominalization import nominalization_candidates
+    from humanize_pl.config import Mode
 
     def w_celu(sentence: str) -> list[str]:
         cands = nominalization_candidates(sentence, mode=Mode.standard)
-        return [c.text for c in cands if "w_celu" in c.rule]
+        return [c.text for c in cands if c.rule == "nominalizacja:w_celu_ger"]
 
-    # Mid-sentence "aby" takes the comma "w celu" did not need.
-    assert w_celu("Złożył wniosek w celu dostosowania się do przepisów.") == [
-        "Złożył wniosek, aby dostosować się do przepisów."
+    expected = "Strona składa wniosek, aby skorzystać z ulgi."
+    assert w_celu("Strona składa wniosek w celu skorzystania z ulgi.") == [expected]
+    assert w_celu("Strona składa wniosek, w celu skorzystania z ulgi.") == [expected]
+    for sentence in [
+        # The object would stay genitive: "aby przeprowadzić kontroli"
+        "Należy złożyć wniosek w celu przeprowadzenia kontroli.",
+        # No main clause before it, so "Aby ..." would need a closing comma
+        "W celu skorzystania z ulgi strona składa wniosek.",
+        # An infinitive takes no agent: "aby usunąć przez Wynajmującego"
+        "Najemca zgłasza usterkę w celu usunięcia przez Wynajmującego.",
+        # A transitive verb would be left without its object
+        "Oskarżona dokonała zaboru w celu przywłaszczenia na szkodę pokrzywdzonego.",
+        # The second of two coordinated purposes: "korzyści i, aby uzyskać"
+        "Działał w celu osiągnięcia korzyści i w celu uzyskania pożyczki.",
+    ]:
+        assert w_celu(sentence) == [], sentence
+    # A reflexive "się" takes the object's place
+    assert w_celu("Pracownik otrzymał dokumenty w celu zapoznania się z nimi.") == [
+        "Pracownik otrzymał dokumenty, aby zapoznać się z nimi."
     ]
-    assert any("aby ustalić, czy" in text for text in w_celu("Sąd wezwał świadka w celu ustalenia, czy umowa istniała."))
-    # An object after the gerund stays genitive under an infinitive: "aby
-    # przeprowadzić kontroli", "aby zapewnić sprawnego zarządzania". Skipped.
-    assert w_celu("W celu przeprowadzenia kontroli należy złożyć wniosek.") == []
-    assert w_celu("Działa w celu zapewnienia sprawnego i skutecznego zarządzania.") == []
 
 
 def test_lix_in_sentence_features():
@@ -245,8 +310,8 @@ def test_lix_in_sentence_features():
 
 def test_ger_auto_detection_nlp_path():
     """Ger auto-detection fires when light verb is known but noun is a gerundive not in table."""
-    from humanize_pl.config import Mode
     from humanize_pl.rules.nominalization import nominalization_candidates
+    from humanize_pl.config import Mode
 
     class _T:
         def __init__(self, **kw):
@@ -272,20 +337,27 @@ def test_ger_auto_detection_nlp_path():
     assert any("analizował" in c.text.lower() for c in nlp_cands)
 
 
-def test_co_do_zasady():
-    from humanize_pl.config import Mode
+def test_co_do_zasady_is_kept_as_a_term_of_art():
     from humanize_pl.rules.kancelaryzmy import kancelaryzm_candidates
+    from humanize_pl.config import Mode
 
-    cases = [
-        ("Co do zasady wierzyciel może dochodzić naprawienia szkody.", "zasadniczo"),
-        ("co do zasady pracownik nie może decydować samodzielnie.", "zasadniczo"),
-    ]
-    for sentence, expected in cases:
+    for sentence in [
+        "Co do zasady wierzyciel może dochodzić naprawienia szkody.",
+        # The claim's basis, as opposed to its amount: "zasadniczo" means "mostly"
+        "Pozwany uznał roszczenie co do zasady, kwestionując jedynie jego wysokość.",
+    ]:
         cands = kancelaryzm_candidates(sentence, mode=Mode.standard)
-        assert cands, f"No candidate for: {sentence!r}"
-        assert any(expected in c.text.lower() for c in cands), (
-            f"Expected {expected!r} in {[c.text for c in cands]}"
-        )
+        assert not any("zasadniczo" in c.text.lower() for c in cands), sentence
+
+
+def test_w_odniesieniu_do_keeps_its_meaning():
+    from humanize_pl.rules.kancelaryzmy import kancelaryzm_candidates
+    from humanize_pl.config import Mode
+
+    cands = kancelaryzm_candidates(
+        "Wierzycielem w odniesieniu do kwoty 8 614 zł była spółka.", mode=Mode.standard
+    )
+    assert {c.text for c in cands} == {"Wierzycielem co do kwoty 8 614 zł była spółka."}
 
 
 def test_drop_intro_with_new_verbs():
@@ -307,8 +379,8 @@ def test_drop_intro_with_new_verbs():
 
 
 def test_kancelaryzmy_b_additions():
-    from humanize_pl.config import Mode
     from humanize_pl.rules.kancelaryzmy import kancelaryzm_candidates
+    from humanize_pl.config import Mode
 
     cases = [
         ("Decyzja jest słuszna, albowiem spełnia wymogi.", "ponieważ"),
@@ -325,9 +397,131 @@ def test_kancelaryzmy_b_additions():
         )
 
 
-def test_split_przy_czym_long_sentence():
+def test_w_oparciu_o_takes_the_genitive():
+    from humanize_pl.rules.kancelaryzmy import kancelaryzm_candidates
+    from humanize_pl.safety.protectors import protect_text
     from humanize_pl.config import Mode
+
+    cases = {
+        "Administrator przetwarza dane w oparciu o przepisy rozporządzenia.":
+            "Administrator przetwarza dane na podstawie przepisów rozporządzenia.",
+        "Decyzję wydano w oparciu o obowiązujące przepisy prawa.":
+            "Decyzję wydano na podstawie obowiązujących przepisów prawa.",
+        "W oparciu o umowę Wykonawca wystawia fakturę.":
+            "Na podstawie umowy Wykonawca wystawia fakturę.",
+        "Spółka działa w oparciu o dane udostępnione przez Klienta.":
+            "Spółka działa na podstawie danych udostępnionych przez Klienta.",
+        # A protected reference ("art. 104") reads the same after both phrases
+        protect_text("Decyzję wydano w oparciu o art. 104 k.p.a.").text:
+            "Decyzję wydano na podstawie __PROTECTED_0000__ k.p.a.",
+    }
+    for sentence, expected in cases.items():
+        texts = [c.text for c in kancelaryzm_candidates(sentence, mode=Mode.standard)]
+        assert expected in texts, texts
+
+    for sentence in [
+        # A word Morfeusz cannot inflect
+        "Działamy w oparciu o insighty klientów.",
+        # Coordination: every conjunct would need the genitive
+        "Spółka działa w oparciu o dane udostępnione i wytyczne udzielone przez Klienta.",
+    ]:
+        texts = [c.text for c in kancelaryzm_candidates(sentence, mode=Mode.standard)]
+        assert not any("na podstawie" in text for text in texts), texts
+
+
+def test_light_verb_reduction_keeps_genitive_chains_without_stanza():
+    """"dokonać oceny ryzyka" → "ocenić ryzyka" would strand the genitive; with
+    no Stanza analysis Morfeusz decides."""
+    from humanize_pl.rules.kancelaryzmy import kancelaryzm_candidates
+    from humanize_pl.config import Mode
+
+    texts = [
+        c.text
+        for c in kancelaryzm_candidates("Zespół musi dokonać oceny ryzyka w ciągu tygodnia.", mode=Mode.standard)
+    ]
+    assert not any("ocenić ryzyka" in text for text in texts), texts
+    texts = [
+        c.text
+        for c in kancelaryzm_candidates("Zespół musi dokonać oceny w ciągu tygodnia.", mode=Mode.standard)
+    ]
+    assert any("musi ocenić w ciągu tygodnia" in text for text in texts), texts
+
+
+def test_light_verb_reductions_keep_the_deleted_nouns_dependents():
+    """Deleting the complement noun must not strand its dependents: a genitive,
+    an adjective or a "nad" phrase, with or without a Stanza parse."""
+    from humanize_pl.config import Mode
+    from humanize_pl.nlp.stanza_engine import SentenceAnalysis, TokenInfo
+    from humanize_pl.rules.kancelaryzmy import kancelaryzm_candidates
+    from humanize_pl.rules.nominalization import nominalization_candidates
+
+    def texts(sentence: str, analysis=None) -> list[str]:
+        cands = nominalization_candidates(sentence, mode=Mode.standard, analysis=analysis)
+        cands += kancelaryzm_candidates(sentence, mode=Mode.standard, analysis=analysis)
+        return [c.text for c in cands]
+
+    for sentence, stranded in [
+        ("Zarząd musi dokonać zmiany umowy w terminie.", "zmienić umowy"),
+        ("Należy przeprowadzić analizę prawną sprawy.", "przeanalizować prawną"),
+        ("Rada sprawuje nadzór nad spółką.", "nadzoruje nad"),
+    ]:
+        assert not any(stranded in text for text in texts(sentence)), sentence
+    assert "Należy zmienić w terminie 7 dni." in texts("Należy dokonać zmiany w terminie 7 dni.")
+    # "bez" is also a noun (lilac), but here it opens a prepositional phrase
+    assert "Organ może oceniać bez zbędnej zwłoki." in texts(
+        "Organ może przeprowadzać ocenę bez zbędnej zwłoki."
+    )
+
+    def parsed(words: list[tuple[str, str, str, int, str, str]]) -> SentenceAnalysis:
+        tokens, start = [], 0
+        for index, (text, lemma, upos, head, deprel, feats) in enumerate(words, start=1):
+            tokens.append(TokenInfo(text, lemma, upos, feats, head, deprel, index, start, start + len(text)))
+            start += len(text) + 1
+        return SentenceAnalysis(tokens=tokens)
+
+    # Stanza attaches the adjective to the noun the reduction deletes
+    sentence = "Należy dokonać oceny prawnej"
+    analysis = parsed([
+        ("Należy", "należy", "VERB", 0, "root", ""),
+        ("dokonać", "dokonać", "VERB", 1, "xcomp", ""),
+        ("oceny", "ocena", "NOUN", 2, "obj", "Case=Gen"),
+        ("prawnej", "prawny", "ADJ", 3, "amod", "Case=Gen"),
+    ])
+    assert not any("ocenić prawnej" in text for text in texts(sentence, analysis))
+    sentence = "Należy przeprowadzić analizę prawną"
+    analysis = parsed([
+        ("Należy", "należy", "VERB", 0, "root", ""),
+        ("przeprowadzić", "przeprowadzić", "VERB", 1, "xcomp", ""),
+        ("analizę", "analiza", "NOUN", 2, "obj", "Case=Acc"),
+        ("prawną", "prawny", "ADJ", 3, "amod", "Case=Acc"),
+    ])
+    assert not any("przeanalizować prawną" in text for text in texts(sentence, analysis))
+
+
+def test_cleanup_spacing_keeps_layout_and_numbers():
+    from humanize_pl.rules.cleanup import cleanup_candidates
+
+    for sentence in [
+        "Zamieszkały w Krakowie przy ul. Długiej.",  # non-breaking space
+        "DARCZYŃCA\tOBDAROWANY",  # signature columns
+        "Zamieszkały w ................... (adres).",  # fill-in blank
+        "Kwota ……………… zł zostanie zapłacona w terminie ................ .",
+        "Rodzaj pracy .……………………………",
+        "Wynajmujący                    Najemca",  # aligned signature columns
+        "............\t\t   ............",
+        "Spotkanie o godz. 12:00, kwota 1,5 tys. zł.",  # time and decimal comma
+    ]:
+        assert cleanup_candidates(sentence) == [], sentence
+
+    cands = cleanup_candidates("Strony ustalają  , że umowa obowiązuje.Od dziś.")
+    assert cands[0].text == "Strony ustalają, że umowa obowiązuje.Od dziś."
+    cands = cleanup_candidates("Strony ustalają,że umowa obowiązuje.")
+    assert cands[0].text == "Strony ustalają, że umowa obowiązuje."
+
+
+def test_split_przy_czym_long_sentence():
     from humanize_pl.rules.sentence_flow import sentence_flow_candidates
+    from humanize_pl.config import Mode
 
     # 33 words, "przy czym" in the middle, both halves have finite verbs, no legal refs near split
     sentence = (
@@ -343,9 +537,102 @@ def test_split_przy_czym_long_sentence():
     assert ". Przy czym" in cands[0].text
 
 
-def test_no_split_przy_czym_short_sentence():
-    from humanize_pl.config import Mode
+def test_split_keeps_coordinated_objects_together():
+    """", a także o ..." joins two objects of one verb. Split off, the second
+    half is a fragment whose only verb sits in a relative clause."""
     from humanize_pl.rules.sentence_flow import sentence_flow_candidates
+    from humanize_pl.config import Mode
+
+    sentence = (
+        "Podmiot przetwarzający niezwłocznie informuje Administratora o każdym naruszeniu "
+        "ochrony danych osobowych w swojej organizacji, a także o wszelkich planowanych "
+        "zmianach w sposobie przetwarzania, które mogą wpłynąć na bezpieczeństwo "
+        "przetwarzania danych osobowych przez Podmiot."
+    )
+    assert sentence_flow_candidates(sentence, mode=Mode.strong) == []
+
+
+def test_split_stays_out_of_a_subordinate_clause():
+    """A connector after "że" or "skoro" may continue that clause: split off,
+    a party's reason becomes the writer's claim, and a condition loses its
+    consequence."""
+    from humanize_pl.rules.sentence_flow import sentence_flow_candidates
+    from humanize_pl.config import Mode
+
+    for sentence in [
+        "Strona pozwana zakwestionowała argumentację zawartą w uzasadnieniu pozwu, podnosząc, "
+        "że akcjonariusze mają możliwość zbycia swoich akcji na rynku regulowanym w każdym "
+        "czasie, ponieważ mogą bez problemu zbyć je za pośrednictwem domu maklerskiego.",
+        "Skoro bowiem pozwany nie otrzymał od powoda żadnej umowy ani nawet jej projektu "
+        "w toku prowadzonych rozmów, a także nie zostały mu przedstawione do akceptacji "
+        "istotne postanowienia przyszłej umowy, to umowa nie została zawarta.",
+    ]:
+        assert len(sentence.split()) >= 32
+        assert sentence_flow_candidates(sentence, mode=Mode.standard) == [], sentence
+
+
+def test_split_needs_a_comma_before_the_connector():
+    """"ale jednak" is one connector; splitting at "jednak" left "…, ale."."""
+    from humanize_pl.rules.sentence_flow import sentence_flow_candidates
+    from humanize_pl.config import Mode
+
+    sentence = (
+        "Dziewczęta również czasami nie spały spokojnie i długo rozmawiały o wydarzeniach dnia, "
+        "naprawdę rzadko, ale jednak — nie czuły się dość pewnie, gdy matka wracała bardzo późno "
+        "wieczorem z ciężkiej pracy w miejskiej fabryce."
+    )
+    assert len(sentence.split()) >= 32
+    assert sentence_flow_candidates(sentence, mode=Mode.strong) == []
+
+
+def test_drop_wlasnie_keeps_the_case_it_found():
+    from humanize_pl.rules.legal_ai_style import _drop_empty_emphasis
+
+    texts = [c.text for c in _drop_empty_emphasis("Nogi, to właśnie najsłabsza jego strona.", nlp_confidence=None)]
+    assert texts == ["Nogi, to najsłabsza jego strona."]
+    texts = [c.text for c in _drop_empty_emphasis("To właśnie ono odróżnia te umowy.", nlp_confidence=None)]
+    assert texts == ["To ono odróżnia te umowy."]
+
+
+def test_repeated_opening_is_not_dropped_before_punctuation():
+    """Dropping "Osiemdziesiąt rubli" left "! – powtórzyła z naciskiem."."""
+    from humanize_pl.rules.redundancy import _inter_sentence_redundancy
+    from humanize_pl.config import Mode
+
+    cands = _inter_sentence_redundancy(
+        "Osiemdziesiąt rubli! – powtórzyła z naciskiem.",
+        previous_sentence="Za pokój żądał osiemdziesiąt rubli miesięcznie.",
+        mode=Mode.strong,
+        paragraph_features=None,
+    )
+    assert cands == []
+
+
+def test_repeated_opening_drops_only_a_shared_subject():
+    from humanize_pl.rules.redundancy import _inter_sentence_redundancy
+    from humanize_pl.config import Mode
+
+    def drops(sentence: str, previous: str) -> list[str]:
+        cands = _inter_sentence_redundancy(
+            sentence, previous_sentence=previous, mode=Mode.strong, paragraph_features=None
+        )
+        return [c.text for c in cands]
+
+    # An object before a first-person verb: "Proszę wpłacić" lost the amount
+    assert drops("Kwotę proszę wpłacić na rachunek bankowy.", "Kwotę należy wpłacić w terminie.") == []
+    # Mentioned before, but not the subject the previous sentence opened with
+    assert drops("Zmiana może dotyczyć celów przetwarzania.", "Strony mogą wprowadzić zmianę umowy.") == []
+    # Not subjects even where Morfeusz also knows a noun or adjective reading
+    assert drops("Można było zbudować tysiące szkół.", "Można było założyć setki kół.") == []
+    assert drops("Niechaj spoczywają w pokoju popioły.", "Niechaj żyją wiecznie bohaterowie.") == []
+    assert drops("Wykonawca jest odpowiedzialny za szkody.", "Wykonawca wykona dzieło w terminie.") == [
+        "Jest odpowiedzialny za szkody."
+    ]
+
+
+def test_no_split_przy_czym_short_sentence():
+    from humanize_pl.rules.sentence_flow import sentence_flow_candidates
+    from humanize_pl.config import Mode
 
     # Under 32 words → no split
     sentence = "Organ jest zobowiązany do rozpatrzenia wniosku, przy czym ma prawo do informacji."
@@ -354,8 +641,8 @@ def test_no_split_przy_czym_short_sentence():
 
 
 def test_no_split_przy_czym_near_legal_ref():
-    from humanize_pl.config import Mode
     from humanize_pl.rules.sentence_flow import sentence_flow_candidates
+    from humanize_pl.config import Mode
 
     # "Kodeksu pracy" is within 6 words of the split point → guard fires
     sentence = (
@@ -368,8 +655,8 @@ def test_no_split_przy_czym_near_legal_ref():
 
 
 def test_split_ponieważ_standard_mode():
-    from humanize_pl.config import Mode
     from humanize_pl.rules.sentence_flow import sentence_flow_candidates
+    from humanize_pl.config import Mode
 
     # 32 words, ponieważ split available in standard (not just strong)
     sentence = (

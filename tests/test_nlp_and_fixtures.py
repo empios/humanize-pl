@@ -1,23 +1,24 @@
 import json
 from pathlib import Path
-from typing import ClassVar
 
 import pytest
 from rich.text import Text
 from typer.testing import CliRunner
 
-from humanize_pl import core
+import humanize_pl.core as core
 from humanize_pl.cli import app
-from humanize_pl.config import Engine, HumanizeConfig, LegalReviewProfile, Mode
+from humanize_pl.config import Engine, HumanizeConfig, Mode
 from humanize_pl.core import humanize_text
 from humanize_pl.io.docx_io import process_docx
-from humanize_pl.nlp.stanza_engine import SentenceAnalysis, TokenInfo
 from humanize_pl.pipeline import LegalPipeline
-from humanize_pl.reports.report import write_json_report
-from humanize_pl.results import HumanizeResult
+from humanize_pl.reports.report import build_json_report, write_json_report
 from humanize_pl.rules.base import Candidate
+from humanize_pl.results import HumanizeResult
 from humanize_pl.rules.engine import RuleEngine
+from humanize_pl.nlp.stanza_engine import SentenceAnalysis, TokenInfo
 from humanize_pl.safety.protectors import protect_text
+from humanize_pl.safety.syntax import stanza_finite_verb_gate
+
 
 FIXTURE_PATH = Path(__file__).parent / "fixtures" / "legal_docs" / "isap_samples.json"
 
@@ -113,8 +114,7 @@ def test_stanza_gate_rejects_split_without_finite_verb():
     original = "Pracownik wykonuje pracę i sam wymóg organizuje ocenę."
     protected = protect_text(original)
     pipeline = LegalPipeline(
-        # Exercise the syntax gate independently of the earlier legal scope guard.
-        config=HumanizeConfig(mode=Mode.standard, engine=Engine.nlp, legal_review_profile=LegalReviewProfile.general),
+        config=HumanizeConfig(mode=Mode.standard, engine=Engine.nlp),
         protected=protected,
         rule_engine=SplitOnlyRuleEngine(mode=Mode.standard),
         stanza_engine=FakeStanzaEngine(),
@@ -127,6 +127,15 @@ def test_stanza_gate_rejects_split_without_finite_verb():
         gate["name"] == "stanza_finite_verb" and not gate["ok"]
         for gate in result.traces[0].gate_results
     )
+
+
+def test_stanza_gate_ignores_abbreviation_periods():
+    checks = stanza_finite_verb_gate(
+        "Pracownik wykonuje pracę od 2024 r. w siedzibie pracodawcy i chroni jego mienie.",
+        "Pracownik wykonuje pracę od 2024 r. w siedzibie pracodawcy. Pracownik chroni jego mienie.",
+        FakeStanzaEngine(),
+    )
+    assert all(check.ok for check in checks)
 
 
 def test_stanza_dependency_summary_detects_sentence_roles():
@@ -149,9 +158,7 @@ def test_transformer_similarity_blocks_semantic_drift():
     original = "Pracownik wykonuje pracę pod kierownictwem pracodawcy."
     protected = protect_text(original)
     pipeline = LegalPipeline(
-        # Exercise the embedding gate independently of legal assertion preservation.
-        config=HumanizeConfig(mode=Mode.standard, engine=Engine.hybrid, semantic_threshold=0.90,
-                             legal_review_profile=LegalReviewProfile.general),
+        config=HumanizeConfig(mode=Mode.standard, engine=Engine.hybrid, semantic_threshold=0.90),
         protected=protected,
         rule_engine=OneCandidateRuleEngine(
             Candidate(
@@ -215,6 +222,24 @@ def test_quality_gate_cannot_be_bypassed_by_transformer_scores():
     assert result.text == original
     assert result.rejected[0].reason == "deontic drift in category obligation"
     assert not any(gate["name"] == "semantic_similarity" for gate in result.traces[0].gate_results)
+
+
+def test_report_counts_blocked_normativity_changes():
+    session = core.HumanizerSession(
+        HumanizeConfig(mode=Mode.standard),
+        rule_engine=OneCandidateRuleEngine(
+            Candidate(
+                "Strona musi złożyć oświadczenie w terminie 7 dni.",
+                "test:normativity_drift",
+                0.99,
+            )
+        ),
+    )
+    result = session.humanize(
+        "Strona może złożyć oświadczenie w terminie 7 dni.", include_candidates=True
+    )
+    payload = build_json_report(result)
+    assert payload["legal_review"]["normativity_changes_blocked"] == 1
 
 
 def test_report_contains_hybrid_model_metadata(tmp_path):
@@ -314,18 +339,17 @@ def test_offline_models_flag_is_passed_to_model_loaders(monkeypatch):
 
 
 def test_process_docx_reuses_one_humanizer_session(monkeypatch, tmp_path):
+    import humanize_pl.io.docx_io as docx_io
     from docx import Document
-
-    from humanize_pl.io import docx_io
 
     created_sessions = []
     processed_paragraphs = []
 
     class FakeSession:
         config = HumanizeConfig(mode=Mode.standard, engine=Engine.nlp)
-        warnings: ClassVar[list[str]] = []
+        warnings: list[str] = []
         engine_used = "nlp"
-        model_status: ClassVar[dict[str, str]] = {
+        model_status = {
             "stanza": "ready",
             "semantic": "not_requested",
             "fluency": "not_requested",
@@ -378,6 +402,7 @@ def test_cli_exposes_offline_models_flag():
     runner = CliRunner()
     result = runner.invoke(app, ["--help"])
     assert result.exit_code == 0
+    # Typer forces ANSI styling on GitHub Actions, even under CliRunner.
     assert "--offline-models" in Text.from_ansi(result.stdout).plain
 
 
@@ -385,27 +410,26 @@ def test_cli_exposes_version():
     runner = CliRunner()
     result = runner.invoke(app, ["--version"])
     assert result.exit_code == 0
-    assert "humanize-pl 0.2.2" in Text.from_ansi(result.stdout).plain
+    assert "humanize-pl 0.2.2" in result.stdout
 
 
-def test_intra_sentence_redundancy_keeps_explicit_legal_actors():
+def test_intra_sentence_redundancy_reduction_is_safe():
     text = (
         "Pracownik wykonuje pracę pod kierownictwem, "
         "oraz pracownik pozostaje w dyspozycji pracodawcy."
     )
     result = humanize_text(text, mode="standard", include_candidates=True)
-    assert result.text == text
+    assert "oraz pozostaje w dyspozycji pracodawcy" in result.text
     assert any(
         trace.rule == "redundancy:drop_repeated_subject_in_sentence"
-        and trace.status == "rejected"
-        and any(g["name"] == "legal_party_roles_preserved" and not g["ok"] for g in trace.gate_results)
+        and trace.status == "accepted"
         for trace in result.all_candidates
     )
 
 
 def test_tautological_adj_pair_is_reduced():
-    from humanize_pl.config import Mode
     from humanize_pl.rules.redundancy import _tautological_adj_candidates
+    from humanize_pl.config import Mode
 
     sentence = "Warunki konieczne i niezbędne muszą być spełnione."
     cands = _tautological_adj_candidates(sentence, mode=Mode.standard)
@@ -416,8 +440,8 @@ def test_tautological_adj_pair_is_reduced():
 
 
 def test_tautological_adj_inflected_forms():
-    from humanize_pl.config import Mode
     from humanize_pl.rules.redundancy import _tautological_adj_candidates
+    from humanize_pl.config import Mode
 
     # Inflected: koniecznych i niezbędnych (Gen Plur)
     sentence = "Brak dokumentów koniecznych i niezbędnych uniemożliwia rejestrację."
@@ -427,9 +451,24 @@ def test_tautological_adj_inflected_forms():
     assert "koniecznych" not in cands[0].text
 
 
-def test_tautological_adj_not_fired_for_non_pair():
-    from humanize_pl.config import Mode
+def test_tautological_adj_uses_wordnet_pairs_only_in_strong_mode():
+    """Słowosieć pairs every member of a synset, so "zielony"/"szary" or the
+    statutory "jasny i zrozumiały" count as doublets. Standard mode trusts only
+    the curated formulas."""
     from humanize_pl.rules.redundancy import _tautological_adj_candidates
+    from humanize_pl.config import Mode
+
+    for sentence in (
+        "Zostałam poinformowana w sposób jasny i zrozumiały o celach przetwarzania.",
+        "Widać było tylko zieloną i szarą równinę.",
+    ):
+        assert _tautological_adj_candidates(sentence, mode=Mode.standard) == [], sentence
+        assert _tautological_adj_candidates(sentence, mode=Mode.strong), sentence
+
+
+def test_tautological_adj_not_fired_for_non_pair():
+    from humanize_pl.rules.redundancy import _tautological_adj_candidates
+    from humanize_pl.config import Mode
 
     # "ważny i prawomocny" — not in the tautology list
     sentence = "Wyrok jest ważny i prawomocny."
@@ -438,8 +477,8 @@ def test_tautological_adj_not_fired_for_non_pair():
 
 
 def test_tautological_adj_not_fired_in_conservative_mode():
-    from humanize_pl.config import Mode
     from humanize_pl.rules.redundancy import redundancy_candidates
+    from humanize_pl.config import Mode
 
     sentence = "Analiza jest kompleksowa i wyczerpująca."
     cands = redundancy_candidates(
@@ -452,8 +491,8 @@ def test_tautological_adj_not_fired_in_conservative_mode():
 
 
 def test_tautological_adj_various_pairs():
-    from humanize_pl.config import Mode
     from humanize_pl.rules.redundancy import _tautological_adj_candidates
+    from humanize_pl.config import Mode
 
     cases = [
         ("Wymóg jest jasny i oczywisty.", "oczywisty"),

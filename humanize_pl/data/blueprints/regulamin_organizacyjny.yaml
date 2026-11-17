@@ -1,0 +1,619 @@
+# Szkielet struktury: regulamin organizacyjny.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: regulamin_organizacyjny
+label_pl: regulamin organizacyjny
+numbering: paragraph
+sections:
+- id: podmiot
+  label_pl: podmiot
+  severity: required
+  matches: [podmiot leczniczy, podmiot, firmą, działającym na podstawie]
+- id: cele
+  label_pl: cele i zadania
+  severity: required
+  matches: [cele, cel, zadania, zadaniami]
+- id: zakres
+  label_pl: zakres świadczeń
+  severity: required
+  matches: [zakres, świadczenia zdrowotne, działalność leczniczą]
+- id: struktura
+  label_pl: struktura organizacyjna
+  severity: required
+  matches: [komórki organizacyjne, struktura, jednostki, zakłady]
+- id: kierowanie
+  label_pl: kierowanie
+  severity: required
+  matches: [kierownik, kierowania, decyzje podejmuje]
+- id: dokumentacja
+  label_pl: dokumentacja
+  severity: expected
+  matches: [dokumentacja, dokumentacji]
+- id: koncowe
+  label_pl: postanowienia końcowe
+  severity: required
+  matches: [zatwierdzony, zmiany mogą nastąpić, postanowienia końcowe]
+
+# Dokument ogólny: realny wzór tej kategorii. Przy użyciu wypełnia się wyłącznie
+# pola (`slots`); treść, kolejność i układ zostają jak we wzorze.
+document:
+  template: regulamin organizacyjny podmiotu leczniczego.docx
+  label_pl: Regulamin organizacyjny podmiotu leczniczego
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+  blocks:
+  - p: 0
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: Regulamin organizacyjny
+  - {p: 1, role: spacer}
+  - {p: 2, role: spacer}
+  - p: 3
+    role: body
+    layout: {align: center, size: 12.0, bold: true}
+    text: ROZDZIAŁ 1
+  - p: 4
+    role: body
+    layout: {align: center, size: 12.0, bold: true}
+    text: Postanowienia ogólne
+  - {p: 5, role: spacer}
+  - p: 6
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+    text: § 1
+  - {p: 7, role: spacer}
+  - p: 8
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: '............................ jest podmiotem leczniczym działającym na podstawie ustawy z dnia 15 kwietnia 2011 r. o działalności leczniczej
+      (dalej jako u.d.l.).'
+    slots:
+    - {id: p8_1, span: [0, 28], type: text, context: ▢ jest podmiotem}
+  - p: 9
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: 'Podmiot leczniczy działa pod firmą: ...............'
+    slots:
+    - {id: podmiot_leczniczy_dziala_pod_firma, span: [36, 51], type: company, label: Podmiot leczniczy działa pod firmą}
+  - p: 10
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: 'Regulamin określa:'
+  - p: 11
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: firmę podmiotu wykonującego działalność leczniczą;
+  - p: 12
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+    text: cele i zadania;
+  - p: 13
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}}
+    text: rodzaj działalności leczniczej oraz zakres udzielanych świadczeń zdrowotnych;
+  - p: 14
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 4), kind: decimal, src: auto, level: 0}}
+    text: strukturę organizacyjną przedsiębiorstwa;
+  - p: 15
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 5), kind: decimal, src: auto, level: 0}}
+    text: wysokość opłat za udostępnienie dokumentacji medycznej;
+  - p: 16
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 6), kind: decimal, src: auto, level: 0}}
+    text: organizację procesu udzielania świadczeń zdrowotnych w przypadku pobierania opłat;
+  - p: 17
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 7), kind: decimal, src: auto, level: 0}}
+    text: wysokość opłat za udzielane świadczenia zdrowotne inne niż finansowane ze środków publicznych;
+  - p: 18
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 8), kind: decimal, src: auto, level: 0}}
+    text: sposób kierowania jednostkami lub komórkami organizacyjnymi.
+  - p: 19
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+    text: Regulamin obowiązuje wszystkich pracowników.
+  - p: 20
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+    text: Regulamin dostępny jest w rejestracji.
+  - {p: 21, role: spacer}
+  - p: 22
+    role: body
+    layout: {align: center, size: 12.0, bold: true}
+    text: ROZDZIAŁ 2
+  - p: 23
+    role: body
+    layout: {align: center, size: 12.0, bold: true}
+    text: Cel działania i zadania
+  - {p: 24, role: spacer}
+  - p: 25
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+    text: § 2
+  - {p: 26, role: spacer}
+  - p: 27
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: Celem działalności jest udzielanie świadczeń zdrowotnych, a także promocja zdrowia, prowadzenie działalności profilaktyczno-leczniczej
+      w zakresie ………………………….
+    slots:
+    - {id: p27_1, span: [146, 157], type: text, context: profilaktyczno leczniczej w zakresie ▢}
+  - {p: 28, role: spacer}
+  - p: 29
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+    text: § 3
+  - {p: 30, role: spacer}
+  - p: 31
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: 'Podstawowym zadaniem podmiotu leczniczego jest sprawowanie opieki zdrowotnej w dziedzinie …………………… w zakresie podstawowym. Do zadań należy:'
+    slots:
+    - {id: p31_1, span: [90, 98], type: text, context: opieki zdrowotnej w dziedzinie ▢ w zakresie}
+  - p: 32
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: zapewnienie pacjentom kompleksowej diagnostyki oraz ciągłości leczenia ze szczególnym uwzględnieniem …………………………;
+    slots:
+    - {id: p32_1, span: [101, 111], type: text, context: leczenia ze szczególnym uwzględnieniem ▢}
+  - p: 33
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+    text: udzielanie świadczeń ……………………………;
+    slots:
+    - {id: p33_1, span: [21, 32], type: text, context: udzielanie świadczeń ▢}
+  - p: 34
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}, tabs: 1}
+    text: "udział w działaniach z zakresu promocji zdrowia …………………………..;\t"
+    slots:
+    - {id: p34_1, span: [48, 60], type: text, context: z zakresu promocji zdrowia ▢}
+  - p: 35
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 4), kind: decimal, src: auto, level: 0}}
+    text: wykonywanie innych zadań podmiotu leczniczego wynikających z odrębnych przepisów.
+  - {p: 36, role: spacer}
+  - p: 37
+    role: body
+    layout: {align: center, size: 12.0, bold: true}
+    text: ROZDZIAŁ 3
+  - p: 38
+    role: body
+    layout: {align: center, size: 12.0, bold: true}
+    text: Rodzaj działalności leczniczej oraz zakres i miejsce udzielanych świadczeń zdrowotnych
+  - {p: 39, role: spacer}
+  - p: 40
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+    text: § 4
+  - {p: 41, role: spacer}
+  - p: 42
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: 'Podmiot prowadzi działalność leczniczą i udziela świadczeń zdrowotnych w zakresie:'
+  - p: 43
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 5), kind: decimal, src: auto, level: 0}}
+    text: ………………………………
+    slots:
+    - {id: p43_1, span: [0, 12], type: text, context: ▢}
+  - p: 44
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 6), kind: decimal, src: auto, level: 0}}
+    text: ………………………………
+    slots:
+    - {id: p44_1, span: [0, 12], type: text, context: ▢}
+  - p: 45
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 7), kind: decimal, src: auto, level: 0}}
+    text: ………………………………
+    slots:
+    - {id: p45_1, span: [0, 12], type: text, context: ▢}
+  - p: 46
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 8), kind: decimal, src: auto, level: 0}}
+    text: ………………………………
+    slots:
+    - {id: p46_1, span: [0, 12], type: text, context: ▢}
+  - p: 47
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 9), kind: decimal, src: auto, level: 0}}
+    text: ………………………………
+    slots:
+    - {id: p47_1, span: [0, 12], type: text, context: ▢}
+  - p: 48
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: 'Podmiot realizuje cele i zadania, o których mowa w § 2 i 3, zapewnia pacjentom opiekę realizowaną zgodnie ze sztuką medyczną i na właściwym
+      poziomie. Podmiot zapewnia w swoim zakresie diagnostykę i ciągłość leczenia:'
+  - p: 49
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: pacjentom uprawnionym do świadczeń opieki zdrowotnej finansowanych ze środków publicznych
+  - p: 50
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+    text: 'w ramach gwarantowanych świadczeń zdrowotnych z zakresu leczenia ……………………….,
+
+      w myśl ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanej ze środków publicznych (dalej jako u.ś.o.);'
+    slots:
+    - {id: p50_1, span: [65, 75], type: text, context: zdrowotnych z zakresu leczenia ▢ w myśl}
+  - p: 51
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}}
+    text: pacjentom indywidualnym w ramach świadczeń odpłatnych na podstawie cennika;
+  - p: 52
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 4), kind: decimal, src: auto, level: 0}}
+    text: pacjentom korzystającym ze świadczeń zdrowotnych na warunkach określonych w odrębnych umowach.
+  - {p: 53, role: spacer}
+  - p: 54
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+    text: § 5
+  - {p: 55, role: spacer}
+  - p: 56
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: "Świadczenia zdrowotne są udzielane przez osoby posiadające przewidziane prawem uprawnienia \ni kwalifikacje zawodowe, przy zachowaniu\
+      \ wszelkich wymagań świadczenia usług określonych przepisami prawa i zgodnie z zasadami ………………………."
+    slots:
+    - {id: p56_1, span: [219, 229], type: text, context: i zgodnie z zasadami ▢}
+  - p: 57
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Podmiot wdraża standardy postępowania i procedury …………………………… w celu zapewnienia właściwego poziomu i jakości świadczonych usług zdrowotnych.
+    slots:
+    - {id: p57_1, span: [50, 61], type: text, context: standardy postępowania i procedury ▢ w celu}
+  - {p: 58, role: spacer}
+  - p: 59
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 6, kind: paragraph, src: manual, level: 0}}
+    text: § 6
+  - {p: 60, role: spacer}
+  - p: 61
+    role: field_header
+    layout: {align: justify, size: 10.0}
+    text: 'Miejscem udzielania świadczeń zdrowotnych jest:'
+  - p: 62
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: '..................................................................................................................'
+    slots:
+    - {id: p62_1, span: [0, 114], type: text, context: ▢}
+  - p: 63
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+    text: '..................................................................................................................'
+    slots:
+    - {id: p63_1, span: [0, 114], type: text, context: ▢}
+  - {p: 64, role: spacer}
+  - p: 65
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 7, kind: paragraph, src: manual, level: 0}}
+    text: § 7
+  - {p: 66, role: spacer}
+  - p: 67
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: 'W ramach podmiotu leczniczego funkcjonują następujące zakłady lecznicze, jednostki i komórki organizacyjne: ……………………………………………………………………………………………………..'
+    slots:
+    - {id: p67_1, span: [108, 148], type: text, context: jednostki i komórki organizacyjne ▢}
+  - {p: 68, role: spacer}
+  - p: 69
+    role: body
+    layout: {align: center, size: 12.0, bold: true}
+    text: ROZDZIAŁ 4
+  - p: 70
+    role: body
+    layout: {align: center, size: 12.0, bold: true}
+    text: Sposób kierowania jednostką organizacyjną i jej komórkami
+  - {p: 71, role: spacer}
+  - p: 72
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Podmiotem leczniczym kieruje Kierownik.
+  - p: 73
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Wszelkie decyzje podejmuje bezpośrednio Kierownik.
+  - {p: 74, role: spacer}
+  - p: 75
+    role: body
+    layout: {align: center, size: 12.0, bold: true}
+    text: ROZDZIAŁ 5
+  - p: 76
+    role: body
+    layout: {align: center, size: 12.0, bold: true}
+    text: Organizacja i zadania poszczególnych komórek organizacyjnych oraz warunki współdziałania tych komórek
+  - {p: 77, role: spacer}
+  - p: 78
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 8, kind: paragraph, src: manual, level: 0}}
+    text: § 8
+  - {p: 79, role: spacer}
+  - p: 80
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: 'Do podstawowych zadań ……………………… należy w szczególności:'
+    slots:
+    - {id: p80_1, span: [22, 31], type: text, context: Do podstawowych zadań ▢ należy w}
+  - p: 81
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: udzielanie świadczeń zdrowotnych z zakresu ………………………. pacjentom uprawnionym do korzystania ze świadczeń opieki zdrowotnej finansowanych
+      ze środków publicznych;
+    slots:
+    - {id: p81_1, span: [43, 53], type: text, context: świadczeń zdrowotnych z zakresu ▢ pacjentom uprawnionym}
+  - p: 82
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+    text: udzielanie świadczeń zdrowotnych z zakresu ………………………….. w trybie usług świadczonych odpłatnie, w pełnym zakresie określonym w cenniku
+      opłat za świadczenia zdrowotne inne niż finansowane ze środków publicznych;
+    slots:
+    - {id: p82_1, span: [43, 55], type: text, context: świadczeń zdrowotnych z zakresu ▢ w trybie}
+  - p: 83
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}}
+    text: udzielanie świadczeń zdrowotnych z zakresu ……………………… pacjentom korzystającym ze świadczeń wynikających z odrębnych umów;
+    slots:
+    - {id: p83_1, span: [43, 52], type: text, context: świadczeń zdrowotnych z zakresu ▢ pacjentom korzystającym}
+  - p: 84
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 4), kind: decimal, src: auto, level: 0}}
+    text: udzielanie świadczeń zdrowotnych z zakresu ……………………… w formie usług diagnostycznych, leczniczych i profilaktycznych;
+    slots:
+    - {id: p84_1, span: [43, 52], type: text, context: świadczeń zdrowotnych z zakresu ▢ w formie}
+  - p: 85
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 5), kind: decimal, src: auto, level: 0}}
+    text: prowadzenie indywidualnej dokumentacji pacjenta w formie papierowej i/lub elektronicznej;
+  - p: 86
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 6), kind: decimal, src: auto, level: 0}}
+    text: prowadzenie dokumentacji będącej podstawą do rozliczeń umowy zawartej z płatnikiem publicznym w formie papierowej i elektronicznej;
+  - p: 87
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 7), kind: decimal, src: auto, level: 0}}
+    text: wystawianie skierowań do placówek zewnętrznych;
+  - p: 88
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 8), kind: decimal, src: auto, level: 0}}
+    text: przechowywanie i udostępnianie indywidualnej dokumentacji medycznej pacjentów.
+  - {p: 89, role: spacer}
+  - p: 90
+    role: body
+    layout: {align: center, size: 12.0, bold: true}
+    text: ROZDZIAŁ 6
+  - p: 91
+    role: body
+    layout: {align: center, size: 12.0, bold: true}
+    text: Warunki współdziałania z innymi podmiotami wykonującymi działalność leczniczą
+  - {p: 92, role: spacer}
+  - p: 93
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 9, kind: paragraph, src: manual, level: 0}}
+    text: § 9
+  - {p: 94, role: spacer}
+  - p: 95
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: "W procesie udzielania świadczeń zdrowotnych podmiot może współdziałać z innymi podmiotami wykonującymi działalność leczniczą w rozumieniu\
+      \ u.d.l. w zakresie zapewnienia prawidłowej \ni kompleksowej diagnostyki, leczenia pacjentów i ciągłości postępowania."
+  - {p: 96, role: spacer}
+  - p: 97
+    role: body
+    layout: {align: center, size: 12.0, bold: true}
+    text: ROZDZIAŁ 7
+  - p: 98
+    role: body
+    layout: {align: center, size: 12.0, bold: true}
+    text: Przebieg procesu udzielania świadczeń zdrowotnych
+  - {p: 99, role: spacer}
+  - p: 100
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 10, kind: paragraph, src: manual, level: 0}}
+    text: § 10
+  - {p: 101, role: spacer}
+  - p: 102
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Podmiot udziela gwarantowanych świadczeń zdrowotnych z zakresu …………………. wszystkim ubezpieczonym i uprawnionym, w myśl u.ś.o. Szczegółowy
+      zakres świadczeń określają odrębne przepisy.
+    slots:
+    - {id: p102_1, span: [63, 71], type: text, context: świadczeń zdrowotnych z zakresu ▢ wszystkim ubezpieczonym}
+  - p: 103
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Podmiot udziela świadczeń każdemu uprawnionemu, bez skierowania, w ramach określonych limitów świadczeń zdrowotnych wynikających z umowy
+      zawartej z płatnikiem publicznym lub innym uprawnionym organem.
+  - p: 104
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: Podstawą do udzielenia świadczeń zdrowotnych, o których mowa, jest okazanie dokumentu potwierdzającego prawo do korzystania z gwarantowanych
+      świadczeń zdrowotnych, dowodu osobistego lub innego dokumentu ze zdjęciem wskazującego wiek, numer PESEL oraz adres zameldowania pacjenta
+      w celu zweryfikowania ubezpieczenia na portalu e-WUŚ.
+  - p: 105
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+    text: Świadczenia zdrowotne wykraczające poza zakres świadczeń finansowanych ze środków publicznych są udzielane odpłatnie.
+  - {p: 106, role: spacer}
+  - p: 107
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 11, kind: paragraph, src: manual, level: 0}}
+    text: § 11
+  - {p: 108, role: spacer}
+  - p: 109
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Rejestracja pacjentów i umawianie wizyt odbywa się w formie elektronicznej, za pośrednictwem systemu/strony internetowej/telefonicznie/mailowo.
+  - p: 110
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Niezbędne informacji w zakresie dostępu do świadczeń zdrowotnych można uzyskać …………………………
+    slots:
+    - {id: p110_1, span: [79, 89], type: text, context: świadczeń zdrowotnych można uzyskać ▢}
+  - p: 111
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: Wszystkie skargi i wnioski składane są w rejestracji/w innej formie i przekazywane Kierownikowi, który je rozpatruje.
+  - {p: 112, role: spacer}
+  - p: 113
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 12, kind: paragraph, src: manual, level: 0}}
+    text: § 12
+  - {p: 114, role: spacer}
+  - p: 115
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Pacjent zamierzający skorzystać z usług ……………….. jest umawiany na wizytę.
+    slots:
+    - {id: p115_1, span: [40, 48], type: text, context: zamierzający skorzystać z usług ▢ jest umawiany}
+  - p: 116
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Liczba przyjęć w danym dniu pacjentów jest zmienna i zależy od harmonogramu pracy ……………..
+    slots:
+    - {id: p116_1, span: [82, 89], type: text, context: zależy od harmonogramu pracy ▢}
+  - p: 117
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: Pacjentowi zgłaszającemu się z bólem świadczenia zdrowotne udzielane są w dniu zgłoszenia. Ocena zakresu udzielanego świadczenia należy
+      do ……………………... Pacjent taki jest przyjmowany pomiędzy wizytami innych pacjentów, w sposób jak najmniej zakłócający udzielanie świadczeń planowanych.
+    slots:
+    - {id: p117_1, span: [139, 150], type: date, context: udzielanego świadczenia należy do ▢ Pacjent taki}
+  - {p: 118, role: spacer}
+  - p: 119
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 13, kind: paragraph, src: manual, level: 0}}
+    text: § 13
+  - {p: 120, role: spacer}
+  - p: 121
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: Pacjentom zgłaszającym się do przychodni po raz pierwszy zakładana jest indywidualna dokumentacja medyczna.
+  - {p: 122, role: spacer}
+  - p: 123
+    role: body
+    layout: {align: center, size: 12.0, bold: true}
+    text: ROZDZIAŁ 8
+  - p: 124
+    role: body
+    layout: {align: center, size: 12.0, bold: true}
+    text: Udostępnienie dokumentacji medycznej
+  - {p: 125, role: spacer}
+  - p: 126
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 14, kind: paragraph, src: manual, level: 0}}
+    text: § 14
+  - {p: 127, role: spacer}
+  - p: 128
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: Dokumentację medyczną udostępnia się pacjentowi lub jego przedstawicielowi ustawowemu, bądź osobie upoważnionej przez pacjenta, na podstawie
+      wniosku pisemnego, ustnego lub przesłanego drogą elektroniczną.
+  - p: 129
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: 'Dokumentacja medyczna jest udostępniana:'
+  - p: 130
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: do wglądu, w tym także do baz danych w zakresie ochrony zdrowia, w miejscu udzielania świadczeń zdrowotnych, z wyłączeniem medycznych
+      czynności ratunkowych, albo w siedzibie podmiotu udzielającego świadczeń zdrowotnych, z zapewnieniem pacjentowi lub innym uprawnionym organom
+      lub podmiotom możliwości sporządzenia notatek lub zdjęć;
+  - p: 131
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+    text: przez sporządzenie jej wyciągu, odpisu, kopii lub wydruku;
+  - p: 132
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}}
+    text: przez wydanie oryginału za potwierdzeniem odbioru i z zastrzeżeniem zwrotu po wykorzystaniu, na żądanie organów władzy publicznej albo
+      sądów powszechnych, a także w przypadku gdy zwłoka w wydaniu dokumentacji mogłaby spowodować zagrożenie życia lub zdrowia pacjenta;
+  - p: 133
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 4), kind: decimal, src: auto, level: 0}}
+    text: "za pośrednictwem środków komunikacji elektronicznej na wskazany przez pacjenta adres \ne-mail;"
+  - p: 134
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 5), kind: decimal, src: auto, level: 0}}
+    text: na informatycznym nośniku danych.
+  - p: 135
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+    text: Zdjęcia wykonane na kliszy, przechowywane przez podmiot udzielający świadczeń zdrowotnych, są udostępniane za potwierdzeniem odbioru i
+      z zastrzeżeniem zwrotu po wykorzystaniu.
+  - p: 136
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+    text: "Dokumentacja medyczna prowadzona w postaci papierowej może być udostępniona przez sporządzenie kopii w formie odwzorowania cyfrowego\
+      \ (skanu) i przekazana w sposób określony \nw ust. 2 lit. d i e, na żądanie pacjenta lub innych uprawnionych organów lub podmiotów."
+  - p: 137
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+    text: Osoba uprawniona do udostępnienia jej dokumentacji medycznej określa, czy chce całość dokumentacji medycznej, czy jej część, oraz określa,
+      w jakim zakresie wnosi o udostępnienie dokumentacji medycznej.
+  - p: 138
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}}
+    text: Za udostępnienie dokumentacji medycznej w sposób określony w ust. 2 lit. b i e oraz w ust. 4 podmiot udzielający świadczeń zdrowotnych
+      może pobierać opłatę.
+  - p: 139
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '7.', kind: decimal, src: auto, level: 0}}
+    text: 'Zgodnie z powyższym ustala się obowiązujące stawki opłaty:'
+  - p: 140
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: jedna strona wyciągu lub odpisu dokumentacji medycznej – ......... zł,
+    slots:
+    - {id: p140_1, span: [57, 66], type: text, context: lub odpisu dokumentacji medycznej ▢ zł}
+  - p: 141
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+    text: jedna strona kopii albo wydruku dokumentacji medycznej – ......... zł,
+    slots:
+    - {id: p141_1, span: [57, 66], type: text, context: albo wydruku dokumentacji medycznej ▢ zł}
+  - p: 142
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}}
+    text: dokumentacja medyczna na elektronicznym nośniku danych – ......... zł.
+    slots:
+    - {id: p142_1, span: [57, 66], type: text, context: na elektronicznym nośniku danych ▢ zł.}
+  - p: 143
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '8.', kind: decimal, src: auto, level: 0}}
+    text: Opłaty, o której mowa w ust. 6-7, nie pobiera się w przypadku udostępnienia dokumentacji medycznej pacjentowi albo jego przedstawicielowi
+      ustawowemu po raz pierwszy w żądanym zakresie i w sposób, o którym mowa w ust. 2 lit. b i e oraz w ust. 4.
+  - p: 144
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '9.', kind: decimal, src: auto, level: 0}, tabs: 1}
+    text: "Dokumentację udostępnia się niezwłocznie.\t"
+  - p: 145
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '10.', kind: decimal, src: auto, level: 0}}
+    text: Dokumentacji medycznej udostępnia się do wglądu wyłącznie na terenie podmiotu leczniczego.
+  - {p: 146, role: spacer}
+  - p: 147
+    role: body
+    layout: {align: center, size: 12.0, bold: true}
+    text: ROZDZIAŁ 9
+  - p: 148
+    role: body
+    layout: {align: center, size: 12.0, bold: true}
+    text: Postanowienia końcowe
+  - p: 149
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 15., kind: paragraph, src: manual, level: 0}}
+    text: § 15.
+  - {p: 150, role: spacer}
+  - p: 151
+    role: body
+    layout: {align: justify, size: 10.0}
+    text: Regulamin Organizacyjny został zatwierdzony przez kierownika podmiotu leczniczego, a jego zmiany mogą nastąpić na podstawie decyzji kierownika
+      podmiotu leczniczego.
+  - {p: 152, role: spacer}

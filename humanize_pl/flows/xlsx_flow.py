@@ -10,17 +10,12 @@ from __future__ import annotations
 import json
 import re
 import unicodedata
+from collections import Counter, defaultdict
 from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any
 
-from humanize_pl.artifacts import is_markup_only
 from humanize_pl.document import DocumentType, RewriteBackend
-from humanize_pl.io.atomic import atomic_output, ensure_distinct_paths, write_text_atomic
-from humanize_pl.reports.axes import AxisRow, axis_rows
-from humanize_pl.reports.operations import operation_lines
-from humanize_pl.runtime import RunControl, checkpoint, controlled, current_control
-
 from .base import (
     FlowSettings,
     ItemOutcome,
@@ -45,6 +40,10 @@ REWRITE_COLUMN = "tekst po redakcji"
 CHANGED_TEXT_COLOR = "FF008000"
 REMOVED_TEXT_COLOR = "FFC00000"
 ACCEPTANCE_SHEET_TITLE = "Do akceptacji"
+# What a reviewer may enter in the decision column, and what it counts as.
+DECISIONS = {"przyjmuję": "accepted", "odrzucam": "rejected"}
+DECISION_HEADER = "Decyzja"
+RULES_HEADER = "Reguły"
 UNRESOLVED_SHEET_TITLE = "Uwagi bez poprawki"
 BASIS_SHEET_TITLE = "Podstawa analizy"
 OUTPUT_COLUMN_WIDTHS = {
@@ -188,7 +187,7 @@ def _format_output_columns(
     for offset, header in enumerate(headers):
         column = first_column + offset
         letter = get_column_letter(column)
-        sheet.column_dimensions[letter].width = OUTPUT_COLUMN_WIDTHS.get(header, 18)
+        sheet.column_dimensions[letter].width = OUTPUT_COLUMN_WIDTHS[header]
 
         for row_index in rows:
             sheet.cell(row=row_index, column=column).alignment = Alignment(
@@ -232,7 +231,11 @@ def _safety_summary(change: dict[str, Any]) -> str:
     """Explain which concrete safety checks an accepted change passed."""
     labels = {
         "numbers_preserved": "liczby",
-        "normativity_preserved": "normatywność (np. może/musi)",
+        "deontic_modality_preserved": "normatywność (np. może/musi)",
+        "negation_preserved": "przeczenia (nie/brak/bez)",
+        "speech_acts_preserved": "czynności (wzywam, wnoszę…)",
+        "party_roles_preserved": "role stron",
+        "party_mentions_preserved": "określenia stron",
         "legal_anchor_retention": "kotwice prawne",
         "content_anchor_retention": "kluczowe pojęcia",
         "protected_fragments": "fragmenty chronione",
@@ -257,6 +260,7 @@ def _safety_summary(change: dict[str, Any]) -> str:
 def _write_acceptance_sheet(workbook, outcomes: list[ItemOutcome]) -> str:
     """Add a one-row-per-edit review queue for a lawyer or public official."""
     from openpyxl.styles import Alignment, Border, Font, PatternFill, Side  # type: ignore
+    from openpyxl.worksheet.datavalidation import DataValidation  # type: ignore
 
     sheet = workbook.create_sheet(_unique_sheet_title(workbook, ACCEPTANCE_SHEET_TITLE))
     sheet.sheet_properties.tabColor = CHANGED_TEXT_COLOR
@@ -271,19 +275,20 @@ def _write_acceptance_sheet(workbook, outcomes: list[ItemOutcome]) -> str:
     thin_gray = Side(style="thin", color="FFD9E2F3")
     row_border = Border(bottom=thin_gray)
 
-    sheet.merge_cells("A1:H1")
+    sheet.merge_cells("A1:J1")
     sheet["A1"] = "Zmiany do akceptacji"
     sheet["A1"].fill = title_fill
     sheet["A1"].font = Font(color="FFFFFFFF", bold=True, size=16)
     sheet["A1"].alignment = Alignment(vertical="center")
     sheet.row_dimensions[1].height = 30
 
-    sheet.merge_cells("A2:H2")
+    sheet.merge_cells("A2:J2")
     sheet["A2"] = (
         "Każdy wiersz poniżej to jedna automatycznie zastosowana poprawka. "
         "Czerwone przekreślenie pokazuje tekst usunięty lub zastąpiony, "
-        "a zielone pogrubienie — tekst dodany lub poprawiony. Raport jest statyczny "
-        "i nie zawiera pól do ręcznego wypełniania."
+        "a zielone pogrubienie — tekst dodany lub poprawiony. W kolumnie „Decyzja” "
+        "można wybrać „przyjmuję” albo „odrzucam”; komenda "
+        "„humanize-pl-flow decisions” zbiera te decyzje w statystykę reguł."
     )
     sheet["A2"].alignment = Alignment(wrap_text=True, vertical="center")
     sheet.row_dimensions[2].height = 42
@@ -295,23 +300,10 @@ def _write_acceptance_sheet(workbook, outcomes: list[ItemOutcome]) -> str:
         for item in outcomes
         if item.status == "ok" and item.findings_before and not item.changes_applied
     )
-    markup_only = sum(
-        1
-        for item in outcomes
-        if item.status == "ok"
-        for change in item.applied_changes
-        if is_markup_only(change)
-    )
-    sheet.merge_cells("A3:H3")
+    sheet.merge_cells("A3:J3")
     sheet["A3"] = (
         f"Wykrycia: {findings}   |   Zastosowane poprawki: {changes}   |   "
         f"Wiersze z uwagami, ale bez automatycznej poprawki: {findings_without_changes}"
-        + (
-            f"   |   Usunięte znaczniki markdown (bez wpływu na treść, niewypisane "
-            f"pojedynczo): {markup_only}"
-            if markup_only
-            else ""
-        )
     )
     sheet["A3"].fill = summary_fill
     sheet["A3"].font = Font(color="FF1F4E78", bold=True)
@@ -327,6 +319,8 @@ def _write_acceptance_sheet(workbook, outcomes: list[ItemOutcome]) -> str:
         "Jest po poprawce",
         "Uzasadnienie",
         "Kontrole bezpieczeństwa",
+        DECISION_HEADER,
+        RULES_HEADER,
     ]
     for column, header in enumerate(headers, start=1):
         cell = sheet.cell(row=5, column=column, value=header)
@@ -344,10 +338,6 @@ def _write_acceptance_sheet(workbook, outcomes: list[ItemOutcome]) -> str:
             after = str(change.get("after", "")).strip()
             if not before or not after or before == after:
                 continue
-            # Counted in the summary line above, not listed: a row per
-            # "**X**" -> "X" buries the edits that need a decision.
-            if is_markup_only(change):
-                continue
             issue = str(change.get("issue", ""))
             risk_label, risk_fill = _risk_level(change.get("risk"))
             values = [
@@ -362,6 +352,8 @@ def _write_acceptance_sheet(workbook, outcomes: list[ItemOutcome]) -> str:
                     describe_visible_change(before, after),
                 ),
                 _safety_summary(change),
+                None,
+                ", ".join(dict.fromkeys(change.get("rules", []))),
             ]
             for column, value in enumerate(values, start=1):
                 cell = sheet.cell(row=row_index, column=column, value=value)
@@ -377,7 +369,7 @@ def _write_acceptance_sheet(workbook, outcomes: list[ItemOutcome]) -> str:
             row_index += 1
 
     if row_index == 6:
-        sheet.merge_cells("A6:H7")
+        sheet.merge_cells("A6:J7")
         sheet["A6"] = (
             "Nie zastosowano żadnej poprawki automatycznie. Wykrycia są uwagami "
             "do ręcznej redakcji i znajdują się w arkuszu „Uwagi bez poprawki”."
@@ -389,7 +381,14 @@ def _write_acceptance_sheet(workbook, outcomes: list[ItemOutcome]) -> str:
         last_row = 7
     else:
         last_row = row_index - 1
-        sheet.auto_filter.ref = f"A5:H{last_row}"
+        sheet.auto_filter.ref = f"A5:J{last_row}"
+        decision = DataValidation(
+            type="list", formula1=f'"{",".join(DECISIONS)}"', allow_blank=True
+        )
+        decision.add(f"I6:I{last_row}")
+        sheet.add_data_validation(decision)
+        for row in range(6, last_row + 1):
+            sheet.cell(row=row, column=10).font = Font(color="FF808080", size=8)
 
     widths = {
         "A": 15,
@@ -400,6 +399,8 @@ def _write_acceptance_sheet(workbook, outcomes: list[ItemOutcome]) -> str:
         "F": 56,
         "G": 42,
         "H": 46,
+        "I": 14,
+        "J": 22,
     }
     for column, width in widths.items():
         sheet.column_dimensions[column].width = width
@@ -409,16 +410,15 @@ def _write_acceptance_sheet(workbook, outcomes: list[ItemOutcome]) -> str:
     sheet.page_setup.fitToHeight = 0
     sheet.sheet_properties.pageSetUpPr.fitToPage = True
     sheet.print_title_rows = "1:5"
-    sheet.print_area = f"A1:H{last_row}"
+    sheet.print_area = f"A1:J{last_row}"
     workbook.active = sheet
     return sheet.title
 
 
 def _write_unresolved_sheet(workbook, outcomes: list[ItemOutcome]) -> str:
     """List every post-rewrite finding that still needs a human decision."""
-    from openpyxl.styles import Alignment, Border, Font, PatternFill, Side  # type: ignore
-
     from humanize_pl.gate import FAMILY_CONSTRAINTS
+    from openpyxl.styles import Alignment, Border, Font, PatternFill, Side  # type: ignore
 
     sheet = workbook.create_sheet(_unique_sheet_title(workbook, UNRESOLVED_SHEET_TITLE))
     sheet.sheet_properties.tabColor = "FFFFC000"
@@ -540,9 +540,8 @@ def _write_unresolved_sheet(workbook, outcomes: list[ItemOutcome]) -> str:
 
 def _write_basis_sheet(workbook, layers: dict[str, Any], settings: FlowSettings) -> str:
     """Explain the method, evidence base and limits in non-technical Polish."""
-    from openpyxl.styles import Alignment, Border, Font, PatternFill, Side  # type: ignore
-
     from humanize_pl.detect import load_profile
+    from openpyxl.styles import Alignment, Border, Font, PatternFill, Side  # type: ignore
 
     sheet = workbook.create_sheet(_unique_sheet_title(workbook, BASIS_SHEET_TITLE))
     sheet.sheet_properties.tabColor = "FF5B9BD5"
@@ -631,15 +630,15 @@ def _write_basis_sheet(workbook, layers: dict[str, Any], settings: FlowSettings)
         ),
         (
             "Co jest wykrywane",
-            ("Szablonowe otwarcia i podsumowania, ogólniki, powtórzenia, niejasne odesłania, "
-            "nominalizacje oraz monotonia zdań i akapitów."),
+            "Szablonowe otwarcia i podsumowania, ogólniki, powtórzenia, niejasne odesłania, "
+            "nominalizacje oraz monotonia zdań i akapitów.",
             "Wykrycie jest sygnałem do przeglądu, a nie dowodem autorstwa AI ani błędu prawnego.",
         ),
         (
             "Punkt odniesienia",
             profile_basis,
-            ("Profil pokazuje typowy rozkład cech ludzkiego pisarstwa w określonym gatunku; "
-            "inne gatunki dokumentów mogą zachowywać się inaczej."),
+            "Profil pokazuje typowy rozkład cech ludzkiego pisarstwa w określonym gatunku; "
+            "inne gatunki dokumentów mogą zachowywać się inaczej.",
         ),
         (
             "Proces",
@@ -648,26 +647,26 @@ def _write_basis_sheet(workbook, layers: dict[str, Any], settings: FlowSettings)
         ),
         (
             "Kontrole bezpieczeństwa",
-            ("Ochrona liczb, dat, kwot, cytatów i podstaw prawnych; kontrola normatywności "
-            "(np. może/musi/powinien), kotwic treści, składni i kompletności zdania."),
+            "Ochrona liczb, dat, kwot, cytatów i podstaw prawnych; kontrola normatywności "
+            "(np. może/musi/powinien), kotwic treści, składni i kompletności zdania.",
             "Przejście kontroli ogranicza ryzyko redakcyjne, ale nie gwarantuje poprawności prawnej.",
         ),
         (
             "Ryzyko redakcyjne",
-            ("Wewnętrzny wskaźnik ryzyka kandydata, tłumaczony na poziomy: niskie, "
-            "umiarkowane i podwyższone."),
+            "Wewnętrzny wskaźnik ryzyka kandydata, tłumaczony na poziomy: niskie, "
+            "umiarkowane i podwyższone.",
             "To nie jest prawdopodobieństwo błędu ani ocena autorstwa lub poprawności prawnej.",
         ),
         (
             "Konfiguracja przebiegu",
             runtime,
-            ("Brak opcjonalnego modelu może oznaczać pracę w trybie uproszczonym; "
-            "podstawowe reguły i walidatory nadal działają."),
+            "Brak opcjonalnego modelu może oznaczać pracę w trybie uproszczonym; "
+            "podstawowe reguły i walidatory nadal działają.",
         ),
         (
             "Ograniczenia",
-            ("Narzędzie nie sprawdza aktualności prawa, poprawności podstawy prawnej, "
-            "kompletności stanu faktycznego ani trafności rozstrzygnięcia."),
+            "Narzędzie nie sprawdza aktualności prawa, poprawności podstawy prawnej, "
+            "kompletności stanu faktycznego ani trafności rozstrzygnięcia.",
             "Końcową odpowiedzialność za dokument ponosi człowiek zatwierdzający treść.",
         ),
     ]
@@ -688,6 +687,33 @@ def _write_basis_sheet(workbook, layers: dict[str, Any], settings: FlowSettings)
     sheet.print_title_rows = "1:4"
     sheet.print_area = f"A1:C{last_row}"
     return sheet.title
+
+
+def read_decisions(paths: list[Path]) -> dict[str, Counter[str]]:
+    """Reviewers' decisions on applied fixes, counted per rule: "accepted",
+    "rejected" and "undecided", from the „Do akceptacji” sheets of finished
+    runs. A fix made by several rules counts for each of them."""
+    openpyxl = _require_openpyxl()
+    by_rule: dict[str, Counter[str]] = defaultdict(Counter)
+    for path in paths:
+        workbook = openpyxl.load_workbook(str(path), read_only=True)
+        for sheet in workbook.worksheets:
+            if not sheet.title.startswith(ACCEPTANCE_SHEET_TITLE):
+                continue
+            header = next(sheet.iter_rows(min_row=5, max_row=5, values_only=True), ())
+            if DECISION_HEADER not in header or RULES_HEADER not in header:
+                continue
+            decision_at, rules_at = header.index(DECISION_HEADER), header.index(RULES_HEADER)
+            for row in sheet.iter_rows(min_row=6, values_only=True):
+                rules = row[rules_at] if rules_at < len(row) else None
+                if not rules:
+                    continue
+                decision = str(row[decision_at] or "").strip().casefold()
+                outcome = DECISIONS.get(decision, "undecided")
+                for rule in str(rules).split(","):
+                    by_rule[rule.strip()][outcome] += 1
+        workbook.close()
+    return dict(by_rule)
 
 
 def _require_openpyxl():
@@ -729,7 +755,6 @@ def resolve_column(sheet, spec: str, *, header_row: int | None) -> int:
     )
 
 
-@controlled
 def run_xlsx_flow(
     input_path: Path,
     output_path: Path,
@@ -744,21 +769,8 @@ def run_xlsx_flow(
     pdf_path: Path | None = None,
     on_item=None,
     on_layers=None,
-    control: RunControl | None = None,
 ) -> dict[str, Any]:
-    if input_path.suffix.lower() != ".xlsx" or output_path.suffix.lower() != ".xlsx":
-        raise ValueError("Obsługiwany jest tylko XLSX. Pliki XLSM z makrami są odrzucane, aby nie utracić makr.")
-    report_path = report_path or output_path.with_name(f"{output_path.stem}_raport.json")
-    pdf_path = pdf_path or output_path.with_name(f"{output_path.stem}_raport.pdf")
-    outputs = [output_path] + ([report_path] if report else []) + ([pdf_path] if pdf else [])
-    ensure_distinct_paths([input_path], outputs)
     openpyxl = _require_openpyxl()
-
-    # A cell is an answer, not a document. Its structure is still reported,
-    # but a "§ 6. Postanowienia końcowe" written into row 17 of a spreadsheet
-    # would complete nothing and corrupt the answer.
-    if settings.draft_missing:
-        raise ValueError("Dopisywanie sekcji nie jest obsługiwane dla komórek XLSX. Wyłącz draft_missing.")
 
     # Two handles on the same file. `data_only=True` yields the cached results
     # of formulas, which is what a column of AI answers pulled from another
@@ -766,11 +778,7 @@ def run_xlsx_flow(
     # formula in the file with a static value. So values are read from one and
     # written to the other.
     workbook = openpyxl.load_workbook(str(input_path))
-    if current_control():
-        current_control().cleanup(workbook.close)
     values_workbook = openpyxl.load_workbook(str(input_path), data_only=True)
-    if current_control():
-        current_control().cleanup(values_workbook.close)
     sheet = workbook[sheet_name] if sheet_name else workbook.active
     values_sheet = values_workbook[sheet.title]
     column_index = resolve_column(sheet, column, header_row=header_row)
@@ -785,7 +793,6 @@ def run_xlsx_flow(
     rewriter, llm_warnings = prepare_llm(settings)
     layers = layer_status(
         session,
-        settings=settings,
         office_profile=style_profile is not None,
         rewriter=rewriter,
         llm_warnings=llm_warnings,
@@ -795,11 +802,8 @@ def run_xlsx_flow(
     start_row = (header_row + 1) if header_row else 1
     outcomes: list[ItemOutcome] = []
     written_rows: list[int] = []
-    axes_by_row: dict[int, list[AxisRow]] = {}
-    operations_by_row: dict[int, str] = {}
 
     for row_index in range(start_row, sheet.max_row + 1):
-        checkpoint("wiersze arkusza", row_index - start_row, sheet.max_row - start_row + 1)
         # Cached formula result first; fall back to the raw cell for files that
         # Excel has never opened and so carry no cached values.
         value = values_sheet.cell(row=row_index, column=column_index).value
@@ -821,19 +825,15 @@ def run_xlsx_flow(
                 llm_prepared=True,
                 llm_initialization_warnings=llm_warnings,
             )
-            outcome.review["workbook"] = {"sheet": sheet.title, "row": row_index,
-                                           "column": column_index, "header_row": header_row}
-        except Exception as exc:  # noqa: BLE001 - one bad row must not stop the sheet
-            outcome = ItemOutcome(name=name, status="failed", error=f"{type(exc).__name__}: {exc}",
-                                  requested_operations=settings.requested_operations())
-            operations_by_row[row_index] = "\n".join(operation_lines([outcome.to_json()]))
+        except Exception as exc:
+            outcome = ItemOutcome(name=name, status="failed", error=f"{type(exc).__name__}: {exc}")
             outcomes.append(outcome)
             if on_item is not None:
                 on_item(outcome)
             continue
 
         values = [
-            outcome.signal_after if outcome.signal_interpretable else "niemiarodajny: krótki tekst",
+            outcome.signal_after,
             "TAK" if outcome.needs_review else "nie",
             outcome.findings_before,
             outcome.changes_applied,
@@ -846,40 +846,10 @@ def run_xlsx_flow(
         for offset, cell_value in enumerate(values):
             sheet.cell(row=row_index, column=first_column + offset, value=cell_value)
         written_rows.append(row_index)
-        axes_by_row[row_index] = axis_rows([outcome.to_json()])
-        operations_by_row[row_index] = "\n".join(operation_lines([outcome.to_json()]))
 
         outcomes.append(outcome)
         if on_item is not None:
             on_item(outcome)
-
-    # "Co się zmieniło" per row, one column per axis - but only the axes that
-    # apply to at least one row. A column of "nie dotyczy" (no office
-    # profile, no skeleton for an answer cell) says nothing a reader needs.
-    applicable = [
-        row.key
-        for row in next(iter(axes_by_row.values()), [])
-        if any(
-            axis.applicable for axes in axes_by_row.values() for axis in axes if axis.key == row.key
-        )
-    ]
-    for key in applicable:
-        column = first_column + len(headers)
-        label = next(axis for axes in axes_by_row.values() for axis in axes if axis.key == key)
-        headers.append(f"{label.axis}: przed → po")
-        for row_index, axes in axes_by_row.items():
-            axis = next(item for item in axes if item.key == key)
-            text_value = (
-                f"{axis.shown(axis.before)} → {axis.shown(axis.after)}"
-                if axis.applicable
-                else "nie dotyczy"
-            )
-            sheet.cell(row=row_index, column=column, value=text_value)
-
-    operation_column = first_column + len(headers)
-    headers.append("Zakres i wyniki czynności")
-    for row_index, description in operations_by_row.items():
-        sheet.cell(row=row_index, column=operation_column, value=description)
 
     # Headers are written only once a row has been processed. Writing them up
     # front widened `max_column` on an empty sheet, which then misreported the
@@ -914,12 +884,8 @@ def run_xlsx_flow(
         }
         workbook.active = workbook[report_sheets["acceptance"]]
 
-    try:
-        with atomic_output(output_path, sources=[input_path]) as staged:
-            workbook.save(str(staged))
-    finally:
-        workbook.close()
-        values_workbook.close()
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    workbook.save(str(output_path))
 
     payload_rows = []
     for item in outcomes:
@@ -941,14 +907,9 @@ def run_xlsx_flow(
         "changes_sheet": report_sheets.get("acceptance"),
         "report_sheets": report_sheets,
         "settings": {
-            "track": settings.track.value,
-            "general_options": settings.general_options.to_json(),
             "mode": settings.mode.value,
             "engine": settings.engine.value,
             "rewrite": settings.rewrite,
-            "check_completeness": settings.check_completeness,
-            "draft_missing": settings.draft_missing,
-            "nli": settings.nli,
             "require_anchor": settings.require_anchor,
             "document_type": settings.document_type.value,
             "rewrite_backend": settings.rewrite_backend.value,
@@ -962,17 +923,19 @@ def run_xlsx_flow(
     }
     if pdf:
         attach_pdf_report(
-            payload, pdf_path
+            payload, pdf_path or output_path.with_name(f"{output_path.stem}_raport.pdf")
         )
 
     # The .docx flow has always written its JSON report unasked. This one used
     # to write it only behind --report, so a plain run left nothing to rebuild
     # a report from and nothing to diff against later. Same default now.
     if report:
-        payload["report_path"] = str(report_path)
-        write_text_atomic(
-            report_path, json.dumps(payload, ensure_ascii=False, indent=2) + "\n", sources=[input_path]
+        report_path = report_path or output_path.with_name(f"{output_path.stem}_raport.json")
+        report_path.parent.mkdir(parents=True, exist_ok=True)
+        report_path.write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
         )
+        payload["report_path"] = str(report_path)
     return payload
 
 
@@ -981,10 +944,10 @@ def _empty_column_message(workbook, sheet, column: str, column_index: int, start
 
     letter = get_column_letter(column_index)
     lines = [
-        (f"Kolumna „{column}” (={letter}) w arkuszu „{sheet.title}” nie ma żadnych "
-        f"niepustych komórek od wiersza {start_row}."),
-        (f"Arkusz ma zakres {sheet.dimensions} "
-        f"({sheet.max_row} wierszy, {sheet.max_column} kolumn)."),
+        f"Kolumna „{column}” (={letter}) w arkuszu „{sheet.title}” nie ma żadnych "
+        f"niepustych komórek od wiersza {start_row}.",
+        f"Arkusz ma zakres {sheet.dimensions} "
+        f"({sheet.max_row} wierszy, {sheet.max_column} kolumn).",
     ]
     if len(workbook.sheetnames) > 1:
         others = ", ".join(f"„{name}”" for name in workbook.sheetnames if name != sheet.title)

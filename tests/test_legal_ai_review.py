@@ -7,8 +7,14 @@ from humanize_pl.cli import app
 from humanize_pl.config import HumanizeConfig, LegalReviewProfile, Mode
 from humanize_pl.core import humanize_text
 from humanize_pl.reports.report import write_json_report
+from humanize_pl.rules.legal_features import (
+    analyze_legal_review_features,
+    legal_anchor_retention,
+    lost_legal_anchors,
+)
 from humanize_pl.safety.protectors import protect_text
-from humanize_pl.safety.validators import validate_candidate
+from humanize_pl.safety.validators import legal_sensitive_inventory, validate_candidate
+
 
 FIXTURE_PATH = Path(__file__).parent / "fixtures" / "ai_legal_samples.json"
 
@@ -67,6 +73,189 @@ def test_validator_rejects_loss_of_legal_party_or_obligation():
     assert validation.reason.startswith("legal anchors removed")
 
 
+def test_legal_anchors_survive_a_change_of_case():
+    # "umowa" -> "umowę", "sąd" -> "sądu": same anchor in another case
+    assert legal_anchor_retention(
+        "Została zawarta umowa, a sąd ją zatwierdził.",
+        "Zawarto umowę, którą zatwierdziło orzeczenie sądu.",
+    ) == 1.0
+    assert lost_legal_anchors("Strona zapłaci karę umowną.", "Zapłaci karę umowną.")
+
+
+def test_money_and_dates_count_as_legal_risk():
+    features = analyze_legal_review_features("Kara wynosi 10% ceny i jest płatna do 2024 r.")
+    assert features.money_or_date_count == 2
+
+
+def test_validator_rejects_parties_swapping_roles():
+    for original, candidate in [
+        (
+            "Najemca zapłaci Wynajmującemu czynsz w terminie siedmiu dni.",
+            "Wynajmujący zapłaci Najemcy czynsz w terminie siedmiu dni.",
+        ),
+        (
+            "Zamawiający zapłaci Wykonawcy wynagrodzenie w terminie siedmiu dni.",
+            "Wykonawca zapłaci Zamawiającemu wynagrodzenie w terminie siedmiu dni.",
+        ),
+    ]:
+        validation = validate_candidate(
+            original, candidate, protected=protect_text(original), max_length_ratio=2.0
+        )
+        assert validation.reason == "parties swapped roles", candidate
+
+
+def test_parties_keeping_their_roles_pass_the_swap_check():
+    from humanize_pl.safety.parties import parties_swapped
+
+    for original, candidate in [
+        # Same subject, restated
+        ("Najemca jest zobowiązany do zapłaty na rzecz Wynajmującego.", "Najemca płaci Wynajmującemu."),
+        # Passive to active: a subject appears, none is lost
+        ("Czynsz jest płacony przez Najemcę Wynajmującemu.", "Najemca płaci Wynajmującemu czynsz."),
+        # Clauses reordered, each party keeps its verb
+        (
+            "Najemca płaci czynsz, a Wynajmujący wydaje lokal.",
+            "Wynajmujący wydaje lokal, a Najemca płaci czynsz.",
+        ),
+        # The contract is not a party
+        ("Umowa określa obowiązki Najemcy.", "Najemca ma obowiązki określone w Umowie."),
+    ]:
+        assert not parties_swapped(original, candidate), candidate
+
+
+def test_validator_rejects_one_party_named_in_place_of_another():
+    for original, candidate in [
+        # The side of the lawsuit liable for costs, swapped
+        (
+            "Pozwana wniosła o zasądzenie od strony pozwanej kosztów procesu.",
+            "Pozwana wniosła o zasądzenie od strony powodowej kosztów procesu.",
+        ),
+        # A legal role replaced by another one: the payer is not the employer
+        (
+            "Płatnik zgłosił ubezpieczoną do ubezpieczeń społecznych w terminie.",
+            "Pracodawca zgłosił ubezpieczoną do ubezpieczeń społecznych w terminie.",
+        ),
+    ]:
+        validation = validate_candidate(
+            original, candidate, protected=protect_text(original), max_length_ratio=2.0
+        )
+        assert validation.reason == "one party named in place of another", candidate
+
+
+def test_party_mentions_may_change_without_an_exchange():
+    from humanize_pl.safety.parties import party_mentions_exchanged
+
+    for original, candidate in [
+        # Passive to active: the same parties, mentioned as often
+        ("Pozwane zostały poinformowane przez powoda o zaległości.", "Powód poinformował pozwane o zaległości."),
+        # A party named less often, by a pronoun
+        ("Pozwany wezwał powoda, a pozwany nie zapłacił.", "Pozwany wezwał powoda, lecz nie zapłacił."),
+        # An opener dropped capitalises a word Morfeusz also reads as a surname
+        ("Warto zauważyć, że zgoda może zostać cofnięta.", "Zgoda może zostać cofnięta."),
+        # Adjectives used as nouns name no party
+        ("Inny świadek potwierdził zeznania powoda.", "Kolejny świadek potwierdził zeznania powoda."),
+    ]:
+        assert not party_mentions_exchanged(original, candidate), candidate
+
+
+def test_validator_rejects_an_act_turned_into_a_request():
+    for original, candidate in [
+        # A hosted model's edit in a payment demand; the meaning check passed it
+        (
+            "Wzywam do zapłaty całej kwoty w terminie 7 dni od dnia doręczenia pisma.",
+            "Płatność całej kwoty proszę dokonać w terminie 7 dni od dnia doręczenia pisma.",
+        ),
+        (
+            "Wnoszę o zasądzenie od pozwanego kosztów postępowania według norm przepisanych.",
+            "Proszę o zasądzenie od pozwanego kosztów postępowania według norm przepisanych.",
+        ),
+    ]:
+        validation = validate_candidate(
+            original, candidate, protected=protect_text(original), max_length_ratio=2.0
+        )
+        assert validation.reason == "performative act changed", candidate
+
+
+def test_acts_kept_reported_or_merely_referred_to_pass():
+    from humanize_pl.safety.speech_acts import speech_acts_changed
+
+    for original, candidate in [
+        ("Niniejszym wypowiadam umowę o pracę.", "Wypowiadam umowę o pracę."),
+        # A request phrased another way is still a request
+        ("Uprzejmie proszę o przesłanie dokumentów.", "Zwracam się z prośbą o przesłanie dokumentów."),
+        # A reference, not an appeal
+        ("Umowa odwołuje się do art. 471 k.c.", "Umowa nawiązuje do art. 471 k.c."),
+        # The past tense reports an act; it performs none
+        ("Powód wezwał pozwanego do zapłaty.", "Powód wezwał pozwaną spółkę do zapłaty."),
+        # The same act carried by a noun: "składam odwołanie", "wnoszę odwołanie"
+        ("Odwołuję się od decyzji z dnia 5 maja.", "Składam odwołanie od decyzji z dnia 5 maja."),
+        ("Odwołuję się od decyzji z dnia 5 maja.", "Wnoszę odwołanie od decyzji z dnia 5 maja."),
+        ("Wnoszę o zasądzenie kwoty.", "Składam wniosek o zasądzenie kwoty."),
+        ("Niniejszym składam wypowiedzenie umowy.", "Wypowiadam umowę."),
+    ]:
+        assert not speech_acts_changed(original, candidate), candidate
+    # An act made into a report of itself is no longer performed
+    assert speech_acts_changed("Składam odwołanie od decyzji.", "Odwołanie od decyzji zostało złożone.")
+
+
+def test_validator_rejects_changed_code_abbreviation():
+    original = "Do szkody stosuje się art. 471 k.c. i strony to akceptują bez zastrzeżeń."
+    validation = validate_candidate(
+        original,
+        "Do szkody stosuje się art. 471 k.p.c. i strony to akceptują bez zastrzeżeń.",
+        protected=protect_text(original),
+        max_length_ratio=2.0,
+    )
+    assert not validation.ok
+    assert validation.reason == "legally sensitive inventory changed: legal_references"
+
+
+def test_party_names_ignore_a_capitalised_common_word_at_sentence_start():
+    inventory = legal_sensitive_inventory(
+        "Niniejsza Umowa wiąże obie strony.\nPonadto Strona zapłaci karę."
+    )
+    assert not inventory["party_names"]
+    inventory = legal_sensitive_inventory(
+        "Jan Kowalski zapłaci karę. Kancelaria Prawna Nowak reprezentuje go w sporze."
+    )
+    assert set(inventory["party_names"]) == {"jan kowalski", "prawna nowak"}
+
+    original = "Niniejsza Umowa wchodzi w życie z dniem jej podpisania przez obie strony."
+    validation = validate_candidate(
+        original,
+        "Ta Umowa wchodzi w życie z dniem jej podpisania przez obie strony.",
+        protected=protect_text(original),
+        max_length_ratio=2.0,
+    )
+    assert validation.ok, validation.reason
+
+
+def test_inventory_tracks_percent_section_and_journal_reference():
+    inventory = legal_sensitive_inventory(
+        "Zgodnie z § 5 kara wynosi 10% kwoty (Dz. U. z 2023 r. poz. 1610)."
+    )
+    assert inventory["amounts"] == {"10%": 1}
+    assert {"§ 5", "dz. u. z 2023 r"} <= set(inventory["legal_references"])
+
+
+def test_only_a_repeated_additive_opener_is_dropped():
+    # The first "Dodatkowo" adds a cumulative condition; it is not overuse
+    single = (
+        "Powodowie wykazali posiadanie nieruchomości. "
+        "Dodatkowo powinni udowodnić, że korzystali z trwałego i widocznego urządzenia."
+    )
+    assert humanize_text(single, mode="standard").text == single
+
+    repeated = (
+        "Pozwany nie zapłacił czynszu. Ponadto pozwany nie wydał lokalu. "
+        "Ponadto pozwany nie oddał kluczy."
+    )
+    assert humanize_text(repeated, mode="standard").text == (
+        "Pozwany nie zapłacił czynszu. Ponadto pozwany nie wydał lokalu. "
+        "Pozwany nie oddał kluczy."
+    )
+
+
 def test_ai_artifact_reduction_preserves_legal_content():
     text = (
         "Warto wskazać, że pracownik wykonuje pracę pod kierownictwem pracodawcy. "
@@ -111,3 +300,40 @@ def test_standard_changes_more_than_conservative_without_relaxing_gates():
         if trace.status == "accepted"
         for gate in trace.gate_results
     )
+
+
+def test_general_text_skips_the_checks_written_for_legal_prose():
+    """A verbless sentence and a split after "oraz" are ordinary writing in an
+    email; the legal checks refused them, the facts and NLI still decide."""
+    from humanize_pl.safety.validators import GENERAL_TEXT_RULE
+
+    for original, candidate, legal_reason in [
+        (
+            "Hotel jest bardzo ładny i zadbany, a obsługa jest miła oraz bardzo pomocna.",
+            "Bardzo ładny, zadbany hotel. Miła i bardzo pomocna obsługa.",
+            "candidate sentence lacks finite verb",
+        ),
+        (
+            "Spotkanie odbędzie się w czwartek o 10:00 w sali 4 oraz potrwa około dwóch godzin.",
+            "Spotkanie odbędzie się w czwartek o 10:00 w sali 4. Potrwa około dwóch godzin.",
+            "sentence split after/around 'oraz' is disabled",
+        ),
+    ]:
+        protected = protect_text(original)
+        legal = validate_candidate(original, candidate, protected=protected, max_length_ratio=2.0)
+        assert legal.reason == legal_reason, candidate
+        general = validate_candidate(
+            original, candidate, protected=protected, max_length_ratio=2.0, rule=GENERAL_TEXT_RULE
+        )
+        assert general.ok, (candidate, general.reason)
+        # A check that did not run is not reported as passed
+        assert {"finite_verb_presence", "sentence_split_safety", "legal_anchor_retention"}.isdisjoint(
+            check.name for check in general.checks
+        )
+    # Facts still bind general text
+    original = "Spotkanie odbędzie się w czwartek o 10:00 w sali 4."
+    candidate = "Spotkanie odbędzie się w piątek o 11:00 w sali 4."
+    general = validate_candidate(
+        original, candidate, protected=protect_text(original), max_length_ratio=2.0, rule=GENERAL_TEXT_RULE
+    )
+    assert not general.ok

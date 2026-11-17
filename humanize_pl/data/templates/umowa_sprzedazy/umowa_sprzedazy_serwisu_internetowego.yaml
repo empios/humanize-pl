@@ -1,0 +1,428 @@
+template: umowa sprzedaży serwisu internetowego.docx
+category: umowa_sprzedazy
+label_pl: Umowa sprzedaży serwisu internetowego
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: UMOWA SPRZEDAŻY I PRZENIESIENIE PRAW AUTORSKICH
+- {p: 1, role: spacer}
+- {p: 2, role: spacer}
+- {p: 3, role: spacer}
+- p: 4
+  role: body
+  layout: {size: 10.0, spans: [{start: 19, end: 38, italic: true}, {start: 52, end: 65, italic: true}]}
+  text: W dniu …………………………… (dzień/miesiąc/rok) w ………………………… (miejscowość)
+  slots:
+  - {id: dzien_miesiac_rok, span: [7, 18], type: date, hint: dzień/miesiąc/rok}
+  - {id: miejscowosc, span: [41, 51], type: place, hint: miejscowość}
+  inline_hints:
+  - {span: [19, 38], text: dzień/miesiąc/rok}
+  - {span: [52, 65], text: miejscowość}
+- {p: 5, role: spacer}
+- p: 6
+  role: party_connector
+  layout: {align: justify, size: 10.0}
+  text: 'pomiędzy:'
+- p: 7
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: …………………………………………………………………………………………………………………………………………………
+  slots:
+  - {id: p7_1, span: [0, 55], type: text, context: ▢}
+- p: 8
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: …………………………………………………………………………………………………………………………………………………
+  slots:
+  - {id: imie_i_nazwisko_firma_miejsce_zamieszkania_siedz, span: [0, 55], type: text, hint: 'imię i nazwisko/firma; miejsce zamieszkania/siedziba
+      i adres; nr i seria dokumentu tożsamości; PESEL, NIP'}
+- p: 9
+  role: hint
+  layout: {align: justify, size: 10.0, italic: true}
+  text: (imię i nazwisko/firma; miejsce zamieszkania/siedziba i adres; nr i seria dokumentu tożsamości; PESEL, NIP)
+  hint_for: 8
+  hint_kind: instruction
+- {p: 10, role: spacer}
+- p: 11
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 22, end: 32, bold: true}]}
+  text: zwanym w treści umowy Sprzedawcą
+  alias: Sprzedawcą
+- {p: 12, role: spacer}
+- p: 13
+  role: party_connector
+  layout: {align: justify, size: 10.0}
+  text: a
+- p: 14
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: …………………………………………………………………………………………………………………………………………………
+  slots:
+  - {id: p14_1, span: [0, 55], type: text, context: ▢}
+- p: 15
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: …………………………………………………………………………………………………………………………………………………
+  slots:
+  - {id: imie_i_nazwisko_firma_miejsce_zamieszkania_siedz_2, span: [0, 55], type: text, hint: imię i nazwisko/firma; miejsce zamieszkania/siedziba
+      i adres; nr i seria dokumentu tożsamości; PESEL}
+- p: 16
+  role: hint
+  layout: {align: justify, size: 10.0, italic: true}
+  text: (imię i nazwisko/firma; miejsce zamieszkania/siedziba i adres; nr i seria dokumentu tożsamości; PESEL)
+  hint_for: 15
+  hint_kind: instruction
+- {p: 17, role: spacer}
+- p: 18
+  role: party_connector
+  layout: {align: justify, size: 10.0}
+  text: oraz
+- p: 19
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: …………………………………………………………………………………………………………………………………………………
+  slots:
+  - {id: p19_1, span: [0, 55], type: text, context: ▢}
+- p: 20
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: …………………………………………………………………………………………………………………………………………………
+  slots:
+  - {id: imie_i_nazwisko_firma_miejsce_zamieszkania_siedz_3, span: [0, 55], type: text, hint: imię i nazwisko/firma; miejsce zamieszkania/siedziba
+      i adres; nr i seria dokumentu tożsamości; PESEL}
+- p: 21
+  role: hint
+  layout: {align: justify, size: 10.0, italic: true}
+  text: (imię i nazwisko/firma; miejsce zamieszkania/siedziba i adres; nr i seria dokumentu tożsamości; PESEL)
+  hint_for: 20
+  hint_kind: instruction
+- {p: 22, role: spacer}
+- p: 23
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 23, end: 33, bold: true}]}
+  text: 'zwanymi w treści umowy Kupującym, '
+  alias: Kupującym
+- {p: 24, role: spacer}
+- p: 25
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 31, end: 40, bold: true}]}
+  text: 'zwanymi łącznie w treści umowy Stronami, '
+  alias: Stronami
+- {p: 26, role: spacer}
+- p: 27
+  role: field_header
+  layout: {align: justify, size: 10.0}
+  text: 'została zawarta Umowa następującej treści:'
+- {p: 28, role: spacer}
+- {p: 29, role: spacer}
+- p: 30
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+  text: § 1
+- {p: 31, role: spacer}
+- p: 32
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 133, end: 180, italic: true},
+      {start: 269, end: 336, italic: true}]}
+  text: 'Przedmiotem Umowy jest sprzedaż serwisu internetowego, funkcjonującego do dnia zawarcia niniejszej Umowy pod adresem www: …………………………
+    (należy wskazać dotychczasowy adres www strony), prowadzonego w ramach działalności gospodarczej Sprzedawcy polegającej na ……………………………… (należy
+    opisać w jakim celu prowadzono dotychczas niniejszą stronę).'
+  slots:
+  - {id: nalezy_wskazac_dotychczasowy_adres_www_strony, span: [122, 132], type: text, hint: należy wskazać dotychczasowy adres www strony}
+  - {id: nalezy_opisac_w_jakim_celu_prowadzono_dotychczas, span: [256, 268], type: text, hint: należy opisać w jakim celu prowadzono dotychczas
+      niniejszą stronę}
+  inline_hints:
+  - {span: [133, 180], text: należy wskazać dotychczasowy adres www strony}
+  - {span: [269, 336], text: należy opisać w jakim celu prowadzono dotychczas niniejszą stronę}
+- p: 33
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Sprzedawca oświadcza, że jest wyłącznym właścicielem serwisu internetowego, stanowiącego przedmiot niniejszej Umowy.
+- p: 34
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Sprzedawca oświadcza ponadto, że opisany powyżej przedmiot umowy jest wolny od jakichkolwiek wad prawnych, w tym wszelkich praw osób trzecich
+    i jakichkolwiek innych obciążeń i zabezpieczeń.
+- {p: 35, role: spacer}
+- p: 36
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+  text: § 2
+- {p: 37, role: spacer}
+- p: 38
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: 'Sprzedawca oświadcza, że przenosi na Kupującego własność serwisu internetowego wskazanego
+
+    w § 1 Umowy, a Kupujący nabywa ww. serwis i zobowiązuje się do zapłaty umówionej ceny. Przedmiot umowy obejmuje:'
+- p: 39
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+  text: ……………………………………………… ;
+  slots:
+  - {id: p39_1, span: [0, 18], type: text, context: ▢}
+- p: 40
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+  text: ……………………………………………… ;
+  slots:
+  - {id: p40_1, span: [0, 18], type: text, context: ▢}
+- p: 41
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}}
+  text: ……………………………………………… ;
+  slots:
+  - {id: p41_1, span: [0, 18], type: text, context: ▢}
+- p: 42
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 4), kind: decimal, src: auto, level: 0}}
+  text: ……………………………………………… .
+  slots:
+  - {id: p42_1, span: [0, 18], type: text, context: ▢}
+- p: 43
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+  text: Szczegółowy spis praw majątkowych i niemajątkowych, wchodzących w skład przedmiotu umowy stanowi Załącznik nr 1 do niniejszej Umowy.
+- p: 44
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}}
+  text: Sprzedawca oświadcza, że do dnia zawarcia niniejszej Umowy nie zbył ww. serwisu internetowego ani żadnego z jego składników na rzecz innego
+    podmiotu niż Kupujący.
+- {p: 45, role: spacer}
+- p: 46
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+  text: § 3
+- {p: 47, role: spacer}
+- p: 48
+  role: body
+  layout: {align: justify, indent: {left: 57, right: 57}, size: 10.0}
+  text: Kupujący oświadcza, że dokonał oględzin przedmiotu określonego w § 1 ust. 1 Umowy, a także oświadcza, że nie wnosi jakichkolwiek zastrzeżeń
+    zarówno co do jego stanu technicznego, jak i jego właściwości, wszystkich parametrów, a także wyglądu.
+- {p: 49, role: spacer}
+- p: 50
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+  text: § 4
+- {p: 51, role: spacer}
+- p: 52
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'Sprzedawca sprzedaje, a Kupujący nabywa serwis internetowy opisany w § 1 Umowy za cenę ......................... zł (słownie: …………………..
+    złotych).'
+  slots:
+  - {id: p52_1, span: [87, 112], type: text, context: 1 Umowy za cenę ▢ zł}
+  - {id: p52_2, span: [126, 135], type: amount, context: za cenę zł słownie ▢ złotych}
+- p: 53
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Zapłata ceny nastąpi w dniu podpisania niniejszej Umowy na rachunek bankowy Sprzedawcy
+
+    o numerze ………………………………… .'
+  slots:
+  - {id: p53_1, span: [97, 110], type: text, context: bankowy Sprzedawcy o numerze ▢}
+- p: 54
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: 'Za dokonanie płatności przez Kupującego uznaje się dzień wpływu środków pieniężnych, o których mowa w ust. 1 powyżej, na rachunek bankowy
+    Sprzedawcy. '
+- p: 55
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: W razie braku zapłaty ceny sprzedaży określonej w § 4 ust. 1 Umowy, Sprzedawca może bez wyznaczenia terminu dodatkowego od Umowy odstąpić.
+    Prawo do odstąpienia Sprzedawca może wykonać w terminie 3 miesięcy od dnia spełnienia się przesłanek do odstąpienia.
+- p: 56
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}}
+  text: Kupujący zapłaci Sprzedawcy odsetki za opóźnienie w transakcjach handlowych z tytułu opóźnienia w uregulowaniu ceny sprzedaży.
+- {p: 57, role: spacer}
+- p: 58
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+  text: § 5
+- {p: 59, role: spacer}
+- p: 60
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Wydanie przedmiotu Umowy nastąpi w dniu .........................., pod warunkiem otrzymania przez Sprzedawcę całości ceny określonej
+    w § 4 ust. 1 Umowy.
+  slots:
+  - {id: p60_1, span: [40, 66], type: date, context: Umowy nastąpi w dniu ▢ pod warunkiem}
+- p: 61
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Od momentu wydania na Kupującym ciąży niebezpieczeństwo utraty lub uszkodzenia przedmiotu umowy.
+- p: 62
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Wraz z wydaniem przedmiotu umowy Sprzedawca przekaże Kupującemu wszelkie posiadane przez niego rzeczy służące do korzystania z serwisu
+    internetowego.
+- {p: 63, role: spacer}
+- p: 64
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 6, kind: paragraph, src: manual, level: 0}}
+  text: § 6
+- {p: 65, role: spacer}
+- p: 66
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 513, end: 542, italic: true}]}
+  text: 'W przypadku zaistnienia w serwisie internetowym błędów nie powstałych na skutek działania siły wyższej, osób trzecich lub Kupującego,
+    Sprzedawca zobowiązuje do ich nieodpłatnego usunięcia
+
+    w ramach gwarancji, w terminie …… dni od daty zgłoszenia błędu, w okresie, o którym mowa
+
+    w ust. 2 poniżej. Zgłoszenie nieprawidłowości działania serwisu internetowego może nastąpić
+
+    w każdy dzień roboczy w godzinach od …… do …… i winno być przesłane drogą elektroniczną poprzez wysłanie e-mail na adres Sprzedawcy: …………………………
+    (należy wskazać adres e-mail).'
+  slots:
+  - {id: p66_1, span: [219, 221], type: text, context: ramach gwarancji w terminie ▢ dni od}
+  - {id: p66_2, span: [406, 408], type: date, context: roboczy w godzinach od ▢ do i}
+  - {id: p66_3, span: [412, 414], type: date, context: w godzinach od do ▢ i winno}
+  - {id: nalezy_wskazac_adres_e_mail, span: [502, 512], type: text, hint: należy wskazać adres e-mail}
+  inline_hints:
+  - {span: [513, 542], text: należy wskazać adres e-mail}
+- p: 67
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Sprzedawca udziela Kupującemu gwarancji na serwis internetowy będący przedmiotem umowy. Gwarancja, o której mowa w zdaniu pierwszym,
+    zostanie udzielona na okres ……… (słownie: ……) miesięcy, począwszy od daty odebrania serwisu internetowego przez Kupującego.'
+  slots:
+  - {id: p67_1, span: [161, 164], type: text, context: zostanie udzielona na okres ▢ miesięcy począwszy}
+  - {id: p67_2, span: [175, 177], type: amount, context: udzielona na okres słownie ▢ miesięcy począwszy}
+- p: 68
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Sprzedawca zastrzega sobie, że w przypadku jakichkolwiek modyfikacji kodu struktury serwisu internetowego przez kogokolwiek, za wyjątkiem
+    Sprzedawcy, Kupujący tracą gwarancję o której mowa w ust. 2 powyżej.
+- {p: 69, role: spacer}
+- p: 70
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 7, kind: paragraph, src: manual, level: 0}}
+  text: § 7
+- {p: 71, role: spacer}
+- p: 72
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: 'Sprzedawca przenosi na Kupującego całość autorskich praw majątkowych do serwisu internetowego oraz poszczególnych elementów graficznych
+    indywidualizujących serwis internetowy, a Kupujący prawa te nabywa, z chwilą wpływu środków pieniężnych, o których mowa w § 4 ust. 1 Umowy,
+    na rachunek bankowy Sprzedawcy. '
+- p: 73
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'Przejście autorskich praw majątkowych obejmuje następujące pola eksploatacji: '
+- p: 74
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+  text: 'utrwalanie i zwielokrotnianie przez wykonywanie kopii plików tworzących dzieło, jak również wydruk kodów źródłowych; '
+- p: 75
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+  text: 'przeglądanie zawartości, co jest równoznaczne ze zwielokrotnianiem utworu w pamięci komputera; '
+- p: 76
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
+  text: 'sprzedaż gotowego projektu strony www bądź udzielaniu na niego licencji; '
+- p: 77
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: d), kind: lowerLetter, src: auto, level: 0}}
+  text: 'publiczne odtwarzanie (np. na rzutniku multimedialnym podczas konferencji); '
+- p: 78
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: e), kind: lowerLetter, src: auto, level: 0}}
+  text: publiczne udostępnianie dowolną techniką, w tym za pomocą sieci Internet;
+- p: 79
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: f), kind: lowerLetter, src: auto, level: 0}}
+  text: dowolna modyfikacja.
+- p: 80
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: 'Kupujący nabywa ponadto wyłączne prawo zezwalania na wykonywanie zależnych praw autorskich do dzieła. '
+- p: 81
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: Kupujący nabywa także wyłączne prawo do korzystania z przedmiotu umowy i rozporządzania nim w celach reklamowych i promocyjnych.
+- p: 82
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}, spans: [{start: 200, end: 247, italic: true}]}
+  text: Autorskie prawa osobiste związane z projektem, poszczególnymi elementami graficznymi indywidualizującymi serwis internetowy pozostają
+    przy podmiocie, który serwis wykonał, tj. …………………………………………………………… (należy oznaczyć podmiot, który wykonał stronę).
+  slots:
+  - {id: nalezy_oznaczyc_podmiot_ktory_wykonal_strone, span: [176, 199], type: text, hint: 'należy oznaczyć podmiot, który wykonał stronę'}
+  inline_hints:
+  - {span: [200, 247], text: 'należy oznaczyć podmiot, który wykonał stronę'}
+- p: 83
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}}
+  text: Na mocy Umowy Kupujący nabywa prawo własności dostarczonych mu przez Sprzedawcę egzemplarzy dzieła (oryginału, kopii, negatywu) bez względu
+    na technikę utrwalenia i nośnik, na którym nastąpiło utrwalenie.
+- p: 84
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '7.', kind: decimal, src: auto, level: 0}}
+  text: 'Sprzedawca w ramach otrzymanego wynagrodzenia od Kupującego udziela Kupującemu licencji na korzystanie z kodu struktury internetowej
+    dla jednego serwisu internetowego Sprzedawcy,
+
+    w zakresie dostępu do niego i korzystania dla jednego serwisu internetowego. Zabronione jest
+
+    w szczególności kopiowanie kodu i jego powielanie dla innych lub podobnych serwisów internetowych Kupującego lub osób trzecich.'
+- {p: 85, role: spacer}
+- p: 86
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 8, kind: paragraph, src: manual, level: 0}}
+  text: § 8
+- {p: 87, role: spacer}
+- p: 88
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Wszelkie zmiany niniejszej Umowy wymagają formy pisemnej pod rygorem nieważności.
+- p: 89
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: 'W sprawach nieuregulowanych zastosowanie znajdą przepisy ustawy z dnia 23 kwietnia 1964 r.
+
+    - Kodeks cywilny, a w zakresie postanowień zawartych w § 7 Umowy, również przepisy ustawy z dnia 4 lutego 1994 r. o prawie autorskim i prawach
+    pokrewnych.'
+- p: 90
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Dla sporów wynikłych na tle niniejszej Umowy właściwy będzie Sąd w ...................................
+  slots:
+  - {id: p90_1, span: [67, 102], type: place, context: właściwy będzie Sąd w ▢}
+- p: 91
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+  text: Umowę sporządzono w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze stron.
+- {p: 92, role: spacer}
+- {p: 93, role: spacer}
+- p: 94
+  role: blank_line
+  layout: {align: center, size: 10.0}
+  text: '...........................................................                              ...........................................................'
+  slots:
+  - {id: p94_1, span: [0, 59], type: signature, context: ▢}
+  - {id: p94_2, span: [89, 148], type: signature, context: ▢}
+- p: 95
+  role: body
+  layout: {align: center, size: 10.0, bold: true}
+  text: KUPUJĄCY                                                                         SPRZEDAWCA
+- {p: 96, role: spacer}
+- {p: 97, role: spacer}
+- {p: 98, role: spacer}
+- p: 99
+  role: field_header
+  layout: {align: justify, size: 10.0, bold: true}
+  text: 'Załączniki:'
+- p: 100
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+  text: Załącznik nr 1 – Spis praw majątkowych i niemajątkowych wchodzących w skład przedmiotu umowy.
+- {p: 101, role: spacer}
+- {p: 102, role: spacer}
+- {p: 103, role: spacer}
+- {p: 104, role: spacer}
+- {p: 105, role: spacer}
+- {p: 106, role: spacer}

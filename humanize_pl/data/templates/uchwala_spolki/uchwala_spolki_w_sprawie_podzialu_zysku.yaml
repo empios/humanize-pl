@@ -1,0 +1,128 @@
+template: Uchwała spółki w sprawie podziału zysku.docx
+category: uchwala_spolki
+label_pl: Uchwała spółki w sprawie podziału zysku
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: body
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: ……………………………, dnia …………………… r.
+  slots:
+  - {id: miejscowosc_i_data, span: [0, 11], type: place_date, hint: miejscowość i data}
+  - {id: miejscowosc_i_data_2, span: [18, 26], type: place_date, hint: miejscowość i data}
+- p: 1
+  role: hint
+  layout: {align: right, indent: {first: 708}, size: 10.0, italic: true}
+  text: (miejscowość i data)
+  hint_for: 0
+  hint_kind: label
+- {p: 2, role: spacer}
+- p: 3
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: UCHWAŁA nr …………………
+  slots:
+  - {id: p3_1, span: [11, 18], type: text, context: UCHWAŁA nr ▢}
+- p: 4
+  role: body
+  layout: {align: center, size: 14.0, bold: true}
+  text: z dnia ………………………
+  slots:
+  - {id: p4_1, span: [7, 16], type: date, context: z dnia ▢}
+- p: 5
+  role: body
+  layout: {align: center, size: 14.0, bold: true}
+  text: 'Wspólników Spółki ……………………………… '
+  slots:
+  - {id: p5_1, span: [18, 30], type: text, context: Wspólników Spółki ▢}
+- p: 6
+  role: body
+  layout: {align: center, size: 14.0, bold: true}
+  text: w sprawie podziału zysku
+- p: 7
+  role: hint
+  layout: {align: justify, size: 10.0}
+  text: (należy wskazać nawzw spółki oraz jej formę prawną np. z ograniczoną odpowiedzialnością)
+  hint_for: 6
+  hint_kind: instruction
+- {p: 8, role: spacer}
+- p: 9
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+  text: § 1
+- p: 10
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 124, end: 145, italic: true}]}
+  text: 'Zgromadzenie wspólników postanawia wynikający z bilansu zysk netto wykazany w sprawozdaniu finansowym za rok obrotowy …………. (należy wskazać
+    rok)  w kwocie ……………….. zł (słownie: ……………………………………. Złotych) podzielić w następujący sposób:'
+  slots:
+  - {id: nalezy_wskazac_rok, span: [118, 123], type: text, hint: należy wskazać rok}
+  - {id: p10_2, span: [155, 163], type: text, context: rok obrotowy w kwocie ▢ zł podzielić}
+  - {id: p10_3, span: [177, 192], type: amount, context: w kwocie zł słownie ▢ Złotych podzielić}
+  inline_hints:
+  - {span: [124, 144], text: należy wskazać rok}
+- p: 11
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: …………………………………………………………………………………………………………………………;
+  slots:
+  - {id: p11_1, span: [0, 46], type: text, context: ▢}
+- p: 12
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: …………………………………………………………………………………………………………………………;
+  slots:
+  - {id: p12_1, span: [0, 46], type: text, context: ▢}
+- p: 13
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: ………………………………………………………………………………………………………………………… .
+  slots:
+  - {id: nalezy_okreslic_w_jaki_sposob_zostanie_podzielon, span: [0, 46], type: text, hint: 'należy określić w jaki sposób zostanie podzielony
+      zysk, jakie kwoty zostaną przeznaczone na rzecz spółki, a jakie na rzecz wspólników'}
+- p: 14
+  role: hint
+  layout: {align: justify, size: 10.0}
+  text: (należy określić w jaki sposób zostanie podzielony zysk, jakie kwoty zostaną przeznaczone na rzecz spółki, a jakie na rzecz wspólników)
+  hint_for: 13
+  hint_kind: instruction
+- {p: 15, role: spacer}
+- p: 16
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+  text: § 2
+- p: 17
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: Uchwała wchodzi w życie z dniem jej podjęcia.
+- {p: 18, role: spacer}
+- {p: 19, role: spacer}
+- p: 20
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: Uchwała została podjęta w głosowaniu jawnym/tajnym jednogłośnie/za uchwałą oddano ……… głosów za, ……… głosów przeciw.
+  slots:
+  - {id: p20_1, span: [82, 85], type: text, context: jednogłośnie za uchwałą oddano ▢ głosów za}
+  - {id: p20_2, span: [97, 100], type: text, context: uchwałą oddano głosów za ▢ głosów przeciw.}
+- {p: 21, role: spacer}
+- {p: 22, role: spacer}
+- p: 23
+  role: field_header
+  layout: {align: right, indent: {first: 708}, size: 10.0, bold: true}
+  text: 'Podpisy wspólników:'
+- {p: 24, role: spacer}
+- p: 25
+  role: blank_line
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: ……………………………………………
+  slots:
+  - {id: podpisy_wspolnikow, span: [0, 17], type: signature, label: Podpisy wspólników}
+- p: 26
+  role: blank_line
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: ……………………………………………
+  slots:
+  - {id: podpisy_wspolnikow_2, span: [0, 17], type: signature, label: Podpisy wspólników}
+- {p: 27, role: spacer}
+- {p: 28, role: spacer}

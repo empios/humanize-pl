@@ -1,0 +1,459 @@
+template: Umowa najmu rzeczy ruchomej.docx
+category: umowa_najmu
+label_pl: Umowa najmu rzeczy ruchomej
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: 'UMOWA NAJMU RZECZY RUCHOMEJ '
+- {p: 1, role: spacer}
+- p: 2
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 42, end: 48, italic: true}, {start: 76, end: 91, italic: true}]}
+  text: 'Zawarta dnia ............................ (data) w ………..................... (miejscowość), pomiędzy:'
+  slots:
+  - {id: data, span: [13, 41], type: date, hint: data}
+  - {id: miejscowosc, span: [51, 75], type: place, hint: miejscowość}
+  inline_hints:
+  - {span: [42, 48], text: data}
+  - {span: [76, 89], text: miejscowość}
+- {p: 3, role: spacer}
+- p: 4
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: '..........................................................................................................................................................................................................................................................................................................'
+  slots:
+  - {id: imie_i_nazwisko_firma_miejsce_zamieszkania_siedz, span: [0, 298], type: text, hint: 'imię i nazwisko/firma; miejsce zamieszkania/siedziba;
+      nr i seria dokumentu tożsamości; PESEL, NIP'}
+- p: 5
+  role: hint
+  layout: {align: justify, size: 10.0, italic: true}
+  text: (imię i nazwisko/firma; miejsce zamieszkania/siedziba; nr i seria dokumentu tożsamości; PESEL, NIP)
+  hint_for: 4
+  hint_kind: instruction
+- p: 6
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 13, end: 25, bold: true}]}
+  text: zwanym dalej Wynajmującym
+  alias: Wynajmującym
+- p: 7
+  role: party_connector
+  layout: {align: justify, size: 10.0}
+  text: a
+- p: 8
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: '..........................................................................................................................................................................................................................................................................................................'
+  slots:
+  - {id: imie_i_nazwisko_firma_miejsce_zamieszkania_siedz_2, span: [0, 298], type: text, hint: 'imię i nazwisko/firma; miejsce zamieszkania/siedziba;
+      nr i seria dokumentu tożsamości; PESEL, NIP'}
+- p: 9
+  role: hint
+  layout: {align: justify, size: 10.0, italic: true}
+  text: (imię i nazwisko/firma; miejsce zamieszkania/siedziba; nr i seria dokumentu tożsamości; PESEL, NIP)
+  hint_for: 8
+  hint_kind: instruction
+- p: 10
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 13, end: 21, bold: true}]}
+  text: zwanym dalej Najemcą,
+  alias: Najemcą
+- {p: 11, role: spacer}
+- p: 12
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 14, end: 23, bold: true}]}
+  text: zwanymi dalej Stronami.
+  alias: Stronami
+- {p: 13, role: spacer}
+- p: 14
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+  text: § 1
+- p: 15
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: Przedmiot umowy najmu
+- {p: 16, role: spacer}
+- p: 17
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 37, end: 50, bold: true}, {start: 51,
+        end: 58, bold: true}, {start: 121, end: 168, italic: true}, {start: 181, end: 198, bold: true}]}
+  text: Przedmiotem umowy jest oddanie przez Wynajmującego Najemcy do używania w zamian za umówiony czynsz ……………………………………………………. (należy wskazać
+    rzecz będącą przedmiotem umowy) zwany dalej przedmiotem umowy.
+  slots:
+  - {id: nalezy_wskazac_rzecz_bedaca_przedmiotem_umowy, span: [99, 120], type: text, hint: należy wskazać rzecz będącą przedmiotem umowy}
+  inline_hints:
+  - {span: [121, 168], text: należy wskazać rzecz będącą przedmiotem umowy}
+- p: 18
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 11, bold: true}]}
+  text: Wynajmujący oświadcza, że jest jedynym właścicielem ww. przedmiotu umowy, a także że jest on sprawny i zdatny do użytku.
+- p: 19
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 7, bold: true}]}
+  text: "Najemca oświadcza, że został poinformowany o sposobie użytkowania przedmiotu umowy \ni zobowiązuje się do korzystania z przedmiotu umowy\
+    \ zgodnie z jego przeznaczeniem. "
+- {p: 20, role: spacer}
+- p: 21
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+  text: § 2
+- p: 22
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: Wydanie przedmiotu umowy
+- {p: 23, role: spacer}
+- p: 24
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 11, bold: true}, {start: 34,
+        end: 42, bold: true}, {start: 240, end: 249, bold: true}, {start: 250, end: 254, bold: true}]}
+  text: Wynajmujący zobowiązuje się wydać Najemcy przedmiot umowy opisany w § 1 ust. 1 Umowy nie później niż w ciągu ........... dni kalendarzowych
+    od daty zawarcia niniejszej umowy, na podstawie protokołu zdawczo-odbiorczego, którego wzór stanowi Załącznik nr 1 do niniejszej Umowy.
+  slots:
+  - {id: p24_1, span: [109, 120], type: text, context: później niż w ciągu ▢ dni kalendarzowych}
+- p: 25
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 8, bold: true}, {start: 32,
+        end: 45, bold: true}]}
+  text: 'Najemca zobowiązuje się zwrócić Wynajmującemu przedmiot umowy opisany w § 1 ust. 1 Umowy nie później niż w ciągu ........... dni kalendarzowych
+    od daty wygaśnięcia lub rozwiązania niniejszej umowy z jakiegokolwiek powodu. '
+  slots:
+  - {id: p25_1, span: [113, 124], type: text, context: później niż w ciągu ▢ dni kalendarzowych}
+- p: 26
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 132, end: 141, bold: true}, {
+        start: 142, end: 146, bold: true}]}
+  text: Wydanie przedmiotu umowy i jego zwrot po zakończeniu najmu zostaną potwierdzone protokołem zdawczo-odbiorczym, którego wzór stanowi Załącznik
+    nr 1 do niniejszej Umowy.
+- {p: 27, role: spacer}
+- p: 28
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+  text: § 3
+- p: 29
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: Sposób używania
+- {p: 30, role: spacer}
+- p: 31
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 7, bold: true}]}
+  text: Najemca zobowiązuje się do używania przedmiotu umowy zgodnie z jego przeznaczeniem.
+- p: 32
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 7, bold: true}]}
+  text: Najemca zobowiązuje się do osobistego korzystania z przedmiotu umowy. Oddanie przedmiotu umowy do używania osobie trzeciej w jakiejkolwiek
+    formie i w jakimkolwiek celu możliwe jest jedynie za zgodą wynajmującego wyrażoną w formie pisemnej.
+- p: 33
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 7, bold: true}]}
+  text: Najemca zobowiązuje się do przechowywania przedmiotu umowy w sposób zabezpieczający jego integralność oraz zobowiązuje się chronić go
+    przed pogorszeniem jego stanu, uszkodzeniem, zniszczeniem oraz przed dostępem osób trzecich.
+- p: 34
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 7, bold: true}, {start: 72,
+        end: 85, bold: true}, {start: 122, end: 133, bold: true}]}
+  text: Najemca zobowiązuje się do okazania przedmiotu umowy  na każde wezwanie Wynajmującego w terminie przez niego wyznaczonym. Wynajmujący
+    może w każdym czasie przeprowadzić kontrolę stanu technicznego przedmiotu umowy.
+- p: 35
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 8, bold: true}]}
+  text: Najemca zobowiązuje się wykorzystywać przedmiot umowy zgodnie z umową, w tym z jego przeznaczeniem i właściwościami, oraz zasadami prawidłowej
+    gospodarki, a w szczególności utrzymywać przedmiot umowy w niepogorszonym stanie ponad jego zużycie będące następstwem prawidłowego używania,
+- p: 36
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 7, bold: true}, {start: 54,
+        end: 68, bold: true}, {start: 209, end: 230, italic: true}, {start: 255, end: 278, italic: true}]}
+  text: 'Najemca zobowiązuje się do niezwłocznego informowania Wynajmującego o każdym przypadku pogorszenia stanu przedmiotu umowy, jego awarii,
+    uszkodzeniu, zniszczeniu lub utracie drogą telefoniczną na nr ………………………… (wskazać nr telefonu) lub mailową: ………………………… (wskazać adres mailowy).'
+  slots:
+  - {id: wskazac_nr_telefonu, span: [198, 208], type: text, hint: wskazać nr telefonu}
+  - {id: wskazac_adres_mailowy, span: [244, 254], type: address, hint: wskazać adres mailowy}
+  inline_hints:
+  - {span: [209, 230], text: wskazać nr telefonu}
+  - {span: [255, 278], text: wskazać adres mailowy}
+- p: 37
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '7.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 7, bold: true}]}
+  text: Najemca nie może dokonywać w przedmiocie umowy zmian ani ulepszeń bez uprzedniej zgody Wynajmującego wyrażonej na piśmie.
+- {p: 38, role: spacer}
+- p: 39
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+  text: § 4
+- p: 40
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: Odpowiedzialność
+- {p: 41, role: spacer}
+- p: 42
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 33, end: 43, bold: true}]}
+  text: Z chwilą wydania przedmiotu umowy Najemcy, ponosi on pełną odpowiedzialność za jego stan techniczny jak i za ewentualne uszkodzenia przedmiotu
+    umowy zaistniałe z jego winy.
+- p: 43
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 7, bold: true}]}
+  text: Najemca jest odpowiedzialny za szkody wynikające z używania przedmiotu umowy w sposób sprzeczny z umową albo z jego właściwościami lub
+    z przeznaczeniem.
+- p: 44
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 40, end: 48, bold: true}, {start: 72,
+        end: 85, bold: true}, {start: 136, end: 143, bold: true}]}
+  text: Po zakończeniu trwania niniejszej umowy Najemca obowiązany jest zwrócić Wynajmującemu przedmiot umowy w stanie niepogorszonym; jednakże
+    Najemca nie ponosi odpowiedzialności za zużycie przedmiotu umowy będące następstwem prawidłowego, normalnego używania.
+- {p: 45, role: spacer}
+- p: 46
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+  text: § 5
+- p: 47
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: Kary umowne
+- p: 48
+  role: hint
+  layout: {align: center, size: 10.0, italic: true}
+  text: (postanowienia dotyczące kar umownych nie są obligatoryjne, Strony mogą je usunąć)
+  hint_for: 47
+  hint_kind: instruction
+- p: 49
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 7, bold: true}, {start: 16,
+        end: 29, bold: true}]}
+  text: 'Najemca zapłaci Wynajmującemu karę umowną w wysokości ………… zł (słownie ……………… zł) za każdy stwierdzony przypadek naruszenia § 3 ust.
+    1 umowy. '
+  slots:
+  - {id: p49_1, span: [54, 58], type: amount, context: karę umowną w wysokości ▢ zł za}
+  - {id: p49_2, span: [71, 77], type: amount, context: w wysokości zł słownie ▢ zł za}
+- p: 50
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 7, bold: true}, {start: 16,
+        end: 29, bold: true}]}
+  text: 'Najemca zapłaci Wynajmującemu karę umowną w wysokości ………… zł (słownie ……………… zł) za każdy stwierdzony przypadek naruszenia § 3 ust.
+    2 umowy. '
+  slots:
+  - {id: p50_1, span: [54, 58], type: amount, context: karę umowną w wysokości ▢ zł za}
+  - {id: p50_2, span: [71, 77], type: amount, context: w wysokości zł słownie ▢ zł za}
+- p: 51
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 7, bold: true}, {start: 16,
+        end: 29, bold: true}]}
+  text: 'Najemca zapłaci Wynajmującemu karę umowną w wysokości ………… zł (słownie ……………… zł) za każdy stwierdzony przypadek naruszenia § 3 ust.
+    4 umowy. '
+  slots:
+  - {id: p51_1, span: [54, 58], type: amount, context: karę umowną w wysokości ▢ zł za}
+  - {id: p51_2, span: [71, 77], type: amount, context: w wysokości zł słownie ▢ zł za}
+- p: 52
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 7, bold: true}, {start: 16,
+        end: 29, bold: true}]}
+  text: 'Najemca zapłaci Wynajmującemu karę umowną w wysokości ………… zł (słownie ……………… zł) za każdy dzień opóźnienia w zwrocie przedmiotu umowy
+    po rozwiązaniu lub wygaśnięciu niniejszej umowy.  '
+  slots:
+  - {id: p52_1, span: [54, 58], type: amount, context: karę umowną w wysokości ▢ zł za}
+  - {id: p52_2, span: [71, 77], type: amount, context: w wysokości zł słownie ▢ zł za}
+- p: 53
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}, spans: [{start: 26, end: 39, bold: true}]}
+  text: W razie poniesienia przez Wynajmującego szkody przewyższającej wysokość zastrzeżonych kar umownych, może on żądać naprawienia szkody na
+    zasadach ogólnych.
+- {p: 54, role: spacer}
+- p: 55
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 6, kind: paragraph, src: manual, level: 0}}
+  text: § 6
+- p: 56
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: Okres obowiązywania umowy
+- {p: 57, role: spacer}
+- p: 58
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 130, end: 240, italic: true}]}
+  text: 'Umowa zawarta zostaje na okres ……… od dnia …………………… do dnia ……………….., z zastrzeżeniem ust. 2 tego paragrafu/na czas nieoznaczony. (należy
+    wybrać, czy umowa jest zawierana na czas oznaczony lub nieoznaczony i wykreślić niepotrzebny fragment) '
+  slots:
+  - {id: p58_1, span: [31, 34], type: text, context: zawarta zostaje na okres ▢ od dnia}
+  - {id: p58_2, span: [43, 51], type: date, context: na okres od dnia ▢ do dnia}
+  - {id: p58_3, span: [60, 68], type: date, context: od dnia do dnia ▢ z zastrzeżeniem}
+- p: 59
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 73, end: 80, bold: true}, {start: 123,
+        end: 136, bold: true}]}
+  text: 'Najem przedmiotu umowy rozpoczyna się w dniu protokolarnego jego wydania Najemcy i trwa do dnia jego protokolarnego zwrotu Wynajmującemu. '
+- {p: 60, role: spacer}
+- p: 61
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 7, kind: paragraph, src: manual, level: 0}}
+  text: '§ 7 '
+- p: 62
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: Czynsz najmu
+- {p: 63, role: spacer}
+- p: 64
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 179, end: 192, bold: true}, {
+        start: 223, end: 236, italic: true}, {start: 259, end: 285, italic: true}]}
+  text: 'Czynsz najmu wynosi ………. (słownie: ………………….…) złotych brutto/netto miesięcznie i płatny jest z góry w terminie do ….. dnia każdego miesiąca
+    przelewem bankowym na rachunek bankowy Wynajmującego prowadzony przez bank …………….. (nazwa banku)  o numerze: …………..……… (numer rachunku bankowego).'
+  slots:
+  - {id: p64_1, span: [20, 24], type: text, context: Czynsz najmu wynosi ▢ złotych brutto}
+  - {id: p64_2, span: [35, 44], type: amount, context: Czynsz najmu wynosi słownie ▢ złotych brutto}
+  - {id: p64_3, span: [114, 117], type: date, context: góry w terminie do ▢ dnia każdego}
+  - {id: nazwa_banku, span: [215, 222], type: text, hint: nazwa banku}
+  - {id: numer_rachunku_bankowego, span: [249, 258], type: text, hint: numer rachunku bankowego}
+  inline_hints:
+  - {span: [223, 236], text: nazwa banku}
+  - {span: [259, 285], text: numer rachunku bankowego}
+- p: 65
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 35, end: 42, bold: true}, {start: 105,
+        end: 118, bold: true}]}
+  text: 'Za dzień dokonania płatności przez Najemcę uznaje się dzień zaksięgowania płatności na rachunku bankowym Wynajmującego/dzień obciążenia
+    rachunku bankowego. '
+- p: 66
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 102, end: 109, bold: true}]}
+  text: Wszelkie koszty bieżące użytkowania przedmiotu umowy w czasie trwania niniejszej umowy będzie ponosił Najemca.
+- {p: 67, role: spacer}
+- p: 68
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 8, kind: paragraph, src: manual, level: 0}}
+  text: § 8
+- p: 69
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: 'Wypowiedzenie umowy '
+- {p: 70, role: spacer}
+- p: 71
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Oświadczenie o wypowiedzeniu lub rozwiązaniu Umowy powinno być złożone w formie pisemnej pod rygorem nieważności.
+- p: 72
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 57, italic: true}]}
+  text: (postanowienie przy umowie zawartej na czas nieoznaczony) Każda ze Stron może wypowiedzieć umowę z zachowaniem …….. okresu wypowiedzenia
+    ze skutkiem na koniec miesiąca.
+  slots:
+  - {id: p72_1, span: [111, 115], type: text, context: wypowiedzieć umowę z zachowaniem ▢ okresu wypowiedzenia}
+- p: 73
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 54, italic: true}]}
+  text: '(postanowienie przy umowie zawartej na czas oznaczony) Każda ze Stron może wypowiedzieć umowę z zachowaniem …….. okresu wypowiedzenia
+    ze skutkiem na koniec miesiąca w przypadku wystąpienia ważnych powodów uniemożliwiających dalsze wykonywanie mowy, w szczególności takich
+    jak: '
+  slots:
+  - {id: p73_1, span: [108, 112], type: text, context: wypowiedzieć umowę z zachowaniem ▢ okresu wypowiedzenia}
+- p: 74
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+  text: ………………………………………………………………………..;
+  slots:
+  - {id: p74_1, span: [0, 29], type: text, context: ▢}
+- p: 75
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+  text: ………………………………………………………………………..;
+  slots:
+  - {id: p75_1, span: [0, 29], type: text, context: ▢}
+- p: 76
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}}
+  text: ……………………………………………………………………… .
+  slots:
+  - {id: p76_1, span: [0, 27], type: text, context: ▢}
+- p: 77
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 11, bold: true}]}
+  text: 'Wynajmujący może w każdym czasie rozwiązać niniejszą Umowę bez zachowania okresu wypowiedzenia w przypadku, gdy:'
+- p: 78
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 7, bold: true}]}
+  text: 'Najemca używa sprzętu w sposób niezgodny z przeznaczeniem; '
+- p: 79
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 7, bold: true}]}
+  text: Najemca zalega z zapłatą czynszu za co najmniej ……………..;
+  slots:
+  - {id: p79_1, span: [48, 55], type: text, context: czynszu za co najmniej ▢}
+- p: 80
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 7, bold: true}]}
+  text: Najemca oddał sprzęt do używania osobie trzeciej;
+- p: 81
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: 4), kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 7, bold: true}, {start: 57,
+        end: 71, bold: true}]}
+  text: Najemca dokonał w sprzęcie zmian lub ulepszeń  bez zgody Wynajmującego.
+- p: 82
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 7, bold: true}, {start: 125,
+        end: 140, bold: true}, {start: 160, end: 171, bold: true}]}
+  text: 'Najemca ma prawo rozwiązać umowę bez zachowania okresu wypowiedzenia w przypadku rażącego naruszenia postanowień Umowy przez Wynajmującego,
+    w szczególności gdy Wynajmujący zwleka z wydaniem przedmiotu umowy w umówionym terminie lub gdy przedmiot umowy okaże się posiadać wady lub
+    usterki uniemożliwiające korzystanie z niego zgodnie z przeznaczeniem. '
+- {p: 83, role: spacer}
+- p: 84
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 9, kind: paragraph, src: manual, level: 0}}
+  text: § 9
+- p: 85
+  role: body
+  layout: {align: center, size: 12.0, bold: true}
+  text: Postanowienia końcowe
+- {p: 86, role: spacer}
+- p: 87
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Wszelkie zmiany niniejszej umowy pod rygorem nieważności wymagają formy pisemnej.
+- p: 88
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: W sprawach nieregulowanych niniejszą umową obowiązują przepisy ustawy z dnia 23 kwietnia 1964 r. - Kodeks cywilny.
+- p: 89
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Umowa została sporządzona w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze Stron.
+- {p: 90, role: spacer}
+- {p: 91, role: spacer}
+- {p: 92, role: spacer}
+- p: 93
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: '..........................................................'
+  slots:
+  - {id: p93_1, span: [0, 58], type: signature, context: ▢}
+- p: 94
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: '                       .........................................................'
+  slots:
+  - {id: podpis_wynajmujacego, span: [23, 80], type: signature, hint: podpis Wynajmującego}
+- p: 95
+  role: hint
+  layout: {align: justify, size: 10.0, bold: true}
+  text: '         [podpis Wynajmującego]'
+  hint_for: 94
+  hint_kind: label
+- p: 96
+  role: hint
+  layout: {align: justify, size: 10.0, bold: true, tabs: 1}
+  text: "                                       [podpis Najemcy]\t"
+- {p: 97, role: spacer}
+- {p: 98, role: spacer}
+- {p: 99, role: spacer}
+- {p: 100, role: spacer}
+- p: 101
+  role: field_header
+  layout: {align: justify, size: 10.0, bold: true}
+  text: 'Załącznik:'
+- p: 102
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Protokół zdawczo-odbiorczy.
+- {p: 103, role: spacer}
+- {p: 104, role: spacer}

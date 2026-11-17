@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any
-
 import regex as re
+from typing import Any
 
 from .config import Engine, HumanizeConfig, LegalReviewProfile, Mode
 from .detect import detect_document
@@ -57,11 +56,7 @@ class HumanizerSession:
 
     def __post_init__(self) -> None:
         if self.rule_engine is None:
-            self.rule_engine = RuleEngine(
-                mode=self.config.mode,
-                preferred_terms=self.config.preferred_terms,
-                disabled_rules=self.config.disabled_rules,
-            )
+            self.rule_engine = RuleEngine(mode=self.config.mode)
 
     def humanize(self, text: str, *, include_candidates: bool = False) -> HumanizeResult:
         # Detection is deliberately outside the rewrite pipeline: it must report
@@ -76,12 +71,7 @@ class HumanizerSession:
         pipeline = LegalPipeline(
             config=self.config,
             protected=protected,
-            rule_engine=self.rule_engine
-            or RuleEngine(
-                mode=self.config.mode,
-                preferred_terms=self.config.preferred_terms,
-                disabled_rules=self.config.disabled_rules,
-            ),
+            rule_engine=self.rule_engine or RuleEngine(mode=self.config.mode),
             stanza_engine=self.stanza_engine,
             semantic=self.semantic,
             fluency=self.fluency,
@@ -157,8 +147,6 @@ def create_humanizer_session(
     offline_models: bool = False,
     agreement_gate_enabled: bool = True,
     require_morfeusz: bool = False,
-    preferred_terms: dict[str, str] | None = None,
-    disabled_rules: frozenset[str] = frozenset(),
 ) -> HumanizerSession:
     mode_v = _coerce_mode(mode)
     engine_v = _coerce_engine(engine)
@@ -170,8 +158,6 @@ def create_humanizer_session(
         semantic_threshold=semantic_threshold,
         semantic_model=semantic_model,
         fluency_model=fluency_model,
-        preferred_terms=preferred_terms,
-        disabled_rules=frozenset(disabled_rules),
         require_models=require_models,
         offline_models=offline_models,
         agreement_gate_enabled=agreement_gate_enabled,

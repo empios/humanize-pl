@@ -1,0 +1,375 @@
+template: Umowa pośrednictwa w sprowadzeniu pojazdu z USA.docx
+category: umowa_posrednictwa
+label_pl: Umowa pośrednictwa w sprowadzeniu pojazdu z USA
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: UMOWA POŚREDNICTWA SPROWADZENIA POJAZDU Z USA
+- {p: 1, role: spacer}
+- {p: 2, role: spacer}
+- p: 3
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: 'Niniejsza Umowa została zawarta dnia …………………….. r. w …………… pomiędzy:'
+  slots:
+  - {id: p3_1, span: [37, 47], type: date, context: Umowa została zawarta dnia ▢ r. w}
+  - {id: p3_2, span: [53, 58], type: place, context: zawarta dnia r. w ▢ pomiędzy}
+- {p: 4, role: spacer}
+- p: 5
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: '………………………………… (nazwa, adres i siedziba przedsiębiorstwa),  reprezentowanym przez ………………………………… (imię i nazwisko osoby reprezentującej
+    Zleceniobiorcę) '
+  slots:
+  - {id: nazwa_adres_i_siedziba_przedsiebiorstwa, span: [0, 13], type: address, hint: 'nazwa, adres i siedziba przedsiębiorstwa'}
+  - {id: imie_i_nazwisko_osoby_reprezentujacej_zleceniobi, span: [81, 94], type: person, hint: imię i nazwisko osoby reprezentującej Zleceniobiorcę}
+  inline_hints:
+  - {span: [14, 56], text: 'nazwa, adres i siedziba przedsiębiorstwa'}
+  - {span: [95, 149], text: imię i nazwisko osoby reprezentującej Zleceniobiorcę}
+- {p: 6, role: spacer}
+- p: 7
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 14, end: 24, bold: true}, {start: 26, end: 38, bold: true}]}
+  text: zwanym dalej „Sprzedawcą (pośrednikiem)”,
+  alias: Sprzedawcą
+- {p: 8, role: spacer}
+- p: 9
+  role: party_connector
+  layout: {align: justify, size: 10.0}
+  text: a
+- {p: 10, role: spacer}
+- p: 11
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: '.………………………………………….. (imię i nazwisko)  '
+  slots:
+  - {id: imie_i_nazwisko, span: [0, 19], type: person, hint: imię i nazwisko}
+  inline_hints:
+  - {span: [20, 37], text: imię i nazwisko}
+- p: 12
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: …………………………………………. (adres zamieszkania)
+  slots:
+  - {id: adres_zamieszkania, span: [0, 17], type: address, hint: adres zamieszkania}
+  inline_hints:
+  - {span: [18, 38], text: adres zamieszkania}
+- p: 13
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: …………………………………………. (numer PESEL oraz numer dowodu osobistego)
+  slots:
+  - {id: numer_pesel_oraz_numer_dowodu_osobistego, span: [0, 17], type: pesel, hint: numer PESEL oraz numer dowodu osobistego}
+  inline_hints:
+  - {span: [18, 60], text: numer PESEL oraz numer dowodu osobistego}
+- p: 14
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: '………………………………………….. (dane kontaktowe) '
+  slots:
+  - {id: dane_kontaktowe, span: [0, 18], type: text, hint: dane kontaktowe}
+  inline_hints:
+  - {span: [19, 36], text: dane kontaktowe}
+- {p: 15, role: spacer}
+- p: 16
+  role: party_alias
+  layout: {align: justify, size: 10.0, spans: [{start: 14, end: 21, bold: true}]}
+  text: zwanym dalej „Nabywcą”.
+  alias: Nabywcą
+- {p: 17, role: spacer}
+- p: 18
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+  text: § 1 Przedmiot umowy
+- {p: 19, role: spacer}
+- p: 20
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 18, end: 28, bold: true}, {start: 30,
+        end: 40, bold: true}]}
+  text: 'Nabywca nabywa od Sprzedawcy (pośrednika) pojazd: ………………..'
+  slots:
+  - {id: nabywca_nabywa_od_sprzedawcy_posrednika_pojazd, span: [50, 58], type: date, label: Nabywca nabywa od Sprzedawcy (pośrednika) pojazd}
+- p: 21
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+  text: 'marka: …………….'
+  slots:
+  - {id: marka, span: [7, 13], type: text, label: marka}
+- p: 22
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+  text: 'model: ……………'
+  slots:
+  - {id: model, span: [7, 12], type: text, label: model}
+- p: 23
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}}
+  text: 'rok produkcji: ………………'
+  slots:
+  - {id: rok_produkcji, span: [15, 21], type: text, label: rok produkcji}
+- p: 24
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: d), kind: lowerLetter, src: auto, level: 0}, spans: [{start: 26, end: 33, bold: true}]}
+  text: 'maksymalna kwota, za jaką Nabywca chce wylicytować pojazd: ……………….'
+  slots:
+  - {id: maksymalna_kwota_za_jaka_nabywca_chce_wylicytowa, span: [59, 66], type: amount, label: 'maksymalna kwota, za jaką Nabywca chce wylicytować
+      pojazd'}
+- p: 25
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 22, end: 29, bold: true}, {start: 31,
+        end: 41, bold: true}, {start: 43, end: 52, bold: true}]}
+  text: Zgodnie z zamówieniem Nabywcy, Sprzedawca (pośrednik) dokona zakupu pojazdu, o którym mowa w § 1 ust. 1, u dilera lub aukcji na terytorium
+    USA oraz sprowadzi ww. pojazd w miejsce odbioru o którym mowa w ust. 3.
+- p: 26
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 40, end: 50, bold: true}]}
+  text: Miejscem dostarczenia przez Sprzedawcę (pośrednika) pojazdu jest …………………….
+  slots:
+  - {id: p26_1, span: [65, 74], type: text, context: przez Sprzedawcę pojazdu jest ▢}
+- p: 27
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 10, bold: true}, {start: 12,
+        end: 21, bold: true}]}
+  text: 'Sprzedawca (pośrednik) oświadcza, że:'
+- p: 28
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}, spans: [{start: 5, end: 17, bold: true}]}
+  text: jest pośrednikiem w zakupie pojazdu o którym mowa w § 1 ust 1,
+- p: 29
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}}
+  text: pojazd o którym mowa w §1 ust. 1 będzie wolny od wad prawnych , w tym praw osób trzecich i nie toczą się w stosunku do niego postępowania
+    sądowe ani egzekucyjne.
+- p: 30
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 10, bold: true}, {start: 12,
+        end: 21, bold: true}]}
+  text: 'Sprzedawca (pośrednik) nie ponosi odpowiedzialności za różnice między stanem faktycznym sprowadzonego pojazdu, a jego opisem przedstawionym
+    na portalu aukcyjnym. '
+- {p: 31, role: spacer}
+- p: 32
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+  text: § 2 Płatności
+- {p: 33, role: spacer}
+- p: 34
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 76, end: 86, bold: true}]}
+  text: Procedura zakupu pojazdu rozpoczyna się po opłaceniu przez Nabywcę prowizji Sprzedawcy w wysokości 1500 zł.
+- p: 35
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Prowizja, o której mowa w § 2 ust. 1 nie podlega zwrotowi, z zastrzeżeniem § 7 ust. 1.
+- p: 36
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 7, bold: true}, {start: 69,
+        end: 79, bold: true}, {start: 80, end: 92, bold: true}, {start: 134, end: 144, bold: true}, {start: 145, end: 157, bold: true}]}
+  text: 'Nabywca wpłaca prowizję, o której mowa w ust. 1, na rachunek bankowy Sprzedawcy (pośrednika): …………………………………………….. lub do rąk własnych
+    Sprzedawcy (pośrednika).'
+  slots:
+  - {id: p36_1, span: [94, 113], type: text, context: na rachunek bankowy Sprzedawcy ▢ lub do}
+- p: 37
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 27, end: 37, bold: true}]}
+  text: Podpisując niniejszą Umowę Sprzedawca (pośrednik) pokwitował Nabywcy otrzymanie kwoty określonej w ust 1.
+- p: 38
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}, spans: [{start: 50, end: 60, bold: true}, {start: 134,
+        end: 141, bold: true}]}
+  text: 'W przypadku nieudanej próby wylicytowania pojazdu Sprzedawca podejmie kolejne próby licytacji kolejnych pojazdów zatwierdzonych przez
+    Nabywcę, z zastrzeżeniem ust. 6. '
+- p: 39
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 10, bold: true}, {start: 12,
+        end: 21, bold: true}, {start: 158, end: 165, bold: true}, {start: 230, end: 237, bold: true}]}
+  text: Sprzedawca (pośrednik) po nieudanej pierwszej licytacji zobowiązuję się do podejmowania kolejnych prób licytacji maksymalnie 50 pojazdów
+    zatwierdzonych przez Nabywcę. Licytacja kolejnych pojazdów uzależniona jest od zapłaty przez Nabywcę dodatkowej prowizji w wysokości 30 zł
+    od każdej kolejnej próby.
+- p: 40
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '7.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 7, bold: true}]}
+  text: 'Nabywca zobowiązuje się w ciągu 24 godzin od poinformowania go o wygranej licytacji do opłacenia wylicytowanego pojazdu wraz z kosztami
+    aukcyjnymi. '
+- p: 41
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '8.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 7, bold: true}, {start: 152,
+        end: 162, bold: true}, {start: 164, end: 174, bold: true}]}
+  text: 'Nabywca dokonuje opłacenia wylicytowanego pojazdu wraz z kosztami aukcyjnymi bezpośrednio na konto portalu aukcyjnego, które zostanie
+    mu wskazane przez Sprzedawcę (pośrednika). '
+- p: 42
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '9.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 7, bold: true}, {start: 236,
+        end: 260, bold: true}]}
+  text: 'Nabywca zobowiązuje się do uiszczenia w wyznaczonych terminach wszystkich dodatkowych opłat, związanych ze sprowadzeniem pojazdu do miejsca,
+    o którym mowa w § 1 ust. 3, na odpowiednie rachunki bankowe, które zostaną mu przekazane przez Sprzedawcę (pośrednika). '
+- {p: 43, role: spacer}
+- p: 44
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+  text: § 3 Terminy
+- {p: 45, role: spacer}
+- p: 46
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 22, bold: true}, {start: 61,
+        end: 68, bold: true}]}
+  text: Sprzedawca (pośrednik) zobowiązuje się wydać przedmiot Umowy Nabywcy do 90 dni od daty podpisania niniejszej umowy.
+- p: 47
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 41, end: 51, bold: true}, {start: 53,
+        end: 63, bold: true}, {start: 119, end: 126, bold: true}]}
+  text: 'Za chwilę wydania przedmiotu umowy przez Sprzedawcę (pośrednika) będzie się uważać moment przekazania przedmiotu Umowy Nabywcy wraz z:'
+- p: 48
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+  text: (KOPIA) TITLE pojazdu – stanowiący o własności Dealera z USA,
+- p: 49
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}, spans: [{start: 58, end: 68, bold: true}]}
+  text: (KOPIA) Faktura - stanowiąca o przeniesieniu własności na Sprzedawcę,
+- p: 50
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}, spans: [{start: 61, end: 68, bold: true}]}
+  text: (ORYGINAŁ) Faktura - stanowiąca o przeniesieniu własności na Nabywcę,
+- p: 51
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: d), kind: lowerLetter, src: auto, level: 0}}
+  text: (KOPIA) dokument odprawy celnej SAD,
+- p: 52
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: e), kind: lowerLetter, src: auto, level: 0}}
+  text: kluczykami (minimum 1) do przedmiotu Umowy, o którym mowa w § 1 ust 1 Umowy,
+- p: 53
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Miejscem wydania przedmiotu Umowy będzie miejsce dostarczenia pojazdu określone w § 1 ust. 3 Umowy.
+- p: 54
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 10, bold: true}, {start: 12,
+        end: 21, bold: true}]}
+  text: 'Sprzedawca (pośrednik) nie ponosi odpowiedzialności za opóźnienia w wydaniu pojazdu wynikające z:'
+- p: 55
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: a), kind: lowerLetter, src: auto, level: 0}}
+  text: działań lub zaniechań organów celnych lub administracyjnych w portach, w szczególności wydłużenie odprawy celnej lub zatrzymania pojazdu;
+- p: 56
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: b), kind: lowerLetter, src: auto, level: 0}, spans: [{start: 165, end: 175, bold: true},
+      {start: 177, end: 187, bold: true}]}
+  text: działań lub zaniechań organów administracyjnych związanych z wprowadzeniem samochodu do obszaru Europy i RP, o ile ich przyczyny nie wynikają
+    z winy lub zaniechania Sprzedawcy (pośrednika);
+- p: 57
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: c), kind: lowerLetter, src: auto, level: 0}, spans: [{start: 38, end: 49, bold: true}]}
+  text: wydłużenia transportu morskiego przez przewoźnika;
+- p: 58
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: d), kind: lowerLetter, src: auto, level: 0}, spans: [{start: 22, end: 29, bold: true}]}
+  text: działań lub zaniechań Nabywcy, w szczególności nie dokonania płatności w terminie,
+- p: 59
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: e), kind: lowerLetter, src: auto, level: 0}}
+  text: zmian obowiązujących przepisów w zakresie procedur administracyjnych, celnych lub transportu morskiego.
+- {p: 60, role: spacer}
+- p: 61
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+  text: § 4  Przeniesienie własności przedmiotu umowy
+- {p: 62, role: spacer}
+- p: 63
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 72, end: 85, bold: true}, {start: 87, end: 97, bold: true}, {start: 102, end: 109, bold: true},
+      {start: 171, end: 178, bold: true}, {start: 179, end: 189, bold: true}, {start: 191, end: 203, bold: true}]}
+  text: Przeniesienie własności przedmiotu umowy o którym mowa w § 1 ust. 1, ze Sprzedającego (pośrednika) na Nabywcę nastąpi w momencie opłat
+    celnych pod warunkiem zapłaty przez Nabywcę Sprzedawcy (pośrednikowi) kwoty, o której mowa w § 2 ust. 1 Umowy.
+- {p: 64, role: spacer}
+- p: 65
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+  text: § 5 Brak odebrania przedmiotu umowy
+- {p: 66, role: spacer}
+- p: 67
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 48, end: 55, bold: true}, {start: 87,
+        end: 97, bold: true}, {start: 99, end: 108, bold: true}]}
+  text: W przypadku nieodebrania przedmiotu umowy przez Nabywcę w terminie wskazanym w Umowie, Sprzedawca (pośrednik) ma prawo obciążyć Nabywcę
+    kosztami związanymi z utrzymaniem przedmiotu umowy, o którym mowa w § 1 ust 1.
+- p: 68
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 10, bold: true}, {start: 12,
+        end: 21, bold: true}]}
+  text: Sprzedawca (pośrednik) w przypadku, o którym mowa w § 1 ust. 1, wyznaczy następny termin oraz miejsce wydania przedmiotu Umowy.
+- {p: 69, role: spacer}
+- p: 70
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 6, kind: paragraph, src: manual, level: 0}}
+  text: § 6 Ryzyko utraty przedmiotu umowy
+- {p: 71, role: spacer}
+- p: 72
+  role: body
+  layout: {align: justify, size: 10.0, spans: [{start: 37, end: 44, bold: true}]}
+  text: Z chwilą wydania przedmiotu umowy na Nabywcę przechodzi ryzyko związane z utratą lub uszkodzeniem rzeczy.
+- {p: 73, role: spacer}
+- p: 74
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 7, kind: paragraph, src: manual, level: 0}}
+  text: § 7 Odstąpienie od umowy, niewywiązanie się z umowy
+- {p: 75, role: spacer}
+- p: 76
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 7, bold: true}, {start: 42,
+        end: 52, bold: true}, {start: 54, end: 64, bold: true}, {start: 108, end: 118, bold: true}, {start: 120, end: 130, bold: true}, {start: 185,
+        end: 195, bold: true}, {start: 197, end: 206, bold: true}, {start: 359, end: 369, bold: true}, {start: 371, end: 381, bold: true}, {start: 389,
+        end: 396, bold: true}]}
+  text: Nabywca ma prawo odstąpić od umowy z winy Sprzedawcy (pośrednika) w wypadku niewykonania zobowiązania przez Sprzedawcę (pośrednika) w
+    terminie wskazanym w § 3 ust. 1. W takim przypadku Sprzedawca (pośrednik) zwróci całość wniesionych wpłat w terminie 15 dni od ustalonej daty
+    przekazania przedmiotu Umowy Nabywcy po wcześniejszym przepisaniu pojazdu umowy na Sprzedawcę (pośrednika) przez Nabywcę.
+- p: 77
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}}
+  text: Umowa może ulec rozwiązaniu jedynie w przypadkach w niej określonych.
+- {p: 78, role: spacer}
+- p: 79
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 8, kind: paragraph, src: manual, level: 0}}
+  text: § 8 Spory i sądy
+- {p: 80, role: spacer}
+- p: 81
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: W sprawach nieuregulowanych w niniejszej Umowie zastosowanie mają przepisy ustawy z dnia 23 kwietnia 1964 r. – Kodeks cywilny.
+- p: 82
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 83, end: 90, bold: true}]}
+  text: Wszelkie wynikłe z niniejszej Umowy spory rozpoznawane będą przez sąd właściwy dla Nabywcy.
+- {p: 83, role: spacer}
+- p: 84
+  role: clause_heading
+  layout: {align: center, size: 12.0, bold: true, marker: {text: § 9, kind: paragraph, src: manual, level: 0}}
+  text: § 9 Przepisy końcowe
+- {p: 85, role: spacer}
+- p: 86
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+  text: Wszelkie zmiany niniejszej Umowy wymagają zachowania formy pisemnej pod rygorem nieważności.
+- p: 87
+  role: item
+  layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+  text: Umowę sporządzono w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze stron.
+- {p: 88, role: spacer}
+- p: 89
+  role: blank_line
+  layout: {align: justify, size: 10.0}
+  text: ………………………………………                                                         ..………………………………….
+  slots:
+  - {id: podpis_nabywcy, span: [0, 15], type: signature, hint: podpis Nabywcy}
+  - {id: podpis_sprzedawcy, span: [72, 88], type: signature, hint: podpis Sprzedawcy}
+- p: 90
+  role: hint
+  layout: {align: justify, size: 9.0, spans: [{start: 14, end: 21, size: 10.0, bold: true}, {start: 116, end: 126, size: 10.0, bold: true}, {
+        start: 126, end: 127, size: 10.0}]}
+  text: '      (podpis Nabywcy)                                                                                      (podpis Sprzedawcy)'
+  hint_for: 89
+  hint_kind: label

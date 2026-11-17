@@ -1,0 +1,85 @@
+template: Zgoda na publikację wizerunku dla pracowników podmiotu leczniczego.docx
+category: zgoda_rodo
+label_pl: Zgoda na publikację wizerunku dla pracowników podmiotu leczniczego
+default_size: 11.0
+page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+blocks:
+- p: 0
+  role: blank_line
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: …………………………..,  …………………………..
+  slots:
+  - {id: miejscowosc_data, span: [0, 12], type: date, hint: 'miejscowość, data'}
+  - {id: miejscowosc_data_2, span: [15, 27], type: date, hint: 'miejscowość, data'}
+- p: 1
+  role: hint
+  layout: {align: right, indent: {first: 708}, size: 10.0, italic: true}
+  text: '(miejscowość, data)  '
+  hint_for: 0
+  hint_kind: label
+- {p: 2, role: spacer}
+- {p: 3, role: spacer}
+- p: 4
+  role: title
+  layout: {align: center, size: 14.0, bold: true}
+  text: 'OŚWIADCZENIE '
+- p: 5
+  role: body
+  layout: {align: center, size: 14.0, bold: true}
+  text: 'o wyrażeniu zgody na publikację wizerunku   '
+- {p: 6, role: spacer}
+- {p: 7, role: spacer}
+- p: 8
+  role: body
+  layout: {align: justify, indent: {first: 708}, size: 10.0, spans: [{start: 67, end: 154, italic: true}, {start: 255, end: 268, bold: true},
+      {start: 451, end: 467, italic: true}]}
+  text: 'Ja, niżej podpisana/podpisany* ……………………………………………………………………………………….. (dane osoby składającej oświadczenie tj. imię i nazwisko, nr PESEL,
+    adres zamieszkania), na podstawie art. 81 ust. 1 ustawy z dnia 4 lutego 1994 r. o prawie autorskim i prawach pokrewnych wyrażam zgodę na nieodpłatne,
+    czasowe (od ….… do …….)/nieograniczone czasowo* rozpowszechnianie mojego wizerunku w postaci zdjęć poprzez: zamieszczenie na profilu podmiotu
+    leczniczego ……………………….. (nazwa podmiotu) w mediach społecznościowych (Facebook) zdjęcia wraz z opisem zakresu świadczonych usług w celach
+    marketingowych, reklamowych, promocyjnych i informacyjnych związanych z działalnością podmiotu. '
+  slots:
+  - {id: dane_osoby_skladajacej_oswiadczenie_tj_imie_i_na, span: [31, 66], type: text, hint: 'dane osoby składającej oświadczenie tj. imię i nazwisko,
+      nr PESEL, adres zamieszkania'}
+  - {id: p8_2, span: [297, 300], type: date, context: na nieodpłatne czasowe od ▢ do nieograniczone}
+  - {id: p8_3, span: [304, 307], type: date, context: nieodpłatne czasowe od do ▢ nieograniczone czasowo}
+  - {id: nazwa_podmiotu, span: [439, 450], type: text, hint: nazwa podmiotu}
+  inline_hints:
+  - {span: [67, 154], text: 'dane osoby składającej oświadczenie tj. imię i nazwisko, nr PESEL, adres zamieszkania'}
+  - {span: [451, 467], text: nazwa podmiotu}
+  alternatives: 3
+- {p: 9, role: spacer}
+- p: 10
+  role: body
+  layout: {align: justify, indent: {first: 708}, size: 10.0}
+  text: Wizerunek może być użyty do różnego rodzaju form elektronicznego przetwarzania obrazu, kadrowania i kompozycji, bez obowiązku akceptacji
+    produktu końcowego, lecz nie w formach obraźliwych lub ogólnie uznanych za nieetyczne.
+- {p: 11, role: spacer}
+- p: 12
+  role: body
+  layout: {align: justify, indent: {first: 360}, size: 10.0}
+  text: "Ponadto oświadczam, że nie będę kierowała/kierował* żadnych roszczeń finansowych w związku \nz udostępnieniem mojego wizerunku, o którym\
+    \ mowa powyżej. Zostałam/em* poinformowana/y* o tym, że niniejszą zgodę mogę w każdej chwili wycofać. "
+- {p: 13, role: spacer}
+- {p: 14, role: spacer}
+- {p: 15, role: spacer}
+- p: 16
+  role: blank_line
+  layout: {align: right, indent: {first: 708}, size: 10.0}
+  text: …………………………..…………………………..
+  slots:
+  - {id: podpis_osoby_skladajacej_oswiadczenie, span: [0, 24], type: signature, hint: podpis osoby składającej oświadczenie}
+- p: 17
+  role: hint
+  layout: {align: right, indent: {first: 708}, size: 10.0, italic: true}
+  text: ' (podpis osoby składającej oświadczenie)'
+  hint_for: 16
+  hint_kind: label
+- {p: 18, role: spacer}
+- {p: 19, role: spacer}
+- p: 20
+  role: body
+  layout: {align: justify, size: 10.0}
+  text: ' *niepotrzebne skreślić'
+- {p: 21, role: spacer}
+- {p: 22, role: spacer}

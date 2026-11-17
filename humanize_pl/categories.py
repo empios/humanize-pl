@@ -23,6 +23,7 @@ from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 
+import regex as re
 import yaml
 
 from humanize_pl.document import DocumentType
@@ -42,6 +43,43 @@ SIGNAL_WEIGHT = 1
 # Below this score the winner is not a finding, it is noise from a couple of
 # common words, and the document is left unspecified.
 MIN_SCORE = 3
+# A winner this close to a runner-up that is a finding in its own right is a
+# coin toss: on the shipped templates such guesses were right a third of the
+# time. The document is left unspecified with both candidates named; a wrong
+# checklist costs more than none. A runner-up below MIN_SCORE is incidental
+# vocabulary and does not hold the winner back.
+CLOSE_MARGIN = 2
+
+# A document sharing half of its word pairs with a shipped template (balanced
+# over both directions) is that template whatever its vocabulary suggests: a
+# leave request full of official-letter phrases is still a leave request.
+# Below a quarter it shares only the register of legal Polish: court rulings
+# stay under 0.08 and freely written AI drafts under 0.2. In between, the
+# template decides only when no signal does. Measured leaving each template's
+# own text out of the search.
+TEMPLATE_OVERRIDE = 0.5
+TEMPLATE_FALLBACK = 0.25
+
+# Confidence is how often each way of deciding was right on the shipped
+# templates (each placed without its own template) and the AI documents,
+# smoothed: signals scoring at least STRONG_SCORE were right 35 times of 37,
+# weaker ones 55 of 87; the closest template sharing half the pairs or more
+# 52 of 52, a quarter to a half 16 of 19.
+STRONG_SCORE = 9
+CONFIDENCE_STRONG_SIGNALS = 0.92
+CONFIDENCE_SIGNALS = 0.63
+CONFIDENCE_TEMPLATE = 0.98
+CONFIDENCE_CLOSE_TEMPLATE = 0.81
+
+# A text that narrates in the past tense reports on events instead of
+# performing an act: rulings run at about two thirds past-tense verbs, while no
+# shipped template or AI-drafted document goes above one half. A filing that
+# narrates its facts still speaks in the first person present ("wnoszę",
+# "wzywam"), and that keeps it a document.
+NARRATIVE_SHARE = 0.6
+# Below this many verbs the share is noise.
+NARRATIVE_MIN_VERBS = 10
+_WORD = re.compile(r"\p{L}+")
 
 
 class CategoryCatalogueError(RuntimeError):
@@ -61,24 +99,9 @@ class LegalCategory:
     # essay about employment law scores as an employment contract, because it
     # discusses exactly the same things - topic is not genre.
     requires_any: tuple[str, ...] = ()
-    # What the document calls itself. Found in its title, one of these
-    # settles the category before any vocabulary is weighed: on the firm's
-    # documents the vocabulary put a deed of gift, two leases of land and a
-    # data-processing agreement among the leases, because each says "najemca"
-    # or "czynsz" somewhere.
-    titles: tuple[str, ...] = ()
 
-    def score(
-        self, lowered_text: str, *, shared: frozenset[str] = frozenset()
-    ) -> tuple[int, list[str]]:
-        """Weighted hits plus the phrases that produced them.
-
-        `shared` gate markers - "zawarta w dniu", "niniejsza umowa", which
-        every contract carries - open the gate but score nothing: they say
-        "a contract", not which one. Scored, they gave every contract the
-        same three points and alphabetical order picked the winner, which is
-        how a deed of gift became a lease.
-        """
+    def score(self, lowered_text: str) -> tuple[int, list[str]]:
+        """Weighted hits plus the phrases that produced them."""
         gate_hits = [phrase for phrase in self.requires_any if phrase in lowered_text]
         if self.requires_any and not gate_hits:
             return 0, []
@@ -86,9 +109,8 @@ class LegalCategory:
         # the document perform this genre at all - so it scores as one.
         # Leaving it at zero meant a letter opening "zwracam się z wnioskiem"
         # could fall through as unrecognised for lacking incidental vocabulary.
-        own_gate_hits = [phrase for phrase in gate_hits if phrase not in shared]
-        evidence: list[str] = list(own_gate_hits)
-        total = STRONG_WEIGHT * len(own_gate_hits)
+        evidence: list[str] = list(gate_hits)
+        total = STRONG_WEIGHT * len(gate_hits)
         counted = set(gate_hits)
         for phrase in self.signals_strong:
             if phrase in lowered_text and phrase not in counted:
@@ -156,7 +178,6 @@ def _load(path: Path) -> dict[str, LegalCategory]:
             signals_strong=tuple(str(v).casefold() for v in row.get("signals_strong") or ()),
             signals=tuple(str(v).casefold() for v in row.get("signals") or ()),
             requires_any=tuple(str(v).casefold() for v in row.get("requires_any") or ()),
-            titles=tuple(str(v).casefold() for v in row.get("titles") or ()),
         )
 
     if UNSPECIFIED not in catalogue:
@@ -173,14 +194,41 @@ def catalogue() -> dict[str, LegalCategory]:
 
 
 @lru_cache(maxsize=1)
-def shared_gate_markers() -> frozenset[str]:
-    """Gate phrases three or more categories share: evidence of a genre
-    family, not of one category."""
-    counts: dict[str, int] = {}
-    for row in catalogue().values():
-        for phrase in row.requires_any:
-            counts[phrase] = counts.get(phrase, 0) + 1
-    return frozenset(phrase for phrase, count in counts.items() if count >= 3)
+def _reporting_markers() -> tuple[tuple[str, re.Pattern], ...]:
+    """Phrases in which a court speaks for itself, matched word by word so the
+    punctuation between the words does not matter."""
+    payload = yaml.safe_load(CATALOGUE_PATH.read_text(encoding="utf-8")) or {}
+    return tuple(
+        (phrase, re.compile(r"(?<!\w)" + r"\W+".join(re.findall(r"\w+", phrase)) + r"(?!\w)"))
+        for phrase in (str(row).casefold() for row in payload.get("reporting_markers") or ())
+    )
+
+
+def _past_tense_share(text: str) -> float | None:
+    """The share of past-tense verbs in a text that never speaks in the first
+    person present; None for any other text, or without Morfeusz."""
+    try:
+        # Imported here because this module also ships standalone, without the
+        # NLP layer; there the check is skipped.
+        from humanize_pl.nlp.morfeusz import try_load_morfeusz
+    except ImportError:
+        return None
+    morfeusz = try_load_morfeusz()
+    if morfeusz is None:
+        return None
+    past = present = 0
+    for word in _WORD.findall(text):
+        tags = [row.tag.split(":") for row in morfeusz.analyses(word)]
+        heads = {tag[0] for tag in tags}
+        if heads == {"fin"} and any(tag[2] == "pri" for tag in tags):
+            return None
+        if "praet" in heads and "fin" not in heads:
+            past += 1
+        elif "fin" in heads and "praet" not in heads:
+            present += 1
+    if past + present < NARRATIVE_MIN_VERBS:
+        return None
+    return past / (past + present)
 
 
 def get(identifier: str) -> LegalCategory:
@@ -194,86 +242,30 @@ def categories_for(family: DocumentType) -> list[LegalCategory]:
     return [row for row in catalogue().values() if row.family is family]
 
 
-# Words a document's title starts with. A line that opens with one of these,
-# near the top and short, is the title; a sentence such as "Umowa zawarta w
-# dniu … pomiędzy …" is not, whatever its first word.
-_TITLE_WORDS = (
-    "umowa", "przedwstępna", "porozumienie", "oświadczenie", "wypowiedzenie", "rozwiązanie",
-    "informacja", "klauzula", "aneks", "ugoda", "regulamin", "polityka", "pozew",
-)
-# Letters put the sender's and addressee's blocks first: the firm's notices
-# of termination carry their title on the ninth line.
-_TITLE_LINES = 12
-_TITLE_MAX_WORDS = 12
-_NOT_A_TITLE = ("zawarta", "zawarto", "pomiędzy", "dnia ")
-# "UMOWA" alone, or with a number, names no kind: the vocabulary decides.
-_BARE_TITLE_WORDS = frozenset({"umowa", "nr", "no."})
-TITLE_CONFIDENCE = 0.95
-# A contract whose title names no catalogued kind: a loan, an exchange, a
-# surety. Its own category has no skeleton, so nothing is checked or drafted.
-OTHER_CONTRACT = "umowa_inna"
+def _nearest_template(text: str, leave_out: str | None):
+    try:
+        # Imported here because this module also ships standalone, without
+        # the templates; there the search is skipped.
+        from humanize_pl.blueprint import nearest_template
+    except ImportError:
+        return None
+    return nearest_template(text, leave_out=leave_out)
 
 
-def document_title(text: str) -> str | None:
-    """The document's title, lower-cased, or None when it has none."""
-    lines = [line for line in text.split("\n") if line.strip()][:_TITLE_LINES]
-    for index, raw in enumerate(lines):
-        # Whitespace normalised: a non-breaking space in "Informacja o\xa0prawach"
-        # kept the title from matching.
-        line = " ".join(raw.strip().strip("#*_„”\"' ").casefold().split())
-        if (
-            line.startswith(_TITLE_WORDS)
-            and len(line.split()) <= _TITLE_MAX_WORDS
-            and not line.endswith(".")
-            and not any(marker in line for marker in _NOT_A_TITLE)
-        ):
-            # A title broken over two lines - "PRZEDWSTĘPNA UMOWA" /
-            # "SPRZEDAŻY NIERUCHOMOŚCI" - is read whole.
-            following = lines[index + 1].strip() if index + 1 < len(lines) else ""
-            if following.isupper() and len(following.split()) <= 6:
-                line = f"{line} {' '.join(following.casefold().split())}"
-            return line
-    return None
+def _from_template(template, share: float) -> CategoryGuess:
+    return CategoryGuess(
+        get(template.category),
+        CONFIDENCE_TEMPLATE if share >= TEMPLATE_OVERRIDE else CONFIDENCE_CLOSE_TEMPLATE,
+        (f"podobieństwo do wzoru „{template.label_pl}” ({share:.0%} wspólnych par słów)",),
+    )
 
 
-def classify_category(text: str) -> CategoryGuess:
-    """Assign the document to exactly one category.
-
-    What the document calls itself decides first: a title naming a catalogued
-    kind settles it, and a contract title naming none makes it `umowa_inna`.
-    Without a title, the vocabulary decides as before.
-
-    An unrecognised document is reported as `nieokreslony` rather than pushed
-    into the closest-looking bucket. A blueprint chosen from a guessed category
-    would report missing sections the document was never supposed to have,
-    which is worse than admitting the category is unknown.
-    """
-    title = document_title(text)
-    if title:
-        # The kind named first is the kind: "Umowa o dzieło i przeniesienie
-        # praw autorskich" is a contract for a work that also transfers
-        # rights. Ties go to the longer name.
-        named = [
-            (title.find(stem), -len(stem), row.id, row)
-            for row in catalogue().values()
-            for stem in row.titles
-            if stem in title
-        ]
-        if named:
-            winner = min(named, key=lambda item: item[:3])[3]
-            return CategoryGuess(winner, TITLE_CONFIDENCE, (f"tytuł: {title[:80]}",))
-        words = title.split()
-        names_a_kind = any(word not in _BARE_TITLE_WORDS and not word[:1].isdigit() for word in words)
-        if "umowa" in words[:2] and names_a_kind and OTHER_CONTRACT in catalogue():
-            return CategoryGuess(get(OTHER_CONTRACT), TITLE_CONFIDENCE, (f"tytuł: {title[:80]}",))
-
-    lowered = text.casefold()
+def _by_signals(lowered: str) -> CategoryGuess:
     scored: list[tuple[int, LegalCategory, list[str]]] = []
-    shared = shared_gate_markers()
     for row in catalogue().values():
         if row.id == UNSPECIFIED:
             continue
-        total, evidence = row.score(lowered, shared=shared)
+        total, evidence = row.score(lowered)
         if total:
             scored.append((total, row, evidence))
 
@@ -288,5 +280,48 @@ def classify_category(text: str) -> CategoryGuess:
 
     runner_up = scored[1][0] if len(scored) > 1 else 0
     margin = best_score - runner_up
-    confidence = min(0.98, 0.45 + 0.05 * best_score + 0.06 * margin)
-    return CategoryGuess(winner, round(confidence, 2), tuple(evidence[:5]))
+    if runner_up >= MIN_SCORE and margin <= CLOSE_MARGIN:
+        second = scored[1][1]
+        return CategoryGuess(
+            get(UNSPECIFIED), 0.0, (f"niepewne: {winner.label_pl} albo {second.label_pl}",)
+        )
+    confidence = CONFIDENCE_STRONG_SIGNALS if best_score >= STRONG_SCORE else CONFIDENCE_SIGNALS
+    return CategoryGuess(winner, confidence, tuple(evidence[:5]))
+
+
+def classify_category(text: str, *, leave_out: str | None = None) -> CategoryGuess:
+    """Assign the document to exactly one category.
+
+    An unrecognised document is reported as `nieokreslony` rather than pushed
+    into the closest-looking bucket. A blueprint chosen from a guessed category
+    would report missing sections the document was never supposed to have,
+    which is worse than admitting the category is unknown.
+
+    A text in which a court speaks for itself ("Sąd zważył, co następuje"), or
+    one that narrates in the past tense without ever acting in the first
+    person, reports on documents rather than being one. It stays unspecified
+    however much of a contract or a statement of claim it quotes.
+
+    A document that closely follows a shipped template takes its category; one
+    that no signal recognises takes the category of the template it resembles,
+    if it resembles one enough. `leave_out` names a template to pass over, to
+    measure how this does on documents it has not seen.
+    """
+    lowered = text.casefold()
+    reported = next(
+        (phrase for phrase, pattern in _reporting_markers() if pattern.search(lowered)), None
+    )
+    if reported is not None:
+        return CategoryGuess(get(UNSPECIFIED), 0.0, (reported,))
+    past = _past_tense_share(text)
+    if past is not None and past > NARRATIVE_SHARE:
+        return CategoryGuess(
+            get(UNSPECIFIED), 0.0, (f"relacja w czasie przeszłym ({past:.0%} czasowników)",)
+        )
+    nearest = _nearest_template(text, leave_out)
+    if nearest is not None and nearest[1] >= TEMPLATE_OVERRIDE:
+        return _from_template(*nearest)
+    guess = _by_signals(lowered)
+    if not guess.specified and nearest is not None and nearest[1] >= TEMPLATE_FALLBACK:
+        return _from_template(*nearest)
+    return guess

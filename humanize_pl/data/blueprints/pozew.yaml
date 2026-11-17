@@ -3,81 +3,392 @@
 # Braki formalne pozwu są dotkliwe inaczej niż braki umowy: sąd wzywa do
 # uzupełnienia, a termin biegnie. Dlatego oznaczenie sądu i podpis są
 # wymagane, choć model pomija je najczęściej.
+#
+# Wzorce poszerzone o sformułowania z szablonów kancelarii (sąd "sąd …"/
+# "sąd w", żądanie "wnoszę o:"/"nakazanie", dowody "dopuszczenie dowodu").
 
 category: pozew
 label_pl: pozew
+# Kolejności sekcji nie sprawdzamy: realne wzory tej kategorii układają je różnie.
+check_order: false
 numbering: roman
-
 sections:
-  - id: sad
-    label_pl: oznaczenie sądu
-    severity: required
-    unit: false
-    matches: ["sąd rejonowy", "sąd okręgowy", "do sądu"]
-    # A form leaves the court blank: "Sąd ……………" at the head of the page.
-    patterns: ['^[ \t*_#]*sąd\b']
-    expects:
-      - "Pozew oznacza sąd, do którego jest wnoszony."
+- id: sad
+  label_pl: oznaczenie sądu
+  severity: required
+  matches: [sąd rejonowy, sąd okręgowy, do sądu, sąd (dokładna nazwa, sąd właściw, 'sąd w ', sąd …]
+- id: strony
+  label_pl: oznaczenie stron
+  severity: required
+  matches: [powód, pozwany]
+- id: wps
+  label_pl: wartość przedmiotu sporu
+  severity: required
+  matches: [wartość przedmiotu sporu, w.p.s.]
+- id: zadanie
+  label_pl: żądanie pozwu
+  severity: required
+  matches: [wnoszę o zasądzenie, żądanie, wnosi o zasądzenie, 'wnoszę o:', nakazanie]
+- id: koszty
+  label_pl: wniosek o koszty procesu
+  severity: expected
+  matches: [koszty procesu, kosztów zastępstwa, koszty postępowania, zwrotu kosztów]
+- id: uzasadnienie
+  label_pl: uzasadnienie
+  severity: required
+  matches: [uzasadnienie]
+- id: dowody
+  label_pl: wnioski dowodowe
+  severity: required
+  matches: [dowody, dowód z, 'dowód:', przeprowadzenie dowodów, wnoszę o dopuszczenie,
+    dopuszczenie dowodu]
+- id: podpis
+  label_pl: podpis
+  severity: required
+  matches: [podpis, pełnomocnik powoda, adwokat, radca prawny]
+- id: zalaczniki
+  label_pl: załączniki
+  severity: expected
+  matches: [załączniki, w załączeniu, załącznik]
 
-  - id: strony
-    label_pl: oznaczenie stron
-    severity: required
-    unit: false
-    matches: ["powód", "pozwany"]
-    expects:
-      - "Pozew oznacza powoda wraz z adresem."
-      - "Pozew oznacza pozwanego wraz z adresem."
-
-  - id: wps
-    label_pl: wartość przedmiotu sporu
-    severity: required
-    unit: false
-    matches: ["wartość przedmiotu sporu", "w.p.s."]
-    expects:
-      - "Pozew wskazuje wartość przedmiotu sporu."
-
-  - id: zadanie
-    label_pl: żądanie pozwu
-    severity: required
-    matches: ["wnoszę o zasądzenie", "żądanie", "wnosi o zasądzenie", "wnoszę o:", "wnosi o:",
-              "wnosimy o:", "domagam się", "domaga się", "żądam"]
-    expects:
-      - "Pozew formułuje wprost, czego powód domaga się od sądu."
-
-  - id: koszty
-    label_pl: wniosek o koszty procesu
-    severity: expected
-    matches: ["koszty procesu", "kosztów zastępstwa", "koszty postępowania"]
-    expects:
-      - "Pozew zawiera wniosek o zasądzenie kosztów procesu."
-
-  - id: uzasadnienie
-    label_pl: uzasadnienie
-    severity: required
-    matches: ["uzasadnienie"]
-    expects:
-      - "Pozew przedstawia okoliczności faktyczne uzasadniające żądanie."
-      - "Pozew wskazuje, dlaczego żądanie znajduje oparcie w przepisach."
-
-  - id: dowody
-    label_pl: wnioski dowodowe
-    severity: required
-    matches: ["dowody", "dowód z", "wnoszę o dopuszczenie"]
-    expects:
-      - "Pozew wskazuje dowody na poparcie przytoczonych okoliczności."
-      - "Pozew określa, co każdy dowód ma wykazać."
-
-  - id: podpis
-    label_pl: podpis
-    severity: required
-    unit: false
-    matches: ["podpis", "pełnomocnik powoda", "adwokat", "radca prawny"]
-    expects:
-      - "Pozew przewiduje podpis powoda lub jego pełnomocnika."
-
-  - id: zalaczniki
-    label_pl: załączniki
-    severity: expected
-    matches: ["załączniki", "w załączeniu", "załącznik"]
-    expects:
-      - "Pozew wymienia załączone dokumenty."
+# Dokument ogólny: realny wzór tej kategorii. Przy użyciu wypełnia się wyłącznie
+# pola (`slots`); treść, kolejność i układ zostają jak we wzorze.
+document:
+  template: Ogólny pozew o zapłatę.docx
+  label_pl: Ogólny pozew o zapłatę
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+  blocks:
+  - p: 0
+    role: body
+    layout: {align: right, indent: {first: 708}, size: 10.0, spans: [{start: 8, end: 21, italic: true}, {start: 43, end: 49, italic: true}]}
+    text: ………………… (miejscowość), dnia ……………… 2026 r. (data)
+    slots:
+    - {id: miejscowosc, span: [0, 7], type: place, hint: miejscowość}
+    - {id: p0_2, span: [28, 34], type: date, context: dnia ▢ 2026 r.}
+    inline_hints:
+    - {span: [8, 21], text: miejscowość}
+  - {p: 1, role: spacer}
+  - {p: 2, role: spacer}
+  - p: 3
+    role: body
+    layout: {indent: {left: 4820}, size: 10.0, spans: [{start: 0, end: 4, bold: true}]}
+    text: 'Sąd (dokładna nazwa sądu właściwego do wniesienia powództwa) '
+  - p: 4
+    role: body
+    layout: {indent: {left: 4820}, size: 10.0, spans: [{start: 0, end: 4, bold: true}]}
+    text: Ul. ……………… (adres sądu)
+    slots:
+    - {id: adres_sadu, span: [4, 10], type: address, hint: adres sądu}
+    inline_hints:
+    - {span: [11, 23], text: adres sądu}
+  - {p: 5, role: spacer}
+  - p: 6
+    role: field_header
+    layout: {indent: {left: 4820}, size: 10.0, bold: true}
+    text: 'Powód: '
+  - p: 7
+    role: blank_line
+    layout: {indent: {left: 4820}, size: 10.0}
+    text: ……………………
+    slots:
+    - {id: powod, span: [0, 8], type: text, hint: 'dane powoda – imię i nazwisko, PESEL, dokładny adres zamieszkania, adres mailowy, nr telefonu
+        – w przypadku osoby fizycznej', label: Powód}
+    optional: true
+    condition: dane powoda – imię i nazwisko, PESEL, dokładny adres zamieszkania, adres mailowy, nr telefonu – w przypadku osoby fizycznej
+  - p: 8
+    role: hint
+    layout: {indent: {left: 4820}, size: 10.0}
+    text: (dane powoda – imię i nazwisko, PESEL, dokładny adres zamieszkania, adres mailowy, nr telefonu – w przypadku osoby fizycznej)
+    hint_for: 7
+    hint_kind: instruction
+  - {p: 9, role: spacer}
+  - p: 10
+    role: field_header
+    layout: {indent: {left: 4820}, size: 10.0, bold: true}
+    text: 'Pozwany: '
+  - p: 11
+    role: blank_line
+    layout: {indent: {left: 4820}, size: 10.0, tabs: 1}
+    text: "……………………\t"
+    slots:
+    - {id: pozwany, span: [0, 8], type: text, hint: 'dane pozwanego – nazwa przedsiębiorstwa, dokładny adres do korespondencji wpisany do CEiDG,
+        numer NIP, numer KRS – w przypadku przedsiębiorstwa', label: Pozwany}
+    optional: true
+    condition: dane pozwanego – nazwa przedsiębiorstwa, dokładny adres do korespondencji wpisany do CEiDG, numer NIP, numer KRS – w przypadku przedsiębiorstwa
+  - p: 12
+    role: hint
+    layout: {indent: {left: 4820}, size: 10.0}
+    text: (dane pozwanego – nazwa przedsiębiorstwa, dokładny adres do korespondencji wpisany do CEiDG, numer NIP, numer KRS – w przypadku przedsiębiorstwa)
+    hint_for: 11
+    hint_kind: instruction
+  - {p: 13, role: spacer}
+  - p: 14
+    role: field_header
+    layout: {size: 10.0, spans: [{start: 0, end: 24, bold: true}]}
+    text: 'Wartość przedmiotu sporu: '
+  - p: 15
+    role: hint
+    layout: {size: 10.0, italic: true}
+    text: (dochodzona należność główna)
+    hint_for: 14
+    hint_kind: label
+  - {p: 16, role: spacer}
+  - {p: 17, role: spacer}
+  - p: 18
+    role: body
+    layout: {align: center, size: 14.0, bold: true}
+    text: 'POZEW O ZAPŁATĘ '
+  - {p: 19, role: spacer}
+  - p: 20
+    role: field_header
+    layout: {align: justify, size: 10.0}
+    text: 'W imieniu własnym wnoszę o: '
+  - p: 21
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: 'Zasądzenie od pozwanego na rzecz powoda łącznej kwoty ….............……… zł (słownie: …………………………………… zł) wraz z ustawowymi odsetkami za
+      opóźnienie liczonymi od dnia ………………………… do dnia zapłaty tytułem roszczeń, które stały się wymagalne z dniem …………………, na co składają się:'
+    slots:
+    - {id: p21_1, span: [54, 71], type: amount, context: rzecz powoda łącznej kwoty ▢ zł wraz}
+    - {id: p21_2, span: [85, 99], type: amount, context: łącznej kwoty zł słownie ▢ zł wraz}
+    - {id: p21_3, span: [164, 174], type: date, context: opóźnienie liczonymi od dnia ▢ do dnia}
+    - {id: p21_4, span: [243, 250], type: text, context: się wymagalne z dniem ▢ na co}
+  - p: 22
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 31, end: 83, italic: true}]}
+    text: odszkodowanie za ………………………………… (należy wskazać podstawę dochodzenia odszkodowania) w wysokości …………… zł;
+    slots:
+    - {id: nalezy_wskazac_podstawe_dochodzenia_odszkodowani, span: [17, 30], type: text, hint: należy wskazać podstawę dochodzenia odszkodowania}
+    - {id: p22_2, span: [95, 100], type: amount, context: odszkodowanie za w wysokości ▢ zł}
+    inline_hints:
+    - {span: [31, 82], text: należy wskazać podstawę dochodzenia odszkodowania}
+  - p: 23
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 59, end: 113, italic: true}]}
+    text: 'zadośćuczynienie w wysokości ………………….. zł z tytułu ………………… (należy wskazać podstawę dochodzenia zadośćuczynienia); '
+    slots:
+    - {id: p23_1, span: [29, 38], type: amount, context: zadośćuczynienie w wysokości ▢ zł z}
+    - {id: nalezy_wskazac_podstawe_dochodzenia_zadoscuczyni, span: [51, 58], type: text, hint: należy wskazać podstawę dochodzenia zadośćuczynienia}
+    inline_hints:
+    - {span: [59, 113], text: należy wskazać podstawę dochodzenia zadośćuczynienia}
+  - p: 24
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+    text: Zasądzenie od pozwanego na rzecz powoda zwrotu kosztów postępowania wraz z ustawowymi odsetkami za opóźnienie, według norm przepisanych;
+  - p: 25
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}, spans: [{start: 110, end: 179, italic: true}]}
+    text: Dopuszczenie dowodu z dokumentów wskazanych w uzasadnieniu niniejszego pozwu na okoliczność ….............……… (należy wskazać okoliczności,
+      które mają wynikać z danych dokumentów);
+    slots:
+    - {id: nalezy_wskazac_okolicznosci_ktore_maja_wynikac_z, span: [92, 109], type: text, hint: 'należy wskazać okoliczności, które mają wynikać
+        z danych dokumentów'}
+    inline_hints:
+    - {span: [110, 179], text: 'należy wskazać okoliczności, które mają wynikać z danych dokumentów'}
+  - p: 26
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '6.', kind: decimal, src: auto, level: 0}, spans: [{start: 73, end: 146, italic: true}]}
+    text: Dopuszczenie dowodu z ….............……… na okoliczność ….............……… (można powołać inne dowody, np. zeznania świadków, opinie biegłych
+      itd.);
+    slots:
+    - {id: p26_1, span: [22, 39], type: text, context: Dopuszczenie dowodu z ▢ na okoliczność}
+    - {id: mozna_powolac_inne_dowody_np_zeznania_swiadkow_o, span: [55, 72], type: text, hint: 'można powołać inne dowody, np. zeznania świadków,
+        opinie biegłych itd.'}
+    inline_hints:
+    - {span: [73, 145], text: 'można powołać inne dowody, np. zeznania świadków, opinie biegłych itd.'}
+  - p: 27
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '7.', kind: decimal, src: auto, level: 0}, spans: [{start: 124, end: 191, italic: true}]}
+    text: Dopuszczenie dowodu z przesłuchania stron i przesłuchanie strony powodowej/strony pozwanej na okoliczność ….............……… (należy wskazać
+      okoliczności, na które powód/pozwany będą zeznawać);
+    slots:
+    - {id: nalezy_wskazac_okolicznosci_na_ktore_powod_pozwa, span: [106, 123], type: text, hint: 'należy wskazać okoliczności, na które powód/pozwany
+        będą zeznawać'}
+    inline_hints:
+    - {span: [124, 191], text: 'należy wskazać okoliczności, na które powód/pozwany będą zeznawać'}
+  - p: 28
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '8.', kind: decimal, src: auto, level: 0}}
+    text: Przeprowadzenie postępowania przygotowawczego także pod nieobecność powoda;
+  - p: 29
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '9.', kind: decimal, src: auto, level: 0}}
+    text: Przeprowadzenie rozprawy;
+  - p: 30
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '10.', kind: decimal, src: auto, level: 0}}
+    text: Rozpoznanie rozprawy także pod nieobecność powoda;
+  - p: 31
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '11.', kind: decimal, src: auto, level: 0}}
+    text: Wydanie wyroku zaocznego w przypadku zaistnienia przesłanek przewidzianych w art. 339 Kodeksu postępowania cywilnego;
+  - p: 32
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '12.', kind: decimal, src: auto, level: 0}}
+    text: Nadanie wyrokowi zaocznemu klauzuli natychmiastowej wykonalności.
+  - {p: 33, role: spacer}
+  - p: 34
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 89, end: 203, italic: true}, {start: 314, end: 406, italic: true}]}
+    text: Oświadczam, że podjąłem próbę polubownego zakończenia niniejszego sporu poprzez …………………… (należy wskazać w jaki sposób podjęto próbę polubownego
+      zakończenia sporu np. – wystosowanie wezwania do zapłaty) jednak nie odniosło ono skutku/nie podjąłem próby polubownego zakończenia niniejszego
+      sporu z uwagi na ………………… (należy dokładnie wskazać z jakich względów nie podjęto próby polubownego zakończenia sporu).
+    slots:
+    - {id: nalezy_wskazac_w_jaki_sposob_podjeto_probe_polub, span: [80, 88], type: person, hint: należy wskazać w jaki sposób podjęto próbę polubownego
+        zakończenia sporu np. – wystosowanie wezwania do zapłaty}
+    - {id: nalezy_dokladnie_wskazac_z_jakich_wzgledow_nie_p, span: [306, 313], type: text, hint: należy dokładnie wskazać z jakich względów nie
+        podjęto próby polubownego zakończenia sporu}
+    inline_hints:
+    - {span: [89, 202], text: należy wskazać w jaki sposób podjęto próbę polubownego zakończenia sporu np. – wystosowanie wezwania do zapłaty}
+    - {span: [314, 406], text: należy dokładnie wskazać z jakich względów nie podjęto próby polubownego zakończenia sporu}
+  - {p: 35, role: spacer}
+  - {p: 36, role: spacer}
+  - p: 37
+    role: body
+    layout: {align: center, size: 14.0, bold: true}
+    text: UZASADNIENIE
+  - {p: 38, role: spacer}
+  - p: 39
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: ……………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: p39_1, span: [0, 110], type: text, context: ▢}
+  - p: 40
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: …………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: p40_1, span: [0, 55], type: text, context: ▢}
+  - p: 41
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: …………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: p41_1, span: [0, 55], type: text, context: ▢}
+  - p: 42
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: …………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: p42_1, span: [0, 55], type: text, context: ▢}
+  - p: 43
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: …………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: p43_1, span: [0, 55], type: text, context: ▢}
+  - p: 44
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: …………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: p44_1, span: [0, 55], type: text, context: ▢}
+  - p: 45
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: …………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: p45_1, span: [0, 55], type: text, context: ▢}
+  - p: 46
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: …………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: p46_1, span: [0, 55], type: text, context: ▢}
+  - p: 47
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: …………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: p47_1, span: [0, 55], type: text, context: ▢}
+  - p: 48
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: …………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: p48_1, span: [0, 55], type: text, context: ▢}
+  - p: 49
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: …………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: p49_1, span: [0, 55], type: text, context: ▢}
+  - p: 50
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: …………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: p50_1, span: [0, 55], type: text, context: ▢}
+  - p: 51
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: …………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: p51_1, span: [0, 55], type: text, context: ▢}
+  - p: 52
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: …………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: p52_1, span: [0, 55], type: text, context: ▢}
+  - p: 53
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: …………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: w_tym_miejscu_nalezy_uzasadnic_zlozenie_pozwu_tj, span: [0, 55], type: text, hint: 'W tym miejscu należy uzasadnić złożenie pozwu, tj.
+        przedstawić wszelkie okoliczności sprawy, dowody oraz informacje mające wpływ na rozstrzygnięcie sporu.'}
+  - p: 54
+    role: hint
+    layout: {align: justify, size: 10.0, italic: true}
+    text: (W tym miejscu należy uzasadnić złożenie pozwu, tj. przedstawić wszelkie okoliczności sprawy, dowody oraz informacje mające wpływ na rozstrzygnięcie
+      sporu.).
+    hint_for: 53
+    hint_kind: instruction
+  - {p: 55, role: spacer}
+  - {p: 56, role: spacer}
+  - p: 57
+    role: body
+    layout: {align: justify, size: 10.0, tabs: 28}
+    text: "\t\t\t\t\t\t\t\t       \t\t\t\t\t\t\t\t\t\t\t\t………………………………………………\t\t\t\t\t\t\t\t (miejsce na własnoręczny podpis)"
+    slots:
+    - {id: miejsce_na_wlasnoreczny_podpis, span: [27, 45], type: signature, hint: miejsce na własnoręczny podpis}
+    inline_hints:
+    - {span: [54, 86], text: miejsce na własnoręczny podpis}
+  - {p: 58, role: spacer}
+  - {p: 59, role: spacer}
+  - p: 60
+    role: field_header
+    layout: {align: justify, size: 10.0, bold: true}
+    text: 'ZAŁĄCZNIKI:'
+  - p: 61
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: Odpis pozwu wraz z załącznikami (pozew wraz z załącznikami składa się w tylu egzemplarzach ilu jest pozwanych (w tym przypadku jeden)
+      plus jeden egzemplarz dla sądu);
+  - p: 62
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+    text: Dowód (w tym miejscu należy wypisać wszystkie dowody stanowiące załącznik do pozwu) …………………… ;
+    slots:
+    - {id: p62_1, span: [84, 92], type: text, context: Dowód ▢}
+  - p: 63
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}}
+    text: Dowód …………………… ;
+    slots:
+    - {id: p63_1, span: [6, 14], type: text, context: Dowód ▢}
+  - p: 64
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 4), kind: decimal, src: auto, level: 0}}
+    text: Dowód …………………… ;
+    slots:
+    - {id: p64_1, span: [6, 14], type: text, context: Dowód ▢}
+  - p: 65
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 5), kind: decimal, src: auto, level: 0}}
+    text: Dowód uiszczenia opłaty sądowej od pozwu.
+  - {p: 66, role: spacer}
+  - {p: 67, role: spacer}

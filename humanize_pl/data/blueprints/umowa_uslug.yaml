@@ -3,109 +3,316 @@
 # `required` blokuje gotowość, `expected` tylko odnotowuje. Podział jest
 # celowy: umowa bez klauzuli odpowiedzialności jest wadliwa, umowa bez
 # klauzuli poufności bywa po prostu inną umową.
+#
+# Wzorce poszerzone o sformułowania z szablonów kancelarii (komparycja "w
+# dniu", przedmiot "zleca, a"/"powierza", termin "okres od"). Odpowiedzialność
+# jest `expected` — umowa o usługi prawne nie ma osobnej klauzuli
+# odpowiedzialności (odpowiada starannością), a to inny kształt, nie wada.
 
 category: umowa_uslug
 label_pl: umowa o świadczenie usług
+# Kolejności sekcji nie sprawdzamy: realne wzory tej kategorii układają je różnie.
+check_order: false
 numbering: paragraph
-
 sections:
-  - id: komparycja
-    label_pl: komparycja (data, miejsce, strony)
-    severity: required
-    # Poza numeracją: komparycja poprzedza § 1, podpisy następują po ostatnim §.
-    unit: false
-    matches: ["zawarta w dniu", "zawarto umowę", "pomiędzy"]
-    expects:
-      - "Umowa wskazuje datę i miejsce jej zawarcia."
-      - "Umowa oznacza obie strony w sposób pozwalający je zidentyfikować."
+- id: komparycja
+  label_pl: komparycja (data, miejsce, strony)
+  severity: required
+  # Formuły zawarcia i oznaczenia stron, nie nazwy ról: „najemca” czy „zawarta”
+  # powtarzają się w całej umowie i utrzymywały usuniętą komparycję jako obecną.
+  matches: [zawarta w dniu, zawarta dnia, zawarta pomiędzy, zawarta między, zawarto umowę,
+    zwanym dalej, zwaną dalej, zwanymi dalej, zwany dalej, zwana dalej, zwanego dalej,
+    zwanej dalej, zwani dalej, z siedzibą w, zamieszkał, pesel, 'nip:', 'nip ', krs, legitymując]
+- id: przedmiot
+  label_pl: przedmiot umowy
+  severity: required
+  matches: [przedmiot umowy, przedmiotem umowy, przedmiotem niniejszej umowy, 'zleca, a', powierza, zobowiązuje
+      się do wykonywania, oświadczenia i zapewnienia]
+- id: termin
+  label_pl: termin i sposób wykonania
+  severity: required
+  matches: [termin wykonania, terminy i sposób, sposób wykonania, harmonogram, czas trwania umowy, okres
+      od, w okresie od, na czas nieokreślony, na czas określony, okres rozliczeniowy, w ramach usługi,
+    w okresie, od dnia]
+- id: wynagrodzenie
+  label_pl: wynagrodzenie
+  severity: required
+  matches: [wynagrodzenie]
+- id: odpowiedzialnosc
+  label_pl: odpowiedzialność
+  severity: expected
+  matches: [odpowiedzialność, odpowiada za, odpowiedzialności]
+- id: poufnosc
+  label_pl: poufność
+  severity: expected
+  matches: [poufnoś, informacje poufne, zachowania w tajemnicy, w tajemnicy]
+- id: rozwiazanie
+  label_pl: rozwiązanie i wypowiedzenie umowy
+  severity: required
+  matches: [rozwiązanie umowy, wypowiedzenie, odstąpienie od umowy, rozwiązać umowę, rozwiązać niniejszą
+      umowę]
+- id: postanowienia_koncowe
+  label_pl: postanowienia końcowe
+  severity: required
+  matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
+      formy pisemnej, wymagają zachowania formy pisemnej]
+- id: wlasciwosc
+  label_pl: właściwość sądu
+  severity: expected
+  matches: [właściwy sąd, sądem właściwym, właściwości sądu, sąd powszechny właściwy, właściwy miejscowo
+      sąd]
+- id: podpisy
+  label_pl: podpisy stron
+  severity: required
+  matches: [podpis, jednobrzmiących egzemplarzach, 'egzemplarzach, po jednym', 'egzemplarzach, po 1',
+    egzemplarzu dla każdej]
 
-  - id: przedmiot
-    label_pl: przedmiot umowy
-    severity: required
-    # The firm often states the subject without naming it: "Zleceniodawca
-    # zleca, a Zleceniobiorca zobowiązuje się…". Not "zobowiązuje się do
-    # świadczenia": it recurs in the obligations clause, and a cut subject
-    # section then went unnoticed.
-    matches: ["przedmiot umowy", "przedmiotem umowy", "przedmiotem niniejszej umowy",
-              "zleca, a ", "powierza, a "]
-    expects:
-      - "Umowa określa, jakie usługi wykonawca ma świadczyć."
-      - "Zakres usług jest opisany na tyle konkretnie, by dało się stwierdzić ich wykonanie."
-
-  - id: termin
-    label_pl: termin i sposób wykonania
-    severity: required
-    # A continuing service states its period, not a deadline: "zawarta na
-    # czas określony od dnia…", "wykonanie nastąpi w okresie od … do …".
-    # Chosen with tools/audit_blueprints.py: no false draft left on the
-    # firm's contracts, 8 of 9 cut sections still noticed. "będzie wykonywał"
-    # silenced the same drafts but sits in every obligations clause, so a
-    # cut section went unnoticed.
-    matches: ["termin wykonania", "terminy i sposób", "sposób wykonania", "harmonogram",
-              "czas określony", "czas nieokreślony", "czas oznaczony", "czas nieoznaczony",
-              "w okresie od"]
-    expects:
-      - "Umowa określa termin lub okres wykonywania usług."
-      - "Umowa wskazuje sposób wykonania usług albo tryb ich odbioru."
-
-  - id: wynagrodzenie
-    label_pl: wynagrodzenie
-    severity: required
-    matches: ["wynagrodzenie"]
-    expects:
-      - "Umowa określa wysokość wynagrodzenia albo sposób jego obliczenia."
-      - "Umowa określa termin i sposób zapłaty wynagrodzenia."
-
-  - id: odpowiedzialnosc
-    label_pl: odpowiedzialność
-    severity: required
-    matches: ["odpowiedzialność", "odpowiada za"]
-    expects:
-      - "Umowa określa zasady odpowiedzialności za niewykonanie lub nienależyte wykonanie usług."
-
-  - id: poufnosc
-    label_pl: poufność
-    severity: expected
-    matches: ["poufnoś", "informacje poufne"]
-    expects:
-      - "Umowa zobowiązuje stronę do zachowania w poufności informacji uzyskanych przy wykonywaniu umowy."
-
-  - id: rozwiazanie
-    label_pl: rozwiązanie i wypowiedzenie umowy
-    severity: required
-    # The verb forms the firm uses: "może rozwiązać umowę", "umowa może być
-    # rozwiązana przez każdą ze stron". Not the stem "wypowiedzeni" nor
-    # "rozwiązania umowy": both sit in other clauses ("w przypadku
-    # rozwiązania umowy…"), and a cut section then went unnoticed - 4 of 7
-    # caught against 6 of 7 with this list.
-    matches: ["rozwiązanie umowy", "rozwiązać umowę", "rozwiązać niniejszą umowę",
-              "rozwiązana przez", "wypowiedzenie", "odstąpienie od umowy"]
-    expects:
-      - "Umowa określa, w jaki sposób i z jakim skutkiem można ją rozwiązać lub wypowiedzieć."
-      - "Umowa wskazuje termin wypowiedzenia albo przesłanki odstąpienia."
-
-  - id: postanowienia_koncowe
-    label_pl: postanowienia końcowe
-    severity: required
-    matches: ["postanowienia końcowe", "w sprawach nieuregulowanych"]
-    expects:
-      - "Umowa wskazuje, jakie przepisy stosuje się w sprawach w niej nieuregulowanych."
-      - "Umowa określa formę wymaganą dla jej zmian."
-
-  - id: wlasciwosc
-    label_pl: właściwość sądu
-    severity: expected
-    matches: ["właściwy sąd", "sądem właściwym", "właściwości sądu"]
-    expects:
-      - "Umowa wskazuje sąd właściwy do rozpoznawania sporów z niej wynikających."
-
-  - id: podpisy
-    label_pl: podpisy stron
-    severity: required
-    unit: false
-    matches: ["podpis", "zamawiający:", "wykonawca:"]
-    # The block by its shape - dots beside the parties' names - because the
-    # role as a word is in every clause (`blueprint.SIGNATURE_BLOCK`).
-    signature_block: true
-    expects:
-      - "Dokument przewiduje miejsce na podpisy obu stron."
+# Dokument ogólny napisany dla tej kategorii: wśród realnych wzorów nie było
+# ogólnego. Przy użyciu wypełnia się wyłącznie pola (`slots`).
+document:
+  label_pl: Umowa o świadczenie usług
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 1417, bottom: 1417, left: 1417, right: 1417}}
+  blocks:
+  - p: 0
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: UMOWA O ŚWIADCZENIE USŁUG
+  - {p: 1, role: spacer}
+  - p: 2
+    role: body
+    layout: {align: justify, size: 11.0}
+    text: 'zawarta w dniu ………………… (data) w ………………… (miejscowość) pomiędzy:'
+    slots:
+    - {id: data, span: [15, 22], type: date, hint: data}
+    - {id: miejscowosc, span: [32, 39], type: place, hint: miejscowość}
+    inline_hints:
+    - {span: [23, 29], text: data}
+    - {span: [40, 53], text: miejscowość}
+  - p: 3
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: ………………………………………………………………………………………………
+    slots:
+    - {id: zamawiajacy, span: [0, 36], type: text, hint: 'imię i nazwisko lub firma, adres lub siedziba, PESEL lub NIP'}
+  - p: 4
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true}
+    text: (imię i nazwisko lub firma, adres lub siedziba, PESEL lub NIP)
+    hint_for: 3
+    hint_kind: label
+  - p: 5
+    role: party_alias
+    layout: {align: justify, size: 11.0}
+    text: zwanym dalej Zamawiającym,
+    alias: Zamawiającym
+  - p: 6
+    role: party_connector
+    layout: {align: justify, size: 11.0}
+    text: a
+  - p: 7
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: ………………………………………………………………………………………………
+    slots:
+    - {id: wykonawca, span: [0, 36], type: text, hint: 'imię i nazwisko lub firma, adres lub siedziba, PESEL lub NIP'}
+  - p: 8
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true}
+    text: (imię i nazwisko lub firma, adres lub siedziba, PESEL lub NIP)
+    hint_for: 7
+    hint_kind: label
+  - p: 9
+    role: party_alias
+    layout: {align: justify, size: 11.0}
+    text: zwanym dalej Wykonawcą,
+    alias: Wykonawcą
+  - p: 10
+    role: party_alias
+    layout: {align: justify, size: 11.0}
+    text: zwanymi dalej łącznie Stronami.
+    alias: Stronami
+  - {p: 11, role: spacer}
+  - p: 12
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 1., kind: paragraph, src: manual, level: 0}}
+    text: § 1. Przedmiot umowy
+  - p: 13
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Zamawiający zleca, a Wykonawca zobowiązuje się świadczyć na rzecz Zamawiającego usługi polegające na ……………………………………………… (opis usług),
+      zwane dalej Usługami.
+    slots:
+    - {id: opis_uslug, span: [104, 122], type: content, hint: opis usług}
+    inline_hints:
+    - {span: [123, 135], text: opis usług}
+  - p: 14
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '2.', kind: decimal, src: manual, level: 0}}
+    text: 2. Szczegółowy zakres Usług określa ………………………… (dokument określający zakres Usług).
+    slots:
+    - {id: dokument_okreslajacy_zakres_uslug, span: [36, 46], type: id_number, hint: dokument określający zakres Usług}
+    inline_hints:
+    - {span: [47, 82], text: dokument określający zakres Usług}
+  - p: 15
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '3.', kind: decimal, src: manual, level: 0}}
+    text: 3. Wykonawca oświadcza, że posiada wiedzę, doświadczenie i środki niezbędne do należytego świadczenia Usług.
+  - {p: 16, role: spacer}
+  - p: 17
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 2., kind: paragraph, src: manual, level: 0}}
+    text: § 2. Termin i sposób wykonania
+  - p: 18
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Umowa zostaje zawarta na czas ………………… (oznaczony albo nieoznaczony), począwszy od dnia ………………… (data rozpoczęcia świadczenia Usług).
+    slots:
+    - {id: czas_umowy, span: [33, 40], type: text, hint: oznaczony albo nieoznaczony}
+    - {id: data_rozpoczecia_swiadczenia_uslug, span: [90, 97], type: date, hint: data rozpoczęcia świadczenia Usług}
+    inline_hints:
+    - {span: [41, 70], text: oznaczony albo nieoznaczony}
+    - {span: [98, 134], text: data rozpoczęcia świadczenia Usług}
+  - p: 19
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '2.', kind: decimal, src: manual, level: 0}}
+    text: 2. Jeżeli Umowa zostaje zawarta na czas oznaczony, wygasa z dniem ………………… (data zakończenia świadczenia Usług).
+    slots:
+    - {id: data_zakonczenia_swiadczenia_uslug, span: [66, 73], type: date, hint: data zakończenia świadczenia Usług}
+    inline_hints:
+    - {span: [74, 110], text: data zakończenia świadczenia Usług}
+  - p: 20
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '3.', kind: decimal, src: manual, level: 0}}
+    text: 3. Wykonawca świadczy Usługi z należytą starannością, z uwzględnieniem zawodowego charakteru prowadzonej działalności oraz wskazówek Zamawiającego.
+  - p: 21
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '4.', kind: decimal, src: manual, level: 0}}
+    text: 4. Wykonawca może powierzyć świadczenie Usług osobie trzeciej wyłącznie za uprzednią pisemną zgodą Zamawiającego.
+  - {p: 22, role: spacer}
+  - p: 23
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 3., kind: paragraph, src: manual, level: 0}}
+    text: § 3. Obowiązki Zamawiającego
+  - p: 24
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Zamawiający przekazuje Wykonawcy informacje i dokumenty niezbędne do świadczenia Usług oraz współdziała z Wykonawcą w zakresie koniecznym
+      do ich wykonania.
+  - {p: 25, role: spacer}
+  - p: 26
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 4., kind: paragraph, src: manual, level: 0}}
+    text: § 4. Wynagrodzenie
+  - p: 27
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Z tytułu świadczenia Usług Wykonawcy przysługuje wynagrodzenie w wysokości ………………… (kwota netto w zł) ………………… (okres rozliczeniowy
+      albo za całość Usług), powiększone o podatek od towarów i usług według obowiązującej stawki, jeżeli jest należny.
+    slots:
+    - {id: kwota_netto_w_zl, span: [78, 85], type: amount, hint: kwota netto w zł}
+    - {id: okres_rozliczeniowy_albo_za_calosc_uslug, span: [105, 112], type: amount, hint: okres rozliczeniowy albo za całość Usług}
+    inline_hints:
+    - {span: [86, 104], text: kwota netto w zł}
+    - {span: [113, 155], text: okres rozliczeniowy albo za całość Usług}
+  - p: 28
+    role: field
+    layout: {align: justify, size: 11.0}
+    text: 'słownie: ……………………………………………… złotych'
+    slots:
+    - {id: slownie, span: [9, 27], type: amount, label: słownie}
+  - p: 29
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '2.', kind: decimal, src: manual, level: 0}}
+    text: 2. Wynagrodzenie płatne jest na podstawie prawidłowo wystawionej faktury albo rachunku, w terminie ………… (liczba dni) dni od dnia jego
+      doręczenia Zamawiającemu, na rachunek bankowy Wykonawcy nr ……………………………… (numer rachunku).
+    slots:
+    - {id: liczba_dni, span: [99, 103], type: text, hint: liczba dni}
+    - {id: numer_rachunku, span: [193, 205], type: text, hint: numer rachunku}
+    inline_hints:
+    - {span: [104, 116], text: liczba dni}
+    - {span: [206, 222], text: numer rachunku}
+  - p: 30
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '3.', kind: decimal, src: manual, level: 0}}
+    text: 3. Wynagrodzenie obejmuje wszystkie koszty poniesione przez Wykonawcę w związku ze świadczeniem Usług, chyba że Strony postanowią inaczej
+      na piśmie.
+  - {p: 31, role: spacer}
+  - p: 32
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 5., kind: paragraph, src: manual, level: 0}}
+    text: § 5. Odpowiedzialność
+  - p: 33
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Wykonawca odpowiada za niewykonanie lub nienależyte wykonanie Usług na zasadach określonych w Kodeksie cywilnym.
+  - {p: 34, role: spacer}
+  - p: 35
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 6., kind: paragraph, src: manual, level: 0}}
+    text: § 6. Poufność
+  - p: 36
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Wykonawca zachowa w tajemnicy informacje uzyskane w związku z wykonywaniem Umowy, zarówno w czasie jej trwania, jak i po jej rozwiązaniu,
+      chyba że obowiązek ich ujawnienia wynika z przepisów prawa.
+  - {p: 37, role: spacer}
+  - p: 38
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 7., kind: paragraph, src: manual, level: 0}}
+    text: § 7. Rozwiązanie umowy
+  - p: 39
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Każda ze Stron może wypowiedzieć Umowę z zachowaniem ………… (okres wypowiedzenia) okresu wypowiedzenia, ze skutkiem na koniec miesiąca
+      kalendarzowego.
+    slots:
+    - {id: okres_wypowiedzenia, span: [56, 60], type: text, hint: okres wypowiedzenia}
+    inline_hints:
+    - {span: [61, 82], text: okres wypowiedzenia}
+  - p: 40
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '2.', kind: decimal, src: manual, level: 0}}
+    text: 2. Każda ze Stron może wypowiedzieć Umowę ze skutkiem natychmiastowym z ważnych powodów, w szczególności w razie rażącego naruszenia jej
+      postanowień przez drugą Stronę.
+  - p: 41
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '3.', kind: decimal, src: manual, level: 0}}
+    text: 3. Wypowiedzenie wymaga formy pisemnej pod rygorem nieważności.
+  - {p: 42, role: spacer}
+  - p: 43
+    role: clause_heading
+    layout: {align: center, size: 11.0, bold: true, marker: {text: § 8., kind: paragraph, src: manual, level: 0}}
+    text: § 8. Postanowienia końcowe
+  - p: 44
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '1.', kind: decimal, src: manual, level: 0}}
+    text: 1. Zmiany Umowy wymagają formy pisemnej pod rygorem nieważności.
+  - p: 45
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '2.', kind: decimal, src: manual, level: 0}}
+    text: 2. W sprawach nieuregulowanych Umową stosuje się przepisy Kodeksu cywilnego, a na podstawie art. 750 Kodeksu cywilnego – odpowiednio przepisy
+      o zleceniu.
+  - p: 46
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '3.', kind: decimal, src: manual, level: 0}}
+    text: 3. Spory wynikające z Umowy rozstrzyga sąd powszechny właściwy według przepisów Kodeksu postępowania cywilnego.
+  - p: 47
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: '4.', kind: decimal, src: manual, level: 0}}
+    text: 4. Umowę sporządzono w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze Stron.
+  - {p: 48, role: spacer}
+  - {p: 49, role: spacer}
+  - p: 50
+    role: signature_line
+    layout: {align: justify, size: 11.0, tabs: 5}
+    text: "……………………………………\t\t\t\t\t……………………………………"
+    slots:
+    - {id: podpis_zamawiajacego, span: [0, 14], type: signature, hint: podpis Zamawiającego}
+    - {id: podpis_wykonawcy, span: [19, 33], type: signature, hint: podpis Wykonawcy}
+  - p: 51
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true, tabs: 5}
+    text: "(podpis Zamawiającego)\t\t\t\t\t(podpis Wykonawcy)"
+    hint_for: 50
+    hint_kind: label

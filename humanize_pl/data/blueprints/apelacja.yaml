@@ -1,0 +1,260 @@
+# Szkielet struktury: apelacja (k.p.c.).
+#
+# Elementy według art. 368 § 1 k.p.c.: oznaczenie zaskarżonego wyroku i zakresu
+# zaskarżenia, zarzuty, wniosek o zmianę albo uchylenie wyroku; wartość przedmiotu
+# zaskarżenia w sprawach o prawa majątkowe (§ 2). Apelacja jest pismem procesowym,
+# więc ma też oznaczenie sądu, stron i podpis (art. 126 k.p.c.).
+
+category: apelacja
+label_pl: apelacja
+check_order: false
+sections:
+- id: data_miejsce
+  label_pl: miejscowość i data
+  severity: required
+  # Linia „miejscowość, data” albo jej podpis we wzorze.
+  patterns:
+  - '^(?=.{0,90}$)[\p{L}…. ()\t\-]{1,60},\s*(?:dnia\s+)?(?:\d{1,2}\b|…|\.{2,})'
+  - '\(miejscowość\W+(?:i\s+)?data'
+- id: sad
+  label_pl: oznaczenie sądu
+  severity: required
+  matches: [sąd odwoławczy, za pośrednictwem, sąd okręgowy, sąd apelacyjny]
+- id: strony
+  label_pl: oznaczenie stron
+  severity: required
+  matches: [powód, pozwan]
+- id: sygnatura
+  label_pl: sygnatura akt
+  severity: expected
+  matches: [sygn]
+- id: zaskarzenie
+  label_pl: oznaczenie wyroku i zakresu zaskarżenia
+  severity: required
+  matches: [zaskarżam wyrok, wyrok zaskarżam]
+- id: zarzuty
+  label_pl: zarzuty
+  severity: required
+  matches: [zarzucam]
+- id: wnioski
+  label_pl: wnioski apelacji
+  severity: required
+  matches: [wnoszę o]
+- id: uzasadnienie
+  label_pl: uzasadnienie
+  severity: required
+  matches: [uzasadnienie]
+- id: wartosc
+  label_pl: wartość przedmiotu zaskarżenia
+  severity: expected
+  matches: [wartość przedmiotu zaskarżenia]
+- id: podpis
+  label_pl: podpis
+  severity: required
+  matches: [podpis]
+
+# Dokument ogólny: wzór do wypełnienia, bez nazwy konkretnego sądu ani organu.
+# Przy użyciu wypełnia się wyłącznie pola (`slots`); treść, kolejność i układ
+# zostają jak we wzorze.
+document:
+  label_pl: Apelacja od wyroku sądu pierwszej instancji
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 1417, bottom: 1417, left: 1417, right: 1417}}
+  blocks:
+  - p: 0
+    role: body
+    layout: {align: right, size: 11.0}
+    text: '………………… (miejscowość), dnia ………………… (data)'
+    slots:
+    - {id: miejscowosc, span: [0, 7], type: place, hint: miejscowość}
+    - {id: data, span: [28, 35], type: date, hint: data}
+    inline_hints:
+    - {span: [8, 21], text: miejscowość}
+    - {span: [36, 42], text: data}
+  - {p: 1, role: spacer}
+  - p: 2
+    role: field_header
+    layout: {align: justify, size: 11.0}
+    text: 'Sąd odwoławczy:'
+  - p: 3
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: '………………………………………………………………………………………………'
+    slots:
+    - {id: sad_odwolawczy, span: [0, 36], type: text, hint: nazwa sądu drugiej instancji, label: Sąd odwoławczy}
+  - p: 4
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true}
+    text: '(nazwa sądu drugiej instancji)'
+    hint_for: 3
+    hint_kind: label
+  - p: 5
+    role: field_header
+    layout: {align: justify, size: 11.0}
+    text: 'Za pośrednictwem:'
+  - p: 6
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: '………………………………………………………………………………………………'
+    slots:
+    - {id: sad_pierwszej_instancji, span: [0, 36], type: text, hint: 'sąd, który wydał wyrok, i wydział', label: Za pośrednictwem}
+  - p: 7
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true}
+    text: '(sąd, który wydał wyrok, i wydział)'
+    hint_for: 6
+    hint_kind: label
+  - {p: 8, role: spacer}
+  - p: 9
+    role: field
+    layout: {align: justify, size: 11.0}
+    text: 'Sygn. akt: …………………'
+    slots:
+    - {id: sygnatura, span: [11, 18], type: text, label: Sygn. akt}
+  - {p: 10, role: spacer}
+  - p: 11
+    role: field_header
+    layout: {align: justify, size: 11.0}
+    text: 'Powód:'
+  - p: 12
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: '………………………………………………………………………………………………'
+    slots:
+    - {id: powod, span: [0, 36], type: text, hint: 'imię i nazwisko lub nazwa, adres, PESEL lub NIP', label: Powód}
+  - p: 13
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true}
+    text: '(imię i nazwisko lub nazwa, adres, PESEL lub NIP)'
+    hint_for: 12
+    hint_kind: label
+  - p: 14
+    role: field_header
+    layout: {align: justify, size: 11.0}
+    text: 'Pozwany:'
+  - p: 15
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: '………………………………………………………………………………………………'
+    slots:
+    - {id: pozwany, span: [0, 36], type: text, hint: 'imię i nazwisko lub nazwa, adres, PESEL lub NIP', label: Pozwany}
+  - p: 16
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true}
+    text: '(imię i nazwisko lub nazwa, adres, PESEL lub NIP)'
+    hint_for: 15
+    hint_kind: label
+  - {p: 17, role: spacer}
+  - p: 18
+    role: field
+    layout: {align: justify, size: 11.0}
+    text: 'Wartość przedmiotu zaskarżenia: ………………… zł'
+    slots:
+    - {id: wartosc_przedmiotu_zaskarzenia, span: [32, 39], type: amount, label: Wartość przedmiotu zaskarżenia}
+  - {p: 19, role: spacer}
+  - p: 20
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: APELACJA
+  - {p: 21, role: spacer}
+  - p: 22
+    role: body
+    layout: {align: justify, size: 11.0}
+    text: Jako ………………… (strona, która wnosi apelację) zaskarżam wyrok Sądu ………………… (sąd i wydział) z dnia ………………… (data wyroku).
+    slots:
+    - {id: rola_wnoszacego, span: [5, 12], type: text, hint: 'strona, która wnosi apelację'}
+    - {id: sad_wyroku, span: [65, 72], type: text, hint: sąd i wydział}
+    - {id: data_wyroku, span: [96, 103], type: date, hint: data wyroku}
+    inline_hints:
+    - {span: [13, 43], text: 'strona, która wnosi apelację'}
+    - {span: [73, 88], text: sąd i wydział}
+    - {span: [104, 117], text: data wyroku}
+  - p: 23
+    role: body
+    layout: {align: justify, size: 11.0}
+    text: Wyrok zaskarżam ………………… (w całości albo w części, ze wskazaniem zakresu).
+    slots:
+    - {id: zakres_zaskarzenia, span: [16, 23], type: text, hint: 'w całości albo w części, ze wskazaniem zakresu'}
+    inline_hints:
+    - {span: [24, 72], text: 'w całości albo w części, ze wskazaniem zakresu'}
+  - {p: 24, role: spacer}
+  - p: 25
+    role: field_header
+    layout: {align: justify, size: 11.0}
+    text: 'Zaskarżonemu wyrokowi zarzucam:'
+  - p: 26
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: '………………… (naruszone przepisy postępowania lub prawa materialnego i na czym polega naruszenie).'
+    slots:
+    - {id: zarzuty, span: [0, 7], type: text, hint: naruszone przepisy postępowania lub prawa materialnego i na czym polega naruszenie}
+    inline_hints:
+    - {span: [8, 92], text: naruszone przepisy postępowania lub prawa materialnego i na czym polega naruszenie}
+  - {p: 27, role: spacer}
+  - p: 28
+    role: field_header
+    layout: {align: justify, size: 11.0}
+    text: 'Wskazując na powyższe, wnoszę o:'
+  - p: 29
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: '………………… (zmianę wyroku przez określone rozstrzygnięcie albo jego uchylenie i przekazanie sprawy do ponownego rozpoznania);'
+    slots:
+    - {id: wnioski_apelacyjne, span: [0, 7], type: text, hint: zmianę wyroku przez określone rozstrzygnięcie albo jego uchylenie i przekazanie sprawy do ponownego rozpoznania}
+    inline_hints:
+    - {span: [8, 121], text: zmianę wyroku przez określone rozstrzygnięcie albo jego uchylenie i przekazanie sprawy do ponownego rozpoznania}
+  - p: 30
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+    text: zasądzenie zwrotu kosztów postępowania odwoławczego.
+  - {p: 31, role: spacer}
+  - p: 32
+    role: body
+    layout: {align: center, size: 12.0, bold: true}
+    text: Uzasadnienie
+  - p: 33
+    role: blank_line
+    layout: {align: justify, size: 11.0}
+    text: '………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………'
+    slots:
+    - {id: uzasadnienie, span: [0, 108], type: text, hint: argumenty prawne na poparcie zarzutów}
+  - p: 34
+    role: hint
+    layout: {align: justify, size: 8.0, italic: true}
+    text: '(argumenty prawne na poparcie zarzutów)'
+    hint_for: 33
+    hint_kind: instruction
+  - {p: 35, role: spacer}
+  - p: 36
+    role: blank_line
+    layout: {align: right, size: 11.0}
+    text: '………………………………'
+    slots:
+    - {id: podpis, span: [0, 12], type: signature, hint: podpis}
+  - p: 37
+    role: hint
+    layout: {align: right, size: 8.0, italic: true}
+    text: '(podpis)'
+    hint_for: 36
+    hint_kind: label
+  - {p: 38, role: spacer}
+  - p: 39
+    role: field_header
+    layout: {align: justify, size: 11.0, bold: true}
+    text: 'Załączniki:'
+  - p: 40
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: odpis apelacji;
+  - p: 41
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+    text: dowód uiszczenia opłaty;
+  - p: 42
+    role: item
+    layout: {align: justify, size: 11.0, marker: {text: 3), kind: decimal, src: auto, level: 0}}
+    text: '………………… (inne załączniki).'
+    slots:
+    - {id: zalaczniki, span: [0, 7], type: text, hint: inne załączniki}
+    inline_hints:
+    - {span: [8, 25], text: inne załączniki}

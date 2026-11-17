@@ -1,0 +1,339 @@
+# Szkielet struktury: umowa zlecenia.
+# Wzorce `matches` oparte o sformułowania z szablonów kancelarii.
+
+category: umowa_zlecenia
+label_pl: umowa zlecenia
+numbering: paragraph
+sections:
+- id: komparycja
+  label_pl: komparycja (zleceniodawca, zleceniobiorca)
+  severity: required
+  # Formuły zawarcia i oznaczenia stron, nie nazwy ról: „najemca” czy „zawarta”
+  # powtarzają się w całej umowie i utrzymywały usuniętą komparycję jako obecną.
+  matches: [zawarta w dniu, zawarta dnia, zawarta pomiędzy, zawarta między, zawarto umowę,
+    zwanym dalej, zwaną dalej, zwanymi dalej, zwany dalej, zwana dalej, zwanego dalej,
+    zwanej dalej, zwani dalej, z siedzibą w, zamieszkał, pesel, 'nip:', 'nip ', krs, legitymując]
+- id: przedmiot
+  label_pl: zakres czynności
+  severity: required
+  matches: [zleca, czynności, zakres, zobowiązuje się do wykonywania, konkurencj, mediów, porozumienie,
+    uregulowanie]
+- id: czas
+  label_pl: czas trwania
+  severity: required
+  matches: [czas, okres, od dnia, do dnia, w okresie]
+- id: wynagrodzenie
+  label_pl: wynagrodzenie
+  severity: expected
+  matches: [wynagrodzenie, odszkodowanie, koszty, kwota, zapłat, kara umowna, zł]
+- id: rozwiazanie
+  label_pl: rozwiązanie / wypowiedzenie
+  severity: expected
+  matches: [rozwiązanie, rozwiązać, wypowiedzenie, wypowiedzenia, odstąpienie]
+- id: postanowienia_koncowe
+  label_pl: postanowienia końcowe
+  severity: required
+  matches: [postanowienia końcowe, w sprawach nieuregulowanych, egzemplarzach, formę pisemną, wymagają
+      formy pisemnej, wymagają zachowania formy pisemnej]
+
+# Dokument ogólny: realny wzór tej kategorii. Przy użyciu wypełnia się wyłącznie
+# pola (`slots`); treść, kolejność i układ zostają jak we wzorze.
+document:
+  template: Umowa zlecenie.docx
+  label_pl: Umowa zlecenie
+  default_size: 11.0
+  page: {size: [11906, 16838], margins: {top: 2269, bottom: 2268, left: 1418, right: 1418}}
+  blocks:
+  - p: 0
+    role: title
+    layout: {align: center, size: 14.0, bold: true}
+    text: UMOWA ZLECENIE
+  - {p: 1, role: spacer}
+  - {p: 2, role: spacer}
+  - p: 3
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 27, end: 33, italic: true}, {start: 49, end: 62, italic: true}]}
+    text: 'Zawarta w dniu …………………………… (data)  w …………………………… (miejscowość), '
+    slots:
+    - {id: data, span: [15, 26], type: date, hint: data}
+    - {id: miejscowosc, span: [37, 48], type: place, hint: miejscowość}
+    inline_hints:
+    - {span: [27, 33], text: data}
+    - {span: [49, 62], text: miejscowość}
+  - {p: 4, role: spacer}
+  - p: 5
+    role: party_connector
+    layout: {align: justify, size: 10.0}
+    text: 'pomiędzy:'
+  - {p: 6, role: spacer}
+  - p: 7
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: '……………………………………………………………………..…………………………………………….…………………………………………………………………………………………………………………………………………………………………… '
+    slots:
+    - {id: imie_i_nazwisko_miejsce_zamieszkania_adres_nr_i, span: [0, 108], type: text, hint: 'imię i nazwisko; miejsce zamieszkania/adres; nr i
+        seria dokumentu tożsamości; PESEL; nr telefonu; adres e-mail lub oznaczenie firmy; siedziba i adres; NIP, numer wpisu do CEIDG lub do KRS'}
+  - p: 8
+    role: hint
+    layout: {align: justify, size: 10.0, italic: true}
+    text: (imię i nazwisko; miejsce zamieszkania/adres; nr i seria dokumentu tożsamości; PESEL; nr telefonu; adres e-mail lub oznaczenie firmy;
+      siedziba i adres; NIP, numer wpisu do CEIDG lub do KRS)
+    hint_for: 7
+    hint_kind: instruction
+  - {p: 9, role: spacer}
+  - p: 10
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 13, end: 26, bold: true}]}
+    text: 'zwanym dalej Zleceniodawcą, '
+    alias: Zleceniodawcą
+  - {p: 11, role: spacer}
+  - p: 12
+    role: party_connector
+    layout: {align: justify, size: 10.0}
+    text: 'a
+
+      '
+  - p: 13
+    role: blank_line
+    layout: {align: justify, size: 10.0}
+    text: '……………………………………………………………………..…………………………………………….…………………………………………………………………………………………………………………………………………………………………… '
+    slots:
+    - {id: imie_i_nazwisko_miejsce_zamieszkania_adres_nr_i_2, span: [0, 108], type: text, hint: imię i nazwisko; miejsce zamieszkania/adres; nr
+        i seria dokumentu tożsamości; PESEL; nr telefonu; adres e-mail}
+  - p: 14
+    role: hint
+    layout: {align: justify, size: 10.0, italic: true}
+    text: (imię i nazwisko; miejsce zamieszkania/adres; nr i seria dokumentu tożsamości; PESEL; nr telefonu; adres e-mail)
+    hint_for: 13
+    hint_kind: instruction
+  - p: 15
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 13, end: 27, bold: true}]}
+    text: 'zwanym dalej Zleceniobiorcą, '
+    alias: Zleceniobiorcą
+  - {p: 16, role: spacer}
+  - p: 17
+    role: party_alias
+    layout: {align: justify, size: 10.0, spans: [{start: 22, end: 30, bold: true}]}
+    text: 'zwanymi dalej łącznie Stronami, '
+    alias: Stronami
+  - {p: 18, role: spacer}
+  - p: 19
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 1, kind: paragraph, src: manual, level: 0}}
+    text: § 1
+  - p: 20
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 30, end: 43, bold: true}, {start: 53, end: 67, bold: true}]}
+    text: 'Na podstawie niniejszej umowy Zleceniodawca zleca, a Zleceniobiorca zobowiązuje się do wykonywania następujących czynności:'
+  - p: 21
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: ………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………..
+    slots:
+    - {id: p21_1, span: [0, 101], type: content, context: ▢}
+  - p: 22
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+    text: …………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: p22_1, span: [0, 100], type: content, context: ▢}
+  - p: 23
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}}
+    text: …………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………………
+    slots:
+    - {id: czynnosci_do_ktorych_wykonania_bedzie_zobowiazan, span: [0, 100], type: content, hint: 'czynności, do których wykonania będzie zobowiązany
+        Zleceniobiorca'}
+  - p: 24
+    role: hint
+    layout: {align: center, indent: {left: 780}, size: 10.0, italic: true}
+    text: (czynności, do których wykonania będzie zobowiązany Zleceniobiorca)
+    hint_for: 23
+    hint_kind: label
+  - {p: 25, role: spacer}
+  - p: 26
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 2, kind: paragraph, src: manual, level: 0}}
+    text: § 2
+  - p: 27
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 87, end: 99, italic: true}]}
+    text: Umowa zostaje zawarta na czas nieoznaczony od dnia ……..…../oznaczony od …….… do ………… . (data/daty).
+    slots:
+    - {id: p27_1, span: [51, 58], type: date, context: czas nieoznaczony od dnia ▢ oznaczony od}
+    - {id: p27_2, span: [72, 76], type: date, context: od dnia oznaczony od ▢ do}
+    - {id: data_daty, span: [80, 84], type: date, hint: data/daty}
+    inline_hints:
+    - {span: [87, 98], text: data/daty}
+  - p: 28
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 14, bold: true}]}
+    text: Zleceniobiorca zobowiązuje się wykonywać powierzone czynności z należytą starannością.
+  - p: 29
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 84, end: 98, italic: true}]}
+    text: Miejscem wykonywania czynności objętych przedmiotem niniejszej umowy jest ……………………. (miejscowość).
+    slots:
+    - {id: miejscowosc_2, span: [74, 83], type: place, hint: miejscowość}
+    inline_hints:
+    - {span: [84, 97], text: miejscowość}
+  - p: 30
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+    text: Strony mogą określić aneksem w formie pisemnej dodatkowe zasady wykonywania zlecenia.
+  - {p: 31, role: spacer}
+  - p: 32
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 3, kind: paragraph, src: manual, level: 0}}
+    text: § 3
+  - p: 33
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 13, bold: true}, {start: 80,
+          end: 94, bold: true}, {start: 142, end: 166, italic: true}, {start: 236, end: 250, bold: true}]}
+    text: 'Zleceniodawca zobowiązuje się za wykonanie czynności wskazanych w § 1, zapłacić Zleceniobiorcy wynagrodzenie w kwocie ……………... złotych
+      brutto (wysokość wynagrodzenia) (słownie: ……………………………… złotych) za każdą przepracowaną godzinę przez Zleceniobiorcę.'
+    slots:
+    - {id: p33_1, span: [118, 126], type: text, context: Zleceniobiorcy wynagrodzenie w kwocie ▢ złotych brutto}
+    - {id: p33_2, span: [177, 189], type: amount, context: kwocie złotych brutto słownie ▢ złotych za}
+  - p: 34
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 72, end: 94, italic: true}]}
+    text: 'Wynagrodzenie, o którym mowa w § 3 ust. 1 płatne będzie do dnia ………………. (data/dzień zapłaty). '
+    slots:
+    - {id: data_dzien_zaplaty, span: [64, 71], type: date, hint: data/dzień zapłaty}
+    inline_hints:
+    - {span: [72, 92], text: data/dzień zapłaty}
+  - p: 35
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 86, end: 100, bold: true}, {
+          start: 132, end: 154, italic: true}, {start: 213, end: 226, italic: true}]}
+    text: Płatność wynagrodzenia, o którym mowa w § 3 ust. 2 nastąpi przelewem na konto bankowe Zleceniobiorcy o nr …………………………………………………………….. (nr
+      rachunku bankowego) prowadzony w banku ..................................... (nazwa banku).
+    slots:
+    - {id: nr_rachunku_bankowego, span: [106, 131], type: text, hint: nr rachunku bankowego}
+    - {id: nazwa_banku, span: [175, 212], type: text, hint: nazwa banku}
+    inline_hints:
+    - {span: [132, 155], text: nr rachunku bankowego}
+    - {span: [213, 226], text: nazwa banku}
+  - p: 36
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}, spans: [{start: 72, end: 85, bold: true}]}
+    text: Zapłata jest uważana za dokonaną z chwilą obciążenia rachunku bankowego Zleceniodawcy.
+  - {p: 37, role: spacer}
+  - p: 38
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 4, kind: paragraph, src: manual, level: 0}}
+    text: § 4
+  - p: 39
+    role: body
+    layout: {align: justify, size: 10.0, spans: [{start: 0, end: 14, bold: true}, {start: 31, end: 44, bold: true}, {start: 89, end: 102, bold: true},
+        {start: 156, end: 170, bold: true}, {start: 233, end: 247, bold: true}]}
+    text: 'Zleceniobiorca ponosi względem Zleceniodawcy odpowiedzialność za szkody poniesione przez Zleceniodawcę a spowodowane zawinionym działaniem
+      lub zaniechaniem Zleceniobiorcy,
+
+      a w szczególności nie dołożeniem należytej staranności przez Zleceniobiorcę przy wykonywaniu czynności, o których mowa w § 1.'
+  - {p: 40, role: spacer}
+  - p: 41
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 5, kind: paragraph, src: manual, level: 0}}
+    text: § 5
+  - p: 42
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}}
+    text: 'Każda ze Stron ma prawo rozwiązać niniejszą umowę z zachowaniem ………… okresu wypowiedzenia ze skutkiem na koniec miesiąca kalendarzowego. '
+    slots:
+    - {id: p42_1, span: [64, 68], type: text, context: niniejszą umowę z zachowaniem ▢ okresu wypowiedzenia}
+  - p: 43
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 13, bold: true}]}
+    text: 'Zleceniodawca ma prawo rozwiązać umowę ze skutkiem natychmiastowym w przypadku:'
+  - p: 44
+    role: item
+    layout: {align: justify, indent: {left: 1068}, size: 10.0, marker: {text: 1), kind: decimal, src: auto, level: 0}}
+    text: ………………………………………………………………………………………………………………………………
+    slots:
+    - {id: p44_1, span: [0, 48], type: text, context: ▢}
+  - p: 45
+    role: item
+    layout: {align: justify, indent: {left: 1068}, size: 10.0, marker: {text: 2), kind: decimal, src: auto, level: 0}}
+    text: ………………………………………………………………………………………………………………………………
+    slots:
+    - {id: p45_1, span: [0, 48], type: text, context: ▢}
+  - p: 46
+    role: item
+    layout: {align: justify, indent: {left: 1068}, size: 10.0, marker: {text: 3), kind: decimal, src: auto, level: 0}}
+    text: ………………………………………………………………………………………………………………………………
+    slots:
+    - {id: przykladowe_powody_rozwiazania_umowy, span: [0, 48], type: text, hint: przykładowe powody rozwiązania umowy}
+  - p: 47
+    role: hint
+    layout: {align: justify, indent: {left: 2124, first: 707}, size: 10.0, italic: true}
+    text: (przykładowe powody rozwiązania umowy)
+    hint_for: 46
+    hint_kind: label
+  - p: 48
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 14, bold: true}, {start: 181,
+          end: 199, italic: true}]}
+    text: Zleceniobiorca ma prawo rozwiązać Umowę bez zachowania okresu wypowiedzenia w przypadku opóźnienia z zapłatą wynagrodzenia, o którym mowa
+      w § 3 wynoszącego co najmniej ………………………….. (okres opóźnienia).
+    slots:
+    - {id: okres_opoznienia, span: [168, 180], type: text, hint: okres opóźnienia}
+    inline_hints:
+    - {span: [181, 199], text: okres opóźnienia}
+  - p: 49
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+    text: Oświadczenie o wypowiedzeniu umowy i rozwiązaniu umowy wymaga dla swej ważności zachowania formy pisemnej.
+  - {p: 50, role: spacer}
+  - p: 51
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 6, kind: paragraph, src: manual, level: 0}}
+    text: § 6
+  - p: 52
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 14, bold: true}, {start: 118,
+          end: 131, bold: true}]}
+    text: Zleceniobiorca nie może powierzyć wykonania czynności objętych zleceniem osobom trzecim bez uprzedniej pisemnej zgody Zleceniodawcy.
+  - p: 53
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}, spans: [{start: 51, end: 65, bold: true}, {start: 112,
+          end: 125, bold: true}]}
+    text: W razie niemożności dokonania określonej czynności Zleceniobiorca obowiązany jest niezwłocznie powiadomić o tym Zleceniodawcę.
+  - {p: 54, role: spacer}
+  - p: 55
+    role: clause_heading
+    layout: {align: center, size: 12.0, bold: true, marker: {text: § 7, kind: paragraph, src: manual, level: 0}}
+    text: § 7
+  - p: 56
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '1.', kind: decimal, src: auto, level: 0}, spans: [{start: 0, end: 6, bold: true}]}
+    text: Strony zgodnie oświadczają, że ich wolą nie jest nawiązanie stosunku pracy.
+  - p: 57
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '2.', kind: decimal, src: auto, level: 0}}
+    text: Wszelkie zmiany niniejszej umowy wymagają zachowania formy pisemnej pod rygorem nieważności.
+  - p: 58
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '3.', kind: decimal, src: auto, level: 0}, spans: [{start: 89, end: 94, bold: true}]}
+    text: 'Umowa została sporządzona w dwóch jednobrzmiących egzemplarzach, po jednym dla każdej ze stron. '
+  - p: 59
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '4.', kind: decimal, src: auto, level: 0}}
+    text: W sprawach nieuregulowanych niniejszą umową będą miały zastosowanie przepisy ustawy Kodeks Cywilny.
+  - p: 60
+    role: item
+    layout: {align: justify, size: 10.0, marker: {text: '5.', kind: decimal, src: auto, level: 0}, spans: [{start: 135, end: 148, bold: true}]}
+    text: Wszelkie spory, jakie mogą wyniknąć w związku z niniejszą umową będą rozpatrywane przez sąd powszechny właściwy ze względu na siedzibę
+      Zleceniodawcy.
+  - {p: 61, role: spacer}
+  - {p: 62, role: spacer}
+  - p: 63
+    role: field
+    layout: {align: justify, size: 10.0, spans: [{start: 0, end: 14, bold: true}, {start: 22, end: 37, bold: true}], tabs: 26}
+    text: "Zleceniodawca:\t\t\t\t\t\t\t\tZleceniobiorca:\t\t\t\t\t\t\t\t\t\t\n……………………...\t\t\t\t\t\t\t\t……….…………………"
+    slots:
+    - {id: zleceniodawca, span: [48, 59], type: signature, label: Zleceniodawca}
+    - {id: zleceniodawca_2, span: [67, 78], type: signature, label: Zleceniodawca}
+  - {p: 64, role: spacer}

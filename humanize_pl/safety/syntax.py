@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-import regex as re
-
 from humanize_pl.rules.finite_verbs import FINITE_VERB_WORDS
-
-from .validators import SENTENCE_TRANSITIONS, GateCheck
+from humanize_pl.sentence_splitter import split_sentences
+from .validators import GateCheck, SENTENCE_TRANSITIONS
 
 
 def stanza_finite_verb_gate(
@@ -16,11 +14,12 @@ def stanza_finite_verb_gate(
 ) -> list[GateCheck]:
     """Use Stanza analysis to validate finite verbs in newly split sentences."""
     checks: list[GateCheck] = []
-    if _sentence_count(candidate) <= _sentence_count(original):
+    parts = split_sentences(candidate)
+    if len(parts) <= len(split_sentences(original)):
         checks.append(GateCheck("stanza_finite_verb", True))
         return checks
 
-    for part in _split_sentence_like(candidate):
+    for part in parts:
         checked = _without_transition(part)
         if not checked:
             checks.append(GateCheck("stanza_finite_verb", False, "empty split fragment"))
@@ -55,14 +54,6 @@ def _analysis_has_finite_verb(analysis) -> bool:
         if upos in {"VERB", "AUX"} and ("VerbForm=Fin" in feats or "Tense=" in feats):
             return True
     return False
-
-
-def _sentence_count(text: str) -> int:
-    return len(_split_sentence_like(text))
-
-
-def _split_sentence_like(text: str) -> list[str]:
-    return [p.strip() for p in re.split(r"(?<=[.!?])\s+", text.strip()) if p.strip()]
 
 
 def _without_transition(sentence: str) -> str:

@@ -208,3 +208,14 @@ def test_shipped_fingerprint_loads() -> None:
     from humanize_pl.detect.fingerprint import load_fingerprint
 
     load_fingerprint()
+
+
+def test_small_ai_corpus_against_a_large_human_corpus_still_ranks() -> None:
+    """A full pooled prior from a corpus far larger than the AI side swamps
+    every AI count; the real corpora are 10 thousand tokens against 5 million."""
+    ai = {
+        "a": corpus(10, phrase="Warto podkreślić", every=2),
+        "b": corpus(10, phrase="Warto podkreślić", every=2),
+    }
+    human = corpus(4000, phrase="Warto podkreślić", every=40)
+    assert "warto podkreślić" in terms(slop_candidates(ai, human, genre="legal"))

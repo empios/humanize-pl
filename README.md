@@ -880,28 +880,57 @@ Ostatnia pozycja to próg jakości, nie sygnał AI: odpowiedź bez konkretnej
 kotwicy (przepis, kwota, termin, nazwa strony) czyta się ogólnikowo niezależnie
 od sformułowań. Wyłączane przez `require_anchor=False`.
 
-## Wyprowadzanie wzorców pomiarem
+## Wyprowadzanie wzorców pomiarem („odcisk slopu”)
 
-Pierwotna lista wzorców powstała ręcznie i — co nie zaskakuje — trafiała
-w ręcznie napisane fixture'y benchmarku znacznie lepiej niż w realny tekst AI.
-`tools/derive_patterns.py` zastępuje zgadywanie pomiarem: porównuje korpus AI
-z ludzkim korpusem referencyjnym metodą log-odds z informatywnym priorem
-Dirichleta (Monroe i in., 2008) i rankinguje n-gramy oraz otwarcia zdań.
+Pierwotna lista wzorców powstała ręcznie i trafiała w ręcznie napisane
+fixture'y benchmarku znacznie lepiej niż w realny tekst AI.
+`tools/derive_patterns.py` zastępuje zgadywanie pomiarem: porównuje tekst
+każdego modelu z ludzkim tekstem tego samego gatunku metodą log-odds
+z informatywnym priorem Dirichleta (Monroe i in., 2008). Analizuje osobno
+unigramy, bigramy, trigramy oraz otwarcia zdań (2- i 3-tokenowe), bo
+monotonia AI ujawnia się na początku zdania wyraźniej niż w środku.
+
+Sam log-odds rankinguje temat równie chętnie jak styl: polityki prywatności
+wypychają na szczyt „danych osobowych”. Kandydat przechodzi więc trzy filtry.
+Musi go nadużywać więcej niż jeden model, musi występować w co najmniej 10%
+dokumentów AI i musi być co najmniej dwa razy częstszy w AI niż w odłożonym
+ludzkim korpusie. Termin dotykający modalności albo odwołań (art, ust, pkt…)
+dostaje flagę `protected` i nie może zostać przyjęty.
+
+Wynik trafia do `humanize_pl/data/slop_fingerprint.yaml`. Każdy nowy wpis ma
+status `candidate` i nie działa, dopóki recenzent nie zmieni go na `accepted`
+(odrzucenie, `rejected`, wymaga uzasadnienia w `note`). Ponowny pomiar,
+np. po nowej generacji modeli, odświeża liczby i nie rusza decyzji
+recenzenta. Przyjęte wpisy diagnoza zgłasza jako rodzinę `slop_ngram`, osobno
+dla gatunku prawnego i `general`, bez reguły przepisującej.
 
 ```bash
-python tools/derive_patterns.py \
-  --ai sciezka/do/dokumentow_ai \
+python tools/derive_patterns.py --genre legal \
+  --ai haiku=docs_tests/corpus/ai_models/haiku \
+  --ai opus=docs_tests/corpus/ai_models/opus \
+  --ai sonnet=docs_tests/corpus/ai_models/sonnet \
+  --glob 'rewrite_*' --split train \
   --human docs_tests/corpus/saos_train.jsonl \
-  --out docs_tests/corpus/derived_patterns.json
+  --human-holdout docs_tests/corpus/saos_holdout.jsonl \
+  --update humanize_pl/data/slop_fingerprint.yaml
+
+python tools/derive_patterns.py --genre general \
+  --ai haiku=docs_tests/corpus/general/haiku --split all \
+  --human docs_tests/corpus/general/wiki_talk_train.jsonl \
+  --human docs_tests/corpus/general/allegro_reviews_train.jsonl \
+  --human-holdout docs_tests/corpus/general/wiki_talk.jsonl \
+  --human-holdout docs_tests/corpus/general/allegro_reviews.jsonl \
+  --update humanize_pl/data/slop_fingerprint.yaml
 ```
 
-Analizowane są osobno unigramy, bigramy, trigramy oraz **otwarcia zdań**
-(2- i 3-tokenowe). Rozdzielenie otwarć od zwykłych n-gramów jest celowe:
-monotonia AI ujawnia się na początku zdania znacznie wyraźniej niż w środku,
-a wspólne liczenie ją zakopuje.
-
-Narzędzie ostrzega, gdy korpus AI liczy mniej niż 25 dokumentów — poniżej tego
-progu ranking odzwierciedla kilka konkretnych plików, a nie styl modelu.
+Gatunek prawny mierzy się na przepisaniach orzeczeń (`rewrite_*`) wobec
+orzeczeń: oba teksty mówią o tym samym, więc różni je styl. Szkice umów
+i pism wobec orzeczeń mierzyłyby różnicę gatunków. `--split train` bierze
+połowę scenariuszy (podział po nazwie pliku, wspólny dla wszystkich modeli),
+a druga połowa zostaje do sprawdzenia skutku. Korpus `general` to dziś
+24 teksty jednego modelu, więc jego wpisy mają flagę `indicative`. Narzędzie
+ostrzega, gdy korpus AI liczy mniej niż 25 dokumentów albo pochodzi od
+jednego modelu.
 
 ## Instalacja
 

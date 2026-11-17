@@ -25,6 +25,10 @@ MIN_MODELS = 2
 MIN_HOLDOUT_RATIO = 2.0
 # Per-model support: the model's own log-odds is positive on this many uses.
 MIN_MODEL_COUNT = 2
+# Weight of the pooled prior. At full weight a human corpus five hundred
+# times the AI side (5.5 million tokens of rulings against 10 thousand of
+# rewrites) swamps every AI count, and only two bigrams reach the threshold.
+PRIOR_SCALE = 0.01
 
 # Tokens of statutory references. A tell built on them would flag citations.
 REFERENCE_TOKENS = frozenset(
@@ -80,7 +84,10 @@ def slop_candidates(
     for kind, (n, openings) in KINDS.items():
         human_counts = count_terms(human, n=n, openings=openings)
         scores = log_odds_with_prior(
-            count_terms(ai_texts, n=n, openings=openings), human_counts, min_count=min_count
+            count_terms(ai_texts, n=n, openings=openings),
+            human_counts,
+            min_count=min_count,
+            prior_scale=PRIOR_SCALE,
         )
         significant = [score for score in scores if score.z_score >= Z_THRESHOLD]
         if not significant:
@@ -170,7 +177,10 @@ def _model_support(
     support: dict[str, set[str]] = {}
     for model, texts in ai_by_model.items():
         for score in log_odds_with_prior(
-            count_terms(texts, n=n, openings=openings), human_counts, min_count=1
+            count_terms(texts, n=n, openings=openings),
+            human_counts,
+            min_count=1,
+            prior_scale=PRIOR_SCALE,
         ):
             if score.log_odds > 0 and score.count_a >= MIN_MODEL_COUNT:
                 support.setdefault(score.term, set()).add(model)

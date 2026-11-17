@@ -230,3 +230,15 @@ def test_ngram_pattern_spans_punctuation_like_the_measurement() -> None:
     assert pattern.search("Pozwana wskazała, że roszczenie jest przedawnione.")
     assert pattern.search("Pozwana wskazała że roszczenie jest przedawnione.")
     assert not pattern.search("Pozwana wskazałaże roszczenie.")
+
+
+def test_amount_date_and_abbreviation_terms_are_protected() -> None:
+    """Tokens drop digits and dots: "kwocie zł" was "kwocie 12 000 zł",
+    "k c" was "k.c."."""
+    assert is_protected("kwocie zł")
+    assert is_protected("w kwocie zł")
+    assert is_protected("lutego r")
+    assert is_protected("k c")
+    assert is_protected("k p c")
+    assert not is_protected("w o")
+    assert not is_protected("wskutek")

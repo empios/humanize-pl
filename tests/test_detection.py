@@ -104,6 +104,12 @@ def _slop(monkeypatch, term: str, *, genre: str, kind: str = "bigram") -> None:
     )
 
 
+def _no_slop(monkeypatch) -> None:
+    import humanize_pl.detect.signals as signals
+
+    monkeypatch.setattr(signals, "accepted_patterns", lambda wanted: ())
+
+
 def _slop_findings(diagnosis) -> list:
     return [finding for finding in diagnosis.findings if finding.family == "slop_ngram"]
 
@@ -147,3 +153,91 @@ def test_general_flow_diagnoses_with_general_genre(monkeypatch) -> None:
         ),
     )
     assert outcome.family_counts_before.get("slop_ngram") == 1
+
+
+def test_slop_findings_do_not_move_the_score(monkeypatch) -> None:
+    """The fingerprint informs; the raw score feeds gates and must not see it."""
+    text = "Umowy zawiera się na piśmie, ponieważ obrót tego wymaga."
+    _no_slop(monkeypatch)
+    plain = detect_document(text, calibrate_against_default=False)
+    _slop(monkeypatch, "ponieważ", genre="legal", kind="unigram")
+    flagged = detect_document(text, calibrate_against_default=False)
+    assert _slop_findings(flagged)
+    assert flagged.ai_signal_score == plain.ai_signal_score
+    assert [row.signal_score for row in flagged.paragraphs] == [
+        row.signal_score for row in plain.paragraphs
+    ]
+
+
+def test_slop_alone_does_not_flag_a_document_for_review(monkeypatch) -> None:
+    from humanize_pl.config import Engine
+    from humanize_pl.document import DocumentType
+    from humanize_pl.flows.base import FlowSettings, run_all_layers
+
+    text = "Strony nie płacą kary, ponieważ nikt nie zawinił."
+    settings = FlowSettings(
+        mode=Mode.standard, engine=Engine.basic, rewrite=False,
+        document_type=DocumentType.contract,
+    )
+    _no_slop(monkeypatch)
+    plain, _ = run_all_layers(text, name="a.txt", settings=settings)
+    _slop(monkeypatch, "ponieważ", genre="legal", kind="unigram")
+    flagged, _ = run_all_layers(text, name="a.txt", settings=settings)
+    assert flagged.family_counts_before.get("slop_ngram") == 1
+    assert (flagged.needs_review, flagged.readiness_status, flagged.signal_before) == (
+        plain.needs_review, plain.readiness_status, plain.signal_before
+    )
+
+
+def test_slop_only_sentence_is_not_sent_to_the_llm(monkeypatch) -> None:
+    from humanize_pl.flows.base import _finding_issues
+
+    _slop(monkeypatch, "ponieważ", genre="legal", kind="unigram")
+    diagnosis = detect_document(
+        "Strony nie płacą kary, ponieważ nikt nie zawinił.",
+        calibrate_against_default=False,
+    )
+    assert _slop_findings(diagnosis)
+    assert _finding_issues(diagnosis) == {}
+
+
+GENERAL_EMAIL = "Dzień dobry. Piszę, ponieważ paczka nie dotarła. Pozdrawiam."
+
+
+def test_docx_detail_reads_a_general_document_with_the_general_fingerprint(
+    monkeypatch, tmp_path
+) -> None:
+    import json
+
+    from humanize_pl.flows.base import ItemOutcome
+    from humanize_pl.flows.docx_flow import _write_detail
+    from humanize_pl.gate import review_response
+
+    _slop(monkeypatch, "ponieważ", genre="legal", kind="unigram")
+    path = tmp_path / "detail.json"
+    outcome = ItemOutcome(name="mail.docx", document_type="general")
+    _write_detail(path, GENERAL_EMAIL, outcome, review_response(GENERAL_EMAIL))
+    families = [row["family"] for row in json.loads(path.read_text())["findings"]]
+    assert "slop_ngram" not in families
+
+
+def test_backfill_reads_a_general_document_with_the_general_fingerprint(
+    monkeypatch, tmp_path
+) -> None:
+    import docx as pydocx
+
+    from humanize_pl.flows.replay import backfill_payload
+
+    _slop(monkeypatch, "ponieważ", genre="legal", kind="unigram")
+    document = pydocx.Document()
+    document.add_paragraph(GENERAL_EMAIL)
+    document.save(tmp_path / "mail.docx")
+    item = {"name": "mail.docx", "status": "ok", "document_type": "general"}
+    payload = {
+        "flow": "docx",
+        "input_directory": str(tmp_path),
+        "output_directory": str(tmp_path),
+        "documents": [item],
+    }
+    assert backfill_payload(payload) == 1
+    assert "slop_ngram" not in item["family_counts_before"]

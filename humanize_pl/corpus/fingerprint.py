@@ -34,6 +34,18 @@ PRIOR_SCALE = 0.01
 REFERENCE_TOKENS = frozenset(
     {"art", "ust", "pkt", "lit", "nr", "poz", "dz", "kc", "kpc", "kp", "par"}
 )
+# Tokens keep letters only, so a term next to these stood next to a number:
+# "kwocie zł" was measured on "kwocie 12 000 zł", "lutego r" on "15 lutego 2024 r.".
+AMOUNT_AND_DATE_TOKENS = frozenset(
+    {
+        "zł", "złotych", "pln", "eur", "euro", "gr", "r", "rok", "roku",
+        "stycznia", "lutego", "marca", "kwietnia", "maja", "czerwca", "lipca",
+        "sierpnia", "września", "października", "listopada", "grudnia",
+    }
+)
+# One-letter Polish words. Any other lone letter is a dotted abbreviation
+# torn apart by tokenization ("k.c." -> "k c").
+ONE_LETTER_WORDS = frozenset({"a", "i", "o", "u", "w", "z"})
 
 
 @dataclass(frozen=True)
@@ -57,8 +69,12 @@ def scenario_half(file_name: str) -> str:
 
 
 def is_protected(term: str) -> bool:
-    """True when the term touches modality or a statutory reference."""
-    if REFERENCE_TOKENS.intersection(term.split()):
+    """True when the term touches modality, a statutory reference, an amount
+    or a date."""
+    tokens = term.split()
+    if REFERENCE_TOKENS.intersection(tokens) or AMOUNT_AND_DATE_TOKENS.intersection(tokens):
+        return True
+    if any(len(token) == 1 and token not in ONE_LETTER_WORDS for token in tokens):
         return True
     return any(extract_deontic_profile(term).values())
 

@@ -7,6 +7,13 @@ if TYPE_CHECKING:
     from .calibration import Calibration
 
 
+# Families reported to the reader and nothing more: they do not enter the
+# score that gates review, readiness and rewrites, and they are never sent to
+# a model as something to fix. The slop fingerprint is measured, not judged,
+# so it informs the reader without deciding anything for them.
+INFORMATIONAL_FAMILIES = frozenset({"slop_ngram"})
+
+
 @dataclass(frozen=True)
 class Finding:
     """A single located AI-style signal in the source text.

@@ -266,6 +266,8 @@ def backfill_payload(payload: dict[str, Any]) -> int:
 
     from humanize_pl.io.docx_io import docx_text
 
+    from .base import diagnosis_genre
+
     input_directory = Path(str(payload.get("input_directory", "")))
     output_directory = Path(str(payload.get("output_directory", "")))
     completed = 0
@@ -285,8 +287,11 @@ def backfill_payload(payload: dict[str, Any]) -> int:
         except Exception:  # a document deleted or replaced since the run
             continue
 
-        before = detect_document(before_text)
-        after = detect_document(after_text) if after_text != before_text else before
+        genre = diagnosis_genre(item.get("document_type"))
+        before = detect_document(before_text, genre=genre)
+        after = (
+            detect_document(after_text, genre=genre) if after_text != before_text else before
+        )
         item.setdefault(
             "family_counts_before", {row.family: row.count for row in before.families}
         )

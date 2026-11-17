@@ -902,7 +902,9 @@ status `candidate` i nie działa, dopóki recenzent nie zmieni go na `accepted`
 (odrzucenie, `rejected`, wymaga uzasadnienia w `note`). Ponowny pomiar,
 np. po nowej generacji modeli, odświeża liczby i nie rusza decyzji
 recenzenta. Przyjęte wpisy diagnoza zgłasza jako rodzinę `slop_ngram`, osobno
-dla gatunku prawnego i `general`, bez reguły przepisującej.
+dla gatunku prawnego i `general`, bez reguły przepisującej. To wyłącznie
+informacja: rodzina nie wchodzi do wyniku sygnału, nie decyduje o przeglądzie
+ani gotowości dokumentu i nie kieruje zdań do modelu językowego.
 
 ```bash
 python tools/derive_patterns.py --genre legal \

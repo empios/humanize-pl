@@ -24,6 +24,7 @@ from humanize_pl.blueprint import check_category
 from humanize_pl.categories import classify_category
 from humanize_pl.tone import compare_tone
 from humanize_pl.detect import detect_document, load_profile, profile_for_family
+from humanize_pl.detect.base import INFORMATIONAL_FAMILIES
 from humanize_pl.document import (
     DocumentType,
     FormatPolicy,
@@ -419,6 +420,12 @@ def _score(diagnosis) -> float:
     return calibration.calibrated_score if calibration else diagnosis.ai_signal_score
 
 
+def diagnosis_genre(document_type: str | None) -> str:
+    """The slop fingerprint a document is read against: "general" only for
+    text the user marked as such, "legal" for everything else."""
+    return "general" if document_type == DocumentType.general else "legal"
+
+
 def run_all_layers(
     text: str,
     *,
@@ -468,7 +475,7 @@ def run_all_layers(
             f"Wzorzec kancelarii zmierzono na {style_profile.document_count} "
             "dokumentach — wynik jest orientacyjny, nie progiem."
         )
-    genre = "general" if resolved_type == DocumentType.general else "legal"
+    genre = diagnosis_genre(resolved_type)
     before = detect_document(
         text, profile=reference, calibrate_against_default=False, genre=genre
     )
@@ -668,7 +675,10 @@ def run_all_layers(
     outcome.blueprint = structure.to_json()
     if structure.checked:
         outcome.warnings.extend(structure.issues)
-    if outcome.needs_review or outcome.unresolved_findings or outcome.warnings:
+    actionable = [
+        row for row in outcome.unresolved_findings if row["family"] not in INFORMATIONAL_FAMILIES
+    ]
+    if outcome.needs_review or actionable or outcome.warnings:
         outcome.readiness_status = ReadinessStatus.ready_with_warnings.value
     if owned_rewriter and rewriter is not None:
         rewriter.close()
@@ -680,6 +690,23 @@ def _short_rationale(value: str, limit: int = 300) -> str:
     """Collapse the model's reason to one report-sized line."""
     text = " ".join(str(value or "").split())
     return text if len(text) <= limit else text[: limit - 1].rstrip() + "…"
+
+
+def _finding_issues(diagnosis) -> dict[tuple[int, int], list[str]]:
+    """What a model is asked to fix, per (paragraph, sentence).
+
+    Informational families stay out: a sentence whose only finding is a
+    measured slop n-gram is not sent, so its amounts and parties are never
+    exposed to a rewrite.
+    """
+    issues: dict[tuple[int, int], list[str]] = {}
+    for finding in diagnosis.findings:
+        if finding.family in INFORMATIONAL_FAMILIES:
+            continue
+        issues.setdefault((finding.paragraph_index, finding.sentence_index), []).append(
+            finding.detail or finding.evidence or finding.family
+        )
+    return issues
 
 
 def _rewrite_remaining_with_llm(
@@ -717,11 +744,7 @@ def _rewrite_remaining_with_llm(
     """
     lines = text.split("\n")
     nonempty = [index for index, value in enumerate(lines) if value.strip()]
-    issues_by_sentence: dict[tuple[int, int], list[str]] = {}
-    for finding in diagnosis.findings:
-        issues_by_sentence.setdefault(
-            (finding.paragraph_index, finding.sentence_index), []
-        ).append(finding.detail or finding.evidence or finding.family)
+    issues_by_sentence = _finding_issues(diagnosis)
     for paragraph_index, line_index in enumerate(nonempty):
         for sentence_index, sentence in enumerate(split_sentences(lines[line_index])):
             words = len(sentence.split())

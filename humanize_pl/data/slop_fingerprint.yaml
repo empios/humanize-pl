@@ -199,7 +199,7 @@ entries:
   - haiku
   - opus
   - sonnet
-  protected: false
+  protected: true
   indicative: false
   status: rejected
   note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
@@ -278,7 +278,7 @@ entries:
   - haiku
   - opus
   - sonnet
-  protected: false
+  protected: true
   indicative: false
   status: rejected
   note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
@@ -358,7 +358,7 @@ entries:
   - haiku
   - opus
   - sonnet
-  protected: false
+  protected: true
   indicative: false
   status: rejected
   note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
@@ -373,7 +373,7 @@ entries:
   models:
   - haiku
   - sonnet
-  protected: false
+  protected: true
   indicative: false
   status: rejected
   note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
@@ -389,7 +389,7 @@ entries:
   - haiku
   - opus
   - sonnet
-  protected: false
+  protected: true
   indicative: false
   status: rejected
   note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
@@ -405,7 +405,7 @@ entries:
   - haiku
   - opus
   - sonnet
-  protected: false
+  protected: true
   indicative: false
   status: rejected
   note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
@@ -437,7 +437,7 @@ entries:
   - haiku
   - opus
   - sonnet
-  protected: false
+  protected: true
   indicative: false
   status: rejected
   note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
@@ -516,7 +516,7 @@ entries:
   models:
   - opus
   - sonnet
-  protected: false
+  protected: true
   indicative: false
   status: rejected
   note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
@@ -658,7 +658,7 @@ entries:
   ai_doc_share: 0.4167
   models:
   - haiku
-  protected: false
+  protected: true
   indicative: true
   status: candidate
   note: ''
@@ -672,7 +672,7 @@ entries:
   ai_doc_share: 0.3333
   models:
   - haiku
-  protected: false
+  protected: true
   indicative: true
   status: candidate
   note: ''
@@ -1078,7 +1078,7 @@ entries:
   ai_doc_share: 0.2083
   models:
   - haiku
-  protected: false
+  protected: true
   indicative: true
   status: candidate
   note: ''
@@ -1190,7 +1190,7 @@ entries:
   ai_doc_share: 0.1667
   models:
   - haiku
-  protected: false
+  protected: true
   indicative: true
   status: candidate
   note: ''
@@ -1218,7 +1218,7 @@ entries:
   ai_doc_share: 0.1667
   models:
   - haiku
-  protected: false
+  protected: true
   indicative: true
   status: candidate
   note: ''
@@ -1470,7 +1470,7 @@ entries:
   ai_doc_share: 0.25
   models:
   - haiku
-  protected: false
+  protected: true
   indicative: true
   status: candidate
   note: ''
@@ -1498,7 +1498,7 @@ entries:
   ai_doc_share: 0.4167
   models:
   - haiku
-  protected: false
+  protected: true
   indicative: true
   status: candidate
   note: ''

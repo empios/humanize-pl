@@ -1343,7 +1343,7 @@ class _Report:
     def ai_use_rows(self) -> list[tuple[str, str]]:
         """The language model's share of the run, as label and value."""
         register = self.summary.get("ai_use")
-        if register is None:
+        if register is None or self.rebuilt:
             return []
         return [
             ("Model językowy", ", ".join(register.get("models") or []) or "nie użyto"),
@@ -1356,11 +1356,21 @@ class _Report:
                 "Propozycje modelu odrzucone przez lokalne kontrole",
                 str(register.get("model_rejections", 0)),
             ),
+            ("Błędy połączenia z modelem", str(register.get("model_errors", 0))),
+            (
+                f"{self.few.capitalize()} z niedostępnym modelem",
+                str(register.get("model_unavailable", 0)),
+            ),
             ("Zmiany z reguł deterministycznych", str(register.get("rule_segments", 0))),
         ]
 
     def ai_use_sentence(self) -> str:
         register = self.summary.get("ai_use")
+        if self.rebuilt:
+            return (
+                "Raport odtworzono z gotowego arkusza, więc nie da się ustalić, "
+                "które zmiany zrobił model językowy."
+            )
         if register is None:
             return (
                 "Ten raport nie zawiera rejestru udziału modelu językowego, "
@@ -1371,10 +1381,17 @@ class _Report:
         )
         if register.get("model_segments"):
             return (
-                "Model językowy redagował wyłącznie zdania, w których po regułach "
-                "zostały uwagi. Każda jego propozycja przeszła lokalne kontrole "
-                "zachowania treści, zanim trafiła do tekstu, a w wykazie zmian jest "
+                "Model językowy redagował fragmenty wskazane przez silnik: zdania "
+                "z uwagami pozostałymi po regułach albo zbyt długie, a w tekstach "
+                "ogólnych całe akapity. Każda propozycja, która trafiła do tekstu, "
+                "przeszła lokalne kontrole zachowania treści i jest w wykazie zmian "
                 "oznaczona jako „redakcja modelowa po regułach”. " + approval
+            )
+        if register.get("models"):
+            return (
+                "Model językowy był dostępny, ale żadna jego propozycja nie trafiła "
+                "do tekstu: odrzuciły je lokalne kontrole albo połączenie zawiodło. "
+                "Wszystkie zmiany pochodzą z reguł deterministycznych. " + approval
             )
         unavailable = int(register.get("model_unavailable", 0))
         if unavailable:
@@ -1392,6 +1409,8 @@ class _Report:
         """Which changes a language model made, stated as facts of the run."""
         from reportlab.platypus import Spacer
 
+        if not self.items:
+            return []
         story: list[Any] = [
             self.para("4.2. Udział modelu językowego", "h2"),
             self.para(escape(self.ai_use_sentence()), "body"),

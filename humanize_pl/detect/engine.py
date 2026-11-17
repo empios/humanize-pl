@@ -23,6 +23,7 @@ def detect_document(
     *,
     profile: ReferenceProfile | None = None,
     calibrate_against_default: bool = True,
+    genre: str = "legal",
 ) -> DocumentDiagnosis:
     """Locate AI-style signals in `text`.
 
@@ -33,6 +34,9 @@ def detect_document(
     When a human reference profile is installed the diagnosis also carries a
     calibrated score expressing the document relative to measured human
     writing. Without one, only the raw density score is available.
+
+    `genre` is "general" only for text the user marked as such; everything
+    else is read against the legal fingerprint.
     """
     paragraphs = [part for part in re.split(r"\n+", text) if part.strip()]
 
@@ -55,6 +59,7 @@ def detect_document(
                     sentence,
                     paragraph_index=paragraph_index,
                     sentence_index=sentence_index,
+                    genre=genre,
                 )
             )
 

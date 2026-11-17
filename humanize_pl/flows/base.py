@@ -468,7 +468,10 @@ def run_all_layers(
             f"Wzorzec kancelarii zmierzono na {style_profile.document_count} "
             "dokumentach — wynik jest orientacyjny, nie progiem."
         )
-    before = detect_document(text, profile=reference, calibrate_against_default=False)
+    genre = "general" if resolved_type == DocumentType.general else "legal"
+    before = detect_document(
+        text, profile=reference, calibrate_against_default=False, genre=genre
+    )
     outcome = ItemOutcome(
         name=name,
         words=before.word_count,
@@ -554,7 +557,9 @@ def run_all_layers(
                 rewriter.metadata.duration_ms,
             )
             reasons_before = dict(rewriter.metadata.decision_reasons)
-            remaining = detect_document(text_out, calibrate_against_default=False)
+            remaining = detect_document(
+                text_out, calibrate_against_default=False, genre=genre
+            )
             text_out, llm_changes, llm_rejections = _rewrite_remaining_with_llm(
                 text_out,
                 remaining,
@@ -599,7 +604,9 @@ def run_all_layers(
 
     outcome.text_out = text_out
     after = (
-        detect_document(text_out, profile=reference, calibrate_against_default=False)
+        detect_document(
+            text_out, profile=reference, calibrate_against_default=False, genre=genre
+        )
         if text_out != text
         else before
     )

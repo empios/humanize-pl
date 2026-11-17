@@ -90,3 +90,60 @@ def test_empty_input_is_safe() -> None:
     assert diagnosis.findings == []
     assert diagnosis.ai_signal_score == 0.0
     assert diagnosis.metrics == {}
+
+
+def _slop(monkeypatch, term: str, *, genre: str, kind: str = "bigram") -> None:
+    """Install one accepted fingerprint entry, independent of the shipped file."""
+    import humanize_pl.detect.signals as signals
+    from humanize_pl.detect.fingerprint import SlopEntry, compile_pattern
+
+    entry = SlopEntry(term, kind, genre, "accepted", "test", False, False)
+    installed = ((entry, compile_pattern(entry)),)
+    monkeypatch.setattr(
+        signals, "accepted_patterns", lambda wanted: installed if wanted == genre else ()
+    )
+
+
+def _slop_findings(diagnosis) -> list:
+    return [finding for finding in diagnosis.findings if finding.family == "slop_ngram"]
+
+
+def test_accepted_entry_fires_only_in_its_genre(monkeypatch) -> None:
+    _slop(monkeypatch, "mam nadzieję", genre="general")
+    text = "Dzień dobry. Mam nadzieję, że paczka dotrze w piątek."
+    assert _slop_findings(detect_document(text, genre="general"))
+    assert not _slop_findings(detect_document(text, genre="legal"))
+
+
+def test_slop_hit_inside_existing_finding_is_not_doubled(monkeypatch) -> None:
+    _slop(monkeypatch, "warto wskazać", genre="legal", kind="opening_bigram")
+    diagnosis = detect_document("Warto wskazać, że umowa wiąże strony.")
+    assert [f.family for f in diagnosis.findings if f.char_start == 0] == ["discourse_frame"]
+    assert not _slop_findings(diagnosis)
+
+
+def test_slop_finding_is_detect_only(monkeypatch) -> None:
+    _slop(monkeypatch, "w dobie", genre="legal")
+    findings = _slop_findings(detect_document("Umowy zawiera się w dobie cyfryzacji obrotu."))
+    assert [(f.rule, f.evidence, f.rewritable, f.weight) for f in findings] == [
+        ("detect:slop.bigram.w_dobie", "w dobie", False, 0.4)
+    ]
+
+
+def test_general_flow_diagnoses_with_general_genre(monkeypatch) -> None:
+    from humanize_pl.config import Engine
+    from humanize_pl.document import DocumentType
+    from humanize_pl.flows.base import FlowSettings, run_all_layers
+
+    _slop(monkeypatch, "mam nadzieję", genre="general")
+    outcome, _verdict = run_all_layers(
+        "Dzień dobry. Mam nadzieję, że paczka dotrze w piątek. Pozdrawiam.",
+        name="mail.txt",
+        settings=FlowSettings(
+            mode=Mode.standard,
+            engine=Engine.basic,
+            rewrite=False,
+            document_type=DocumentType.general,
+        ),
+    )
+    assert outcome.family_counts_before.get("slop_ngram") == 1

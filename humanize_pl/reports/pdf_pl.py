@@ -824,6 +824,7 @@ class _Report:
             self.xlsx_unresolved,
             self.xlsx_basis,
             self.readiness_audit,
+            self.ai_use,
             self.metrics,
             self.families,
             self.per_item,
@@ -1338,6 +1339,74 @@ class _Report:
             ),
             Spacer(1, 4),
         ]
+
+    def ai_use_rows(self) -> list[tuple[str, str]]:
+        """The language model's share of the run, as label and value."""
+        register = self.summary.get("ai_use")
+        if register is None:
+            return []
+        return [
+            ("Model językowy", ", ".join(register.get("models") or []) or "nie użyto"),
+            ("Fragmenty zredagowane przez model", str(register.get("model_segments", 0))),
+            (
+                f"{self.many.capitalize()} z redakcją modelu",
+                str(register.get("documents_with_model_edits", 0)),
+            ),
+            (
+                "Propozycje modelu odrzucone przez lokalne kontrole",
+                str(register.get("model_rejections", 0)),
+            ),
+            ("Zmiany z reguł deterministycznych", str(register.get("rule_segments", 0))),
+        ]
+
+    def ai_use_sentence(self) -> str:
+        register = self.summary.get("ai_use")
+        if register is None:
+            return (
+                "Ten raport nie zawiera rejestru udziału modelu językowego, "
+                "bo powstał przed jego wprowadzeniem."
+            )
+        approval = (
+            "Zatwierdzenie każdej zmiany należy do osoby odpowiedzialnej za dokument."
+        )
+        if register.get("model_segments"):
+            return (
+                "Model językowy redagował wyłącznie zdania, w których po regułach "
+                "zostały uwagi. Każda jego propozycja przeszła lokalne kontrole "
+                "zachowania treści, zanim trafiła do tekstu, a w wykazie zmian jest "
+                "oznaczona jako „redakcja modelowa po regułach”. " + approval
+            )
+        unavailable = int(register.get("model_unavailable", 0))
+        if unavailable:
+            return (
+                "Zamówiono redakcję modelową, ale model był niedostępny "
+                f"(pozycje: {unavailable}). Wszystkie zmiany pochodzą z reguł "
+                "deterministycznych. " + approval
+            )
+        return (
+            "Model językowy nie był używany. Wszystkie zmiany pochodzą z reguł "
+            "deterministycznych. " + approval
+        )
+
+    def ai_use(self) -> list:
+        """Which changes a language model made, stated as facts of the run."""
+        from reportlab.platypus import Spacer
+
+        story: list[Any] = [
+            self.para("4.2. Udział modelu językowego", "h2"),
+            self.para(escape(self.ai_use_sentence()), "body"),
+        ]
+        rows = self.ai_use_rows()
+        if rows:
+            story.append(
+                self.table(
+                    [self.head("Pozycja rejestru", "Wartość")]
+                    + [[self.cell(escape(label)), self.cell(escape(value))] for label, value in rows],
+                    [90 * self.mm, self.width - 90 * self.mm],
+                )
+            )
+        story.append(Spacer(1, 4))
+        return story
 
     def examples(self) -> list:
         """Real before/after pairs. The most convincing part of the report."""

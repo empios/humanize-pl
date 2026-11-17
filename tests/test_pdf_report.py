@@ -661,3 +661,52 @@ def test_the_headline_leads_with_the_content_check_and_ends_with_the_score() -> 
     assert report.headline_sentence().startswith(
         "Zapis liczb, dat, kwot, przepisów albo nazw zmienił się w 1 z 2 pozycji"
     )
+
+
+def _ai_use_report(ai_use: dict | None) -> "pdf_pl._Report":
+    payload = _detail_payload([])
+    if ai_use is not None:
+        payload["summary"]["ai_use"] = ai_use
+    return pdf_pl._Report(payload, 400, pdf_pl._styles())
+
+
+AI_USE = {
+    "models": ["bielik"],
+    "documents_with_model_edits": 2,
+    "model_segments": 3,
+    "rule_segments": 5,
+    "model_rejections": 1,
+    "model_unavailable": 0,
+}
+
+
+def test_pdf_names_what_the_model_changed() -> None:
+    report = _ai_use_report(AI_USE)
+    rows = dict(report.ai_use_rows())
+    assert rows["Model językowy"] == "bielik"
+    assert rows["Fragmenty zredagowane przez model"] == "3"
+    assert rows["Propozycje modelu odrzucone przez lokalne kontrole"] == "1"
+    assert rows["Zmiany z reguł deterministycznych"] == "5"
+    assert "osoby odpowiedzialnej za dokument" in report.ai_use_sentence()
+    assert "redakcja modelowa po regułach" in report.ai_use_sentence()
+
+
+def test_pdf_says_when_no_model_was_used() -> None:
+    report = _ai_use_report({**AI_USE, "models": [], "documents_with_model_edits": 0,
+                             "model_segments": 0, "model_rejections": 0})
+    assert "Model językowy nie był używany" in report.ai_use_sentence()
+    assert dict(report.ai_use_rows())["Model językowy"] == "nie użyto"
+
+
+def test_pdf_says_when_the_model_was_unavailable() -> None:
+    report = _ai_use_report({**AI_USE, "models": [], "documents_with_model_edits": 0,
+                             "model_segments": 0, "model_rejections": 0,
+                             "model_unavailable": 2})
+    assert "niedostępny" in report.ai_use_sentence()
+
+
+def test_pdf_old_report_has_no_register() -> None:
+    report = _ai_use_report(None)
+    assert "nie zawiera rejestru" in report.ai_use_sentence()
+    assert report.ai_use_rows() == []
+    assert report.ai_use()

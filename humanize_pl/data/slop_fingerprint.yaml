@@ -1,0 +1,11 @@
+# Polski „odcisk slopu”: n-gramy nadużywane przez dzisiejsze modele.
+#
+# Wpisy mierzy `tools/derive_patterns.py` (log-odds szkiców AI wobec
+# ludzkiego tekstu tego samego gatunku). Każdy nowy wpis ma status
+# `candidate` i nie działa, dopóki recenzent nie zmieni go na `accepted`.
+# Odrzucenie (`rejected`) wymaga uzasadnienia w `note`. Termin `protected`
+# (modalność, odwołania) nie może zostać przyjęty. Ponowny pomiar odświeża
+# liczby i nie rusza statusów ani notatek.
+version: 1
+measurements: []
+entries: []

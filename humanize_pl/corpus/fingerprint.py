@@ -12,21 +12,12 @@ from __future__ import annotations
 
 import zlib
 from collections import Counter
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from pathlib import PurePath
 
 from humanize_pl.corpus.logodds import Z_THRESHOLD, count_terms, log_odds_with_prior
+from humanize_pl.detect.fingerprint import GENRES, KINDS
 from humanize_pl.safety.deontic import extract_deontic_profile
-
-# Layer name -> (n, sentence openings only).
-KINDS: dict[str, tuple[int, bool]] = {
-    "unigram": (1, False),
-    "bigram": (2, False),
-    "trigram": (3, False),
-    "opening_bigram": (2, True),
-    "opening_trigram": (3, True),
-}
-GENRES = ("legal", "general")
 
 MIN_DOC_SHARE = 0.10
 MIN_MODELS = 2
@@ -130,6 +121,46 @@ def slop_candidates(
                 )
             )
     return sorted(out, key=lambda candidate: candidate.z_score, reverse=True)
+
+
+def merge_candidates(
+    document: dict, fresh: list[SlopCandidate], *, measurement: dict
+) -> dict:
+    """`document` with `fresh` measurements folded in.
+
+    Numbers are refreshed; a reviewer's status and note never are. A term the
+    new measurement no longer finds keeps its entry and is listed in the
+    measurement, so a reviewer sees what the newer models stopped doing.
+    """
+    entries = [dict(row) for row in document.get("entries") or []]
+    by_key = {(row["term"], row["kind"], row["genre"]): row for row in entries}
+    seen: set[tuple[str, str, str]] = set()
+    for candidate in fresh:
+        values = asdict(candidate)
+        values["models"] = list(candidate.models)
+        key = (candidate.term, candidate.kind, candidate.genre)
+        seen.add(key)
+        row = by_key.get(key)
+        if row is None:
+            row = by_key[key] = {**values, "status": "candidate", "note": ""}
+            entries.append(row)
+        else:
+            row.update(values)
+
+    genre = measurement.get("genre")
+    missing = [
+        row["term"]
+        for row in entries
+        if row["genre"] == genre and (row["term"], row["kind"], row["genre"]) not in seen
+    ]
+    record = dict(measurement)
+    if missing:
+        record["not_remeasured"] = missing
+    return {
+        **document,
+        "measurements": [*(document.get("measurements") or []), record],
+        "entries": entries,
+    }
 
 
 def _model_support(

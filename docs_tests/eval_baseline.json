@@ -23,7 +23,7 @@
     "ai_models_category_wrong": 0.0,
     "ai_models_checklist_blocking": 0.4167,
     "edits_per_1k_ai_models": 2.03,
-    "detector_auc_drafts": 0.5752,
+    "detector_auc_drafts": 0.5748,
     "detector_auc_rewrites": 0.7455
   }
 }

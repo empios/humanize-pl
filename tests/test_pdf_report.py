@@ -687,6 +687,7 @@ def test_pdf_names_what_the_model_changed() -> None:
     assert rows["Fragmenty zredagowane przez model"] == "3"
     assert rows["Propozycje modelu odrzucone przez lokalne kontrole"] == "1"
     assert rows["Zmiany z reguł deterministycznych"] == "5"
+    assert rows["Wiersze z redakcją modelu"] == "2"
     assert "osoby odpowiedzialnej za dokument" in report.ai_use_sentence()
     assert "redakcja modelowa po regułach" in report.ai_use_sentence()
 

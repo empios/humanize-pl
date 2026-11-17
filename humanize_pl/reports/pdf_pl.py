@@ -1349,7 +1349,7 @@ class _Report:
             ("Model językowy", ", ".join(register.get("models") or []) or "nie użyto"),
             ("Fragmenty zredagowane przez model", str(register.get("model_segments", 0))),
             (
-                f"{self.many.capitalize()} z redakcją modelu",
+                f"{self.few.capitalize()} z redakcją modelu",
                 str(register.get("documents_with_model_edits", 0)),
             ),
             (

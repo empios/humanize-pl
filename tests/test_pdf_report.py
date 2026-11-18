@@ -753,3 +753,49 @@ def test_a_rebuilt_workbook_carries_no_register(tmp_path) -> None:
     output = tmp_path / "out.xlsx"
     run_xlsx_flow(source, output, column="B", settings=BASIC, report=False, pdf=False)
     assert payload_from_workbook(output, column="Odpowiedź AI")["summary"]["ai_use"] is None
+
+
+def _references_report(layers: dict, references: list[dict] | None = None):
+    item = {"name": "wiersz 2", "status": "ok", "signal_before": 0.1, "signal_after": 0.1,
+            "changes_applied": 0}
+    if references is not None:
+        item["references"] = references
+    payload = _detail_payload([item])
+    payload["layers"] = layers
+    return pdf_pl._Report(payload, 400, pdf_pl._styles())
+
+
+def test_pdf_says_verification_was_off() -> None:
+    report = _references_report({"references": "disabled"}, [])
+    assert "nie przeprowadzono" in report.references_sentence()
+    assert "--verify-references" in report.references_sentence()
+    assert report.references_rows() == []
+
+
+def test_pdf_lists_unconfirmed_references() -> None:
+    rows = [
+        {"text": "art. 415 k.c.", "kind": "statute", "status": "confirmed",
+         "source": "ELI DU/2024/1061", "note_pl": "Potwierdzono."},
+        {"text": "art. 6 § 1 k.c.", "kind": "statute", "status": "not_found",
+         "source": "ELI DU/2024/1061", "note_pl": "W tekście DU/2024/1061 nie ma: art. 6 § 1."},
+        {"text": "art. 2", "kind": "statute", "status": "unknown_act",
+         "source": "ELI", "note_pl": "ISAP/ELI nie zna aktu DU/2099/1."},
+    ]
+    report = _references_report({"references": "enabled"}, rows)
+    sentence = report.references_sentence()
+    assert "potwierdzono: 1" in sentence and "nie znaleziono: 1" in sentence
+    assert "tekstu nie zmieniono" in sentence
+    listed = report.references_rows()
+    assert [row[1] for row in listed] == ["art. 6 § 1 k.c.", "art. 2"]
+    assert listed[0][2] == "nie znaleziono"
+
+
+def test_pdf_says_when_no_references_were_found() -> None:
+    report = _references_report({"references": "enabled"}, [])
+    assert "nie znaleziono odwołań" in report.references_sentence()
+
+
+def test_pdf_old_report_has_no_verification() -> None:
+    report = _references_report({})
+    assert "nie zawiera weryfikacji" in report.references_sentence()
+    assert report.references_audit()

@@ -6,7 +6,13 @@ import regex as re
 
 from .reference import ReferenceProfile
 from humanize_pl.sentence_splitter import split_sentences
-from .base import DocumentDiagnosis, FamilySummary, Finding, ParagraphDiagnosis
+from .base import (
+    INFORMATIONAL_FAMILIES,
+    DocumentDiagnosis,
+    FamilySummary,
+    Finding,
+    ParagraphDiagnosis,
+)
 from .calibration import calibrate
 from .signals import WORD_RE, repeated_opening_findings, sentence_findings
 from .lexical import connective_density, fog_pl, mtld
@@ -23,6 +29,7 @@ def detect_document(
     *,
     profile: ReferenceProfile | None = None,
     calibrate_against_default: bool = True,
+    genre: str = "legal",
 ) -> DocumentDiagnosis:
     """Locate AI-style signals in `text`.
 
@@ -33,6 +40,9 @@ def detect_document(
     When a human reference profile is installed the diagnosis also carries a
     calibrated score expressing the document relative to measured human
     writing. Without one, only the raw density score is available.
+
+    `genre` is "general" only for text the user marked as such; everything
+    else is read against the legal fingerprint.
     """
     paragraphs = [part for part in re.split(r"\n+", text) if part.strip()]
 
@@ -55,6 +65,7 @@ def detect_document(
                     sentence,
                     paragraph_index=paragraph_index,
                     sentence_index=sentence_index,
+                    genre=genre,
                 )
             )
 
@@ -97,7 +108,15 @@ def detect_document(
 def _score(findings: list[Finding], word_count: int) -> float:
     if word_count <= 0:
         return 0.0
-    density = sum(finding.weight for finding in findings) / word_count * 1000
+    density = (
+        sum(
+            finding.weight
+            for finding in findings
+            if finding.family not in INFORMATIONAL_FAMILIES
+        )
+        / word_count
+        * 1000
+    )
     return round(min(1.0, density / SATURATION_PER_1000_WORDS), 4)
 
 

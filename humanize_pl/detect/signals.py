@@ -12,6 +12,7 @@ from humanize_pl.rules.legal_features import (
     VAGUE_REFERENCE_PATTERN,
 )
 from .base import Finding
+from .fingerprint import accepted_patterns
 from .structural import scaffold_findings, tricolon_findings
 
 # Detectors reuse the rewrite rules' own patterns wherever a rewrite exists, so
@@ -20,6 +21,8 @@ from .structural import scaffold_findings, tricolon_findings
 # safe deterministic rewrite, and saying so is the point of this layer.
 
 WORD_RE = re.compile(r"\p{L}+")
+# Quotes, dashes and numbering an opening pattern may span before its words.
+_LEADING_NON_LETTERS = re.compile(r"^[\W\d_]*")
 
 _EMPTY_EMPHASIS_PATTERNS: list[tuple[str, str]] = [
     (r"\b[Tt]o właśnie\b", "detect:empty_emphasis.to_wlasnie"),
@@ -40,8 +43,13 @@ def sentence_findings(
     *,
     paragraph_index: int,
     sentence_index: int,
+    genre: str = "legal",
 ) -> list[Finding]:
-    """All signals located in a single sentence, regardless of rewrite mode."""
+    """All signals located in a single sentence, regardless of rewrite mode.
+
+    `genre` picks the slop fingerprint: what reads as a tell in an email can
+    be ordinary in a ruling, and the other way round.
+    """
     out: list[Finding] = []
     out.extend(_discourse_frames(sentence, paragraph_index, sentence_index))
     out.extend(_transitions(sentence, paragraph_index, sentence_index))
@@ -59,6 +67,7 @@ def sentence_findings(
             sentence, paragraph_index=paragraph_index, sentence_index=sentence_index
         )
     )
+    out.extend(_slop_ngrams(sentence, paragraph_index, sentence_index, genre, out))
     return _dedupe(out)
 
 def _typography_artifacts(
@@ -173,6 +182,38 @@ def _empty_emphasis(sentence: str, paragraph_index: int, sentence_index: int) ->
             weight=0.5,
             rewritable=True,
         )
+
+
+def _slop_ngrams(
+    sentence: str,
+    paragraph_index: int,
+    sentence_index: int,
+    genre: str,
+    found: list[Finding],
+) -> Iterator[Finding]:
+    """Reviewed n-grams today's models overuse in this genre.
+
+    A hit inside a span another family already reports is the same tell seen
+    twice, so it is skipped rather than counted again.
+    """
+    spans = [(finding.char_start, finding.char_end) for finding in found]
+    for entry, pattern in accepted_patterns(genre):
+        for match in pattern.finditer(sentence):
+            start, end = match.start(), match.end()
+            start += len(_LEADING_NON_LETTERS.match(match.group(0)).group(0))
+            if any(start < other_end and other_start < end for other_start, other_end in spans):
+                continue
+            yield Finding(
+                family="slop_ngram",
+                rule=f"detect:slop.{entry.kind}.{entry.term.replace(' ', '_')}",
+                evidence=sentence[start:end],
+                paragraph_index=paragraph_index,
+                sentence_index=sentence_index,
+                char_start=start,
+                char_end=end,
+                weight=0.4,
+                rewritable=False,
+            )
 
 
 def _reference_density(

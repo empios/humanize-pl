@@ -29,6 +29,7 @@ from .base import (
     FlowSettings,
     ItemOutcome,
     attach_pdf_report,
+    diagnosis_genre,
     layer_status,
     prepare_llm,
     run_all_layers,
@@ -295,7 +296,7 @@ def _write_docx(
 
 
 def _write_detail(path: Path, text: str, outcome: ItemOutcome, verdict) -> None:
-    diagnosis = detect_document(text)
+    diagnosis = detect_document(text, genre=diagnosis_genre(outcome.document_type))
     path.write_text(
         json.dumps(
             {

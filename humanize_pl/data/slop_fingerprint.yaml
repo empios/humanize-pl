@@ -1,0 +1,2568 @@
+# Polski „odcisk slopu”: n-gramy nadużywane przez dzisiejsze modele.
+#
+# Wpisy mierzy `tools/derive_patterns.py` (log-odds szkiców AI wobec
+# ludzkiego tekstu tego samego gatunku). Każdy nowy wpis ma status
+# `candidate` i nie działa, dopóki recenzent nie zmieni go na `accepted`.
+# Odrzucenie (`rejected`) wymaga uzasadnienia w `note`. Termin `protected`
+# (modalność, odwołania) nie może zostać przyjęty. Ponowny pomiar odświeża
+# liczby i nie rusza statusów ani notatek.
+version: 1
+measurements:
+- date: '2026-11-17'
+  genre: legal
+  split: train
+  glob: rewrite_*
+  ai_documents:
+    haiku: 30
+    opus: 30
+    sonnet: 30
+  human_documents: 1804
+  holdout_documents: 592
+  z_threshold: 1.96
+  min_count: 5
+  prior_scale: 0.01
+  min_doc_share: 0.1
+  min_models: 2
+  min_holdout_ratio: 2.0
+  candidates: 38
+- date: '2026-11-17'
+  genre: general
+  split: all
+  glob: '*'
+  ai_documents:
+    haiku: 24
+  human_documents: 14645
+  holdout_documents: 1131
+  z_threshold: 1.96
+  min_count: 5
+  prior_scale: 0.01
+  min_doc_share: 0.1
+  min_models: 2
+  min_holdout_ratio: 2.0
+  candidates: 137
+entries:
+- term: na miejscu
+  kind: bigram
+  genre: legal
+  z_score: 6.5553
+  ai_per_1000: 1.2581
+  human_per_1000: 0.0422
+  holdout_per_1000: 0.0305
+  ai_doc_share: 0.1
+  models:
+  - haiku
+  - opus
+  - sonnet
+  protected: false
+  indicative: false
+  status: rejected
+  note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
+- term: wskazała że
+  kind: bigram
+  genre: legal
+  z_score: 6.5372
+  ai_per_1000: 1.8388
+  human_per_1000: 0.0974
+  holdout_per_1000: 0.0871
+  ai_doc_share: 0.1778
+  models:
+  - haiku
+  - opus
+  - sonnet
+  protected: false
+  indicative: false
+  status: accepted
+  note: Stała formuła referowania stanowiska strony; na odłożonej połowie 0,50 wobec 0,18 na 1000 słów
+    orzeczeń.
+- term: wskazała
+  kind: unigram
+  genre: legal
+  z_score: 6.1454
+  ai_per_1000: 2.3985
+  human_per_1000: 0.1928
+  holdout_per_1000: 0.1827
+  ai_doc_share: 0.2333
+  models:
+  - haiku
+  - opus
+  - sonnet
+  protected: false
+  indicative: false
+  status: rejected
+  note: Sam czasownik jest zbyt szeroki; formułę obejmuje bigram „wskazała, że”.
+- term: w uzasadnieniu
+  kind: opening_bigram
+  genre: legal
+  z_score: 5.3589
+  ai_per_1000: 45.8015
+  human_per_1000: 4.6007
+  holdout_per_1000: 4.3992
+  ai_doc_share: 0.2667
+  models:
+  - haiku
+  - opus
+  - sonnet
+  protected: false
+  indicative: false
+  status: rejected
+  note: Na odłożonej połowie tak samo częste jak w orzeczeniach (0,60 wobec 0,61 na 1000 słów); formuła
+    gatunku.
+- term: w uzasadnieniu
+  kind: bigram
+  genre: legal
+  z_score: 4.2729
+  ai_per_1000: 2.5162
+  human_per_1000: 0.3907
+  holdout_per_1000: 0.3948
+  ai_doc_share: 0.2889
+  models:
+  - haiku
+  - opus
+  - sonnet
+  protected: false
+  indicative: false
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
+- term: uzasadnieniu
+  kind: unigram
+  genre: legal
+  z_score: 4.1018
+  ai_per_1000: 2.4945
+  human_per_1000: 0.4142
+  holdout_per_1000: 0.4268
+  ai_doc_share: 0.2889
+  models:
+  - haiku
+  - opus
+  - sonnet
+  protected: false
+  indicative: false
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
+- term: pozwana
+  kind: unigram
+  genre: legal
+  z_score: 3.9544
+  ai_per_1000: 3.358
+  human_per_1000: 0.7248
+  holdout_per_1000: 0.8049
+  ai_doc_share: 0.2
+  models:
+  - haiku
+  - opus
+  - sonnet
+  protected: false
+  indicative: false
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
+- term: ponieważ
+  kind: unigram
+  genre: legal
+  z_score: 3.825
+  ai_per_1000: 1.8229
+  human_per_1000: 0.2647
+  holdout_per_1000: 0.2564
+  ai_doc_share: 0.1778
+  models:
+  - haiku
+  - opus
+  - sonnet
+  protected: false
+  indicative: false
+  status: accepted
+  note: Modele piszą „ponieważ” tam, gdzie sędziowie piszą „gdyż”, „albowiem”, „bowiem”; na odłożonej
+    połowie przepisań 1,20 wobec 0,15 na 1000 słów orzeczeń.
+- term: również że
+  kind: bigram
+  genre: legal
+  z_score: 3.6496
+  ai_per_1000: 0.9678
+  human_per_1000: 0.0872
+  holdout_per_1000: 0.0962
+  ai_doc_share: 0.1
+  models:
+  - opus
+  - sonnet
+  protected: false
+  indicative: false
+  status: rejected
+  note: 'Za słabe na odłożonej połowie: 0,20 wobec 0,11 na 1000 słów.'
+- term: zł
+  kind: unigram
+  genre: legal
+  z_score: 3.3913
+  ai_per_1000: 9.4982
+  human_per_1000: 4.1594
+  holdout_per_1000: 4.468
+  ai_doc_share: 0.3667
+  models:
+  - haiku
+  - opus
+  - sonnet
+  protected: true
+  indicative: false
+  status: rejected
+  note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
+- term: pozwem
+  kind: unigram
+  genre: legal
+  z_score: 3.2719
+  ai_per_1000: 1.0554
+  human_per_1000: 0.1264
+  holdout_per_1000: 0.1154
+  ai_doc_share: 0.1
+  models:
+  - opus
+  - sonnet
+  protected: false
+  indicative: false
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
+- term: wniosła
+  kind: unigram
+  genre: legal
+  z_score: 3.1158
+  ai_per_1000: 1.3432
+  human_per_1000: 0.2116
+  holdout_per_1000: 0.212
+  ai_doc_share: 0.1333
+  models:
+  - haiku
+  - opus
+  - sonnet
+  protected: false
+  indicative: false
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
+- term: sąd rejonowy w
+  kind: trigram
+  genre: legal
+  z_score: 3.099
+  ai_per_1000: 1.2692
+  human_per_1000: 0.1884
+  holdout_per_1000: 0.1758
+  ai_doc_share: 0.1444
+  models:
+  - haiku
+  - opus
+  - sonnet
+  protected: false
+  indicative: false
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
+- term: wskutek
+  kind: unigram
+  genre: legal
+  z_score: 3.0916
+  ai_per_1000: 1.0554
+  human_per_1000: 0.139
+  holdout_per_1000: 0.1538
+  ai_doc_share: 0.1111
+  models:
+  - opus
+  - sonnet
+  protected: false
+  indicative: false
+  status: accepted
+  note: Spójnik przyczynowy nadużywany w przepisaniach; na odłożonej połowie 0,70 wobec 0,13 na 1000 słów.
+    Trafia w 3 z 77 ludzkich szablonów.
+- term: n
+  kind: unigram
+  genre: legal
+  z_score: 3.0586
+  ai_per_1000: 2.1107
+  human_per_1000: 0.4704
+  holdout_per_1000: 0.6463
+  ai_doc_share: 0.1333
+  models:
+  - haiku
+  - opus
+  - sonnet
+  protected: true
+  indicative: false
+  status: rejected
+  note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
+- term: rejonowy w
+  kind: bigram
+  genre: legal
+  z_score: 3.0288
+  ai_per_1000: 1.2581
+  human_per_1000: 0.1945
+  holdout_per_1000: 0.1822
+  ai_doc_share: 0.1444
+  models:
+  - haiku
+  - opus
+  - sonnet
+  protected: false
+  indicative: false
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
+- term: w o
+  kind: bigram
+  genre: legal
+  z_score: 2.9502
+  ai_per_1000: 1.1613
+  human_per_1000: 0.1758
+  holdout_per_1000: 0.148
+  ai_doc_share: 0.1
+  models:
+  - haiku
+  - opus
+  - sonnet
+  protected: false
+  indicative: false
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
+- term: wyrokiem z
+  kind: bigram
+  genre: legal
+  z_score: 2.8256
+  ai_per_1000: 1.0646
+  human_per_1000: 0.1611
+  holdout_per_1000: 0.1555
+  ai_doc_share: 0.1222
+  models:
+  - haiku
+  - opus
+  - sonnet
+  protected: false
+  indicative: false
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
+- term: wyrokiem
+  kind: unigram
+  genre: legal
+  z_score: 2.8193
+  ai_per_1000: 1.5351
+  human_per_1000: 0.3082
+  holdout_per_1000: 0.3354
+  ai_doc_share: 0.1667
+  models:
+  - haiku
+  - opus
+  - sonnet
+  protected: false
+  indicative: false
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
+- term: lutego
+  kind: unigram
+  genre: legal
+  z_score: 2.7753
+  ai_per_1000: 2.4945
+  human_per_1000: 0.6942
+  holdout_per_1000: 0.7606
+  ai_doc_share: 0.2222
+  models:
+  - haiku
+  - opus
+  - sonnet
+  protected: true
+  indicative: false
+  status: rejected
+  note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
+- term: roku
+  kind: unigram
+  genre: legal
+  z_score: 2.577
+  ai_per_1000: 7.4835
+  human_per_1000: 3.672
+  holdout_per_1000: 3.5562
+  ai_doc_share: 0.3778
+  models:
+  - haiku
+  - sonnet
+  protected: true
+  indicative: false
+  status: rejected
+  note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
+- term: w kwocie zł
+  kind: trigram
+  genre: legal
+  z_score: 2.5632
+  ai_per_1000: 1.7573
+  human_per_1000: 0.428
+  holdout_per_1000: 0.395
+  ai_doc_share: 0.1667
+  models:
+  - haiku
+  - opus
+  - sonnet
+  protected: true
+  indicative: false
+  status: rejected
+  note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
+- term: l
+  kind: unigram
+  genre: legal
+  z_score: 2.5618
+  ai_per_1000: 2.5904
+  human_per_1000: 0.8044
+  holdout_per_1000: 0.6164
+  ai_doc_share: 0.1333
+  models:
+  - haiku
+  - opus
+  - sonnet
+  protected: true
+  indicative: false
+  status: rejected
+  note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
+- term: z tego
+  kind: bigram
+  genre: legal
+  z_score: 2.5209
+  ai_per_1000: 1.5484
+  human_per_1000: 0.359
+  holdout_per_1000: 0.3852
+  ai_doc_share: 0.1444
+  models:
+  - haiku
+  - opus
+  - sonnet
+  protected: false
+  indicative: false
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
+- term: kwocie zł
+  kind: bigram
+  genre: legal
+  z_score: 2.3935
+  ai_per_1000: 1.742
+  human_per_1000: 0.463
+  holdout_per_1000: 0.4542
+  ai_doc_share: 0.1667
+  models:
+  - haiku
+  - opus
+  - sonnet
+  protected: true
+  indicative: false
+  status: rejected
+  note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
+- term: postanowienia
+  kind: unigram
+  genre: legal
+  z_score: 2.388
+  ai_per_1000: 1.4391
+  human_per_1000: 0.3446
+  holdout_per_1000: 0.43
+  ai_doc_share: 0.1333
+  models:
+  - haiku
+  - opus
+  - sonnet
+  protected: false
+  indicative: false
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
+- term: pojazdu
+  kind: unigram
+  genre: legal
+  z_score: 2.3392
+  ai_per_1000: 1.727
+  human_per_1000: 0.4734
+  holdout_per_1000: 0.2553
+  ai_doc_share: 0.1
+  models:
+  - haiku
+  - opus
+  - sonnet
+  protected: false
+  indicative: false
+  status: rejected
+  note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
+- term: lat
+  kind: unigram
+  genre: legal
+  z_score: 2.3228
+  ai_per_1000: 2.3026
+  human_per_1000: 0.745
+  holdout_per_1000: 0.8017
+  ai_doc_share: 0.1333
+  models:
+  - haiku
+  - opus
+  - sonnet
+  protected: false
+  indicative: false
+  status: rejected
+  note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
+- term: strona
+  kind: unigram
+  genre: legal
+  z_score: 2.3123
+  ai_per_1000: 1.5351
+  human_per_1000: 0.3979
+  holdout_per_1000: 0.3563
+  ai_doc_share: 0.1222
+  models:
+  - haiku
+  - opus
+  - sonnet
+  protected: false
+  indicative: false
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
+- term: lutego r
+  kind: bigram
+  genre: legal
+  z_score: 2.3082
+  ai_per_1000: 1.742
+  human_per_1000: 0.483
+  holdout_per_1000: 0.5279
+  ai_doc_share: 0.1556
+  models:
+  - opus
+  - sonnet
+  protected: true
+  indicative: false
+  status: rejected
+  note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
+- term: opłat
+  kind: unigram
+  genre: legal
+  z_score: 2.2739
+  ai_per_1000: 1.2472
+  human_per_1000: 0.2902
+  holdout_per_1000: 0.3306
+  ai_doc_share: 0.1222
+  models:
+  - haiku
+  - opus
+  - sonnet
+  protected: false
+  indicative: false
+  status: rejected
+  note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
+- term: ponadto
+  kind: unigram
+  genre: legal
+  z_score: 2.2495
+  ai_per_1000: 1.727
+  human_per_1000: 0.495
+  holdout_per_1000: 0.5496
+  ai_doc_share: 0.2
+  models:
+  - haiku
+  - opus
+  - sonnet
+  protected: false
+  indicative: false
+  status: rejected
+  note: Już zgłaszane jako transition_marker (detect:ai_transition).
+- term: miejscu
+  kind: unigram
+  genre: legal
+  z_score: 2.2063
+  ai_per_1000: 1.2472
+  human_per_1000: 0.3014
+  holdout_per_1000: 0.2404
+  ai_doc_share: 0.1
+  models:
+  - haiku
+  - opus
+  - sonnet
+  protected: false
+  indicative: false
+  status: rejected
+  note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
+- term: umowa
+  kind: unigram
+  genre: legal
+  z_score: 2.1922
+  ai_per_1000: 1.8229
+  human_per_1000: 0.5539
+  holdout_per_1000: 0.4962
+  ai_doc_share: 0.2111
+  models:
+  - haiku
+  - opus
+  - sonnet
+  protected: false
+  indicative: false
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
+- term: w całości
+  kind: bigram
+  genre: legal
+  z_score: 2.1661
+  ai_per_1000: 1.8388
+  human_per_1000: 0.5639
+  holdout_per_1000: 0.5626
+  ai_doc_share: 0.2111
+  models:
+  - haiku
+  - opus
+  - sonnet
+  protected: false
+  indicative: false
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
+- term: odsetek
+  kind: unigram
+  genre: legal
+  z_score: 2.1574
+  ai_per_1000: 1.1513
+  human_per_1000: 0.2721
+  holdout_per_1000: 0.2815
+  ai_doc_share: 0.1
+  models:
+  - haiku
+  - opus
+  - sonnet
+  protected: false
+  indicative: false
+  status: rejected
+  note: Treść, daty lub kwoty przepisywanych spraw albo ślad anonimizacji, nie styl modelu.
+- term: się od
+  kind: bigram
+  genre: legal
+  z_score: 2.0894
+  ai_per_1000: 0.871
+  human_per_1000: 0.1769
+  holdout_per_1000: 0.1533
+  ai_doc_share: 0.1
+  models:
+  - haiku
+  - opus
+  - sonnet
+  protected: false
+  indicative: false
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
+- term: całości
+  kind: unigram
+  genre: legal
+  z_score: 2.0731
+  ai_per_1000: 1.9188
+  human_per_1000: 0.6353
+  holdout_per_1000: 0.6287
+  ai_doc_share: 0.2222
+  models:
+  - haiku
+  - opus
+  - sonnet
+  protected: false
+  indicative: false
+  status: rejected
+  note: Słownictwo gatunku orzeczeń (strony, sądy, czynności procesowe), nie styl modelu.
+- term: listopada
+  kind: unigram
+  genre: general
+  z_score: 13.9922
+  ai_per_1000: 5.9952
+  human_per_1000: 0.0179
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.4167
+  models:
+  - haiku
+  protected: true
+  indicative: true
+  status: candidate
+  note: ''
+- term: października
+  kind: unigram
+  genre: general
+  z_score: 13.1862
+  ai_per_1000: 5.3957
+  human_per_1000: 0.0228
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.3333
+  models:
+  - haiku
+  protected: true
+  indicative: true
+  status: candidate
+  note: ''
+- term: poważaniem
+  kind: unigram
+  genre: general
+  z_score: 10.692
+  ai_per_1000: 3.5971
+  human_per_1000: 0.0171
+  holdout_per_1000: 0.0233
+  ai_doc_share: 0.5
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: z poważaniem
+  kind: bigram
+  genre: general
+  z_score: 10.6891
+  ai_per_1000: 3.6232
+  human_per_1000: 0.0173
+  holdout_per_1000: 0.0236
+  ai_doc_share: 0.5
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: z poważaniem
+  kind: opening_bigram
+  genre: general
+  z_score: 10.0411
+  ai_per_1000: 24.5399
+  human_per_1000: 0.2649
+  holdout_per_1000: 0.3445
+  ai_doc_share: 0.5
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: termin
+  kind: unigram
+  genre: general
+  z_score: 9.9537
+  ai_per_1000: 3.8969
+  human_per_1000: 0.0424
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.375
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: email
+  kind: unigram
+  genre: general
+  z_score: 9.3736
+  ai_per_1000: 2.6978
+  human_per_1000: 0.0098
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.3333
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: ul
+  kind: unigram
+  genre: general
+  z_score: 9.3518
+  ai_per_1000: 2.6978
+  human_per_1000: 0.0106
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.375
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: uprzejmie
+  kind: unigram
+  genre: general
+  z_score: 8.9175
+  ai_per_1000: 2.6978
+  human_per_1000: 0.0188
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.375
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: naszych
+  kind: unigram
+  genre: general
+  z_score: 8.9075
+  ai_per_1000: 2.9976
+  human_per_1000: 0.0294
+  holdout_per_1000: 0.0116
+  ai_doc_share: 0.1667
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: szanowni
+  kind: unigram
+  genre: general
+  z_score: 8.7119
+  ai_per_1000: 2.6978
+  human_per_1000: 0.0033
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.375
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: dostawy
+  kind: unigram
+  genre: general
+  z_score: 8.7084
+  ai_per_1000: 2.3981
+  human_per_1000: 0.0049
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: spotkania
+  kind: unigram
+  genre: general
+  z_score: 8.6159
+  ai_per_1000: 2.6978
+  human_per_1000: 0.0237
+  holdout_per_1000: 0.0116
+  ai_doc_share: 0.2917
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: usług
+  kind: unigram
+  genre: general
+  z_score: 8.2784
+  ai_per_1000: 2.0983
+  human_per_1000: 0.0065
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: br
+  kind: unigram
+  genre: general
+  z_score: 8.2175
+  ai_per_1000: 2.0983
+  human_per_1000: 0.009
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.2083
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: szanowni państwo
+  kind: bigram
+  genre: general
+  z_score: 7.6393
+  ai_per_1000: 2.1135
+  human_per_1000: 0.0025
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.2917
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: harmonogramu
+  kind: unigram
+  genre: general
+  z_score: 7.4693
+  ai_per_1000: 1.7986
+  human_per_1000: 0.0033
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.2083
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: netto
+  kind: unigram
+  genre: general
+  z_score: 7.4693
+  ai_per_1000: 1.7986
+  human_per_1000: 0.0033
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: szanowni państwo
+  kind: opening_bigram
+  genre: general
+  z_score: 7.2935
+  ai_per_1000: 14.3149
+  human_per_1000: 0.0378
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.2917
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: nowak
+  kind: unigram
+  genre: general
+  z_score: 7.2321
+  ai_per_1000: 1.7986
+  human_per_1000: 0.0024
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.1667
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: prosimy o
+  kind: opening_bigram
+  genre: general
+  z_score: 7.1985
+  ai_per_1000: 16.3599
+  human_per_1000: 0.4036
+  holdout_per_1000: 0.1722
+  ai_doc_share: 0.3333
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: kierownik
+  kind: unigram
+  genre: general
+  z_score: 7.1076
+  ai_per_1000: 2.0983
+  human_per_1000: 0.0016
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.2917
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: państwo
+  kind: unigram
+  genre: general
+  z_score: 7.1016
+  ai_per_1000: 2.0983
+  human_per_1000: 0.0261
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.2917
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: otrzymania
+  kind: unigram
+  genre: general
+  z_score: 6.9961
+  ai_per_1000: 1.4988
+  human_per_1000: 0.0049
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: sp
+  kind: unigram
+  genre: general
+  z_score: 6.9961
+  ai_per_1000: 1.4988
+  human_per_1000: 0.0049
+  holdout_per_1000: 0.0116
+  ai_doc_share: 0.1667
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: przy ul
+  kind: bigram
+  genre: general
+  z_score: 6.981
+  ai_per_1000: 1.5097
+  human_per_1000: 0.0041
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.2083
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: o potwierdzenie
+  kind: bigram
+  genre: general
+  z_score: 6.9365
+  ai_per_1000: 1.5097
+  human_per_1000: 0.0066
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.2083
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: o o
+  kind: bigram
+  genre: general
+  z_score: 6.7464
+  ai_per_1000: 1.5097
+  human_per_1000: 0.0025
+  holdout_per_1000: 0.0118
+  ai_doc_share: 0.1667
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: nr
+  kind: unigram
+  genre: general
+  z_score: 6.7113
+  ai_per_1000: 2.9976
+  human_per_1000: 0.0865
+  holdout_per_1000: 0.0465
+  ai_doc_share: 0.2917
+  models:
+  - haiku
+  protected: true
+  indicative: true
+  status: candidate
+  note: ''
+- term: numer
+  kind: unigram
+  genre: general
+  z_score: 6.5158
+  ai_per_1000: 2.6978
+  human_per_1000: 0.0726
+  holdout_per_1000: 0.0233
+  ai_doc_share: 0.2083
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: października roku
+  kind: bigram
+  genre: general
+  z_score: 6.4242
+  ai_per_1000: 2.7174
+  human_per_1000: 0.0008
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.2083
+  models:
+  - haiku
+  protected: true
+  indicative: true
+  status: candidate
+  note: ''
+- term: z o
+  kind: bigram
+  genre: general
+  z_score: 6.3862
+  ai_per_1000: 1.5097
+  human_per_1000: 0.0017
+  holdout_per_1000: 0.0118
+  ai_doc_share: 0.1667
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: płatności
+  kind: unigram
+  genre: general
+  z_score: 6.2554
+  ai_per_1000: 1.199
+  human_per_1000: 0.0041
+  holdout_per_1000: 0.0233
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: dni od
+  kind: bigram
+  genre: general
+  z_score: 6.2439
+  ai_per_1000: 1.2077
+  human_per_1000: 0.0033
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.1667
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: terminu
+  kind: unigram
+  genre: general
+  z_score: 6.2343
+  ai_per_1000: 1.4988
+  human_per_1000: 0.0155
+  holdout_per_1000: 0.0233
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: przygotowanie
+  kind: unigram
+  genre: general
+  z_score: 5.9613
+  ai_per_1000: 1.199
+  human_per_1000: 0.0082
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.1667
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: dnia
+  kind: unigram
+  genre: general
+  z_score: 5.9065
+  ai_per_1000: 3.2974
+  human_per_1000: 0.1525
+  holdout_per_1000: 0.221
+  ai_doc_share: 0.4167
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: zarząd
+  kind: unigram
+  genre: general
+  z_score: 5.9048
+  ai_per_1000: 1.199
+  human_per_1000: 0.0016
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: dnia października
+  kind: bigram
+  genre: general
+  z_score: 5.9036
+  ai_per_1000: 1.2077
+  human_per_1000: 0.0017
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.1667
+  models:
+  - haiku
+  protected: true
+  indicative: true
+  status: candidate
+  note: ''
+- term: godz
+  kind: unigram
+  genre: general
+  z_score: 5.8708
+  ai_per_1000: 1.7986
+  human_per_1000: 0.0351
+  holdout_per_1000: 0.0116
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: października br
+  kind: bigram
+  genre: general
+  z_score: 5.825
+  ai_per_1000: 1.8116
+  human_per_1000: 0.0008
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.1667
+  models:
+  - haiku
+  protected: true
+  indicative: true
+  status: candidate
+  note: ''
+- term: pisma
+  kind: unigram
+  genre: general
+  z_score: 5.8098
+  ai_per_1000: 1.199
+  human_per_1000: 0.0098
+  holdout_per_1000: 0.0116
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: spotkanie
+  kind: unigram
+  genre: general
+  z_score: 5.7746
+  ai_per_1000: 1.4988
+  human_per_1000: 0.022
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: prosimy
+  kind: unigram
+  genre: general
+  z_score: 5.6958
+  ai_per_1000: 2.6978
+  human_per_1000: 0.106
+  holdout_per_1000: 0.0233
+  ai_doc_share: 0.3333
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: com
+  kind: unigram
+  genre: general
+  z_score: 5.6717
+  ai_per_1000: 2.0983
+  human_per_1000: 0.0587
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.25
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: z o o
+  kind: trigram
+  genre: general
+  z_score: 5.5549
+  ai_per_1000: 1.5207
+  human_per_1000: 0.0008
+  holdout_per_1000: 0.0119
+  ai_doc_share: 0.1667
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: dostępny
+  kind: unigram
+  genre: general
+  z_score: 5.5486
+  ai_per_1000: 1.7986
+  human_per_1000: 0.0424
+  holdout_per_1000: 0.0349
+  ai_doc_share: 0.25
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: piotr
+  kind: unigram
+  genre: general
+  z_score: 5.5203
+  ai_per_1000: 1.199
+  human_per_1000: 0.013
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: nieobecności
+  kind: unigram
+  genre: general
+  z_score: 5.4113
+  ai_per_1000: 0.8993
+  human_per_1000: 0.0033
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: uprzejmie proszę
+  kind: bigram
+  genre: general
+  z_score: 5.4073
+  ai_per_1000: 0.9058
+  human_per_1000: 0.0025
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: dziękuję za zainteresowanie
+  kind: trigram
+  genre: general
+  z_score: 5.406
+  ai_per_1000: 0.9124
+  human_per_1000: 0.0025
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: potwierdzenie
+  kind: unigram
+  genre: general
+  z_score: 5.3521
+  ai_per_1000: 1.4988
+  human_per_1000: 0.0294
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.2083
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: prosimy o
+  kind: bigram
+  genre: general
+  z_score: 5.3067
+  ai_per_1000: 2.4155
+  human_per_1000: 0.0982
+  holdout_per_1000: 0.0236
+  ai_doc_share: 0.3333
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: tel
+  kind: unigram
+  genre: general
+  z_score: 5.2587
+  ai_per_1000: 2.3981
+  human_per_1000: 0.0995
+  holdout_per_1000: 0.1163
+  ai_doc_share: 0.3333
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: panie
+  kind: unigram
+  genre: general
+  z_score: 5.2001
+  ai_per_1000: 1.199
+  human_per_1000: 0.0171
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.1667
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: piętrze
+  kind: unigram
+  genre: general
+  z_score: 5.1188
+  ai_per_1000: 0.8993
+  human_per_1000: 0.0065
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: naprawa
+  kind: unigram
+  genre: general
+  z_score: 5.1188
+  ai_per_1000: 0.8993
+  human_per_1000: 0.0065
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: dziękuję za zainteresowanie
+  kind: opening_trigram
+  genre: general
+  z_score: 5.1019
+  ai_per_1000: 7.8329
+  human_per_1000: 0.026
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: zł
+  kind: unigram
+  genre: general
+  z_score: 5.0884
+  ai_per_1000: 5.0959
+  human_per_1000: 0.5171
+  holdout_per_1000: 0.6281
+  ai_doc_share: 0.25
+  models:
+  - haiku
+  protected: true
+  indicative: true
+  status: candidate
+  note: ''
+- term: godzina
+  kind: unigram
+  genre: general
+  z_score: 5.085
+  ai_per_1000: 1.199
+  human_per_1000: 0.0188
+  holdout_per_1000: 0.0349
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: roku
+  kind: unigram
+  genre: general
+  z_score: 4.9475
+  ai_per_1000: 4.4964
+  human_per_1000: 0.4274
+  holdout_per_1000: 0.349
+  ai_doc_share: 0.4167
+  models:
+  - haiku
+  protected: true
+  indicative: true
+  status: candidate
+  note: ''
+- term: zespół
+  kind: unigram
+  genre: general
+  z_score: 4.9067
+  ai_per_1000: 1.7986
+  human_per_1000: 0.0612
+  holdout_per_1000: 0.0349
+  ai_doc_share: 0.2083
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: za zainteresowanie
+  kind: bigram
+  genre: general
+  z_score: 4.779
+  ai_per_1000: 0.9058
+  human_per_1000: 0.0099
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: opóźnienia
+  kind: unigram
+  genre: general
+  z_score: 4.7026
+  ai_per_1000: 0.8993
+  human_per_1000: 0.0106
+  holdout_per_1000: 0.0116
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: plan
+  kind: unigram
+  genre: general
+  z_score: 4.686
+  ai_per_1000: 1.199
+  human_per_1000: 0.0253
+  holdout_per_1000: 0.0233
+  ai_doc_share: 0.1667
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: numerem
+  kind: unigram
+  genre: general
+  z_score: 4.5555
+  ai_per_1000: 0.8993
+  human_per_1000: 0.0122
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: wartość
+  kind: unigram
+  genre: general
+  z_score: 4.5451
+  ai_per_1000: 1.4988
+  human_per_1000: 0.0489
+  holdout_per_1000: 0.0116
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: dla
+  kind: unigram
+  genre: general
+  z_score: 4.5266
+  ai_per_1000: 10.4916
+  human_per_1000: 2.2852
+  holdout_per_1000: 2.6289
+  ai_doc_share: 0.7083
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: it
+  kind: unigram
+  genre: general
+  z_score: 4.471
+  ai_per_1000: 2.0983
+  human_per_1000: 0.1101
+  holdout_per_1000: 0.0465
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: dziękuję za
+  kind: bigram
+  genre: general
+  z_score: 4.3794
+  ai_per_1000: 2.4155
+  human_per_1000: 0.1552
+  holdout_per_1000: 0.1061
+  ai_doc_share: 0.3333
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: dziękuję za
+  kind: opening_bigram
+  genre: general
+  z_score: 4.3574
+  ai_per_1000: 14.3149
+  human_per_1000: 1.2866
+  holdout_per_1000: 0.3445
+  ai_doc_share: 0.2917
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: projektu
+  kind: unigram
+  genre: general
+  z_score: 4.3201
+  ai_per_1000: 2.3981
+  human_per_1000: 0.1582
+  holdout_per_1000: 0.0931
+  ai_doc_share: 0.2083
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: naszej
+  kind: unigram
+  genre: general
+  z_score: 4.3188
+  ai_per_1000: 1.4988
+  human_per_1000: 0.0563
+  holdout_per_1000: 0.0116
+  ai_doc_share: 0.2083
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: naszym
+  kind: unigram
+  genre: general
+  z_score: 4.1906
+  ai_per_1000: 1.199
+  human_per_1000: 0.0359
+  holdout_per_1000: 0.0116
+  ai_doc_share: 0.1667
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: rozszerzenie
+  kind: unigram
+  genre: general
+  z_score: 4.1786
+  ai_per_1000: 0.8993
+  human_per_1000: 0.0171
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: przegląd
+  kind: unigram
+  genre: general
+  z_score: 4.0651
+  ai_per_1000: 1.199
+  human_per_1000: 0.0391
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: data
+  kind: unigram
+  genre: general
+  z_score: 4.0369
+  ai_per_1000: 2.3981
+  human_per_1000: 0.1827
+  holdout_per_1000: 0.0349
+  ai_doc_share: 0.3333
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: wam
+  kind: unigram
+  genre: general
+  z_score: 3.9774
+  ai_per_1000: 1.199
+  human_per_1000: 0.0416
+  holdout_per_1000: 0.0582
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: przygotować
+  kind: unigram
+  genre: general
+  z_score: 3.9708
+  ai_per_1000: 0.8993
+  human_per_1000: 0.0204
+  holdout_per_1000: 0.0465
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: dział
+  kind: unigram
+  genre: general
+  z_score: 3.9708
+  ai_per_1000: 0.8993
+  human_per_1000: 0.0204
+  holdout_per_1000: 0.0116
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: zainteresowanie
+  kind: unigram
+  genre: general
+  z_score: 3.9232
+  ai_per_1000: 0.8993
+  human_per_1000: 0.0212
+  holdout_per_1000: 0.0116
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: was
+  kind: unigram
+  genre: general
+  z_score: 3.8365
+  ai_per_1000: 1.4988
+  human_per_1000: 0.0758
+  holdout_per_1000: 0.0233
+  ai_doc_share: 0.2083
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: dzień
+  kind: unigram
+  genre: general
+  z_score: 3.8292
+  ai_per_1000: 3.2974
+  human_per_1000: 0.3776
+  holdout_per_1000: 0.3839
+  ai_doc_share: 0.4167
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: kroki
+  kind: unigram
+  genre: general
+  z_score: 3.7893
+  ai_per_1000: 0.8993
+  human_per_1000: 0.0237
+  holdout_per_1000: 0.0233
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: dostęp
+  kind: unigram
+  genre: general
+  z_score: 3.6731
+  ai_per_1000: 1.4988
+  human_per_1000: 0.084
+  holdout_per_1000: 0.1628
+  ai_doc_share: 0.1667
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: odbędzie
+  kind: unigram
+  genre: general
+  z_score: 3.6674
+  ai_per_1000: 0.8993
+  human_per_1000: 0.0261
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: temat
+  kind: unigram
+  genre: general
+  z_score: 3.6663
+  ai_per_1000: 3.8969
+  human_per_1000: 0.5546
+  holdout_per_1000: 0.3955
+  ai_doc_share: 0.5
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: odbędzie się
+  kind: bigram
+  genre: general
+  z_score: 3.6656
+  ai_per_1000: 0.9058
+  human_per_1000: 0.0264
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: pana
+  kind: unigram
+  genre: general
+  z_score: 3.5823
+  ai_per_1000: 1.199
+  human_per_1000: 0.0546
+  holdout_per_1000: 0.0233
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: dni
+  kind: unigram
+  genre: general
+  z_score: 3.4358
+  ai_per_1000: 2.9976
+  human_per_1000: 0.3817
+  holdout_per_1000: 0.3955
+  ai_doc_share: 0.4167
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: stanu
+  kind: unigram
+  genre: general
+  z_score: 3.4198
+  ai_per_1000: 1.199
+  human_per_1000: 0.0612
+  holdout_per_1000: 0.0349
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: pytań
+  kind: unigram
+  genre: general
+  z_score: 3.4052
+  ai_per_1000: 1.4988
+  human_per_1000: 0.0995
+  holdout_per_1000: 0.0465
+  ai_doc_share: 0.2083
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: dzień dobry
+  kind: bigram
+  genre: general
+  z_score: 3.3862
+  ai_per_1000: 1.8116
+  human_per_1000: 0.1478
+  holdout_per_1000: 0.1179
+  ai_doc_share: 0.25
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: pracowników
+  kind: unigram
+  genre: general
+  z_score: 3.3573
+  ai_per_1000: 0.8993
+  human_per_1000: 0.0334
+  holdout_per_1000: 0.0349
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: dostępu do
+  kind: bigram
+  genre: general
+  z_score: 3.3555
+  ai_per_1000: 0.9058
+  human_per_1000: 0.0338
+  holdout_per_1000: 0.0589
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: w warszawie
+  kind: bigram
+  genre: general
+  z_score: 3.3251
+  ai_per_1000: 1.2077
+  human_per_1000: 0.066
+  holdout_per_1000: 0.0354
+  ai_doc_share: 0.1667
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: warszawie
+  kind: unigram
+  genre: general
+  z_score: 3.2748
+  ai_per_1000: 1.199
+  human_per_1000: 0.0677
+  holdout_per_1000: 0.0349
+  ai_doc_share: 0.1667
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: marek
+  kind: unigram
+  genre: general
+  z_score: 3.2687
+  ai_per_1000: 0.8993
+  human_per_1000: 0.0359
+  holdout_per_1000: 0.0116
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: pl
+  kind: unigram
+  genre: general
+  z_score: 3.2464
+  ai_per_1000: 1.7986
+  human_per_1000: 0.159
+  holdout_per_1000: 0.0931
+  ai_doc_share: 0.2083
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: będziemy
+  kind: unigram
+  genre: general
+  z_score: 3.2409
+  ai_per_1000: 1.199
+  human_per_1000: 0.0693
+  holdout_per_1000: 0.0465
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: projekt
+  kind: unigram
+  genre: general
+  z_score: 3.1692
+  ai_per_1000: 1.4988
+  human_per_1000: 0.1158
+  holdout_per_1000: 0.0349
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: o
+  kind: unigram
+  genre: general
+  z_score: 3.1441
+  ai_per_1000: 15.5875
+  human_per_1000: 6.2929
+  holdout_per_1000: 4.6877
+  ai_doc_share: 0.875
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: dziękuję
+  kind: unigram
+  genre: general
+  z_score: 3.1234
+  ai_per_1000: 2.3981
+  human_per_1000: 0.2969
+  holdout_per_1000: 0.1745
+  ai_doc_share: 0.3333
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: zespołu
+  kind: unigram
+  genre: general
+  z_score: 3.1085
+  ai_per_1000: 0.8993
+  human_per_1000: 0.0408
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: proszę o
+  kind: bigram
+  genre: general
+  z_score: 3.0681
+  ai_per_1000: 1.8116
+  human_per_1000: 0.1791
+  holdout_per_1000: 0.0825
+  ai_doc_share: 0.2083
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: trakcie
+  kind: unigram
+  genre: general
+  z_score: 3.0059
+  ai_per_1000: 1.4988
+  human_per_1000: 0.1289
+  holdout_per_1000: 0.128
+  ai_doc_share: 0.2083
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: w trakcie
+  kind: bigram
+  genre: general
+  z_score: 3.0033
+  ai_per_1000: 1.5097
+  human_per_1000: 0.1304
+  holdout_per_1000: 0.1297
+  ai_doc_share: 0.2083
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: od do
+  kind: bigram
+  genre: general
+  z_score: 2.9652
+  ai_per_1000: 0.9058
+  human_per_1000: 0.0462
+  holdout_per_1000: 0.0589
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: prac
+  kind: unigram
+  genre: general
+  z_score: 2.9451
+  ai_per_1000: 0.8993
+  human_per_1000: 0.0465
+  holdout_per_1000: 0.0349
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: dostępu
+  kind: unigram
+  genre: general
+  z_score: 2.861
+  ai_per_1000: 0.8993
+  human_per_1000: 0.0497
+  holdout_per_1000: 0.0582
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: dotyczących
+  kind: unigram
+  genre: general
+  z_score: 2.861
+  ai_per_1000: 0.8993
+  human_per_1000: 0.0497
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: dodatkowe
+  kind: unigram
+  genre: general
+  z_score: 2.854
+  ai_per_1000: 1.199
+  human_per_1000: 0.0913
+  holdout_per_1000: 0.1628
+  ai_doc_share: 0.1667
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: pani
+  kind: unigram
+  genre: general
+  z_score: 2.8409
+  ai_per_1000: 0.8993
+  human_per_1000: 0.0506
+  holdout_per_1000: 0.0349
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: techniczne
+  kind: unigram
+  genre: general
+  z_score: 2.8409
+  ai_per_1000: 0.8993
+  human_per_1000: 0.0506
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: dostępne
+  kind: unigram
+  genre: general
+  z_score: 2.8176
+  ai_per_1000: 1.199
+  human_per_1000: 0.0938
+  holdout_per_1000: 0.0698
+  ai_doc_share: 0.1667
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: dodatkowych
+  kind: unigram
+  genre: general
+  z_score: 2.8018
+  ai_per_1000: 0.8993
+  human_per_1000: 0.0522
+  holdout_per_1000: 0.0233
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: dzień dobry
+  kind: opening_bigram
+  genre: general
+  z_score: 2.7966
+  ai_per_1000: 12.2699
+  human_per_1000: 2.1822
+  holdout_per_1000: 1.5501
+  ai_doc_share: 0.25
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: godzinach
+  kind: unigram
+  genre: general
+  z_score: 2.7273
+  ai_per_1000: 0.8993
+  human_per_1000: 0.0555
+  holdout_per_1000: 0.1628
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: produkcji
+  kind: unigram
+  genre: general
+  z_score: 2.6575
+  ai_per_1000: 0.8993
+  human_per_1000: 0.0587
+  holdout_per_1000: 0.0582
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: projektów
+  kind: unigram
+  genre: general
+  z_score: 2.5761
+  ai_per_1000: 0.8993
+  human_per_1000: 0.0628
+  holdout_per_1000: 0.0233
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: szczegóły
+  kind: unigram
+  genre: general
+  z_score: 2.53
+  ai_per_1000: 0.8993
+  human_per_1000: 0.0652
+  holdout_per_1000: 0.0582
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: firmy
+  kind: unigram
+  genre: general
+  z_score: 2.4696
+  ai_per_1000: 1.7986
+  human_per_1000: 0.2594
+  holdout_per_1000: 0.349
+  ai_doc_share: 0.2083
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: dostęp do
+  kind: bigram
+  genre: general
+  z_score: 2.4141
+  ai_per_1000: 0.9058
+  human_per_1000: 0.0726
+  holdout_per_1000: 0.1297
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: materiały
+  kind: unigram
+  genre: general
+  z_score: 2.3381
+  ai_per_1000: 0.8993
+  human_per_1000: 0.0767
+  holdout_per_1000: 0.0465
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: w celu
+  kind: bigram
+  genre: general
+  z_score: 2.3114
+  ai_per_1000: 0.9058
+  human_per_1000: 0.0792
+  holdout_per_1000: 0.0471
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: dotyczące
+  kind: unigram
+  genre: general
+  z_score: 2.2011
+  ai_per_1000: 1.199
+  human_per_1000: 0.1492
+  holdout_per_1000: 0.0582
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: oraz
+  kind: unigram
+  genre: general
+  z_score: 2.1969
+  ai_per_1000: 3.8969
+  human_per_1000: 1.1222
+  holdout_per_1000: 1.0585
+  ai_doc_share: 0.375
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: celu
+  kind: unigram
+  genre: general
+  z_score: 2.1941
+  ai_per_1000: 1.199
+  human_per_1000: 0.1501
+  holdout_per_1000: 0.0582
+  ai_doc_share: 0.1667
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: obsługi
+  kind: unigram
+  genre: general
+  z_score: 2.1347
+  ai_per_1000: 0.8993
+  human_per_1000: 0.0913
+  holdout_per_1000: 0.1163
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: w przyszłości
+  kind: bigram
+  genre: general
+  z_score: 2.1225
+  ai_per_1000: 0.9058
+  human_per_1000: 0.0933
+  holdout_per_1000: 0.0825
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: nas
+  kind: unigram
+  genre: general
+  z_score: 2.022
+  ai_per_1000: 1.199
+  human_per_1000: 0.1721
+  holdout_per_1000: 0.1512
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: niniejszego
+  kind: unigram
+  genre: general
+  z_score: 1.9999
+  ai_per_1000: 1.4988
+  human_per_1000: 0.0
+  holdout_per_1000: 0.0116
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: otrzymania niniejszego
+  kind: bigram
+  genre: general
+  z_score: 1.9996
+  ai_per_1000: 1.5097
+  human_per_1000: 0.0
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: tel email
+  kind: bigram
+  genre: general
+  z_score: 1.9996
+  ai_per_1000: 1.5097
+  human_per_1000: 0.0
+  holdout_per_1000: 0.0
+  ai_doc_share: 0.2083
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: sp z
+  kind: bigram
+  genre: general
+  z_score: 1.9996
+  ai_per_1000: 1.5097
+  human_per_1000: 0.0
+  holdout_per_1000: 0.0118
+  ai_doc_share: 0.1667
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: sp z o
+  kind: trigram
+  genre: general
+  z_score: 1.9994
+  ai_per_1000: 1.5207
+  human_per_1000: 0.0
+  holdout_per_1000: 0.0119
+  ai_doc_share: 0.1667
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''
+- term: w ciągu
+  kind: bigram
+  genre: general
+  z_score: 1.9903
+  ai_per_1000: 0.9058
+  human_per_1000: 0.1048
+  holdout_per_1000: 0.0707
+  ai_doc_share: 0.125
+  models:
+  - haiku
+  protected: false
+  indicative: true
+  status: candidate
+  note: ''

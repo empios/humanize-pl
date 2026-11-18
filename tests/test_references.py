@@ -9,7 +9,8 @@ import httpx
 import pytest
 
 from humanize_pl.references.extract import CaseRef, StatuteRef, extract_references, load_acts
-from humanize_pl.references.sources import ReferenceSources, SourceUnavailable
+from humanize_pl.references.sources import ActStructure, ReferenceSources, SourceUnavailable
+from humanize_pl.references.verify import verify_references
 
 
 def statutes(text: str) -> list[StatuteRef]:
@@ -236,3 +237,107 @@ def test_network_error_raises_source_unavailable_and_is_not_cached(tmp_path) -> 
 def test_server_error_is_source_unavailable(tmp_path) -> None:
     with pytest.raises(SourceUnavailable):
         sources(tmp_path, [], struct_status={"DU/2024/1061": 503}).act_structure("DU/1964/93")
+
+
+# --- verdicts ----------------------------------------------------------------
+
+
+
+class FakeSources:
+    def __init__(self, *, fail: bool = False) -> None:
+        self.fail = fail
+        self.asked: list[str] = []
+
+    def act_structure(self, eli: str):
+        self.asked.append(eli)
+        if self.fail:
+            raise SourceUnavailable("offline")
+        if eli == "DU/1964/93":
+            return ActStructure(
+                "DU/2024/1061", "Kodeks cywilny", frozenset({"415", "445", "445§1", "449_1", "6"})
+            )
+        if eli == "DU/2019/1781":
+            return ActStructure("DU/2019/1781", "o ochronie danych", frozenset({"23", "23ust1"}))
+        if eli == "DU/1997/483":
+            return ActStructure("DU/1997/483", "Konstytucja", frozenset())
+        return None
+
+    def case_found(self, signature: str):
+        if self.fail:
+            raise SourceUnavailable("offline")
+        return (True, ["Sąd Apelacyjny w Łodzi"]) if signature == "I ACa 772/13" else (False, [])
+
+
+def verdicts(text: str, sources=None) -> dict[str, object]:
+    return {row.text: row for row in verify_references(text, sources or FakeSources())}
+
+
+def test_existing_article_and_paragraph_are_confirmed() -> None:
+    rows = verdicts("Zob. art. 415 k.c. i art. 445 § 1 k.c.")
+    assert {rows["art. 415 k.c."].status, rows["art. 445 § 1 k.c."].status} == {"confirmed"}
+    assert "DU/2024/1061" in rows["art. 415 k.c."].source
+
+
+def test_missing_paragraph_is_not_found() -> None:
+    row = verdicts("Zgodnie z art. 6 § 1 k.c. ciężar dowodu.")["art. 6 § 1 k.c."]
+    assert row.status == "not_found"
+    assert "§ 1" in row.note_pl and "DU/2024/1061" in row.note_pl
+
+
+def test_missing_passage_is_not_found() -> None:
+    row = verdicts("Podstawą jest art. 23 ust. 2 ustawy (Dz. U. z 2019 r. poz. 1781).")[
+        "art. 23 ust. 2"
+    ]
+    assert row.status == "not_found"
+
+
+def test_flattened_superscript_gets_a_hint() -> None:
+    row = verdicts("Odpowiedzialność reguluje art. 4491 k.c.")["art. 4491 k.c."]
+    assert row.status == "not_found"
+    assert "art. 449¹" in row.note_pl
+
+
+def test_unknown_dz_u_is_unknown_act() -> None:
+    row = verdicts("Zob. art. 5 ustawy (Dz. U. z 2099 r. poz. 1).")["art. 5"]
+    assert row.status == "unknown_act"
+
+
+def test_act_without_structure_is_unknown_act() -> None:
+    row = verdicts("Zob. art. 2 ustawy (Dz. U. z 1997 r. poz. 483).")["art. 2"]
+    assert row.status == "unknown_act"
+    assert "struktury" in row.note_pl
+
+
+def test_case_found_names_the_courts() -> None:
+    row = verdicts("Por. wyrok I ACa 772/13.")["I ACa 772/13"]
+    assert (row.kind, row.status) == ("case", "confirmed")
+    assert "Sąd Apelacyjny w Łodzi" in row.note_pl
+
+
+def test_case_not_in_saos_says_the_base_is_incomplete() -> None:
+    row = verdicts("Por. wyrok II C 1/99.")["II C 1/99"]
+    assert row.status == "not_found"
+    assert "nie obejmuje wszystkich" in row.note_pl
+
+
+def test_each_act_is_fetched_once_per_document() -> None:
+    sources = FakeSources()
+    rows = verify_references("Art. 415 k.c., art. 445 k.c. i znów art. 415 k.c.", sources)
+    assert sources.asked == ["DU/1964/93"]
+    assert [row.text for row in rows] == ["Art. 415 k.c.", "art. 445 k.c."]
+
+
+def test_unavailable_source_marks_every_reference_of_that_act() -> None:
+    rows = verify_references("Art. 415 k.c. i I ACa 772/13.", FakeSources(fail=True))
+    assert {row.status for row in rows} == {"unavailable"}
+
+
+def test_verdict_serialises() -> None:
+    [row] = verify_references("Zob. art. 415 k.c.", FakeSources())
+    assert row.to_json() == {
+        "text": "art. 415 k.c.",
+        "kind": "statute",
+        "status": "confirmed",
+        "source": row.source,
+        "note_pl": row.note_pl,
+    }

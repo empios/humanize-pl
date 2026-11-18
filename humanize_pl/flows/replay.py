@@ -168,7 +168,12 @@ def payload_from_workbook(
         "source_column_index": column_index,
         "settings": {},
         "layers": {},
-        "summary": summarise(outcomes),
+        "summary": {
+            **summarise(outcomes),
+            # The sheet does not say which edits the model made: an empty
+            # register would claim it made none.
+            "ai_use": None,
+        },
         "rows": [outcome.to_json() for outcome in outcomes],
     }
 

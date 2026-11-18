@@ -661,3 +661,95 @@ def test_the_headline_leads_with_the_content_check_and_ends_with_the_score() -> 
     assert report.headline_sentence().startswith(
         "Zapis liczb, dat, kwot, przepisów albo nazw zmienił się w 1 z 2 pozycji"
     )
+
+
+def _ai_use_report(ai_use: dict | None) -> "pdf_pl._Report":
+    payload = _detail_payload([{"name": "wiersz 2", "status": "ok", "signal_before": 0.1,
+                                "signal_after": 0.1, "changes_applied": 0}])
+    if ai_use is not None:
+        payload["summary"]["ai_use"] = ai_use
+    return pdf_pl._Report(payload, 400, pdf_pl._styles())
+
+
+AI_USE = {
+    "models": ["bielik"],
+    "documents_with_model_edits": 2,
+    "model_segments": 3,
+    "rule_segments": 5,
+    "model_rejections": 1,
+    "model_errors": 0,
+    "model_unavailable": 0,
+}
+
+
+def test_pdf_names_what_the_model_changed() -> None:
+    report = _ai_use_report(AI_USE)
+    rows = dict(report.ai_use_rows())
+    assert rows["Model językowy"] == "bielik"
+    assert rows["Fragmenty zredagowane przez model"] == "3"
+    assert rows["Propozycje modelu odrzucone przez lokalne kontrole"] == "1"
+    assert rows["Zmiany z reguł deterministycznych"] == "5"
+    assert rows["Wiersze z redakcją modelu"] == "2"
+    assert rows["Błędy połączenia z modelem"] == "0"
+    assert rows["Wiersze z niedostępnym modelem"] == "0"
+    sentence = report.ai_use_sentence()
+    assert "osoby odpowiedzialnej za dokument" in sentence
+    assert "redakcja modelowa po regułach" in sentence
+    # The model is sent long sentences and whole general paragraphs too.
+    assert "zbyt długie" in sentence and "całe akapity" in sentence
+    assert "Każda propozycja, która trafiła do tekstu" in sentence
+
+
+def test_pdf_says_when_no_model_was_used() -> None:
+    report = _ai_use_report({**AI_USE, "models": [], "documents_with_model_edits": 0,
+                             "model_segments": 0, "model_rejections": 0})
+    assert "Model językowy nie był używany" in report.ai_use_sentence()
+    assert dict(report.ai_use_rows())["Model językowy"] == "nie użyto"
+
+
+def test_pdf_says_when_the_model_was_unavailable() -> None:
+    report = _ai_use_report({**AI_USE, "models": [], "documents_with_model_edits": 0,
+                             "model_segments": 0, "model_rejections": 0,
+                             "model_unavailable": 2})
+    assert "niedostępny" in report.ai_use_sentence()
+
+
+def test_pdf_old_report_has_no_register() -> None:
+    report = _ai_use_report(None)
+    assert "nie zawiera rejestru" in report.ai_use_sentence()
+    assert report.ai_use_rows() == []
+    assert report.ai_use()
+
+
+def test_pdf_model_used_without_accepted_edits_is_not_called_unused() -> None:
+    report = _ai_use_report({**AI_USE, "documents_with_model_edits": 0,
+                             "model_segments": 0, "model_rejections": 4})
+    sentence = report.ai_use_sentence()
+    assert "nie był używany" not in sentence
+    assert "żadna jego propozycja nie trafiła do tekstu" in sentence
+
+
+def test_pdf_rebuilt_report_does_not_guess_the_model_s_share() -> None:
+    payload = _detail_payload([{"name": "wiersz 2", "status": "ok", "signal_before": 0.1,
+                                "signal_after": 0.1, "changes_applied": 0}])
+    payload["rebuilt"] = True
+    payload["summary"]["ai_use"] = AI_USE
+    report = pdf_pl._Report(payload, 400, pdf_pl._styles())
+    assert "nie da się ustalić" in report.ai_use_sentence()
+    assert report.ai_use_rows() == []
+
+
+def test_pdf_has_no_register_section_without_items() -> None:
+    report = pdf_pl._Report(_detail_payload([]), 400, pdf_pl._styles())
+    assert report.ai_use() == []
+
+
+def test_a_rebuilt_workbook_carries_no_register(tmp_path) -> None:
+    from humanize_pl.flows import payload_from_workbook
+
+    openpyxl = pytest.importorskip("openpyxl")
+    source = tmp_path / "in.xlsx"
+    write_xlsx(source, openpyxl)
+    output = tmp_path / "out.xlsx"
+    run_xlsx_flow(source, output, column="B", settings=BASIC, report=False, pdf=False)
+    assert payload_from_workbook(output, column="Odpowiedź AI")["summary"]["ai_use"] is None

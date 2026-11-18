@@ -1,0 +1,60 @@
+# Kodeksy rozpoznawane w odwołaniach do przepisów („art. 6 § 1 k.c.”).
+#
+# `eli` to adres aktu pierwotnego w ISAP/ELI (api.sejm.gov.pl/eli/acts/<eli>);
+# weryfikacja sama szuka jego najnowszego tekstu jednolitego. Każdy adres
+# potwierdzono 2026-11-18 tytułem zwróconym przez API. `forms` to zapisy,
+# które w tekście stoją tuż po numerze jednostki: skróty z kropkami i bez
+# oraz dopełniacz pełnej nazwy. Kodeks karny wykonawczy i skarbowy stoją
+# osobno, bo ich pełne nazwy zaczynają się tak samo jak „Kodeksu karnego”.
+#
+# Konstytucji tu nie ma: ELI nie udostępnia jej struktury, więc żadnego
+# odwołania do niej nie dałoby się sprawdzić.
+acts:
+  - key: kc
+    name: Kodeks cywilny
+    eli: DU/1964/93
+    forms: [k.c., kc, Kodeksu cywilnego]
+  - key: kpc
+    name: Kodeks postępowania cywilnego
+    eli: DU/1964/296
+    forms: [k.p.c., kpc, Kodeksu postępowania cywilnego]
+  - key: kp
+    name: Kodeks pracy
+    eli: DU/1974/141
+    forms: [k.p., kp, Kodeksu pracy]
+  - key: kk
+    name: Kodeks karny
+    eli: DU/1997/553
+    forms: [k.k., kk, Kodeksu karnego]
+  - key: kkw
+    name: Kodeks karny wykonawczy
+    eli: DU/1997/557
+    forms: [k.k.w., kkw, Kodeksu karnego wykonawczego]
+  - key: kks
+    name: Kodeks karny skarbowy
+    eli: DU/1999/930
+    forms: [k.k.s., kks, Kodeksu karnego skarbowego]
+  - key: kpk
+    name: Kodeks postępowania karnego
+    eli: DU/1997/555
+    forms: [k.p.k., kpk, Kodeksu postępowania karnego]
+  - key: kw
+    name: Kodeks wykroczeń
+    eli: DU/1971/114
+    forms: [k.w., kw, Kodeksu wykroczeń]
+  - key: ksh
+    name: Kodeks spółek handlowych
+    eli: DU/2000/1037
+    forms: [k.s.h., ksh, Kodeksu spółek handlowych]
+  - key: kro
+    name: Kodeks rodzinny i opiekuńczy
+    eli: DU/1964/59
+    forms: [k.r.o., kro, Kodeksu rodzinnego i opiekuńczego]
+  - key: kpa
+    name: Kodeks postępowania administracyjnego
+    eli: DU/1960/168
+    forms: [k.p.a., kpa, Kodeksu postępowania administracyjnego]
+  - key: op
+    name: Ordynacja podatkowa
+    eli: DU/1997/926
+    forms: [o.p., Ordynacji podatkowej]

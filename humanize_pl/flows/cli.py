@@ -50,6 +50,7 @@ def _settings(
     format_policy: FormatPolicy = FormatPolicy.preserve,
     require_llm: bool = False,
     require_renderer: bool = False,
+    verify_references: bool = False,
 ) -> FlowSettings:
     return FlowSettings(
         mode=mode,
@@ -66,6 +67,7 @@ def _settings(
         format_policy=format_policy,
         require_llm=require_llm,
         require_renderer=require_renderer,
+        verify_references=verify_references,
     )
 
 
@@ -210,6 +212,14 @@ def run_command(
         "--resume",
         help="Tylko folder .docx: dokończ przerwany przebieg, pominij ukończone dokumenty",
     ),
+    verify_references: bool = typer.Option(
+        False,
+        "--verify-references/--no-verify-references",
+        help=(
+            "Sprawdź odwołania w ISAP/ELI i sygnatury w SAOS; wysyła tylko oznaczenia "
+            "aktów i sygnatury, nigdy treść dokumentu"
+        ),
+    ),
 ) -> None:
     """Cały przebieg jedną komendą: wzorzec kancelarii, diagnoza, redakcja, raport.
 
@@ -272,6 +282,7 @@ def run_command(
         FormatPolicy.preserve,
         llm,
         False,
+        verify_references=verify_references,
     )
 
     try:
@@ -377,6 +388,14 @@ def docx_command(
         "--require-renderer",
         help="Przerwij, jeśli dokumentu nie można sprawdzić przez LibreOffice",
     ),
+    verify_references: bool = typer.Option(
+        False,
+        "--verify-references/--no-verify-references",
+        help=(
+            "Sprawdź odwołania w ISAP/ELI i sygnatury w SAOS; wysyła tylko oznaczenia "
+            "aktów i sygnatury, nigdy treść dokumentu"
+        ),
+    ),
     no_pdf: bool = typer.Option(
         False, "--no-pdf", help="Pomiń raport PDF opisowy (dla odbiorcy nietechnicznego)"
     ),
@@ -406,6 +425,7 @@ def docx_command(
                 format_policy,
                 require_llm,
                 require_renderer,
+                verify_references=verify_references,
             ),
             pdf=not no_pdf,
             resume=resume,
@@ -495,6 +515,14 @@ def xlsx_command(
     require_llm: bool = typer.Option(
         False, "--require-llm", help="Przerwij, jeśli hostowany model nie jest dostępny"
     ),
+    verify_references: bool = typer.Option(
+        False,
+        "--verify-references/--no-verify-references",
+        help=(
+            "Sprawdź odwołania w ISAP/ELI i sygnatury w SAOS; wysyła tylko oznaczenia "
+            "aktów i sygnatury, nigdy treść dokumentu"
+        ),
+    ),
 ) -> None:
     """Kolumna .xlsx: diagnoza → redakcja → bramka, wyniki dopisane obok."""
     output_path = output or workbook.with_name(f"{workbook.stem}_flow.xlsx")
@@ -521,6 +549,7 @@ def xlsx_command(
                 format_policy,
                 require_llm,
                 False,
+                verify_references=verify_references,
             ),
             sheet_name=sheet,
             header_row=header_row or None,

@@ -85,6 +85,17 @@ Działa warstwowo:
   zamówiony model był niedostępny. Raport odtworzony z gotowego arkusza mówi,
   że udziału modelu nie da się z niego ustalić.
   Zmiana zaczęta regułą i dokończona przez model liczy się jako zmiana modelu,
+- weryfikacja odwołań i sygnatur (`--verify-references`, domyślnie wyłączona):
+  odwołania do kodeksów (`art. 6 § 1 k.c.`) i aktów cytowanych z Dz.U.
+  sprawdzane w ISAP/ELI na najnowszym tekście jednolitym, który ma strukturę,
+  a sygnatury w SAOS. Do sieci wychodzą wyłącznie oznaczenia aktów i
+  sygnatury, nigdy treść dokumentu; wyniki trafiają do pamięci podręcznej
+  `~/.cache/humanize-pl/references.json` (30 dni, katalog zmienia
+  `HUMANIZE_PL_CACHE_DIR`). Niepotwierdzone odwołanie daje ostrzeżenie
+  i status „gotowy z ostrzeżeniami”, nigdy nie zmienia tekstu ani nie blokuje.
+  Zapis „art. 4491 k.c.” dostaje podpowiedź „czy chodziło o art. 449¹?”, a brak
+  sygnatury w SAOS jest opisany jako „nie znaleziono”, bo baza nie obejmuje
+  wszystkich orzeczeń (`references` w raporcie JSON, sekcja 4.3 raportu PDF),
 - `humanize-pl-flow report <folder|json|xlsx>` — sam raport PDF z zakończonej
   pracy, z doczytaniem brakujących pomiarów ze starszych przebiegów DOCX
   i odtworzeniem obu stron pomiaru z gotowego arkusza XLSX,

@@ -825,6 +825,7 @@ class _Report:
             self.xlsx_basis,
             self.readiness_audit,
             self.ai_use,
+            self.references_audit,
             self.metrics,
             self.families,
             self.per_item,
@@ -1422,6 +1423,89 @@ class _Report:
                     [self.head("Pozycja rejestru", "Wartość")]
                     + [[self.cell(escape(label)), self.cell(escape(value))] for label, value in rows],
                     [90 * self.mm, self.width - 90 * self.mm],
+                )
+            )
+        story.append(Spacer(1, 4))
+        return story
+
+    def _verification_state(self) -> str | None:
+        """"enabled", "disabled", or None for a report from before the check."""
+        return (self.payload.get("layers") or {}).get("references")
+
+    def references_rows(self) -> list[tuple[str, str, str, str]]:
+        """Position, reference, result and note for what was not confirmed."""
+        if self._verification_state() != "enabled":
+            return []
+        labels = {"not_found": "nie znaleziono", "unknown_act": "nie dało się sprawdzić"}
+        return [
+            (
+                _item_label(position, self.one, item),
+                str(row.get("text", "")),
+                labels[row["status"]],
+                str(row.get("note_pl", "")),
+            )
+            for position, item in enumerate(self.items, 1)
+            for row in item.get("references") or []
+            if row.get("status") in labels
+        ]
+
+    def references_sentence(self) -> str:
+        state = self._verification_state()
+        if self.rebuilt and state is None:
+            return (
+                "Raport odtworzono z gotowego arkusza, więc nie wiadomo, czy odwołania "
+                "sprawdzano."
+            )
+        if state is None:
+            return (
+                "Ten raport nie zawiera weryfikacji odwołań, bo powstał przed jej "
+                "wprowadzeniem."
+            )
+        if state != "enabled":
+            return (
+                "Weryfikacji odwołań nie przeprowadzono (wyłączona; włącza ją "
+                "--verify-references)."
+            )
+        rows = [row for item in self.items for row in item.get("references") or []]
+        if not rows:
+            return (
+                "Weryfikację włączono, ale w tekście nie znaleziono odwołań do kodeksów, "
+                "aktów z Dz.U. ani sygnatur orzeczeń."
+            )
+        count = {
+            status: sum(1 for row in rows if row.get("status") == status)
+            for status in ("confirmed", "not_found", "unknown_act", "unavailable")
+        }
+        sentence = (
+            "Odwołania do przepisów sprawdzono w ISAP/ELI, a sygnatury w SAOS. "
+            f"Liczba sprawdzonych odwołań i sygnatur: {len(rows)}; potwierdzono: "
+            f"{count['confirmed']}, nie znaleziono: {count['not_found']}, nie dało się "
+            f"sprawdzić: {count['unknown_act'] + count['unavailable']}."
+        )
+        if count["not_found"]:
+            sentence += (
+                " Niepotwierdzone odwołania wymagają sprawdzenia przez osobę "
+                "odpowiedzialną za dokument; tekstu nie zmieniono."
+            )
+        return sentence
+
+    def references_audit(self) -> list:
+        """Which statute references and case numbers the sources confirmed."""
+        from reportlab.platypus import Spacer
+
+        if not self.items:
+            return []
+        story: list[Any] = [
+            self.para("4.3. Weryfikacja odwołań", "h2"),
+            self.para(escape(self.references_sentence()), "body"),
+        ]
+        rows = self.references_rows()
+        if rows:
+            story.append(
+                self.table(
+                    [self.head(self.one.capitalize(), "Odwołanie", "Wynik", "Uwaga")]
+                    + [[self.cell(escape(value)) for value in row] for row in rows],
+                    [25 * self.mm, 40 * self.mm, 30 * self.mm, self.width - 95 * self.mm],
                 )
             )
         story.append(Spacer(1, 4))

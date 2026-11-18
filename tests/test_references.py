@@ -2,7 +2,14 @@
 
 from __future__ import annotations
 
+import json
+from datetime import datetime, timedelta
+
+import httpx
+import pytest
+
 from humanize_pl.references.extract import CaseRef, StatuteRef, extract_references, load_acts
+from humanize_pl.references.sources import ReferenceSources, SourceUnavailable
 
 
 def statutes(text: str) -> list[StatuteRef]:
@@ -94,3 +101,138 @@ def test_signature_spacing_is_normalised() -> None:
     [ref] = cases("Zob. wyrok I  ACa   772/13.")
     assert ref.signature == "I ACa 772/13"
     assert ref.text == "I  ACa   772/13"
+
+
+# --- sources -----------------------------------------------------------------
+
+KC_META = {
+    "title": "Ustawa z dnia 23 kwietnia 1964 r. - Kodeks cywilny.",
+    "references": {"Inf. o tekście jednolitym": [{"id": "DU/2026/795"}, {"id": "DU/2024/1061"}]},
+}
+KC_STRUCT = [
+    {
+        "id": "part_1",
+        "type": "part",
+        "children": [
+            {
+                "id": "book_TRZECIA-titl_VI-arti_445",
+                "type": "arti",
+                "children": [
+                    {
+                        "id": "book_TRZECIA-titl_VI-arti_445-para_1",
+                        "type": "para",
+                        "children": [
+                            {"id": "book_TRZECIA-titl_VI-arti_445-para_1-pint_2", "type": "pint"}
+                        ],
+                    },
+                ],
+            },
+            {
+                "id": "chpt_4-arti_21",
+                "type": "arti",
+                "children": [{"id": "chpt_4-arti_21-pass_2", "type": "pass"}],
+            },
+            {"id": "book_TRZECIA-titl_VI-arti_449_1", "type": "arti"},
+            {"id": "book_TRZECIA-titl_VI-arti_6", "type": "arti"},
+        ],
+    }
+]
+SAOS_HIT = {
+    "items": [
+        {
+            "courtType": "COMMON",
+            "courtCases": [{"caseNumber": "I ACa 772/13"}],
+            "division": {"court": {"name": "Sąd Apelacyjny w Łodzi"}},
+        },
+        {"courtType": "SUPREME", "courtCases": [{"caseNumber": "I ACa 772/13"}]},
+        {"courtType": "COMMON", "courtCases": [{"caseNumber": "I ACa 772/130"}]},
+    ]
+}
+
+
+def eli_handler(requests: list[str], *, struct_status: dict[str, int] | None = None):
+    statuses = {"DU/2026/795": 404, **(struct_status or {})}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        path = request.url.path
+        requests.append(str(request.url))
+        if path.startswith("/eli/acts/"):
+            address = path.removeprefix("/eli/acts/").removesuffix("/struct")
+            if path.endswith("/struct"):
+                status = statuses.get(address, 200)
+                return httpx.Response(status, json=KC_STRUCT if status == 200 else None)
+            if address == "DU/1964/93":
+                return httpx.Response(200, json=KC_META)
+            return httpx.Response(404)
+        if path == "/api/search/judgments":
+            number = request.url.params["caseNumber"]
+            return httpx.Response(200, json=SAOS_HIT if number == "I ACa 772/13" else {"items": []})
+        return httpx.Response(500)
+
+    return handler
+
+
+def sources(tmp_path, requests: list[str], **kwargs) -> ReferenceSources:
+    return ReferenceSources(
+        client=httpx.Client(transport=httpx.MockTransport(eli_handler(requests, **kwargs))),
+        cache_dir=tmp_path,
+    )
+
+
+def test_newest_text_without_structure_falls_back(tmp_path) -> None:
+    structure = sources(tmp_path, []).act_structure("DU/1964/93")
+    assert structure.eli == "DU/2024/1061"
+    assert "Kodeks cywilny" in structure.title
+
+
+def test_units_are_collected_with_paragraphs_passages_and_points(tmp_path) -> None:
+    units = sources(tmp_path, []).act_structure("DU/1964/93").units
+    assert {"445", "445§1", "445§1pkt2", "21", "21ust2", "449_1", "6"} <= units
+    assert "445§2" not in units
+
+
+def test_unknown_act_has_no_structure(tmp_path) -> None:
+    assert sources(tmp_path, []).act_structure("DU/2099/1") is None
+
+
+def test_structure_is_cached_on_disk(tmp_path) -> None:
+    requests: list[str] = []
+    sources(tmp_path, requests).act_structure("DU/1964/93")
+    first = len(requests)
+    sources(tmp_path, requests).act_structure("DU/1964/93")
+    assert len(requests) == first
+
+    cache = tmp_path / "references.json"
+    data = json.loads(cache.read_text())
+    stale = (datetime.now() - timedelta(days=31)).isoformat()
+    for row in data["acts"].values():
+        row["fetched"] = stale
+    cache.write_text(json.dumps(data))
+    sources(tmp_path, requests).act_structure("DU/1964/93")
+    assert len(requests) > first
+
+
+def test_case_search_returns_court_names(tmp_path) -> None:
+    found, courts = sources(tmp_path, []).case_found("I ACa 772/13")
+    assert found is True
+    assert courts == ["Sąd Apelacyjny w Łodzi", "Sąd Najwyższy"]
+    assert sources(tmp_path, []).case_found("II C 1/99") == (False, [])
+
+
+def test_network_error_raises_source_unavailable_and_is_not_cached(tmp_path) -> None:
+    def broken(request: httpx.Request) -> httpx.Response:
+        raise httpx.ConnectError("offline", request=request)
+
+    failing = ReferenceSources(
+        client=httpx.Client(transport=httpx.MockTransport(broken)), cache_dir=tmp_path
+    )
+    with pytest.raises(SourceUnavailable):
+        failing.act_structure("DU/1964/93")
+    with pytest.raises(SourceUnavailable):
+        failing.case_found("I ACa 772/13")
+    assert not (tmp_path / "references.json").exists()
+
+
+def test_server_error_is_source_unavailable(tmp_path) -> None:
+    with pytest.raises(SourceUnavailable):
+        sources(tmp_path, [], struct_status={"DU/2024/1061": 503}).act_structure("DU/1964/93")

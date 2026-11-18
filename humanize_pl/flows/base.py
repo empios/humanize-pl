@@ -37,6 +37,8 @@ from humanize_pl.llm import LlmConfigurationError, LlmSettings, OpenAICompatible
 from humanize_pl.nlp.morfeusz import try_load_morfeusz
 from humanize_pl.nlp.semantic import NLIValidator
 from humanize_pl.gate import GateVerdict, review_response
+from humanize_pl.references.sources import ReferenceSources
+from humanize_pl.references.verify import verify_references
 from humanize_pl.sentence_splitter import split_sentences
 
 # Kept per item, not per run: the report picks its illustrations from across
@@ -191,6 +193,9 @@ class FlowSettings:
     require_llm: bool = False
     require_renderer: bool = False
     llm_env_file: Path | None = None
+    # Asks ISAP/ELI and SAOS about the document's references. Off unless
+    # asked for: a case number can itself be confidential.
+    verify_references: bool = False
 
     def session(self) -> HumanizerSession:
         profile = self.legal_review_profile
@@ -265,6 +270,7 @@ def layer_status(
     office_profile: bool = False,
     rewriter: OpenAICompatibleRewriter | None = None,
     llm_warnings: list[str] | None = None,
+    references: bool = False,
 ) -> dict[str, Any]:
     """What actually loaded, per layer.
 
@@ -288,7 +294,8 @@ def layer_status(
                 load_profile().name if load_profile() is not None else "missing"
             ),
             "office_profile": "supplied" if office_profile else "none",
-        }
+        },
+        "references": "enabled" if references else "disabled",
     }
     if session is None:
         status["rewrite"] = {"skipped": True}
@@ -366,6 +373,7 @@ class ItemOutcome:
     legal_sensitive_check: dict[str, Any] = field(default_factory=dict)
     llm: dict[str, Any] = field(default_factory=dict)
     formatting: dict[str, Any] | None = None
+    references: list[dict[str, Any]] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         if self.status == "failed":
@@ -449,6 +457,7 @@ class ItemOutcome:
             "legal_sensitive_check": self.legal_sensitive_check,
             "llm": self.llm,
             "ai_use": self.ai_use,
+            "references": self.references,
             "formatting": self.formatting,
         }
 
@@ -490,6 +499,7 @@ def run_all_layers(
     protected_paragraph_indices: set[int] | None = None,
     llm_prepared: bool = False,
     llm_initialization_warnings: list[str] | None = None,
+    reference_sources: ReferenceSources | None = None,
 ) -> tuple[ItemOutcome, GateVerdict]:
     """Detect, optionally rewrite, re-detect, then gate."""
     guess = classify_document(text)
@@ -552,6 +562,8 @@ def run_all_layers(
     )
     outcome.warnings.extend(profile_warnings)
     outcome.warnings.extend(llm_initialization_warnings or [])
+    if settings.verify_references:
+        _verify_references(text, outcome, reference_sources or ReferenceSources())
     # Two classifiers looked at the same text: the coarse family one and the
     # evidence-gated category one. When they disagree, one of them is wrong,
     # and which one decides the formatting norms and the genre profile - so it
@@ -743,6 +755,30 @@ def _short_rationale(value: str, limit: int = 300) -> str:
     """Collapse the model's reason to one report-sized line."""
     text = " ".join(str(value or "").split())
     return text if len(text) <= limit else text[: limit - 1].rstrip() + "…"
+
+
+REFERENCES_UNAVAILABLE = (
+    "Weryfikacja odwołań nie powiodła się (brak połączenia ze źródłem); "
+    "części odwołań nie sprawdzono."
+)
+
+
+def _verify_references(text: str, outcome: ItemOutcome, sources: ReferenceSources) -> None:
+    """Record the verdicts; warn about what was not found, never block.
+
+    A reference the source does not hold is the reader's to judge, so it
+    becomes a warning and the text stays as written. A source that could not
+    be asked is one technical warning, not one per reference.
+    """
+    verdicts = verify_references(text, sources)
+    outcome.references = [row.to_json() for row in verdicts]
+    outcome.warnings.extend(
+        f"Nie potwierdzono odwołania „{row.text}”: {row.note_pl}"
+        for row in verdicts
+        if row.status == "not_found"
+    )
+    if any(row.status == "unavailable" for row in verdicts):
+        outcome.warnings.append(REFERENCES_UNAVAILABLE)
 
 
 def _finding_issues(diagnosis) -> dict[tuple[int, int], list[str]]:

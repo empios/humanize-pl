@@ -341,3 +341,73 @@ def test_verdict_serialises() -> None:
         "source": row.source,
         "note_pl": row.note_pl,
     }
+
+
+# --- flow ----------------------------------------------------------------------
+
+def _flow(text: str, *, verify: bool, sources=None):
+    from humanize_pl.config import Engine, Mode
+    from humanize_pl.flows.base import FlowSettings, run_all_layers
+
+    settings = FlowSettings(
+        mode=Mode.standard, engine=Engine.basic, rewrite=False, verify_references=verify
+    )
+    outcome, _verdict = run_all_layers(
+        text, name="a.txt", settings=settings, reference_sources=sources
+    )
+    return outcome
+
+
+UNCONFIRMED = "Zgodnie z art. 6 § 1 k.c. ciężar dowodu spoczywa na powodzie."
+
+
+def test_disabled_verification_makes_no_requests(monkeypatch) -> None:
+    import humanize_pl.flows.base as base
+
+    def refuse(*args, **kwargs):
+        raise AssertionError("no lookup may start when verification is off")
+
+    monkeypatch.setattr(base, "ReferenceSources", refuse)
+    outcome = _flow(UNCONFIRMED, verify=False)
+    assert outcome.references == []
+
+
+def test_unconfirmed_reference_warns_but_never_blocks() -> None:
+    plain = _flow(UNCONFIRMED, verify=False)
+    checked = _flow(UNCONFIRMED, verify=True, sources=FakeSources())
+    assert (checked.needs_review, checked.signal_before, checked.text_out) == (
+        plain.needs_review, plain.signal_before, plain.text_out
+    )
+    assert checked.readiness_status == "ready_with_warnings"
+    assert any(
+        warning.startswith("Nie potwierdzono odwołania „art. 6 § 1 k.c.”")
+        for warning in checked.warnings
+    )
+
+
+def test_network_failure_is_one_warning_not_a_crash() -> None:
+    outcome = _flow("Art. 415 k.c. oraz wyrok I ACa 772/13.", verify=True,
+                    sources=FakeSources(fail=True))
+    failures = [w for w in outcome.warnings if "Weryfikacja odwołań nie powiodła się" in w]
+    assert len(failures) == 1
+    assert {row["status"] for row in outcome.references} == {"unavailable"}
+
+
+def test_references_reach_the_json_row() -> None:
+    outcome = _flow("Zob. art. 415 k.c.", verify=True, sources=FakeSources())
+    assert outcome.to_json()["references"][0]["status"] == "confirmed"
+
+
+def test_flag_is_off_by_default_and_reported_in_layers() -> None:
+    from rich.text import Text
+    from typer.testing import CliRunner
+
+    from humanize_pl.flows.base import FlowSettings, layer_status
+    from humanize_pl.flows.cli import app
+
+    assert FlowSettings().verify_references is False
+    assert layer_status(None)["references"] == "disabled"
+    assert layer_status(None, references=True)["references"] == "enabled"
+    for command in ("run", "docx", "xlsx"):
+        result = CliRunner().invoke(app, [command, "--help"], env={"COLUMNS": "200"})
+        assert "--verify-references" in Text.from_ansi(result.stdout).plain, command

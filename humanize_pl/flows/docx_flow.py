@@ -87,6 +87,7 @@ def run_docx_flow(
         office_profile=style_profile is not None,
         rewriter=rewriter,
         llm_warnings=llm_warnings,
+        references=settings.verify_references,
     )
     if on_layers is not None:
         on_layers(layers)

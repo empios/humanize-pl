@@ -32,12 +32,24 @@ _DZ_U_RE = re.compile(
     r"Dz\.\s*U\.\s*(?:z\s*)?(?P<year>\d{4})(?:\s*r\.)?\s*,?\s*"
     r"(?:Nr\s*\d+\s*,?\s*)?poz\.\s*(?P<position>\d+)"
 )
-# A division in Roman numerals before any repertory symbol, or without one
-# an all-capitals symbol (KIO, K, SK): "Termin 12/2024" is not a case number.
+# A case number has a division in Roman numerals before its repertory symbol,
+# except at the Constitutional Tribunal and the KIO, whose symbols are a
+# closed list. Any other capitals before a number are an invoice, contract or
+# resolution number: "FV 12/2024", "NR 123/2020", "ZP 12/2024". Those are the
+# document's own content and must never be sent to SAOS.
+_UNDIVIDED_SYMBOLS = ("KIO", "Kpt", "SK", "Kp", "Pp", "Tw", "Ts", "K", "P", "U")
 _CASE_RE = re.compile(
     r"(?<![\p{L}\d/])"
-    r"(?:(?:[IVX]{1,5})\s+[A-Z][A-Za-z]{0,4}|[A-Z]{1,4})"
+    r"(?:[IVX]{1,6}\s+[A-Z][A-Za-z]{0,4}|(?:" + "|".join(_UNDIVIDED_SYMBOLS) + r"))"
     r"\s+\d{1,6}/(?:\d{4}|\d{2})(?![\d/])"
+)
+# An article and a Dz.U. citation later in the sentence belong together only
+# when no other article or other act stands between them.
+# A full word and a period right before the citation end the sentence there
+# ("art. 5 ustawy. Dz. U. …"); a one-letter abbreviation ("r.", "t.j.") does not.
+_SENTENCE_END_RE = re.compile(r"\p{Ll}{3,}\.\s*$")
+_OTHER_ACT_RE = re.compile(
+    r"rozporządzeni|dyrektyw|Konstytucj|\bRODO\b|\bTFUE\b|\bTUE\b", re.IGNORECASE
 )
 
 
@@ -84,7 +96,7 @@ def load_acts(path: Path = ACTS_PATH) -> dict[str, LegalAct]:
 
 
 @lru_cache(maxsize=None)
-def _act_form_re(path: Path) -> tuple[re.Pattern, dict[str, str]]:
+def _act_form_re(path: Path) -> tuple[re.Pattern, re.Pattern, dict[str, str]]:
     """Code forms, longest first so "k.p.c." is not read as "k.p."."""
     by_form: dict[str, str] = {}
     for act in _acts(path).values():
@@ -93,7 +105,8 @@ def _act_form_re(path: Path) -> tuple[re.Pattern, dict[str, str]]:
     alternatives = sorted(by_form, key=len, reverse=True)
     body = "|".join(re.escape(form).replace(r"\.", r"\.\s*") for form in alternatives)
     pattern = re.compile(rf"\s*,?\s*(?P<form>{body})(?!\p{{L}})", re.IGNORECASE)
-    return pattern, by_form
+    anywhere = re.compile(rf"(?<!\p{{L}})(?:{body})(?!\p{{L}})", re.IGNORECASE)
+    return pattern, anywhere, by_form
 
 
 def extract_references(text: str, *, acts_path: Path = ACTS_PATH) -> list[StatuteRef | CaseRef]:
@@ -103,7 +116,7 @@ def extract_references(text: str, *, acts_path: Path = ACTS_PATH) -> list[Statut
         found.extend(
             CaseRef(
                 text=match.group(0),
-                signature=" ".join(match.group(0).split()),
+                signature=_signature(match.group(0)),
                 start=start + match.start(),
                 end=start + match.end(),
             )
@@ -116,10 +129,11 @@ def _sentences(text: str) -> list[tuple[int, str]]:
     """Sentences with their offsets, cut from the original text.
 
     The splitter reads "Dz. U." and "r. Nr" as sentence ends, so citations
-    are masked with letters of the same length before splitting: offsets
+    are masked with lowercase letters of the same length (a capital would
+    end the sentence at "t.j." or "r.") before splitting: offsets
     stay put, and the sentences are sliced from the unmasked text.
     """
-    masked = _DZ_U_RE.sub(lambda match: "X" * len(match.group(0)), text)
+    masked = _DZ_U_RE.sub(lambda match: "x" * len(match.group(0)), text)
     out: list[tuple[int, str]] = []
     offset = 0
     for paragraph in masked.split("\n"):
@@ -136,7 +150,7 @@ def _sentences(text: str) -> list[tuple[int, str]]:
 
 
 def _statutes(sentence: str, start: int, acts_path: Path) -> list[StatuteRef]:
-    form_re, by_form = _act_form_re(acts_path)
+    form_re, code_anywhere, by_form = _act_form_re(acts_path)
     refs: list[StatuteRef] = []
     for match in _ARTICLE_RE.finditer(sentence):
         end = match.end()
@@ -147,6 +161,14 @@ def _statutes(sentence: str, start: int, acts_path: Path) -> list[StatuteRef]:
         else:
             citation = _DZ_U_RE.search(sentence, match.end())
             if citation is None:
+                continue
+            between = sentence[match.end():citation.start()]
+            if (
+                _ARTICLE_RE.search(between)
+                or _SENTENCE_END_RE.search(between)
+                or _OTHER_ACT_RE.search(between)
+                or code_anywhere.search(between)
+            ):
                 continue
             act = f"DU/{citation.group('year')}/{citation.group('position')}"
         article, flattened = _article(match)
@@ -176,6 +198,11 @@ def _article(match: re.Match) -> tuple[str, bool]:
         index = superscript.translate(_SUPERSCRIPTS).strip("^()")
         return f"{digits}{letter}_{index}", False
     return f"{digits}{letter}", not letter and len(digits) >= 2
+
+
+def _signature(written: str) -> str:
+    """Single spaces and a two-digit year, the form SAOS stores."""
+    return re.sub(r"/(?:19|20)(\d{2})$", r"/\1", " ".join(written.split()))
 
 
 def _numbers(value: str | None) -> tuple[str, ...]:

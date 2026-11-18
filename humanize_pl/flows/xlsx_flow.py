@@ -22,6 +22,7 @@ from .base import (
     attach_pdf_report,
     describe_visible_change,
     layer_status,
+    open_reference_sources,
     prepare_llm,
     run_all_layers,
     summarise,
@@ -803,6 +804,7 @@ def run_xlsx_flow(
     start_row = (header_row + 1) if header_row else 1
     outcomes: list[ItemOutcome] = []
     written_rows: list[int] = []
+    reference_sources = open_reference_sources(settings)
 
     for row_index in range(start_row, sheet.max_row + 1):
         # Cached formula result first; fall back to the raw cell for files that
@@ -825,6 +827,7 @@ def run_xlsx_flow(
                 style_profile=style_profile,
                 llm_prepared=True,
                 llm_initialization_warnings=llm_warnings,
+                reference_sources=reference_sources,
             )
         except Exception as exc:
             outcome = ItemOutcome(name=name, status="failed", error=f"{type(exc).__name__}: {exc}")
@@ -864,6 +867,8 @@ def run_xlsx_flow(
             sheet, first_column, headers, written_rows, header_row=header_row
         )
 
+    if reference_sources is not None:
+        reference_sources.close()
     if not outcomes:
         # Writing an untouched copy and reporting success is the same failure
         # mode the detection layer had: silence that reads as "nothing to do".

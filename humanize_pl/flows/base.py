@@ -563,7 +563,11 @@ def run_all_layers(
     outcome.warnings.extend(profile_warnings)
     outcome.warnings.extend(llm_initialization_warnings or [])
     if settings.verify_references:
-        _verify_references(text, outcome, reference_sources or ReferenceSources())
+        if reference_sources is not None:
+            _verify_references(text, outcome, reference_sources)
+        else:
+            with ReferenceSources() as owned:
+                _verify_references(text, outcome, owned)
     # Two classifiers looked at the same text: the coarse family one and the
     # evidence-gated category one. When they disagree, one of them is wrong,
     # and which one decides the formatting norms and the genre profile - so it
@@ -763,20 +767,34 @@ REFERENCES_UNAVAILABLE = (
 )
 
 
+def open_reference_sources(settings: FlowSettings) -> ReferenceSources | None:
+    """One lookup object for a whole run, so a source that is down is asked
+    once, not once per document. The caller closes it."""
+    return ReferenceSources() if settings.verify_references else None
+
+
 def _verify_references(text: str, outcome: ItemOutcome, sources: ReferenceSources) -> None:
     """Record the verdicts; warn about what was not found, never block.
 
     A reference the source does not hold is the reader's to judge, so it
     becomes a warning and the text stays as written. A source that could not
-    be asked is one technical warning, not one per reference.
+    be asked is one technical warning, not one per reference. Any other
+    failure of the check is reported the same way: verification must never
+    turn a document into a failed one.
     """
-    verdicts = verify_references(text, sources)
+    try:
+        verdicts = verify_references(text, sources)
+    except Exception:  # the check is advisory by design
+        outcome.references = []
+        outcome.warnings.append(REFERENCES_UNAVAILABLE)
+        return
     outcome.references = [row.to_json() for row in verdicts]
-    outcome.warnings.extend(
-        f"Nie potwierdzono odwołania „{row.text}”: {row.note_pl}"
-        for row in verdicts
-        if row.status == "not_found"
-    )
+    for row in verdicts:
+        if row.status != "not_found":
+            continue
+        what = "sygnatury" if row.kind == "case" else "odwołania"
+        note = row.note_pl[:1].lower() + row.note_pl[1:]
+        outcome.warnings.append(f"Nie potwierdzono {what} „{row.text}”: {note}")
     if any(row.status == "unavailable" for row in verdicts):
         outcome.warnings.append(REFERENCES_UNAVAILABLE)
 

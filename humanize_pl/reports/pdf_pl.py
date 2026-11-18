@@ -1451,6 +1451,11 @@ class _Report:
 
     def references_sentence(self) -> str:
         state = self._verification_state()
+        if self.rebuilt and state is None:
+            return (
+                "Raport odtworzono z gotowego arkusza, więc nie wiadomo, czy odwołania "
+                "sprawdzano."
+            )
         if state is None:
             return (
                 "Ten raport nie zawiera weryfikacji odwołań, bo powstał przed jej "

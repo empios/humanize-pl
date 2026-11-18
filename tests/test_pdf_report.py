@@ -799,3 +799,11 @@ def test_pdf_old_report_has_no_verification() -> None:
     report = _references_report({})
     assert "nie zawiera weryfikacji" in report.references_sentence()
     assert report.references_audit()
+
+
+def test_pdf_rebuilt_report_does_not_claim_the_check_predates_it() -> None:
+    report = _references_report({})
+    report.rebuilt = True
+    sentence = report.references_sentence()
+    assert "odtworzono" in sentence
+    assert "przed jej wprowadzeniem" not in sentence

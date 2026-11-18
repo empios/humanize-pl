@@ -31,6 +31,7 @@ from .base import (
     attach_pdf_report,
     diagnosis_genre,
     layer_status,
+    open_reference_sources,
     prepare_llm,
     run_all_layers,
     summarise,
@@ -92,6 +93,7 @@ def run_docx_flow(
     if on_layers is not None:
         on_layers(layers)
     outcomes: list[ItemOutcome] = []
+    reference_sources = open_reference_sources(settings)
 
     for path in files:
         target = output_directory / f"{path.stem}_humanized.docx"
@@ -144,6 +146,7 @@ def run_docx_flow(
                 protected_paragraph_indices=protected_indices,
                 llm_prepared=True,
                 llm_initialization_warnings=llm_warnings,
+                reference_sources=reference_sources,
             )
             if settings.rewrite or settings.format_policy == FormatPolicy.normalize:
                 formatting = _write_docx(
@@ -179,6 +182,8 @@ def run_docx_flow(
     if rewriter is not None:
         layers["hosted_model"] = rewriter.metadata.to_report()
         rewriter.close()
+    if reference_sources is not None:
+        reference_sources.close()
 
     summary = summarise(outcomes)
     documents = []

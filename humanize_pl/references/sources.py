@@ -61,6 +61,18 @@ class ReferenceSources:
         self._client = client or httpx.Client(timeout=timeout, follow_redirects=True)
         self._cache_path = (cache_dir or default_cache_dir()) / "references.json"
         self._cache: dict[str, dict[str, Any]] | None = None
+        # A source that failed once is not asked again by this object: behind
+        # a firewall every further lookup would only wait out its timeout.
+        self._down: set[str] = set()
+
+    def close(self) -> None:
+        self._client.close()
+
+    def __enter__(self) -> "ReferenceSources":
+        return self
+
+    def __exit__(self, *exc: object) -> None:
+        self.close()
 
     def act_structure(self, eli: str) -> ActStructure | None:
         """The units of the newest consolidated text that has a structure.
@@ -73,18 +85,31 @@ class ReferenceSources:
         if cached is not None:
             if not cached.get("known"):
                 return None
-            return ActStructure(cached["eli"], cached["title"], frozenset(cached["units"]))
+            try:
+                return ActStructure(
+                    str(cached["eli"]), str(cached["title"]), frozenset(cached["units"])
+                )
+            except (KeyError, TypeError):
+                pass  # a damaged entry is a miss
 
-        metadata = self._get_json(f"{ELI_API}/{eli}")
+        metadata = self._get_json("eli", f"{ELI_API}/{eli}")
         if metadata is None:
             self._store("acts", eli, {"known": False})
             return None
-        texts = [row["id"] for row in (metadata.get("references") or {}).get(CONSOLIDATED) or []]
-        structure = ActStructure(eli, metadata.get("title", ""), frozenset())
+        if not isinstance(metadata, dict):
+            raise SourceUnavailable("unexpected ELI metadata")
+        references = metadata.get("references")
+        rows = references.get(CONSOLIDATED) if isinstance(references, dict) else None
+        texts = [
+            row["id"]
+            for row in rows or []
+            if isinstance(row, dict) and isinstance(row.get("id"), str)
+        ]
+        structure = ActStructure(eli, str(metadata.get("title", "")), frozenset())
         for text in [*texts, eli]:
-            tree = self._get_json(f"{ELI_API}/{text}/struct")
-            if tree:
-                structure = ActStructure(text, structure.title, frozenset(_units(tree)))
+            units = _units(self._get_json("eli", f"{ELI_API}/{text}/struct"))
+            if units:
+                structure = ActStructure(text, structure.title, frozenset(units))
                 break
         self._store(
             "acts",
@@ -104,10 +129,22 @@ class ReferenceSources:
         cached = self._cached("cases", signature)
         if cached is not None:
             return cached["found"], cached["courts"]
-        payload = self._get_json(SAOS_API, params={"caseNumber": signature, "pageSize": 20})
+        payload = self._get_json(
+            "saos", SAOS_API, params={"caseNumber": signature, "pageSize": 20}
+        )
+        # The search answers 200 with an empty list when nothing matches; a
+        # 404 or an empty body means the API moved, not that no judgment exists.
+        if not isinstance(payload, dict):
+            raise SourceUnavailable("unexpected SAOS response")
         courts: list[str] = []
-        for item in (payload or {}).get("items") or []:
-            numbers = {case.get("caseNumber") for case in item.get("courtCases") or []}
+        for item in payload.get("items") or []:
+            if not isinstance(item, dict):
+                continue
+            numbers = {
+                case.get("caseNumber")
+                for case in item.get("courtCases") or []
+                if isinstance(case, dict)
+            }
             if signature not in numbers:
                 continue
             court = ((item.get("division") or {}).get("court") or {}).get("name")
@@ -117,15 +154,19 @@ class ReferenceSources:
         self._store("cases", signature, {"found": bool(courts), "courts": courts})
         return bool(courts), courts
 
-    def _get_json(self, url: str, *, params: dict[str, Any] | None = None) -> Any:
+    def _get_json(self, source: str, url: str, *, params: dict[str, Any] | None = None) -> Any:
         """Parsed JSON, None on 404, SourceUnavailable on anything else."""
+        if source in self._down:
+            raise SourceUnavailable(f"{source} failed earlier in this run")
         try:
             response = self._client.get(url, params=params)
         except httpx.HTTPError as exc:
+            self._down.add(source)
             raise SourceUnavailable(type(exc).__name__) from exc
         if response.status_code == 404:
             return None
         if response.status_code >= 400:
+            self._down.add(source)
             raise SourceUnavailable(f"HTTP {response.status_code}")
         if not response.content:
             return None
@@ -137,14 +178,16 @@ class ReferenceSources:
     def _load(self) -> dict[str, dict[str, Any]]:
         if self._cache is None:
             try:
-                self._cache = json.loads(self._cache_path.read_text(encoding="utf-8"))
+                loaded = json.loads(self._cache_path.read_text(encoding="utf-8"))
             except (OSError, ValueError):
-                self._cache = {}
+                loaded = {}
+            self._cache = loaded if isinstance(loaded, dict) else {}
         return self._cache
 
     def _cached(self, section: str, key: str) -> dict[str, Any] | None:
-        row = self._load().get(section, {}).get(key)
-        if row is None:
+        rows = self._load().get(section)
+        row = rows.get(key) if isinstance(rows, dict) else None
+        if not isinstance(row, dict):
             return None
         try:
             fetched = datetime.fromisoformat(row["fetched"])
@@ -154,9 +197,15 @@ class ReferenceSources:
 
     def _store(self, section: str, key: str, value: dict[str, Any]) -> None:
         cache = self._load()
-        cache.setdefault(section, {})[key] = {**value, "fetched": datetime.now().isoformat()}
-        self._cache_path.parent.mkdir(parents=True, exist_ok=True)
-        self._cache_path.write_text(json.dumps(cache, ensure_ascii=False), encoding="utf-8")
+        if not isinstance(cache.get(section), dict):
+            cache[section] = {}
+        cache[section][key] = {**value, "fetched": datetime.now().isoformat()}
+        # Best effort: a read-only home must not turn a lookup into a failure.
+        try:
+            self._cache_path.parent.mkdir(parents=True, exist_ok=True)
+            self._cache_path.write_text(json.dumps(cache, ensure_ascii=False), encoding="utf-8")
+        except OSError:
+            pass
 
 
 def _units(tree: Any) -> set[str]:
@@ -165,12 +214,14 @@ def _units(tree: Any) -> set[str]:
 
     def walk(nodes: Any) -> None:
         for node in nodes if isinstance(nodes, list) else []:
+            if not isinstance(node, dict):
+                continue
             key = _unit_key(str(node.get("id", "")))
             if key:
                 units.add(key)
             walk(node.get("children") or [])
 
-    walk(tree if isinstance(tree, list) else [tree])
+    walk(tree if isinstance(tree, list) else [tree] if isinstance(tree, dict) else [])
     return units
 
 

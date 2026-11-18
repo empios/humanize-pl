@@ -4,7 +4,8 @@
 # weryfikacja sama szuka jego najnowszego tekstu jednolitego. Każdy adres
 # potwierdzono 2026-11-18 tytułem zwróconym przez API. `forms` to zapisy,
 # które w tekście stoją tuż po numerze jednostki: skróty z kropkami i bez
-# oraz dopełniacz pełnej nazwy.
+# oraz dopełniacz pełnej nazwy. Kodeks karny wykonawczy i skarbowy stoją
+# osobno, bo ich pełne nazwy zaczynają się tak samo jak „Kodeksu karnego”.
 #
 # Konstytucji tu nie ma: ELI nie udostępnia jej struktury, więc żadnego
 # odwołania do niej nie dałoby się sprawdzić.
@@ -25,6 +26,14 @@ acts:
     name: Kodeks karny
     eli: DU/1997/553
     forms: [k.k., kk, Kodeksu karnego]
+  - key: kkw
+    name: Kodeks karny wykonawczy
+    eli: DU/1997/557
+    forms: [k.k.w., kkw, Kodeksu karnego wykonawczego]
+  - key: kks
+    name: Kodeks karny skarbowy
+    eli: DU/1999/930
+    forms: [k.k.s., kks, Kodeksu karnego skarbowego]
   - key: kpk
     name: Kodeks postępowania karnego
     eli: DU/1997/555

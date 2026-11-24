@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import stat
 
 import pytest
@@ -329,3 +330,75 @@ def test_author_metadata_is_cleared(tmp_path) -> None:
     assert result.status == "complete"
     properties = Document(str(target)).core_properties
     assert (properties.author, properties.last_modified_by) == ("", "")
+
+
+# --- command -------------------------------------------------------------------
+
+def run_command(args: list[str]):
+    from typer.testing import CliRunner
+
+    from humanize_pl.flows.cli import app
+
+    return CliRunner().invoke(app, args, env={"COLUMNS": "200"})
+
+
+def folder_with(tmp_path, *, header: bool = False):
+    source = tmp_path / "in"
+    source.mkdir()
+    build(source / "umowa.docx")
+
+    def with_header(document):
+        document.sections[0].header.paragraphs[0].text = "Sporządził: Jan Kowalski"
+
+    if header:
+        build(source / "pismo.docx", extra=with_header)
+    return source
+
+
+def test_command_writes_copies_key_and_report(tmp_path) -> None:
+    out = tmp_path / "out"
+    result = run_command(["pseudonymize", str(folder_with(tmp_path)), "-o", str(out)])
+    assert result.exit_code == 0, result.stdout
+    assert (out / "umowa_pseudonimizowany.docx").exists()
+    assert stat.S_IMODE((out / "klucz.json").stat().st_mode) == 0o600
+    report = json.loads((out / "pseudonimizacja.json").read_text())
+    assert report["dokumenty"][0]["status"] == "complete"
+    assert report["podsumowanie"]["complete"] == 1
+
+
+def test_report_never_contains_original_values(tmp_path) -> None:
+    out = tmp_path / "out"
+    result = run_command(["pseudonymize", str(folder_with(tmp_path, header=True)), "-o", str(out)])
+    report = (out / "pseudonimizacja.json").read_text()
+    for value in ("Kowalski", "Nowak", "44051401359"):
+        assert value not in report and value not in result.stdout
+
+
+def test_incomplete_document_sets_exit_code(tmp_path) -> None:
+    out = tmp_path / "out"
+    result = run_command(["pseudonymize", str(folder_with(tmp_path, header=True)), "-o", str(out)])
+    assert result.exit_code == 1
+    assert not (out / "pismo_pseudonimizowany.docx").exists()
+    assert (out / "umowa_pseudonimizowany.docx").exists()
+
+
+def test_existing_key_option_is_reused(tmp_path) -> None:
+    out = tmp_path / "out"
+    key = tmp_path / "osobno" / "klucz.json"
+    run_command(["pseudonymize", str(folder_with(tmp_path)), "-o", str(out), "--key", str(key)])
+    assert key.exists() and not (out / "klucz.json").exists()
+
+
+def test_missing_morfeusz_refuses(tmp_path, monkeypatch) -> None:
+    import humanize_pl.pseudonymize.batch as batch
+
+    monkeypatch.setattr(batch, "try_load_morfeusz", lambda: None)
+    result = run_command(["pseudonymize", str(folder_with(tmp_path)), "-o", str(tmp_path / "o")])
+    assert result.exit_code == 2
+    assert "Morfeusz" in result.stdout
+
+
+def test_help_lists_the_command() -> None:
+    from rich.text import Text
+
+    assert "pseudonymize" in Text.from_ansi(run_command(["--help"]).stdout).plain

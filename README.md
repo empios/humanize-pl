@@ -96,6 +96,22 @@ Działa warstwowo:
   Zapis „art. 4491 k.c.” dostaje podpowiedź „czy chodziło o art. 449¹?”, a brak
   sygnatury w SAOS jest opisany jako „nie znaleziono”, bo baza nie obejmuje
   wszystkich orzeczeń (`references` w raporcie JSON, sekcja 4.3 raportu PDF),
+- pseudonimizacja dokumentów (`humanize-pl-flow pseudonymize <folder> -o <katalog>
+  [--key klucz.json]`): kopie DOCX, w których dane osobowe zastąpiono etykietami
+  (`[Osoba 1]`, `[PESEL 1]`, `[adres 1]`, `[rachunek 1]`, `[KW 1]`…), z zachowanym
+  formatowaniem. Osoby rozpoznaje Morfeusz2 (imię z nazwiskiem, nazwisko po
+  „Pan” albo po roli procesowej, nazwisko znane z wcześniejszego miejsca),
+  także w odmianie: „Kowalskiemu” to ta sama `[Osoba 1]`. Role (powód,
+  Najemca, Zamawiający), firmy, NIP, KRS i REGON zostają. PESEL wymaga sumy
+  kontrolnej albo etykiety „PESEL”, dowód i paszport słowa kontekstowego.
+  Klucz (`klucz.json`, prawa tylko dla właściciela) pozwala odwrócić
+  zamianę i jest rozszerzany przy kolejnym przebiegu, więc etykiety się nie
+  zmieniają; trzeba go przechowywać osobno od kopii. Zasada „fail closed”:
+  dokument, w którym dane zostałyby w nagłówku, stopce, przypisie,
+  komentarzu, śledzonej zmianie, łączu `mailto:` albo właściwościach pliku,
+  nie dostaje kopii, a raport `pseudonimizacja.json` mówi, gdzie zostały
+  (bez samych wartości). Kod wyjścia 1, gdy któryś dokument nie dostał kopii;
+  bez Morfeusza polecenie odmawia pracy (kod 2),
 - `humanize-pl-flow report <folder|json|xlsx>` — sam raport PDF z zakończonej
   pracy, z doczytaniem brakujących pomiarów ze starszych przebiegów DOCX
   i odtworzeniem obu stron pomiaru z gotowego arkusza XLSX,

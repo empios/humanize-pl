@@ -761,5 +761,57 @@ def _default_report_path(source: Path) -> Path:
     return source.parent / "raport.pdf"
 
 
+_PSEUDONYMIZE_STATUS = {
+    "complete": "gotowe",
+    "incomplete": "bez kopii, zostały dane",
+    "failed": "błąd, bez kopii",
+}
+
+
+@app.command("pseudonymize")
+def pseudonymize_command(
+    folder: Path = typer.Argument(..., exists=True, file_okay=False, help="Folder z plikami .docx"),
+    output: Path = typer.Option(
+        None, "--output", "-o", help="Katalog na kopie, klucz i raport"
+    ),
+    key: Path = typer.Option(
+        None,
+        "--key",
+        help="Plik klucza, wczytywany i rozszerzany; domyślnie <katalog>/klucz.json",
+    ),
+) -> None:
+    """Folder .docx: kopie z danymi osobowymi zastąpionymi etykietami i osobny klucz."""
+    from humanize_pl.pseudonymize.batch import KEY_NAME, pseudonymize_folder
+    from humanize_pl.pseudonymize.detect import MorfeuszRequired
+    from humanize_pl.pseudonymize.labels import LABELS
+
+    output_directory = output or folder.with_name(f"{folder.name}_pseudonimizacja")
+    try:
+        report = pseudonymize_folder(folder, output_directory, key_path=key)
+    except MorfeuszRequired as exc:
+        print(str(exc))
+        raise typer.Exit(2)
+
+    for row in report["dokumenty"]:
+        counts = ", ".join(
+            f"{LABELS[kind]}: {count}" for kind, count in sorted(row["counts"].items())
+        )
+        line = f"{row['name']}: {_PSEUDONYMIZE_STATUS[row['status']]}"
+        print(line + (f" ({counts})" if counts else ""))
+        for leak in row["leaks"]:
+            print(f"  - {leak}")
+    summary = report["podsumowanie"]
+    print(
+        f"Kopie: {summary['complete']} z {summary['documents']}. Raport i kopie: "
+        f"{output_directory}"
+    )
+    print(
+        f"Klucz: {key or output_directory / KEY_NAME}. Zawiera prawdziwe dane; "
+        "przechowuj go osobno od kopii."
+    )
+    if summary["incomplete"] or summary["failed"]:
+        raise typer.Exit(1)
+
+
 if __name__ == "__main__":
     app()

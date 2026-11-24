@@ -42,6 +42,9 @@ class MorfeuszAnalysis:
     form: str
     lemma: str
     tag: str  # e.g. "subst:sg:nom:m1"
+    # SGJP proper-name categories of this reading: "imię", "nazwisko",
+    # "nazwa_geograficzna"... Empty for common words.
+    names: tuple[str, ...] = ()
 
     @property
     def upos(self) -> str | None:
@@ -181,7 +184,11 @@ class MorfeuszAnalyzer:
             if not tag or tag.startswith("ign"):
                 continue
             base_lemma = (lemma or word).split(":")[0]
-            out.append(MorfeuszAnalysis(form=form or word, lemma=base_lemma, tag=tag))
+            out.append(
+                MorfeuszAnalysis(
+                    form=form or word, lemma=base_lemma, tag=tag, names=_name_categories(entry)
+                )
+            )
         self._cache[key] = out
         return out
 
@@ -248,6 +255,16 @@ def unknown_tokens(
 
 def _looks_like_word(token: str) -> bool:
     return len(token) >= 3 and any(ch.lower() in "aeiouyąęó" for ch in token)
+
+
+def _name_categories(entry: Any) -> tuple[str, ...]:
+    """The fourth field of a Morfeusz interpretation, a list of categories."""
+    interp = entry[2] if isinstance(entry, (tuple, list)) and len(entry) >= 3 else None
+    if isinstance(interp, (tuple, list)) and len(interp) >= 4:
+        categories = interp[3]
+        if isinstance(categories, (tuple, list)):
+            return tuple(str(category) for category in categories)
+    return ()
 
 
 def _extract_interp(entry: Any) -> tuple[str, ...] | None:

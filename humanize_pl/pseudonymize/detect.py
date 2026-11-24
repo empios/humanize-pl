@@ -150,7 +150,7 @@ def _people(text: str, morfeusz: MorfeuszAnalyzer, known: frozenset[str]) -> lis
             and following.capital
             and _adjacent(text, word, following)
         )
-        if pair and not _is_title(word):
+        if pair and not _is_role(morfeusz, word):
             first = _lemmas(morfeusz, word.text, "imię")
             last = _lemmas(morfeusz, following.text, "nazwisko")
             unknown_last = not morfeusz.analyses(following.text)

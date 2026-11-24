@@ -5,11 +5,17 @@ from __future__ import annotations
 import stat
 
 import pytest
+from docx import Document
+from docx.opc.constants import RELATIONSHIP_TYPE
+from docx.oxml import parse_xml
+from docx.oxml.ns import nsdecls
 
 pytest.importorskip("morfeusz2", reason="pseudonimizacja wymaga Morfeusza2 [morfeusz]")
 
 from humanize_pl.nlp.morfeusz import try_load_morfeusz  # noqa: E402
 from humanize_pl.pseudonymize.detect import Entity, find_entities  # noqa: E402
+from humanize_pl.pseudonymize import docx as pseudo_docx  # noqa: E402
+from humanize_pl.pseudonymize.docx import pseudonymize_docx  # noqa: E402
 from humanize_pl.pseudonymize.labels import Pseudonymizer, load_key, save_key  # noqa: E402
 
 
@@ -43,6 +49,11 @@ def test_inflected_surname_keeps_the_key() -> None:
         ("Kowalskiemu", "|kowalski"),
         ("Kowalskiego", "|kowalski"),
     ]
+
+
+def test_a_role_is_never_part_of_the_name() -> None:
+    assert kinds("Świadek Anna Nowak potwierdziła.") == [("person", "Anna Nowak")]
+    assert kinds("Powód Jan Kowalski wniósł pozew.") == [("person", "Jan Kowalski")]
 
 
 def test_honorific_and_role_mark_a_surname() -> None:
@@ -177,3 +188,144 @@ def test_snapshot_restores_the_key() -> None:
     assert pseudonymizer.key()["etykiety"] == {}
     text, _ = pseudonymizer.apply("Anna Nowak podpisała.")
     assert text == "[Osoba 1] podpisała."
+
+
+# --- DOCX ----------------------------------------------------------------------
+
+BODY = "Pozwany Jan Kowalski, PESEL 44051401359, zapłacił."
+
+
+def build(path, *, body: str = BODY, extra=None):
+    document = Document()
+    document.add_paragraph(body)
+    table = document.add_table(rows=1, cols=1)
+    table.cell(0, 0).text = "Świadek Anna Nowak potwierdziła."
+    if extra:
+        extra(document)
+    document.save(str(path))
+    return path
+
+
+def test_body_and_table_are_pseudonymized(tmp_path) -> None:
+    source = build(tmp_path / "a.docx")
+    target = tmp_path / "out" / "a.docx"
+    result = pseudonymize_docx(source, target, Pseudonymizer())
+    assert (result.status, result.leaks, result.output) == ("complete", [], target)
+    copy = Document(str(target))
+    assert copy.paragraphs[0].text == "Pozwany [Osoba 1], PESEL [PESEL 1], zapłacił."
+    assert copy.tables[0].cell(0, 0).text == "Świadek [Osoba 2] potwierdziła."
+    assert result.counts == {"person": 2, "pesel": 1}
+
+
+def test_formatting_runs_survive(tmp_path) -> None:
+    source = tmp_path / "bold.docx"
+    document = Document()
+    paragraph = document.add_paragraph("Najemca ")
+    paragraph.add_run("Jan Kowalski").bold = True
+    paragraph.add_run(" zapłacił.")
+    document.save(str(source))
+    target = tmp_path / "out.docx"
+    assert pseudonymize_docx(source, target, Pseudonymizer()).status == "complete"
+    runs = Document(str(target)).paragraphs[0].runs
+    assert [(run.text, bool(run.bold)) for run in runs] == [
+        ("Najemca ", False), ("[Osoba 1]", True), (" zapłacił.", False)
+    ]
+
+
+def test_personal_data_in_header_blocks_the_output(tmp_path) -> None:
+    def header(document):
+        document.sections[0].header.paragraphs[0].text = "Sporządził: Jan Kowalski"
+
+    pseudonymizer = Pseudonymizer()
+    source = build(tmp_path / "h.docx", extra=header)
+    target = tmp_path / "out.docx"
+    result = pseudonymize_docx(source, target, pseudonymizer)
+    assert (result.status, result.output) == ("incomplete", None)
+    assert not target.exists()
+    assert any("nagłówek" in leak for leak in result.leaks)
+    assert "Kowalski" not in " ".join(result.leaks)
+
+
+def test_rejected_document_leaves_no_labels_in_the_key(tmp_path) -> None:
+    def header(document):
+        document.sections[0].header.paragraphs[0].text = "Sporządził: Jan Kowalski"
+
+    pseudonymizer = Pseudonymizer()
+    pseudonymize_docx(build(tmp_path / "h.docx", extra=header), tmp_path / "o.docx", pseudonymizer)
+    assert pseudonymizer.key()["etykiety"] == {}
+
+
+def test_mailto_target_blocks_the_output(tmp_path) -> None:
+    def link(document):
+        paragraph = document.add_paragraph()
+        r_id = paragraph.part.relate_to(
+            "mailto:jan.kowalski@example.com", RELATIONSHIP_TYPE.HYPERLINK, is_external=True
+        )
+        paragraph._p.append(parse_xml(
+            f'<w:hyperlink {nsdecls("w", "r")} r:id="{r_id}"><w:r><w:t>kontakt</w:t></w:r>'
+            "</w:hyperlink>"
+        ))
+
+    target = tmp_path / "out.docx"
+    result = pseudonymize_docx(build(tmp_path / "m.docx", extra=link), target, Pseudonymizer())
+    assert result.status == "incomplete"
+    assert not target.exists()
+    assert any("łącz" in leak for leak in result.leaks)
+
+
+def test_tracked_changes_block_the_output(tmp_path) -> None:
+    def tracked(document):
+        paragraph = document.add_paragraph("Uzupełnienie.")
+        paragraph._p.append(parse_xml(
+            f'<w:del {nsdecls("w")} w:id="1" w:author="x" w:date="2026-01-01T00:00:00Z">'
+            "<w:r><w:delText>Jan Kowalski</w:delText></w:r></w:del>"
+        ))
+
+    target = tmp_path / "out.docx"
+    result = pseudonymize_docx(build(tmp_path / "t.docx", extra=tracked), target, Pseudonymizer())
+    assert result.status == "incomplete"
+    assert any("śledzone zmiany" in leak for leak in result.leaks)
+
+
+def test_comments_block_the_output(tmp_path) -> None:
+    def comment(document):
+        document.add_comment(document.paragraphs[0].runs, text="Sprawdzić", author="Anna Nowak")
+
+    target = tmp_path / "out.docx"
+    result = pseudonymize_docx(build(tmp_path / "c.docx", extra=comment), target, Pseudonymizer())
+    assert result.status == "incomplete"
+    assert any("komentarz" in leak for leak in result.leaks)
+
+
+def test_structure_mismatch_never_copies_the_source(tmp_path, monkeypatch) -> None:
+    source = build(tmp_path / "s.docx")
+    real = pseudo_docx.inventory_docx
+    calls: list[object] = []
+
+    def drifting(path):
+        inventory = real(path)
+        calls.append(path)
+        if len(calls) > 1:
+            from dataclasses import replace
+
+            return replace(inventory, tables=inventory.tables + 1)
+        return inventory
+
+    monkeypatch.setattr(pseudo_docx, "inventory_docx", drifting)
+    target = tmp_path / "out.docx"
+    result = pseudonymize_docx(source, target, Pseudonymizer())
+    assert (result.status, result.output) == ("failed", None)
+    assert not target.exists()
+    assert not list(tmp_path.glob("*.tmp*"))
+
+
+def test_author_metadata_is_cleared(tmp_path) -> None:
+    def author(document):
+        document.core_properties.author = "Jan Kowalski"
+        document.core_properties.last_modified_by = "Jan Kowalski"
+
+    target = tmp_path / "out.docx"
+    result = pseudonymize_docx(build(tmp_path / "x.docx", extra=author), target, Pseudonymizer())
+    assert result.status == "complete"
+    properties = Document(str(target)).core_properties
+    assert (properties.author, properties.last_modified_by) == ("", "")

@@ -39,26 +39,54 @@ _ID_CARD_RE = re.compile(
 )
 _PASSPORT_RE = re.compile(r"(?i:paszport\w*)[^\n]{0,30}?(?P<value>(?<![A-Z])[A-Z]{2}\s?\d{7}(?!\d))")
 _IBAN_RE = re.compile(r"(?<![\dA-Z])(?:PL\s?)?\d{2}(?:\s?\d{4}){6}(?!\d)")
+# Three groups of three digits are also how amounts are written ("100 000 000
+# zł"), so such a match is not a phone when a digit group comes before it or a
+# currency, a decimal part or a share count after it.
+_NOT_AN_AMOUNT = (
+    r"(?<!\d[ \u00a0.])(?![ \u00a0]\d{3})"
+    r"(?!\s?(?:,\d|zł|PLN|EUR|USD|akcj|udział|%|gr\b))"
+)
 _PHONE_RE = re.compile(
     r"(?<![\d+])\+48\s?\d{3}[ -]?\d{3}[ -]?\d{3}(?!\d)"
-    r"|(?<![\d+])\d{3}[ -]\d{3}[ -]\d{3}(?!\d)"
+    r"|(?<![\d+])(?<!\d[ \u00a0.])\d{3}[ -]\d{3}[ -]\d{3}(?!\d)" + _NOT_AN_AMOUNT
+    + r"|(?<![\d(])(?:\(\d{2}\)|\d{2})\s?\d{3}[ -]\d{2}[ -]\d{2}(?!\d)"
     r"|(?i:\btel\.?|\btelefon\w*)\s*(?:nr\.?\s*)?:?\s*(?P<value>\d{9})(?!\d)"
 )
 _EMAIL_RE = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
 _HOUSE = r"\d+[A-Za-z]?(?:\s*/\s*\d+[A-Za-z]?)?(?:\s*(?:m\.|lok\.)\s*\d+[A-Za-z]?)?"
+# "zam." marks a residence without being part of it, so it stays in the copy.
 _ADDRESS_RE = re.compile(
-    r"(?:\b(?:ul|al|pl|os)\.|\bulic[ay]|\balej[ai])\s+"
+    r"(?:(?i:\b(?:ul|al|pl|os)\.|\bulic[ay]\b|\balej[ai]\b)\s*|(?<=(?i:\bzam\.)\s{0,3}))"
     r"(?:(?:\p{Lu}[\p{L}\-]*\.?|[IVXL]+|\d+(?=\s+\p{L}))\s+){1,5}?"
     + _HOUSE
     + r"(?!\d)"
 )
-_POSTAL_RE = re.compile(r"(?<!\d)\d{2}-\d{3}\s+\p{Lu}[\p{L}\-]+(?:\s+\p{Lu}[\p{L}\-]+)?")
+# A postal code is personal data even without the town after it.
+_POSTAL_RE = re.compile(
+    r"(?<![\d-])\d{2}-\d{3}(?![\d-])(?:\s+\p{Lu}[\p{L}\-]+(?:\s+\p{Lu}[\p{L}\-]+)?)?"
+)
 # Format alone: a wrong check-digit rule would leave real numbers in place.
 _KW_RE = re.compile(r"\b[A-Z]{2}\d[A-Z]/\d{8}/\d\b")
 
 _WORD_RE = re.compile(r"\p{L}+(?:-\p{L}+)*")
 # Titles: "Pan" has a first-name reading, so it is never read as one.
-_TITLES = frozenset({"pan", "pana", "panu", "panem", "panie", "pani", "panią", "p"})
+_TITLES = frozenset(
+    {
+        "pan", "pana", "panu", "panem", "panie", "pani", "panią", "p",
+        "adw", "mec", "pr", "dr", "prof", "mgr", "inż",
+    }
+)
+# What may stand between a title or role and the surname: "adw. Kowalski".
+_AFTER_TITLE_RE = re.compile(r"\.?\s+")
+# "Uniwersytet im. Adama Mickiewicza": a patron is part of an institution's name.
+_PATRON_RE = re.compile(r"\bim\.\s*$", re.IGNORECASE)
+# "w Krakowie Jan Kowalski": a place after a preposition never starts a name,
+# though Morfeusz also reads "Krakowie" as a first name.
+_PLACE_PREPOSITIONS = frozenset(
+    {"w", "we", "z", "ze", "do", "na", "przy", "pod", "od", "koło", "spod", "nad"}
+)
+# Surname before first name only in listings: "Kowalski Jan, zam. …".
+_LISTING_END_RE = re.compile(r"\s*(?:[,;(\n]|$)")
 # Procedural and contractual roles a surname may follow ("powód Nowak").
 _ROLE_LEMMAS = frozenset(
     {
@@ -143,48 +171,97 @@ def _people(text: str, morfeusz: MorfeuszAnalyzer, known: frozenset[str]) -> lis
     index = 0
     while index < len(words):
         word = words[index]
-        following = words[index + 1] if index + 1 < len(words) else None
-        pair = (
-            following is not None
-            and word.capital
-            and following.capital
-            and _adjacent(text, word, following)
-        )
-        if pair and not _is_role(morfeusz, word):
-            first = _lemmas(morfeusz, word.text, "imię")
-            last = _lemmas(morfeusz, following.text, "nazwisko")
-            unknown_last = not morfeusz.analyses(following.text)
-            if (first or word.dotted) and (last or unknown_last):
-                given = first[0] if first else f"{word.text.lower()}."
-                surname = last[0] if last else following.text.lower()
-                found.append(Entity("person", word.start, following.end, f"{given}|{surname}"))
-                surnames.update(last or [surname])
-                index += 2
-                continue
-            reversed_first = _lemmas(morfeusz, following.text, "imię")
-            reversed_last = _lemmas(morfeusz, word.text, "nazwisko")
-            if reversed_last and reversed_first and not first:
-                key = f"{reversed_first[0]}|{reversed_last[0]}"
-                found.append(Entity("person", word.start, following.end, key))
-                surnames.update(reversed_last)
-                index += 2
-                continue
-        if word.capital and not _is_title(word):
+        if not word.capital or _PATRON_RE.search(text[:word.start]):
+            index += 1
+            continue
+        taken = _name(text, words, index, morfeusz)
+        if taken is not None:
+            end_index, key = taken
+            found.append(Entity("person", word.start, words[end_index].end, key))
+            surnames.add(key.split("|", 1)[1])
+            index = end_index + 1
+            continue
+        if not _is_title(word):
             last = _lemmas(morfeusz, word.text, "nazwisko")
+            unknown = not _analyses(morfeusz, word.text)
             previous = words[index - 1] if index else None
             after_role = (
                 previous is not None
-                and _adjacent(text, previous, word)
+                and _AFTER_TITLE_RE.fullmatch(text[previous.end:word.start]) is not None
                 and _is_role(morfeusz, previous)
-                and (last or not morfeusz.analyses(word.text))
+                and (last or unknown)
             )
-            known_surname = bool(set(last) & surnames) or word.text.lower() in surnames
+            known_surname = (
+                bool(set(last) & surnames)
+                or word.text.lower() in surnames
+                or (unknown and _same_stem(word.text.lower(), surnames))
+            )
             if after_role or known_surname:
                 surname = last[0] if last else word.text.lower()
                 found.append(Entity("person", word.start, word.end, f"|{surname}"))
-                surnames.update(last or [surname])
+                surnames.add(surname)
         index += 1
     return found
+
+
+def _name(
+    text: str, words: list[_Word], index: int, morfeusz: MorfeuszAnalyzer
+) -> tuple[int, str] | None:
+    """(index of the last word, key) when a name starts at `index`."""
+    word = words[index]
+    if _is_role(morfeusz, word):
+        return None
+    previous = words[index - 1] if index else None
+    if (
+        previous is not None
+        and previous.text.lower() in _PLACE_PREPOSITIONS
+        and _lemmas(morfeusz, word.text, "nazwa_geograficzna")
+    ):
+        return None
+
+    def next_capital(position: int) -> _Word | None:
+        if position + 1 >= len(words):
+            return None
+        candidate = words[position + 1]
+        if candidate.capital and _adjacent(text, words[position], candidate):
+            return candidate
+        return None
+
+    def surname_like(candidate: _Word) -> bool:
+        return bool(_lemmas(morfeusz, candidate.text, "nazwisko")) or not _analyses(
+            morfeusz, candidate.text
+        )
+
+    def surname_of(candidate: _Word) -> str:
+        last = _lemmas(morfeusz, candidate.text, "nazwisko")
+        return last[0] if last else candidate.text.lower()
+
+    first = _lemmas(morfeusz, word.text, "imię")
+    second = next_capital(index)
+    if second is None:
+        return None
+    if first or word.dotted:
+        given = first[0] if first else f"{word.text.lower()}."
+        third = next_capital(index + 1)
+        if third is not None and _lemmas(morfeusz, second.text, "imię") and surname_like(third):
+            return index + 2, f"{given}|{surname_of(third)}"
+        if surname_like(second):
+            return index + 1, f"{given}|{surname_of(second)}"
+    reversed_first = _lemmas(morfeusz, second.text, "imię")
+    reversed_last = _lemmas(morfeusz, word.text, "nazwisko")
+    listing = word.text.isupper() or _LISTING_END_RE.match(text, second.end) is not None
+    if reversed_last and reversed_first and not first and listing:
+        return index + 1, f"{reversed_first[0]}|{reversed_last[0]}"
+    return None
+
+
+def _same_stem(word: str, surnames: set[str]) -> bool:
+    """An inflected form of a surname Morfeusz does not know: "Kowalczykowej"
+    after "Kowalczykowa"."""
+    return any(
+        len(surname) >= 6 and word[: len(surname) - 2] == surname[: len(surname) - 2]
+        for surname in surnames
+    )
 
 
 def _adjacent(text: str, left: _Word, right: _Word) -> bool:
@@ -194,9 +271,20 @@ def _adjacent(text: str, left: _Word, right: _Word) -> bool:
     )
 
 
+def _analyses(morfeusz: MorfeuszAnalyzer, word: str) -> list:
+    """Readings of a word, with capitals read as a capitalised name."""
+    if word.isupper() and len(word) > 1:
+        word = word.capitalize()
+    return morfeusz.analyses(word)
+
+
 def _lemmas(morfeusz: MorfeuszAnalyzer, word: str, category: str) -> list[str]:
     return sorted(
-        {reading.lemma.lower() for reading in morfeusz.analyses(word) if category in reading.names}
+        {
+            reading.lemma.lower()
+            for reading in _analyses(morfeusz, word)
+            if category in reading.names
+        }
     )
 
 

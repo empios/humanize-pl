@@ -99,19 +99,25 @@ Działa warstwowo:
 - pseudonimizacja dokumentów (`humanize-pl-flow pseudonymize <folder> -o <katalog>
   [--key klucz.json]`): kopie DOCX, w których dane osobowe zastąpiono etykietami
   (`[Osoba 1]`, `[PESEL 1]`, `[adres 1]`, `[rachunek 1]`, `[KW 1]`…), z zachowanym
-  formatowaniem. Osoby rozpoznaje Morfeusz2 (imię z nazwiskiem, nazwisko po
-  „Pan” albo po roli procesowej, nazwisko znane z wcześniejszego miejsca),
-  także w odmianie: „Kowalskiemu” to ta sama `[Osoba 1]`. Role (powód,
-  Najemca, Zamawiający), firmy, NIP, KRS i REGON zostają. PESEL wymaga sumy
-  kontrolnej albo etykiety „PESEL”, dowód i paszport słowa kontekstowego.
-  Klucz (`klucz.json`, prawa tylko dla właściciela) pozwala odwrócić
-  zamianę i jest rozszerzany przy kolejnym przebiegu, więc etykiety się nie
-  zmieniają; trzeba go przechowywać osobno od kopii. Zasada „fail closed”:
-  dokument, w którym dane zostałyby w nagłówku, stopce, przypisie,
-  komentarzu, śledzonej zmianie, łączu `mailto:` albo właściwościach pliku,
-  nie dostaje kopii, a raport `pseudonimizacja.json` mówi, gdzie zostały
-  (bez samych wartości). Kod wyjścia 1, gdy któryś dokument nie dostał kopii;
-  bez Morfeusza polecenie odmawia pracy (kod 2),
+  formatowaniem. Osoby rozpoznaje Morfeusz2: imię (także podwójne) z nazwiskiem,
+  nazwisko po „Pan”, „adw.”, „r.pr.” albo po roli procesowej, nazwisko znane
+  z dowolnego miejsca przebiegu, także w odmianie: „Kowalskiemu” to ta sama
+  `[Osoba 1]`, nawet gdy pełne imię i nazwisko pojawia się dopiero w innym pliku.
+  Role (powód, Najemca), firmy, NIP, KRS, REGON, kwoty i patroni instytucji
+  („im. Adama Mickiewicza”) zostają. Kopie mają neutralne nazwy
+  (`dokument_01_pseudonimizowany.docx`), bo nazwy plików często zawierają
+  nazwiska stron. Klucz (`klucz.json`, prawa tylko dla właściciela, zapis
+  atomowy) zawiera etykiety i oryginalne nazwy plików, pozwala odwrócić zamianę
+  i jest rozszerzany przy kolejnym przebiegu; trzeba go przechowywać osobno.
+  Zasada „fail closed”: zapisana kopia jest czytana ponownie część po części
+  (treść, nagłówki, przypisy, komentarze, kontrolki treści, kody pól, tekst
+  alternatywny obrazów, właściwości pliku, łącza) i każde znalezione dane osobowe
+  blokują kopię; to samo przy śledzonych zmianach i komentarzach. Raport
+  `pseudonimizacja.json` mówi, gdzie dane zostały, bez samych wartości. Kod
+  wyjścia 1, gdy któryś dokument nie dostał kopii; 2, gdy brak Morfeusza, klucz
+  jest uszkodzony albo katalog wyjściowy leży w katalogu z dokumentami.
+  Nierozpoznawane: imiona i nazwiska spoza słownika Morfeusza (np. obce),
+  telefony zapisane jako 9 cyfr bez kontekstu, dane w obrazach,
 - `humanize-pl-flow report <folder|json|xlsx>` — sam raport PDF z zakończonej
   pracy, z doczytaniem brakujących pomiarów ze starszych przebiegów DOCX
   i odtworzeniem obu stron pomiaru z gotowego arkusza XLSX,

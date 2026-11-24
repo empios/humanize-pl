@@ -14,7 +14,7 @@ from typing import Any
 from humanize_pl.nlp.morfeusz import try_load_morfeusz
 
 from .detect import MorfeuszRequired
-from .docx import DocumentResult, pseudonymize_docx
+from .docx import DocumentResult, package_texts, pseudonymize_docx
 from .labels import Pseudonymizer, load_key, save_key
 
 REPORT_NAME = "pseudonimizacja.json"
@@ -32,21 +32,39 @@ def pseudonymize_folder(
             "Pseudonimizacja wymaga Morfeusza2; bez niego osoby nie zostałyby znalezione. "
             "Zainstaluj: pip install '.[morfeusz]'."
         )
+    folder, output = folder.resolve(), output.resolve()
+    if output == folder or folder in output.parents:
+        raise ValueError(
+            "Katalog wyjściowy nie może leżeć w katalogu z dokumentami: kopie trafiłyby "
+            "do następnego przebiegu."
+        )
     key_path = key_path or output / KEY_NAME
-    pseudonymizer = Pseudonymizer(load_key(key_path) if key_path.exists() else None)
-    results: list[DocumentResult] = []
-    for source in docx_files(folder):
-        target = output / f"{source.stem}{SUFFIX}.docx"
+    try:
+        pseudonymizer = Pseudonymizer(load_key(key_path) if key_path.exists() else None)
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"Nie można użyć pliku klucza {key_path.name}: {exc}") from exc
+    sources = docx_files(folder)
+    # Everyone named anywhere in the run is known before any copy is made, so a
+    # surname met in one file before its full name appears in another is found.
+    for source in sources:
         try:
-            results.append(pseudonymize_docx(source, target, pseudonymizer))
+            pseudonymizer.learn([text for _, text in package_texts(source)])
+        except Exception:  # an unreadable file is reported in the main pass
+            continue
+    results: list[DocumentResult] = []
+    for source in sources:
+        alias = pseudonymizer.file_alias(source.name)
+        target = output / f"{alias}{SUFFIX}.docx"
+        try:
+            results.append(pseudonymize_docx(source, target, pseudonymizer, name=alias))
         except MorfeuszRequired:
             raise
         except Exception as exc:  # one unreadable file must not stop the batch
             # The exception's message may quote the document, so only its type.
             results.append(
-                DocumentResult(source.name, "failed", leaks=[f"błąd: {type(exc).__name__}"])
+                DocumentResult(alias, "failed", leaks=[f"błąd: {type(exc).__name__}"])
             )
-    if pseudonymizer.key()["etykiety"]:
+    if results:
         save_key(pseudonymizer.key(), key_path)
     statuses = Counter(result.status for result in results)
     replaced: Counter[str] = Counter()
@@ -54,6 +72,8 @@ def pseudonymize_folder(
         replaced.update(result.counts)
     report = {
         "wersja": 1,
+        # Only the file name: the report travels, a local path would not stay local.
+        "klucz": key_path.name if results else None,
         "dokumenty": [result.to_json() for result in results],
         "podsumowanie": {
             "documents": len(results),

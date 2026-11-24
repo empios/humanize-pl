@@ -781,14 +781,14 @@ def pseudonymize_command(
     ),
 ) -> None:
     """Folder .docx: kopie z danymi osobowymi zastąpionymi etykietami i osobny klucz."""
-    from humanize_pl.pseudonymize.batch import KEY_NAME, pseudonymize_folder
+    from humanize_pl.pseudonymize.batch import pseudonymize_folder
     from humanize_pl.pseudonymize.detect import MorfeuszRequired
     from humanize_pl.pseudonymize.labels import LABELS
 
     output_directory = output or folder.with_name(f"{folder.name}_pseudonimizacja")
     try:
         report = pseudonymize_folder(folder, output_directory, key_path=key)
-    except MorfeuszRequired as exc:
+    except (MorfeuszRequired, ValueError) as exc:
         print(str(exc))
         raise typer.Exit(2)
 
@@ -805,10 +805,11 @@ def pseudonymize_command(
         f"Kopie: {summary['complete']} z {summary['documents']}. Raport i kopie: "
         f"{output_directory}"
     )
-    print(
-        f"Klucz: {key or output_directory / KEY_NAME}. Zawiera prawdziwe dane; "
-        "przechowuj go osobno od kopii."
-    )
+    if report["klucz"]:
+        print(
+            f"Klucz: {key or output_directory / report['klucz']}. Zawiera prawdziwe dane "
+            "i oryginalne nazwy plików; przechowuj go osobno od kopii."
+        )
     if summary["incomplete"] or summary["failed"]:
         raise typer.Exit(1)
 
